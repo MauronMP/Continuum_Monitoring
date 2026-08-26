@@ -1,0 +1,15 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.org/smartcity/profiles/edge>
+    a owl:Ontology, ex:SemanticNodeProfile ;
+    rdfs:label "Edge semantic profile"@en ;
+    owl:imports
+        <http://example.org/smartcity>,
+        <http://example.org/smartcity/modules/core-vocabulary>,
+        <http://example.org/smartcity/modules/deployment>,
+        <http://example.org/smartcity/modules/wellbeing>,
+        <http://example.org/smartcity/modules/wellbeing-vocabulary> ;
+    ex:usesEntailmentProfile "rdfs" ;
+    owl:versionInfo "2.3.0" .

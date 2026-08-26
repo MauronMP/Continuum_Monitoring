@@ -1,0 +1,41 @@
+# ================================================================================================
+
+# NodeState sin trust score/weight o con valores fuera de [0,1]
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?state ?problem ?value
+WHERE {
+  {
+    ?state a ex:NodeState .
+    FILTER NOT EXISTS { ?state ex:hasTrustScore ?score . }
+    BIND("missing hasTrustScore" AS ?problem)
+  }
+  UNION
+  {
+    ?state a ex:NodeState .
+    FILTER NOT EXISTS { ?state ex:hasTrustWeight ?weight . }
+    BIND("missing hasTrustWeight" AS ?problem)
+  }
+  UNION
+  {
+    ?state a ex:NodeState ; ex:hasTrustScore ?value .
+    FILTER (?value < 0 || ?value > 1)
+    BIND("hasTrustScore outside [0,1]" AS ?problem)
+  }
+  UNION
+  {
+    ?state a ex:NodeState ; ex:hasTrustWeight ?value .
+    FILTER (?value < 0 || ?value > 1)
+    BIND("hasTrustWeight outside [0,1]" AS ?problem)
+  }
+}
+ORDER BY ?state ?problem
+
+# ------------------------------------------------------------------------------------------------

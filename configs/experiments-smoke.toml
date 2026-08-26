@@ -1,0 +1,41 @@
+[experiment]
+repetitions = 1
+request_timeout_seconds = 30
+seed = 2026
+query_rounds = 1
+warmup_query_rounds = 1
+
+[scale_out]
+users = 5
+target_triples = 0
+rule_count = 0
+node_counts = [1, 3, 5]
+padding_mode = "neutral"
+
+[reasoning_hardware]
+
+[[reasoning_hardware.profiles]]
+name = "triples-5000"
+dimension = "target_triples"
+users = 5
+target_triples = 5000
+rule_count = 0
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "rules-5"
+dimension = "rule_count"
+users = 5
+target_triples = 5000
+rule_count = 5
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "users-10"
+dimension = "users"
+users = 10
+target_triples = 0
+rule_count = 0
+
+[distributed_ontology]
+users = [0, 10]

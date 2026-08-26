@@ -1,0 +1,24 @@
+# ================================================================================================
+# Category: contract_compliance
+
+# Ticket de auditoría cuyo rango de consentimiento no coincide con el contrato auditado
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?contract ?evaluationRange ?contractRange
+WHERE {
+  ?evaluation a ex:EvaluationState ;
+              ex:auditsContract ?contract ;
+              ex:hasConsentRange ?evaluationRange .
+  ?contract ex:hasConsentRange ?contractRange .
+  FILTER (?evaluationRange != ?contractRange)
+}
+ORDER BY ?evaluation
+
+# ------------------------------------------------------------------------------------------------

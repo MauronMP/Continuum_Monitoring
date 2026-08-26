@@ -1,0 +1,37 @@
+# ================================================================================================
+# Category: contract_compliance
+
+# Sesiones FL cuyo rango efectivo no alcanza el rango requerido
+# Expectativa: Incumplimiento. Debe devolver 0 filas para sesiones que requieren consentimiento.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?flSession ?requiredRange ?actualRange ?requiredRank ?actualRank
+WHERE {
+  ?flSession a ex:FederatedLearningSession ;
+             ex:requiresConsent true ;
+             ex:requiresConsentRange ?requiredRange .
+  OPTIONAL { ?flSession ex:hasConsentRange ?actualRange . }
+
+  VALUES (?requiredRange ?requiredRank) {
+    (ex:RangeLocalOnly 1)
+    (ex:RangeCommunityAgg 2)
+    (ex:RangeGlobalAgg 3)
+  }
+  OPTIONAL {
+    VALUES (?actualRange ?actualRank) {
+      (ex:RangeLocalOnly 1)
+      (ex:RangeCommunityAgg 2)
+      (ex:RangeGlobalAgg 3)
+    }
+  }
+  FILTER (!BOUND(?actualRange) || ?actualRank < ?requiredRank)
+}
+ORDER BY ?flSession
+
+# ------------------------------------------------------------------------------------------------

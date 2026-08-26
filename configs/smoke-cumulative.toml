@@ -1,0 +1,46 @@
+[paths]
+ontology_files = [
+  "ontology/core/schema.ttl",
+  "ontology/modules/foundation.ttl",
+  "ontology/modules/topology.ttl",
+  "ontology/modules/observability.ttl",
+  "ontology/modules/governance.ttl",
+  "ontology/modules/orchestration.ttl",
+  "ontology/modules/federation.ttl",
+  "ontology/modules/deployment.ttl",
+  "ontology/core/vocabulary.ttl",
+  "ontology/domains/wellbeing/schema.ttl",
+  "ontology/domains/wellbeing/vocabulary.ttl",
+  "ontology/examples/reference-system.ttl",
+  "ontology/shapes/core-compliance.ttl",
+  "ontology/shapes/federated-learning.ttl",
+]
+shape_files = [
+  "ontology/shapes/core-compliance.ttl",
+  "ontology/shapes/federated-learning.ttl",
+]
+query_catalog = "queries/catalog.csv"
+output_dir = "outputs/smoke-cumulative"
+
+[benchmark]
+reasoners = ["rdfs", "owlrl", "rdfs_owlrl"]
+category_order = [
+  "topology",
+  "semantic_schema",
+  "observability",
+  "decision",
+  "consent",
+  "contract_compliance",
+  "access_control",
+  "policy",
+  "migration",
+  "delegation",
+  "federation",
+  "privacy",
+  "context",
+  "wellbeing",
+]
+# Obligatorio por el esquema común, pero no se usa en el test acumulativo.
+scale_users = [1]
+repetitions = 1
+seed = 2026

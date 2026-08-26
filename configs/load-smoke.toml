@@ -1,0 +1,27 @@
+[load]
+repetitions = 1
+duration_seconds = 0.2
+batch_size = 2
+queue_capacity_events = 20
+request_timeout_seconds = 15
+point_timeout_seconds = 20
+recovery_timeout_seconds = 20
+seed = 2026
+
+[[profiles]]
+name = "eps-smoke"
+dimension = "events_per_second"
+events_per_second = 10
+users = 5
+target_triples = 3000
+rule_count = 2
+node_count = 5
+
+[[profiles]]
+name = "nodes-smoke"
+dimension = "node_count"
+events_per_second = 10
+users = 5
+target_triples = 3000
+rule_count = 2
+node_count = 1

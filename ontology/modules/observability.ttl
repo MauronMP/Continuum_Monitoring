@@ -1,0 +1,144 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:hasAvailability a owl:ObjectProperty ;
+    rdfs:label "has availability" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range ex:AvailabilityLevel .
+
+ex:hasBatteryLevel a owl:ObjectProperty ;
+    rdfs:label "has battery level" ;
+    rdfs:domain ex:DeviceState ;
+    rdfs:range ex:BatteryLevel .
+
+ex:hasCommunication a owl:ObjectProperty ;
+    rdfs:label "has communication level" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range ex:CommunicationLevel .
+
+ex:hasConnectionStatus a owl:ObjectProperty ;
+    rdfs:label "has connection status" ;
+    rdfs:domain ex:DeviceState ;
+    rdfs:range ex:DeviceConnectionStatus .
+
+ex:hasDeviceState a owl:ObjectProperty ;
+    rdfs:label "has device state" ;
+    rdfs:comment "Links any SAREF device to its temporal state; domain profiles may specialize the device type." ;
+    rdfs:domain <https://saref.etsi.org/core/Device> ;
+    rdfs:range ex:DeviceState .
+
+ex:hasEnergyLevel a owl:ObjectProperty ;
+    rdfs:label "has energy level" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range ex:EnergyLevel .
+
+ex:hasMobility a owl:ObjectProperty ;
+    rdfs:label "has mobility" ;
+    rdfs:domain ex:UserState ;
+    rdfs:range ex:MobilityLevel .
+
+ex:hasNodeState a owl:ObjectProperty ;
+    rdfs:label "has node state" ;
+    rdfs:domain ex:ComputationalNode ;
+    rdfs:range ex:NodeState .
+
+ex:hasOperationalStatus a owl:ObjectProperty ;
+    rdfs:label "has operational status" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range ex:OperationalStatus .
+
+ex:hasPerformance a owl:ObjectProperty ;
+    rdfs:label "has performance" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range ex:PerformanceLevel .
+
+ex:hasResidualCapacity a owl:ObjectProperty ;
+    rdfs:label "has residual capacity" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range ex:ResidualCapacity .
+
+ex:hasTrustScore a owl:DatatypeProperty ;
+    rdfs:label "has trust score" ;
+    rdfs:comment "Historical reliability score in the [0,1] range, computed from previous failures, latency instability and availability." ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range xsd:decimal .
+
+ex:hasUserState a owl:ObjectProperty ;
+    rdfs:label "has user state" ;
+    rdfs:domain ex:User ;
+    rdfs:range ex:UserState .
+
+ex:hasWorkload a owl:ObjectProperty ;
+    rdfs:label "has workload" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range ex:WorkloadLevel .
+
+ex:parametrizedDataReady a owl:DatatypeProperty ;
+    rdfs:label "parametrized data ready" ;
+    rdfs:domain ex:DeviceState ;
+    rdfs:range xsd:boolean .
+
+ex:queuedRequests a owl:DatatypeProperty ;
+    rdfs:label "queued requests" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range xsd:integer .
+
+ex:resourceUsagePercent a owl:DatatypeProperty ;
+    rdfs:label "resource usage (%)" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range xsd:decimal .
+
+ex:userFeedbackScore a owl:DatatypeProperty ;
+    rdfs:label "user feedback score" ;
+    rdfs:comment "User rating of the previous day's prediction (local model without consent)." ;
+    rdfs:domain ex:UserState ;
+    rdfs:range xsd:integer .
+
+<http://example.org/smartcity/modules/observability> a owl:Ontology ;
+    owl:imports <http://example.org/smartcity/modules/foundation> ;
+    owl:versionInfo "2.3.0" .
+
+ex:AvailabilityLevel a owl:Class ;
+    rdfs:label "Availability Level" .
+
+ex:BatteryLevel a owl:Class ;
+    rdfs:label "Battery Level" .
+
+ex:CommunicationLevel a owl:Class ;
+    rdfs:label "Communication Level" .
+
+ex:DeviceConnectionStatus a owl:Class ;
+    rdfs:label "Device Connection Status" .
+
+ex:EnergyLevel a owl:Class ;
+    rdfs:label "Energy Level" .
+
+ex:MobilityLevel a owl:Class ;
+    rdfs:label "Mobility Level" .
+
+ex:OperationalStatus a owl:Class ;
+    rdfs:label "Operational Status" .
+
+ex:PerformanceLevel a owl:Class ;
+    rdfs:label "Performance Level" .
+
+ex:ResidualCapacity a owl:Class ;
+    rdfs:label "Residual Capacity" .
+
+ex:WorkloadLevel a owl:Class ;
+    rdfs:label "Workload Level" .
+
+ex:UserState a owl:Class ;
+    rdfs:label "User State" ;
+    rdfs:subClassOf ex:State .
+
+ex:DeviceState a owl:Class ;
+    rdfs:label "Device State" ;
+    rdfs:subClassOf ex:State .
+
+ex:NodeState a owl:Class ;
+    rdfs:label "Node State" ;
+    rdfs:subClassOf ex:State,
+        ex:TrustWeightedEntity .

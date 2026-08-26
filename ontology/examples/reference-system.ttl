@@ -1,0 +1,1028 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:AccelSensorA a ex:AccelerometerSensor,
+        owl:NamedIndividual ;
+    rdfs:label "Accelerometer - Watch A" ;
+    sosa:isHostedBy ex:WatchA .
+
+ex:AdminRole a ex:Role,
+        owl:NamedIndividual ;
+    rdfs:label "Administrator" ;
+    ex:hasPermission ex:ManageInfrastructure,
+        ex:ReadPhysiologicalData,
+        ex:ReadSleepData,
+        ex:TrainGlobalModel .
+
+ex:DeviceState_S4_WatchA a ex:DeviceState,
+        owl:NamedIndividual ;
+    rdfs:label "Device State S4 - Watch A Low Battery" ;
+    ex:hasBatteryLevel ex:BatteryLow ;
+    ex:hasConnectionStatus ex:AirplaneMode ;
+    ex:parametrizedDataReady false ;
+    ex:validFrom "2026-05-04T12:00:00"^^xsd:dateTime .
+
+ex:DoctorRole a ex:Role,
+        owl:NamedIndividual ;
+    rdfs:label "Doctor" ;
+    ex:hasPermission ex:ReadPhysiologicalData,
+        ex:ReadSleepData,
+        ex:ReadStressPrediction .
+
+ex:Eval_S1 a ex:EvaluationState,
+        owl:NamedIndividual ;
+    rdfs:label "Evaluation S1 - Normal" ;
+    ex:appliesPolicy ex:ConsentAwareProcessingPolicy,
+        ex:DefaultUrbanAggregationPolicy ;
+    ex:auditsContract ex:Contract_UserA_Global ;
+    ex:evaluatesNode ex:EdgeNode1 ;
+    ex:evaluatesService ex:StressService1 ;
+    ex:hasAHPScore 0.91 ;
+    ex:hasConsentRange ex:RangeGlobalAgg ;
+    ex:hasDetectedSymptom ex:SymptomNone ;
+    ex:hasEvaluationTicketID "AUD-S1-20260504-0905" ;
+    ex:hasLatencyWeight 0.30 ;
+    ex:hasMigrationCost ex:CostLow ;
+    ex:hasMigrationTime ex:TimingLow ;
+    ex:hasModelQualityWeight 0.25 ;
+    ex:hasPrivacyWeight 0.20 ;
+    ex:hasProfitability ex:Adequate ;
+    ex:hasSelectionJustification "Edge tier selected because latency and node trust are sufficient and no migration symptom is active." ;
+    ex:hasTrustWeight 0.25 ;
+    ex:selectedModelTier ex:EdgeModelTier ;
+    ex:validFrom "2026-05-04T09:05:00"^^xsd:dateTime .
+
+ex:Eval_S2 a ex:EvaluationState,
+        owl:NamedIndividual ;
+    rdfs:label "Evaluation S2 - Saturation" ;
+    ex:appliesPolicy ex:DefaultUrbanAggregationPolicy,
+        ex:TrustBasedNodeSelectionPolicy ;
+    ex:auditsContract ex:Contract_UserA_Global ;
+    ex:evaluatesNode ex:EdgeNode1 ;
+    ex:evaluatesService ex:StressService1 ;
+    ex:hasAHPScore 0.52 ;
+    ex:hasConsentRange ex:RangeGlobalAgg ;
+    ex:hasDetectedSymptom ex:SymptomSaturatedWorkload ;
+    ex:hasEvaluationTicketID "AUD-S2-20260504-1105" ;
+    ex:hasLatencyWeight 0.30 ;
+    ex:hasMigrationCost ex:CostMedium ;
+    ex:hasMigrationTime ex:TimingMedium ;
+    ex:hasModelQualityWeight 0.20 ;
+    ex:hasPrivacyWeight 0.20 ;
+    ex:hasProfitability ex:NotAdequate ;
+    ex:hasSelectionJustification "Edge tier is not adequate because workload is saturated; fog tier offers a better trust/capacity balance." ;
+    ex:hasTrustWeight 0.30 ;
+    ex:selectedModelTier ex:FogModelTier ;
+    ex:triggeredByState ex:NodeState_S2_Edge1 ;
+    ex:validFrom "2026-05-04T11:05:00"^^xsd:dateTime .
+
+ex:Eval_S3 a ex:EvaluationState,
+        owl:NamedIndividual ;
+    rdfs:label "Evaluation S3 - Migration to Fog" ;
+    ex:appliesPolicy ex:FLGradientDifferentialPrivacyPolicy,
+        ex:TrustBasedNodeSelectionPolicy ;
+    ex:auditsContract ex:Contract_UserA_Global ;
+    ex:evaluatesNode ex:FogNode1 ;
+    ex:evaluatesService ex:StressService1 ;
+    ex:hasAHPScore 0.84 ;
+    ex:hasConsentRange ex:RangeGlobalAgg ;
+    ex:hasDetectedSymptom ex:SymptomSaturatedWorkload ;
+    ex:hasEvaluationTicketID "AUD-S3-20260504-1112" ;
+    ex:hasLatencyWeight 0.25 ;
+    ex:hasMigrationCost ex:CostLow ;
+    ex:hasMigrationTime ex:TimingLow ;
+    ex:hasModelQualityWeight 0.20 ;
+    ex:hasPrivacyWeight 0.20 ;
+    ex:hasProfitability ex:Adequate ;
+    ex:hasSelectionJustification "Fog tier selected after saturation because it preserves community aggregation, applies DP to gradients and has higher trust than the saturated edge state." ;
+    ex:hasTrustWeight 0.35 ;
+    ex:selectedModelTier ex:FogModelTier ;
+    ex:triggeredByState ex:NodeState_S2_Edge1 ;
+    ex:validFrom "2026-05-04T11:12:00"^^xsd:dateTime .
+
+ex:Eval_S4 a ex:EvaluationState,
+        owl:NamedIndividual ;
+    rdfs:label "Evaluation S4 - Communication Failure" ;
+    ex:appliesPolicy ex:ConsentAwareProcessingPolicy,
+        ex:TrustBasedNodeSelectionPolicy ;
+    ex:auditsContract ex:Contract_UserA_Global ;
+    ex:evaluatesNode ex:EdgeNode2 ;
+    ex:evaluatesService ex:StressService1 ;
+    ex:hasAHPScore 0.38 ;
+    ex:hasConsentRange ex:RangeGlobalAgg ;
+    ex:hasDetectedSymptom ex:SymptomCommunicationLoss ;
+    ex:hasEvaluationTicketID "AUD-S4-20260504-1205" ;
+    ex:hasLatencyWeight 0.40 ;
+    ex:hasMigrationCost ex:CostVeryHigh ;
+    ex:hasMigrationTime ex:TimingVeryHigh ;
+    ex:hasModelQualityWeight 0.15 ;
+    ex:hasPrivacyWeight 0.20 ;
+    ex:hasProfitability ex:NotAdequate ;
+    ex:hasSelectionJustification "EdgeNode2 is compute-only and low-trust; delegation to EdgeNode1 keeps low latency while avoiding a disconnected node." ;
+    ex:hasTrustWeight 0.25 ;
+    ex:selectedModelTier ex:EdgeModelTier ;
+    ex:triggeredByState ex:NodeState_S4_Edge2 ;
+    ex:validFrom "2026-05-04T12:05:00"^^xsd:dateTime .
+
+ex:Eval_S5 a ex:EvaluationState,
+        owl:NamedIndividual ;
+    rdfs:label "Evaluation S5 - Local Only" ;
+    ex:appliesPolicy ex:ConsentAwareProcessingPolicy ;
+    ex:auditsContract ex:Contract_UserB_LocalOnly ;
+    ex:evaluatesNode ex:MobileA ;
+    ex:evaluatesService ex:StressService1 ;
+    ex:hasAHPScore 0.89 ;
+    ex:hasConsentRange ex:RangeLocalOnly ;
+    ex:hasDetectedSymptom ex:SymptomConsentLocalOnly ;
+    ex:hasEvaluationTicketID "AUD-S5-20260504-0905" ;
+    ex:hasLatencyWeight 0.20 ;
+    ex:hasMigrationCost ex:CostLow ;
+    ex:hasMigrationTime ex:TimingLow ;
+    ex:hasModelQualityWeight 0.15 ;
+    ex:hasPrivacyWeight 0.55 ;
+    ex:hasProfitability ex:Adequate ;
+    ex:hasSelectionJustification "Local tier selected because the active semantic contract only authorizes local processing." ;
+    ex:hasTrustWeight 0.10 ;
+    ex:selectedModelTier ex:LocalModelTier ;
+    ex:validFrom "2026-05-04T09:05:00"^^xsd:dateTime .
+
+ex:Eval_S6 a ex:EvaluationState,
+        owl:NamedIndividual ;
+    rdfs:label "Evaluation S6 - Global FL" ;
+    ex:appliesPolicy ex:ConsentAwareProcessingPolicy,
+        ex:FLGradientDifferentialPrivacyPolicy ;
+    ex:auditsContract ex:Contract_UserA_Global ;
+    ex:evaluatesNode ex:CloudNode1 ;
+    ex:evaluatesService ex:StressService1 ;
+    ex:hasAHPScore 0.93 ;
+    ex:hasConsentRange ex:RangeGlobalAgg ;
+    ex:hasDetectedSymptom ex:SymptomNone ;
+    ex:hasEvaluationTicketID "AUD-S6-20260504-0310" ;
+    ex:hasLatencyWeight 0.10 ;
+    ex:hasMigrationCost ex:CostVeryLow ;
+    ex:hasMigrationTime ex:TimingVeryLow ;
+    ex:hasModelQualityWeight 0.40 ;
+    ex:hasPrivacyWeight 0.25 ;
+    ex:hasProfitability ex:Adequate ;
+    ex:hasSelectionJustification "Cloud tier selected because global consent is active, privacy budget is declared and model quality dominates during the night FL window." ;
+    ex:hasTrustWeight 0.25 ;
+    ex:selectedModelTier ex:CloudModelTier ;
+    ex:validFrom "2026-05-04T03:10:00"^^xsd:dateTime .
+
+ex:Eval_S7 a ex:EvaluationState,
+        owl:NamedIndividual ;
+    rdfs:label "Evaluation S7 - Rural Retention" ;
+    ex:appliesPolicy ex:ConsentAwareProcessingPolicy,
+        ex:RuralLocalRetentionPolicy ;
+    ex:auditsContract ex:Contract_UserC_Community ;
+    ex:evaluatesNode ex:MobileC ;
+    ex:evaluatesService ex:StressService1 ;
+    ex:hasAHPScore 0.80 ;
+    ex:hasConsentRange ex:RangeCommunityAgg ;
+    ex:hasDetectedSymptom ex:SymptomRuralLowConnectivity ;
+    ex:hasEvaluationTicketID "AUD-S7-20260504-1005" ;
+    ex:hasLatencyWeight 0.15 ;
+    ex:hasMigrationCost ex:CostHigh ;
+    ex:hasMigrationTime ex:TimingHigh ;
+    ex:hasModelQualityWeight 0.20 ;
+    ex:hasPrivacyWeight 0.40 ;
+    ex:hasProfitability ex:Adequate ;
+    ex:hasSelectionJustification "Local tier selected temporarily because rural connectivity is intermittent; community aggregation is deferred until a controlled upload window." ;
+    ex:hasTrustWeight 0.25 ;
+    ex:selectedModelTier ex:LocalModelTier ;
+    ex:triggeredByState ex:MobileC_NodeState_S7 ;
+    ex:validFrom "2026-05-04T10:05:00"^^xsd:dateTime .
+
+ex:Eval_S8 a ex:EvaluationState,
+        owl:NamedIndividual ;
+    rdfs:label "Evaluation S8 - Restricted Zone" ;
+    ex:appliesPolicy ex:RestrictedExternalTransferAbstentionPolicy,
+        ex:RestrictedZoneNoExternalTransferPolicy ;
+    ex:auditsContract ex:Contract_UserD_RestrictedFacility ;
+    ex:evaluatesNode ex:InternalEdgeFacility ;
+    ex:evaluatesService ex:StressService1 ;
+    ex:hasAHPScore 0.88 ;
+    ex:hasConsentRange ex:RangeCommunityAgg ;
+    ex:hasDetectedSymptom ex:SymptomRestrictedZoneBoundary ;
+    ex:hasEvaluationTicketID "AUD-S8-20260504-0205" ;
+    ex:hasLatencyWeight 0.25 ;
+    ex:hasMigrationCost ex:CostVeryLow ;
+    ex:hasMigrationTime ex:TimingVeryLow ;
+    ex:hasModelQualityWeight 0.10 ;
+    ex:hasPrivacyWeight 0.40 ;
+    ex:hasProfitability ex:Adequate ;
+    ex:hasSelectionJustification "Internal edge tier selected because the restricted zone policy prohibits external transfer, while the local facility node has high trust." ;
+    ex:hasTrustWeight 0.25 ;
+    ex:selectedModelTier ex:EdgeModelTier ;
+    ex:triggeredByState ex:NodeState_S8_Internal ;
+    ex:validFrom "2026-05-04T02:05:00"^^xsd:dateTime .
+
+ex:FL_S3_EdgeToFog a ex:FederatedLearningSession,
+        owl:NamedIndividual ;
+    rdfs:label "FL Session S3 - Edge to Fog" ;
+    ex:dataType "model_gradients" ;
+    ex:governedBy ex:FLGradientDifferentialPrivacyPolicy ;
+    ex:hasAnonymizationApplied true ;
+    ex:hasConsentRange ex:RangeGlobalAgg ;
+    ex:hasNoiseApplied true ;
+    ex:hasPrivacyBudget 2.00 ;
+    ex:hasPrivacyMechanism ex:DifferentialPrivacy,
+        ex:GaussianNoiseMechanism ;
+    ex:hasProcessingPurpose ex:PurposeCommunityFederatedLearning ;
+    ex:involvedNode ex:EdgeNode1,
+        ex:FogNode1 ;
+    ex:noiseLevel 0.15 ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeCommunityAgg ;
+    ex:sessionTime "2026-05-04T11:10:00"^^xsd:dateTime ;
+    ex:transfersData ex:GradientUpdate_S3_A ;
+    ex:updatesModel ex:ModelFog1 .
+
+ex:FL_S6_DownloadToEdge a ex:FederatedLearningSession,
+        owl:NamedIndividual ;
+    rdfs:label "FL Session S6 - Download to Edge" ;
+    ex:dataType "improved_model_parameters" ;
+    ex:hasAnonymizationApplied true ;
+    ex:hasNoiseApplied false ;
+    ex:hasPrivacyBudget 1.50 ;
+    ex:hasPrivacyMechanism ex:LocalAnonymizationMechanism ;
+    ex:hasProcessingPurpose ex:PurposeLocalPrediction ;
+    ex:involvedNode ex:CloudNode1,
+        ex:EdgeNode1 ;
+    ex:noiseLevel 0.00 ;
+    ex:requiresConsent false ;
+    ex:requiresConsentRange ex:RangeLocalOnly ;
+    ex:sessionTime "2026-05-04T04:00:00"^^xsd:dateTime ;
+    ex:updatesModel ex:ModelEdge1 .
+
+ex:FL_S6_EdgeToCloud a ex:FederatedLearningSession,
+        owl:NamedIndividual ;
+    rdfs:label "FL Session S6 - Global Update" ;
+    ex:dataType "global_model_parameters" ;
+    ex:governedBy ex:FLGradientDifferentialPrivacyPolicy ;
+    ex:hasAnonymizationApplied true ;
+    ex:hasConsentRange ex:RangeGlobalAgg ;
+    ex:hasNoiseApplied true ;
+    ex:hasPrivacyBudget 1.50 ;
+    ex:hasPrivacyMechanism ex:DifferentialPrivacy,
+        ex:GaussianNoiseMechanism ;
+    ex:hasProcessingPurpose ex:PurposeGlobalFederatedLearning ;
+    ex:involvedNode ex:CloudNode1,
+        ex:EdgeNode1,
+        ex:FogNode1 ;
+    ex:noiseLevel 0.20 ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeGlobalAgg ;
+    ex:sessionTime "2026-05-04T03:00:00"^^xsd:dateTime ;
+    ex:transfersData ex:GradientUpdate_S6_A ;
+    ex:updatesModel ex:ModelCloud1 .
+
+ex:LaplaceNoiseMechanism a ex:DifferentialPrivacyMechanism,
+        owl:NamedIndividual ;
+    rdfs:label "Laplace Noise Mechanism" .
+
+ex:ModelLocal1 a ex:AIModel,
+        owl:NamedIndividual ;
+    rdfs:label "Local Model - Mobile A" ;
+    ex:hasModelTier ex:LocalModelTier ;
+    ex:hostedOnNode ex:MobileA ;
+    ex:lastUpdated "2026-05-04T00:00:00"^^xsd:dateTime ;
+    ex:modelVersion "0.9.0" .
+
+ex:ModelLocalB a ex:AIModel,
+        owl:NamedIndividual ;
+    rdfs:label "Local Model - Ring B (No Consent)" ;
+    ex:hasDegradationCause ex:NoNearbyNodes ;
+    ex:hasModelTier ex:LocalModelTier ;
+    ex:hostedOnNode ex:RingB ;
+    ex:lastUpdated "2026-05-04T00:00:00"^^xsd:dateTime ;
+    ex:modelVersion "0.8.0" .
+
+ex:ModelLocal_C a ex:AIModel,
+        owl:NamedIndividual ;
+    rdfs:label "Local Model - Mobile C Rural" ;
+    ex:hasDegradationCause ex:NoNearbyNodes ;
+    ex:hasModelTier ex:LocalModelTier ;
+    ex:hostedOnNode ex:MobileC ;
+    ex:modelVersion "1.0.0" .
+
+ex:NodeUserRel_S1_Edge1_UserA a ex:NodeUserRelation,
+        owl:NamedIndividual ;
+    rdfs:label "Node-User Relation S1 - Edge1/UserA" ;
+    ex:hasDistance ex:Close ;
+    ex:isPreferredNode true ;
+    ex:relatesNode ex:EdgeNode1 ;
+    ex:relatesUser ex:UserA ;
+    ex:validFrom "2026-05-04T09:00:00"^^xsd:dateTime .
+
+ex:Obs_EDA_A1 a ex:PhysiologicalObservation,
+        owl:NamedIndividual ;
+    sosa:hasFeatureOfInterest ex:UserA ;
+    sosa:hasSimpleResult "3.2" ;
+    sosa:madeBySensor ex:EDASensorA ;
+    sosa:observedProperty ex:EDAProperty ;
+    sosa:resultTime "2026-05-04T10:01:00"^^xsd:dateTime .
+
+ex:Obs_Sleep_A1 a ex:SleepObservation,
+        owl:NamedIndividual ;
+    sosa:hasFeatureOfInterest ex:UserA ;
+    sosa:hasSimpleResult "82" ;
+    sosa:madeBySensor ex:SleepSensorA ;
+    sosa:observedProperty ex:SleepQualityProperty ;
+    sosa:resultTime "2026-05-04T07:00:00"^^xsd:dateTime .
+
+ex:PhysioDataA1 a ex:PhysiologicalParametrizedData,
+        owl:NamedIndividual ;
+    ex:generatedBy ex:WatchA ;
+    ex:isRedundant false ;
+    ex:sendTimestamp "2026-05-04T22:30:00"^^xsd:dateTime ;
+    ex:sentToNode ex:EdgeNode1 .
+
+ex:ResearcherRole a ex:Role,
+        owl:NamedIndividual ;
+    rdfs:label "Researcher" ;
+    ex:hasPermission ex:ReadStressPrediction,
+        ex:TrainGlobalModel .
+
+ex:ServiceState_S2 a ex:ServiceState,
+        owl:NamedIndividual ;
+    rdfs:label "Service State S2 - Degraded at Edge" ;
+    ex:hasAdaptability ex:Migratable ;
+    ex:hasProcessingLevel ex:ReducedProcessing ;
+    ex:validFrom "2026-05-04T11:00:00"^^xsd:dateTime .
+
+ex:ServiceState_S3_Fog a ex:ServiceState,
+        owl:NamedIndividual ;
+    rdfs:label "Service State S3 - Migrated to Fog" ;
+    ex:hasAdaptability ex:Migratable ;
+    ex:hasProcessingLevel ex:ReducedProcessing ;
+    ex:validFrom "2026-05-04T11:10:00"^^xsd:dateTime .
+
+ex:SleepDataA1 a ex:SleepParametrizedData,
+        owl:NamedIndividual ;
+    ex:generatedBy ex:WatchA ;
+    ex:isRedundant false ;
+    ex:sendTimestamp "2026-05-04T07:15:00"^^xsd:dateTime ;
+    ex:sentToNode ex:EdgeNode1 .
+
+ex:SpO2SensorA a ex:SpO2Sensor,
+        owl:NamedIndividual ;
+    rdfs:label "SpO2 Sensor - Watch A" ;
+    sosa:isHostedBy ex:WatchA .
+
+ex:UserState_S2 a ex:UserState,
+        owl:NamedIndividual ;
+    rdfs:label "User State S2 - Mass Event" ;
+    ex:hasMobility ex:Walking ;
+    ex:hasPersonStatus ex:Agitated ;
+    ex:hasPredictedStressLevel ex:StressHigh ;
+    ex:userFeedbackScore 2 ;
+    ex:validFrom "2026-05-04T11:00:00"^^xsd:dateTime .
+
+ex:UserState_S4 a ex:UserState,
+        owl:NamedIndividual ;
+    rdfs:label "User State S4 - No Signal" ;
+    ex:hasMobility ex:InTransport ;
+    ex:hasPersonStatus ex:Agitated ;
+    ex:hasPredictedStressLevel ex:StressCritical ;
+    ex:validFrom "2026-05-04T12:00:00"^^xsd:dateTime .
+
+<http://example.org/smartcity/examples/reference-system> a owl:Ontology ;
+    rdfs:label "Continuum Monitoring Reference System"@en ;
+    rdfs:comment "Reference ABox with policy-compliant scenarios used by tests."@en ;
+    owl:imports <http://example.org/smartcity>,
+        <http://example.org/smartcity/modules/core-vocabulary>,
+        <http://example.org/smartcity/modules/wellbeing>,
+        <http://example.org/smartcity/modules/wellbeing-vocabulary> ;
+    owl:versionInfo "2.3.0" .
+
+ex:BandC a ex:SmartBand,
+        owl:NamedIndividual ;
+    rdfs:label "Smart Band C1" ;
+    ex:hasDeviceState ex:DeviceState_S7_BandC .
+
+ex:CareFacilityCommunity a ex:Community,
+        owl:NamedIndividual ;
+    rdfs:label "Care Facility A Community" ;
+    rdfs:comment "Community of residents of Senior Care Facility A." .
+
+ex:CentreNeighbourhood a ex:Community,
+        owl:NamedIndividual ;
+    rdfs:label "Centre Neighbourhood Community" .
+
+ex:Delegation_S3_Edge1_To_Fog1 a ex:DelegationEvent,
+        owl:NamedIndividual ;
+    rdfs:label "Temporal Delegation S3 - Edge1 to Fog1" ;
+    ex:delegatedBy ex:EdgeNode1 ;
+    ex:delegatesTo ex:FogNode1 ;
+    ex:expiresOnRecoveryOf ex:EdgeNode1 ;
+    ex:hasRecoveryCondition "Ends when EdgeNode1 no longer has ex:SaturatedWorkload and reaches at least ex:MediumResidual capacity." ;
+    ex:triggeredByState ex:NodeState_S2_Edge1 ;
+    ex:validFrom "2026-05-04T11:10:00"^^xsd:dateTime ;
+    ex:validTo "2026-05-04T12:30:00"^^xsd:dateTime .
+
+ex:Delegation_S4_Edge2_To_Edge1 a ex:DelegationEvent,
+        owl:NamedIndividual ;
+    rdfs:label "Temporal Delegation S4 - Edge2 to Edge1" ;
+    ex:delegatedBy ex:EdgeNode2 ;
+    ex:delegatesTo ex:EdgeNode1 ;
+    ex:expiresOnRecoveryOf ex:EdgeNode2 ;
+    ex:hasRecoveryCondition "Ends when EdgeNode2 communication changes from ex:NoConnectionComm to ex:StableComm or ex:VariableComm." ;
+    ex:triggeredByState ex:NodeState_S4_Edge2 ;
+    ex:validFrom "2026-05-04T12:00:00"^^xsd:dateTime .
+
+ex:DeviceState_S1_WatchA a ex:DeviceState,
+        owl:NamedIndividual ;
+    rdfs:label "Device State S1 - Watch A" ;
+    ex:derivedFrom ex:Obs_HR_A1 ;
+    ex:hasBatteryLevel ex:BatteryHigh ;
+    ex:hasConnectionStatus ex:Connected ;
+    ex:parametrizedDataReady true ;
+    ex:validFrom "2026-05-04T09:00:00"^^xsd:dateTime .
+
+ex:DeviceState_S5_RingB a ex:DeviceState,
+        owl:NamedIndividual ;
+    rdfs:label "Device State S5 - Ring B" ;
+    ex:hasBatteryLevel ex:BatteryMedium ;
+    ex:hasConnectionStatus ex:Connected ;
+    ex:parametrizedDataReady true ;
+    ex:validFrom "2026-05-04T09:00:00"^^xsd:dateTime .
+
+ex:DeviceState_S7_BandC a ex:DeviceState,
+        owl:NamedIndividual ;
+    rdfs:label "Device State S7 - Band C Rural" ;
+    ex:hasBatteryLevel ex:BatteryMedium ;
+    ex:hasConnectionStatus ex:Disconnected ;
+    ex:parametrizedDataReady true ;
+    ex:validFrom "2026-05-04T10:00:00"^^xsd:dateTime .
+
+ex:EDAProperty a owl:NamedIndividual ;
+    rdfs:label "Electrodermal Activity" ;
+    rdfs:comment "Observable property: electrodermal activity in µS." .
+
+ex:EDASensorA a ex:EDASensor,
+        owl:NamedIndividual ;
+    rdfs:label "EDA Sensor - Watch A" ;
+    sosa:isHostedBy ex:WatchA .
+
+ex:GradientUpdate_S3_A a ex:ModelGradientUpdate,
+        owl:NamedIndividual ;
+    rdfs:label "Gradient Update S3 - Participant A" ;
+    ex:hasAnonymizationApplied true ;
+    ex:hasNoiseApplied true ;
+    ex:hasPrivacyMechanism ex:DifferentialPrivacy,
+        ex:GaussianNoiseMechanism,
+        ex:LocalAnonymizationMechanism ;
+    ex:originatesFromDevice ex:MobileA ;
+    ex:sendTimestamp "2026-05-04T11:09:30"^^xsd:dateTime ;
+    ex:sentToNode ex:FogNode1 .
+
+ex:GradientUpdate_S6_A a ex:ModelGradientUpdate,
+        owl:NamedIndividual ;
+    rdfs:label "Gradient Update S6 - Participant A Global" ;
+    ex:hasAnonymizationApplied true ;
+    ex:hasNoiseApplied true ;
+    ex:hasPrivacyMechanism ex:DifferentialPrivacy,
+        ex:GaussianNoiseMechanism,
+        ex:LocalAnonymizationMechanism ;
+    ex:originatesFromDevice ex:MobileA ;
+    ex:sendTimestamp "2026-05-04T02:59:30"^^xsd:dateTime ;
+    ex:sentToNode ex:CloudNode1 .
+
+ex:HRSensorA a ex:HeartRateSensor,
+        owl:NamedIndividual ;
+    rdfs:label "HR Sensor - Watch A" ;
+    sosa:isHostedBy ex:WatchA .
+
+ex:HeartRateProperty a owl:NamedIndividual ;
+    rdfs:label "Heart Rate" ;
+    rdfs:comment "Observable property: heart rate in bpm." .
+
+ex:ManageInfrastructure a ex:Permission,
+        owl:NamedIndividual ;
+    rdfs:label "Manage Infrastructure" ;
+    ex:requiresConsent false .
+
+ex:NodeState_S1_Edge1 a ex:NodeState,
+        owl:NamedIndividual ;
+    rdfs:label "Node State S1 - Edge1 Normal" ;
+    ex:derivedFrom ex:Obs_HR_A1 ;
+    ex:hasAvailability ex:Available ;
+    ex:hasCommunication ex:StableComm ;
+    ex:hasEnergyLevel ex:HighEnergy ;
+    ex:hasOperationalStatus ex:Operational ;
+    ex:hasPerformance ex:Optimal ;
+    ex:hasResidualCapacity ex:HighResidual ;
+    ex:hasTrustScore 0.93 ;
+    ex:hasTrustWeight 0.35 ;
+    ex:hasWorkload ex:LowWorkload ;
+    ex:queuedRequests 1 ;
+    ex:resourceUsagePercent 30.0 ;
+    ex:validFrom "2026-05-04T09:00:00"^^xsd:dateTime .
+
+ex:NodeState_S2_Fog1 a ex:NodeState,
+        owl:NamedIndividual ;
+    rdfs:label "Node State S2 - Fog1 Available" ;
+    ex:hasAvailability ex:Available ;
+    ex:hasCommunication ex:StableComm ;
+    ex:hasEnergyLevel ex:HighEnergy ;
+    ex:hasOperationalStatus ex:Operational ;
+    ex:hasPerformance ex:Optimal ;
+    ex:hasResidualCapacity ex:MediumResidual ;
+    ex:hasTrustScore 0.88 ;
+    ex:hasTrustWeight 0.35 ;
+    ex:hasWorkload ex:MediumWorkload ;
+    ex:queuedRequests 4 ;
+    ex:resourceUsagePercent 55.0 ;
+    ex:validFrom "2026-05-04T11:00:00"^^xsd:dateTime .
+
+ex:NodeState_S6_Cloud a ex:NodeState,
+        owl:NamedIndividual ;
+    rdfs:label "Node State S6 - Cloud Normal" ;
+    ex:hasAvailability ex:Available ;
+    ex:hasCommunication ex:StableComm ;
+    ex:hasEnergyLevel ex:HighEnergy ;
+    ex:hasOperationalStatus ex:Operational ;
+    ex:hasPerformance ex:Optimal ;
+    ex:hasResidualCapacity ex:HighResidual ;
+    ex:hasTrustScore 0.96 ;
+    ex:hasTrustWeight 0.30 ;
+    ex:hasWorkload ex:LowWorkload ;
+    ex:queuedRequests 0 ;
+    ex:resourceUsagePercent 25.0 ;
+    ex:validFrom "2026-05-04T03:00:00"^^xsd:dateTime .
+
+ex:ServiceState_S1 a ex:ServiceState,
+        owl:NamedIndividual ;
+    rdfs:label "Service State S1 - Normal" ;
+    ex:hasAdaptability ex:MigratableAndScalable ;
+    ex:hasProcessingLevel ex:FullProcessing ;
+    ex:validFrom "2026-05-04T09:00:00"^^xsd:dateTime .
+
+ex:SleepQualityProperty a owl:NamedIndividual ;
+    rdfs:label "Sleep Quality" ;
+    rdfs:comment "Observable property: sleep quality score (0–100)." .
+
+ex:SleepSensorA a ex:SleepSensor,
+        owl:NamedIndividual ;
+    rdfs:label "Sleep Sensor - Watch A" ;
+    sosa:isHostedBy ex:WatchA .
+
+ex:UserB a ex:User,
+        owl:NamedIndividual ;
+    ex:anonymizedID "USR-B002" ;
+    ex:governedBy ex:ConsentAwareProcessingPolicy ;
+    ex:hasActiveConsentRange ex:RangeLocalOnly ;
+    ex:hasConsent ex:ConsentDenied ;
+    ex:hasRole ex:EndUserRole ;
+    ex:hasSemanticContract ex:Contract_UserB_LocalOnly ;
+    ex:hasUserState ex:UserState_S5_B ;
+    ex:hasWearable ex:RingB ;
+    foaf:name "Participant B" .
+
+ex:UserC a ex:User,
+        owl:NamedIndividual ;
+    ex:anonymizedID "USR-C003" ;
+    ex:governedBy ex:ConsentAwareProcessingPolicy,
+        ex:RuralLocalRetentionPolicy ;
+    ex:hasActiveConsentRange ex:RangeCommunityAgg ;
+    ex:hasConsent ex:ConsentGiven ;
+    ex:hasMobileDevice ex:MobileC ;
+    ex:hasRole ex:EndUserRole ;
+    ex:hasSemanticContract ex:Contract_UserC_Community ;
+    ex:hasUserState ex:UserState_S7_C ;
+    ex:hasWearable ex:BandC ;
+    ex:locatedInZone ex:NorthRuralZone ;
+    foaf:name "Participant C" .
+
+ex:UserD a ex:User,
+        owl:NamedIndividual ;
+    ex:anonymizedID "USR-D004" ;
+    ex:belongsToCommunity ex:CareFacilityCommunity ;
+    ex:governedBy ex:ConsentAwareProcessingPolicy,
+        ex:RestrictedExternalTransferAbstentionPolicy,
+        ex:RestrictedZoneNoExternalTransferPolicy ;
+    ex:hasActiveConsentRange ex:RangeCommunityAgg ;
+    ex:hasConsent ex:ConsentGiven ;
+    ex:hasRole ex:EndUserRole ;
+    ex:hasSemanticContract ex:Contract_UserD_RestrictedFacility ;
+    ex:hasUserState ex:UserState_S8_D ;
+    ex:hasWearable ex:WatchD ;
+    ex:locatedInZone ex:CareFacility1 ;
+    foaf:name "Participant D" .
+
+ex:UserState_S1_A a ex:UserState,
+        owl:NamedIndividual ;
+    rdfs:label "User State S1 - Participant A" ;
+    ex:derivedFrom ex:Obs_HR_A1 ;
+    ex:hasMobility ex:Still ;
+    ex:hasPersonStatus ex:Calm ;
+    ex:hasPredictedStressLevel ex:StressLow ;
+    ex:userFeedbackScore 5 ;
+    ex:validFrom "2026-05-04T09:00:00"^^xsd:dateTime .
+
+ex:UserState_S5_B a ex:UserState,
+        owl:NamedIndividual ;
+    rdfs:label "User State S5 - User B Local" ;
+    ex:hasMobility ex:Still ;
+    ex:hasPersonStatus ex:Calm ;
+    ex:hasPredictedStressLevel ex:StressLow ;
+    ex:userFeedbackScore 4 ;
+    ex:validFrom "2026-05-04T09:00:00"^^xsd:dateTime .
+
+ex:UserState_S7_C a ex:UserState,
+        owl:NamedIndividual ;
+    rdfs:label "User State S7 - User C Rural" ;
+    ex:hasMobility ex:Walking ;
+    ex:hasPersonStatus ex:Calm ;
+    ex:hasPredictedStressLevel ex:StressMedium ;
+    ex:userFeedbackScore 3 ;
+    ex:validFrom "2026-05-04T10:00:00"^^xsd:dateTime .
+
+ex:UserState_S8_D a ex:UserState,
+        owl:NamedIndividual ;
+    rdfs:label "User State S8 - User D Care Facility" ;
+    ex:hasMobility ex:Still ;
+    ex:hasPersonStatus ex:Asleep ;
+    ex:hasPredictedStressLevel ex:StressLow ;
+    ex:validFrom "2026-05-04T02:00:00"^^xsd:dateTime .
+
+ex:WatchD a ex:SmartWatch,
+        owl:NamedIndividual ;
+    rdfs:label "Smart Watch D1" ;
+    ex:connectsTo ex:EdgeNode1,
+        ex:InternalEdgeFacility .
+
+ex:Contract_UserB_LocalOnly a ex:SemanticContract,
+        owl:NamedIndividual ;
+    rdfs:label "Semantic Contract - Participant B Local Only" ;
+    ex:contractSubject ex:UserB ;
+    ex:governedBy ex:ConsentAwareProcessingPolicy ;
+    ex:hasConsentRange ex:RangeLocalOnly ;
+    ex:hasProcessingPurpose ex:PurposeLocalPrediction ;
+    ex:validFrom "2026-05-04T00:00:00"^^xsd:dateTime .
+
+ex:Contract_UserC_Community a ex:SemanticContract,
+        owl:NamedIndividual ;
+    rdfs:label "Semantic Contract - Participant C Community" ;
+    ex:contractSubject ex:UserC ;
+    ex:governedBy ex:FLGradientDifferentialPrivacyPolicy,
+        ex:RuralLocalRetentionPolicy ;
+    ex:hasConsentRange ex:RangeCommunityAgg ;
+    ex:hasProcessingPurpose ex:PurposeCommunityFederatedLearning,
+        ex:PurposeLocalPrediction ;
+    ex:validFrom "2026-05-04T00:00:00"^^xsd:dateTime .
+
+ex:Contract_UserD_RestrictedFacility a ex:SemanticContract,
+        owl:NamedIndividual ;
+    rdfs:label "Semantic Contract - Participant D Restricted Facility" ;
+    ex:contractSubject ex:UserD ;
+    ex:governedBy ex:RestrictedZoneNoExternalTransferPolicy ;
+    ex:hasConsentRange ex:RangeCommunityAgg ;
+    ex:hasProcessingPurpose ex:PurposeClinicalMonitoring,
+        ex:PurposeLocalPrediction ;
+    ex:validFrom "2026-05-04T00:00:00"^^xsd:dateTime .
+
+ex:InternalEdgeFacility a ex:EdgeNode,
+        owl:NamedIndividual ;
+    rdfs:label "Internal Edge - Care Facility A" ;
+    ex:coversArea ex:CareFacility1 ;
+    ex:governedBy ex:RestrictedZoneNoExternalTransferPolicy,
+        ex:TrustBasedNodeSelectionPolicy ;
+    ex:hasElasticity false ;
+    ex:hasNodeState ex:NodeState_S8_Internal ;
+    ex:locatedIn ex:CareFacility1 .
+
+ex:MobileC_NodeState_S7 a ex:NodeState,
+        owl:NamedIndividual ;
+    rdfs:label "Node State S7 - Mobile C Rural" ;
+    ex:hasAvailability ex:Partial ;
+    ex:hasCommunication ex:IntermittentComm ;
+    ex:hasEnergyLevel ex:MediumEnergy ;
+    ex:hasOperationalStatus ex:Operational ;
+    ex:hasPerformance ex:Acceptable ;
+    ex:hasResidualCapacity ex:MediumResidual ;
+    ex:hasTrustScore 0.78 ;
+    ex:hasTrustWeight 0.25 ;
+    ex:hasWorkload ex:LowWorkload ;
+    ex:queuedRequests 0 ;
+    ex:resourceUsagePercent 40.0 ;
+    ex:validFrom "2026-05-04T10:00:00"^^xsd:dateTime .
+
+ex:ModelCloud1 a ex:AIModel,
+        owl:NamedIndividual ;
+    rdfs:label "Global Cloud Model" ;
+    ex:hasModelTier ex:CloudModelTier ;
+    ex:hostedOnNode ex:CloudNode1 ;
+    ex:lastUpdated "2026-05-04T03:10:00"^^xsd:dateTime ;
+    ex:modelVersion "2.1.0" .
+
+ex:ModelFog1 a ex:AIModel,
+        owl:NamedIndividual ;
+    rdfs:label "Fog Model - Community Centre" ;
+    ex:hasModelTier ex:FogModelTier ;
+    ex:hostedOnNode ex:FogNode1 ;
+    ex:lastUpdated "2026-05-04T06:00:00"^^xsd:dateTime ;
+    ex:modelVersion "1.8.0" .
+
+ex:NodeState_S8_Internal a ex:NodeState,
+        owl:NamedIndividual ;
+    rdfs:label "Node State S8 - Internal Edge Facility" ;
+    ex:hasAvailability ex:Available ;
+    ex:hasCommunication ex:StableComm ;
+    ex:hasEnergyLevel ex:HighEnergy ;
+    ex:hasOperationalStatus ex:Operational ;
+    ex:hasPerformance ex:Optimal ;
+    ex:hasResidualCapacity ex:HighResidual ;
+    ex:hasTrustScore 0.91 ;
+    ex:hasTrustWeight 0.40 ;
+    ex:hasWorkload ex:LowWorkload ;
+    ex:queuedRequests 2 ;
+    ex:resourceUsagePercent 20.0 ;
+    ex:validFrom "2026-05-04T02:00:00"^^xsd:dateTime .
+
+ex:NorthRuralZone a ex:RuralZone,
+        owl:NamedIndividual ;
+    rdfs:label "North Rural Zone" ;
+    ex:governedBy ex:RuralLocalRetentionPolicy ;
+    ex:hasPopulationDensity ex:LowDensity .
+
+ex:ReadPhysiologicalData a ex:Permission,
+        owl:NamedIndividual ;
+    rdfs:label "Read Physiological Data" ;
+    ex:hasProcessingPurpose ex:PurposeClinicalMonitoring ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeLocalOnly .
+
+ex:ReadSleepData a ex:Permission,
+        owl:NamedIndividual ;
+    rdfs:label "Read Sleep Data" ;
+    ex:hasProcessingPurpose ex:PurposeClinicalMonitoring ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeLocalOnly .
+
+ex:RingB a ex:MistNode,
+        ex:SmartRing,
+        owl:NamedIndividual ;
+    rdfs:label "Smart Ring B1" ;
+    ex:hasDeviceState ex:DeviceState_S5_RingB ;
+    rdfs:comment "Acts as a personal Mist node for local-only model execution (UserB, no consent)." .
+
+ex:TrainGlobalModel a ex:Permission,
+        owl:NamedIndividual ;
+    rdfs:label "Train Global Model" ;
+    ex:hasProcessingPurpose ex:PurposeGlobalFederatedLearning ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeGlobalAgg .
+
+ex:LocalAnonymizationMechanism a ex:PrivacyMechanism,
+        owl:NamedIndividual ;
+    rdfs:label "Local Anonymization Mechanism" .
+
+ex:MobileC a ex:MobileDevice,
+        owl:NamedIndividual ;
+    rdfs:label "Mobile Device - Participant C" ;
+    ex:governedBy ex:RuralLocalRetentionPolicy ;
+    ex:hasNodeState ex:MobileC_NodeState_S7 .
+
+ex:ModelEdge1 a ex:AIModel,
+        owl:NamedIndividual ;
+    rdfs:label "Edge Model - Edge Node 1" ;
+    ex:hasDegradationCause ex:CommunicationLoss ;
+    ex:hasModelTier ex:EdgeModelTier ;
+    ex:hostedOnNode ex:EdgeNode1 ;
+    ex:lastUpdated "2026-05-04T08:00:00"^^xsd:dateTime ;
+    ex:modelVersion "1.2.0" .
+
+ex:NodeState_S4_Edge2 a ex:NodeState,
+        owl:NamedIndividual ;
+    rdfs:label "Node State S4 - Edge2 Disconnected" ;
+    ex:hasAvailability ex:NotAvailable ;
+    ex:hasCommunication ex:NoConnectionComm ;
+    ex:hasEnergyLevel ex:LowEnergy ;
+    ex:hasOperationalStatus ex:ComputeOnly ;
+    ex:hasPerformance ex:Deficient ;
+    ex:hasResidualCapacity ex:CriticalResidual ;
+    ex:hasTrustScore 0.30 ;
+    ex:hasTrustWeight 0.10 ;
+    ex:hasWorkload ex:SaturatedWorkload ;
+    ex:queuedRequests 25 ;
+    ex:resourceUsagePercent 99.0 ;
+    ex:validFrom "2026-05-04T12:00:00"^^xsd:dateTime .
+
+ex:Obs_HR_A1 a ex:PhysiologicalObservation,
+        owl:NamedIndividual ;
+    sosa:hasFeatureOfInterest ex:UserA ;
+    sosa:hasSimpleResult "78" ;
+    sosa:madeBySensor ex:HRSensorA ;
+    sosa:observedProperty ex:HeartRateProperty ;
+    sosa:resultTime "2026-05-04T10:01:00"^^xsd:dateTime .
+
+ex:ReadStressPrediction a ex:Permission,
+        owl:NamedIndividual ;
+    rdfs:label "Read Stress Prediction" ;
+    ex:hasProcessingPurpose ex:PurposeLocalPrediction ;
+    ex:requiresConsent false ;
+    ex:requiresConsentRange ex:RangeLocalOnly .
+
+ex:RestrictedExternalTransferAbstentionPolicy a ex:Policy,
+        owl:NamedIndividual ;
+    rdfs:label "Restricted External Transfer Abstention Policy" ;
+    ex:appliesInZone ex:CareFacility1 ;
+    ex:hasPolicyAction "abstain_from_cloud_training_when_restricted_zone_active" ;
+    ex:hasPolicyStatement "The planner abstains from cloud/global training whenever the active user or node is in a restricted zone." ;
+    ex:hasPolicyType ex:AbstentionPolicyType ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeGlobalAgg .
+
+ex:DifferentialPrivacy a ex:DifferentialPrivacyMechanism,
+        owl:NamedIndividual ;
+    rdfs:label "Differential Privacy" .
+
+ex:EdgeNode2 a ex:EdgeNode,
+        owl:NamedIndividual ;
+    rdfs:label "Edge Node 2 - City Centre" ;
+    ex:delegatesTo ex:EdgeNode1 ;
+    ex:governedBy ex:TrustBasedNodeSelectionPolicy ;
+    ex:hasDelegation ex:Delegation_S4_Edge2_To_Edge1 ;
+    ex:hasElasticity false ;
+    ex:hasNeighborNode ex:EdgeNode1 ;
+    ex:hasNodeState ex:NodeState_S4_Edge2 ;
+    ex:locatedIn ex:CityCentreZone .
+
+ex:EndUserRole a ex:Role,
+        owl:NamedIndividual ;
+    rdfs:label "End User" ;
+    ex:hasPermission ex:ReadStressPrediction .
+
+ex:GaussianNoiseMechanism a ex:DifferentialPrivacyMechanism,
+        owl:NamedIndividual ;
+    rdfs:label "Gaussian Noise Mechanism" .
+
+ex:NodeState_S2_Edge1 a ex:NodeState,
+        owl:NamedIndividual ;
+    rdfs:label "Node State S2 - Edge1 Saturated" ;
+    ex:hasAvailability ex:Partial ;
+    ex:hasCommunication ex:VariableComm ;
+    ex:hasEnergyLevel ex:MediumEnergy ;
+    ex:hasOperationalStatus ex:Operational ;
+    ex:hasPerformance ex:Acceptable ;
+    ex:hasResidualCapacity ex:LowResidual ;
+    ex:hasTrustScore 0.71 ;
+    ex:hasTrustWeight 0.20 ;
+    ex:hasWorkload ex:SaturatedWorkload ;
+    ex:queuedRequests 15 ;
+    ex:resourceUsagePercent 92.0 ;
+    ex:validFrom "2026-05-04T11:00:00"^^xsd:dateTime .
+
+ex:CareFacility1 a ex:RestrictedZone,
+        owl:NamedIndividual ;
+    rdfs:label "Senior Care Facility A" ;
+    ex:governedBy ex:RestrictedExternalTransferAbstentionPolicy,
+        ex:RestrictedZoneNoExternalTransferPolicy ;
+    ex:hasPopulationDensity ex:MediumDensity .
+
+ex:CloudNode1 a ex:CloudNode,
+        owl:NamedIndividual ;
+    rdfs:label "Cloud Node - Global" ;
+    ex:hasElasticity true ;
+    ex:hasNodeState ex:NodeState_S6_Cloud ;
+    ex:hostsModel ex:ModelCloud1 .
+
+ex:MobileA a ex:MobileDevice,
+        owl:NamedIndividual ;
+    rdfs:label "Mobile Device - Participant A" ;
+    ex:connectsTo ex:EdgeNode1 .
+
+ex:RestrictedZoneNoExternalTransferPolicy a ex:Policy,
+        owl:NamedIndividual ;
+    rdfs:label "Restricted Zone No External Transfer Policy" ;
+    ex:appliesInZone ex:CareFacility1 ;
+    ex:hasPolicyAction "prohibit_external_transfer_outside_restricted_zone" ;
+    ex:hasPolicyStatement "Data generated inside a restricted zone must not be sent outside that zone; processing remains internal." ;
+    ex:hasPolicyType ex:ProhibitionPolicyType ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeCommunityAgg .
+
+ex:RuralLocalRetentionPolicy a ex:Policy,
+        owl:NamedIndividual ;
+    rdfs:label "Rural Local Retention Policy" ;
+    ex:appliesInZone ex:NorthRuralZone ;
+    ex:hasPolicyAction "retain_data_locally_until_controlled_upload_window" ;
+    ex:hasPolicyStatement "In rural zones, parametrized data must be retained locally until a safe connectivity window opens." ;
+    ex:hasPolicyType ex:ObligationPolicyType ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeCommunityAgg .
+
+ex:UserA a ex:User,
+        owl:NamedIndividual ;
+    ex:anonymizedID "USR-A001" ;
+    ex:belongsToCommunity ex:CentreNeighbourhood ;
+    ex:governedBy ex:ConsentAwareProcessingPolicy,
+        ex:DefaultUrbanAggregationPolicy ;
+    ex:hasActiveConsentRange ex:RangeGlobalAgg ;
+    ex:hasConsent ex:ConsentGiven ;
+    ex:hasMobileDevice ex:MobileA ;
+    ex:hasRole ex:EndUserRole ;
+    ex:hasSemanticContract ex:Contract_UserA_Global ;
+    ex:hasUserState ex:UserState_S1_A ;
+    ex:hasWearable ex:WatchA ;
+    ex:locatedInZone ex:CityCentreZone ;
+    foaf:name "Participant A" .
+
+ex:CityCentreZone a ex:UrbanZone,
+        owl:NamedIndividual ;
+    rdfs:label "City Centre" ;
+    ex:governedBy ex:DefaultUrbanAggregationPolicy ;
+    ex:hasPopulationDensity ex:HighDensity .
+
+ex:Contract_UserA_Global a ex:SemanticContract,
+        owl:NamedIndividual ;
+    rdfs:label "Semantic Contract - Participant A Global" ;
+    ex:contractSubject ex:UserA ;
+    ex:governedBy ex:ConsentAwareProcessingPolicy,
+        ex:FLGradientDifferentialPrivacyPolicy ;
+    ex:hasConsentRange ex:RangeGlobalAgg ;
+    ex:hasProcessingPurpose ex:PurposeGlobalFederatedLearning,
+        ex:PurposeLocalPrediction ;
+    ex:validFrom "2026-05-04T00:00:00"^^xsd:dateTime .
+
+ex:DefaultUrbanAggregationPolicy a ex:Policy,
+        owl:NamedIndividual ;
+    rdfs:label "Default Urban Aggregation Policy" ;
+    ex:appliesInZone ex:CityCentreZone ;
+    ex:hasPolicyAction "prefer_edge_or_fog_when_latency_and_trust_are_sufficient" ;
+    ex:hasPolicyStatement "Urban zones may use edge/fog processing when consent range and trust score allow it." ;
+    ex:hasPolicyType ex:ObligationPolicyType ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeCommunityAgg .
+
+ex:FLGradientDifferentialPrivacyPolicy a ex:Policy,
+        owl:NamedIndividual ;
+    rdfs:label "FL Gradient Differential Privacy Policy" ;
+    ex:hasPolicyAction "apply_anonymization_and_noise_before_gradient_transfer" ;
+    ex:hasPolicyStatement "Federated model gradients must be anonymized and noise-protected before leaving a mobile device." ;
+    ex:hasPolicyType ex:ObligationPolicyType ;
+    ex:requiresConsent true ;
+    ex:requiresConsentRange ex:RangeCommunityAgg .
+
+ex:FogNode1 a ex:FogNode,
+        owl:NamedIndividual ;
+    rdfs:label "Fog Node 1 - Centre Zone" ;
+    ex:coversArea ex:CityCentreZone ;
+    ex:governedBy ex:DefaultUrbanAggregationPolicy,
+        ex:TrustBasedNodeSelectionPolicy ;
+    ex:hasElasticity false ;
+    ex:hasNodeState ex:NodeState_S2_Fog1 ;
+    ex:hostsModel ex:ModelFog1 .
+
+ex:TrustBasedNodeSelectionPolicy a ex:Policy,
+        owl:NamedIndividual ;
+    rdfs:label "Trust-Based Node Selection Policy" ;
+    ex:hasPolicyAction "prioritize_high_trust_nodes_over_saturated_nodes" ;
+    ex:hasPolicyStatement "During MAPE-K analysis, node selection must include trust score and trust weight in addition to workload and latency." ;
+    ex:hasPolicyType ex:ObligationPolicyType ;
+    ex:requiresConsent false .
+
+ex:WatchA a ex:SmartWatch,
+        owl:NamedIndividual ;
+    rdfs:label "Smart Watch A1" ;
+    ex:connectsTo ex:EdgeNode1 ;
+    ex:hasDeviceState ex:DeviceState_S1_WatchA .
+
+ex:StressService1 a ex:Service,
+        owl:NamedIndividual ;
+    rdfs:label "Stress Prediction Service" ;
+    ex:hasProcessingPurpose ex:PurposeLocalPrediction ;
+    ex:hasServiceState ex:ServiceState_S1 ;
+    ex:hostsModel ex:ModelEdge1 ;
+    ex:requiresConsent false ;
+    ex:requiresConsentRange ex:RangeLocalOnly .
+
+ex:ConsentAwareProcessingPolicy a ex:Policy,
+        owl:NamedIndividual ;
+    rdfs:label "Consent-Aware Processing Policy" ;
+    ex:hasPolicyAction "select_processing_layer_from_active_semantic_contract" ;
+    ex:hasPolicyStatement "The MAPE-K planner must constrain processing to the active consent range encoded in the user's semantic contract." ;
+    ex:hasPolicyType ex:ObligationPolicyType ;
+    ex:requiresConsent false .
+
+ex:EdgeNode1 a ex:EdgeNode,
+        owl:NamedIndividual ;
+    rdfs:label "Edge Node 1 - City Centre" ;
+    ex:coversArea ex:CityCentreZone ;
+    ex:delegatesTo ex:FogNode1 ;
+    ex:governedBy ex:DefaultUrbanAggregationPolicy,
+        ex:TrustBasedNodeSelectionPolicy ;
+    ex:hasDelegation ex:Delegation_S3_Edge1_To_Fog1 ;
+    ex:hasElasticity false ;
+    ex:hasNeighborNode ex:EdgeNode2 ;
+    ex:hasNodeState ex:NodeState_S1_Edge1,
+        ex:NodeState_S2_Edge1 ;
+    ex:hostsModel ex:ModelEdge1 ;
+    ex:hostsService ex:StressService1 ;
+    ex:locatedIn ex:CityCentreZone .

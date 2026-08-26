@@ -1,0 +1,399 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:AbstentionPolicyType a ex:PolicyType,
+        owl:NamedIndividual ;
+    rdfs:label "Abstention Policy" .
+
+ex:Acceptable a ex:PerformanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Acceptable" .
+
+ex:Adequate a ex:ProfitabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Adequate" .
+
+ex:AirplaneMode a ex:DeviceConnectionStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Airplane Mode" ;
+    rdfs:comment "No communication. Most basic local model active." .
+
+ex:Available a ex:AvailabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Available" .
+
+ex:BatteryHigh a ex:BatteryLevel,
+        owl:NamedIndividual ;
+    rdfs:label "High" .
+
+ex:BatteryLow a ex:BatteryLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Low" .
+
+ex:BatteryMedium a ex:BatteryLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Medium" .
+
+ex:BatteryVeryLow a ex:BatteryLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Low" .
+
+ex:Close a ex:DistanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Close" .
+
+ex:CloudModelTier a ex:ModelTier,
+        owl:NamedIndividual ;
+    rdfs:label "Cloud / Global" ;
+    rdfs:comment "Global model. Highest accuracy. Anonymized data from all consenting users." .
+
+ex:CommunicationLoss a ex:ModelDegradationCause,
+        owl:NamedIndividual ;
+    rdfs:label "Communication Loss" .
+
+ex:ComputeOnly a ex:OperationalStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Compute Only" ;
+    rdfs:comment "Disconnected node but still computing. Receives internal delegations." .
+
+ex:Connected a ex:DeviceConnectionStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Connected" .
+
+ex:ConsentDenied a ex:ConsentStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Consent Denied" ;
+    rdfs:comment "Local training only. Data does not leave the person–device–edge area." .
+
+ex:ConsentGiven a ex:ConsentStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Consent Given" ;
+    rdfs:comment "Anonymized data can be uploaded to the continuum for global HFL training." .
+
+ex:CostHigh a ex:MigrationCostLevel,
+        owl:NamedIndividual ;
+    rdfs:label "High" .
+
+ex:CostLow a ex:MigrationCostLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Low" .
+
+ex:CostMedium a ex:MigrationCostLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Medium" .
+
+ex:CostVeryHigh a ex:MigrationCostLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very High" .
+
+ex:CostVeryLow a ex:MigrationCostLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Low" .
+
+ex:CriticalResidual a ex:ResidualCapacity,
+        owl:NamedIndividual ;
+    rdfs:label "Critical" .
+
+ex:Deficient a ex:PerformanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Deficient" .
+
+ex:Disconnected a ex:DeviceConnectionStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Disconnected" .
+
+ex:EdgeModelTier a ex:ModelTier,
+        owl:NamedIndividual ;
+    rdfs:label "Edge" ;
+    rdfs:comment "Low-level model. Lower accuracy. For degradation or low-latency scenarios." .
+
+ex:Far a ex:DistanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Far" .
+
+ex:FogModelTier a ex:ModelTier,
+        owl:NamedIndividual ;
+    rdfs:label "Fog / Community" ;
+    rdfs:comment "Community/zone model. Aggregated data from nearby users." .
+
+ex:FullProcessing a ex:ProcessingLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Full" .
+
+ex:HighDensity a ex:PopulationDensity,
+        owl:NamedIndividual ;
+    rdfs:label "High Density" .
+
+ex:HighEnergy a ex:EnergyLevel,
+        owl:NamedIndividual ;
+    rdfs:label "High" .
+
+ex:HighResidual a ex:ResidualCapacity,
+        owl:NamedIndividual ;
+    rdfs:label "High" .
+
+ex:HighWorkload a ex:WorkloadLevel,
+        owl:NamedIndividual ;
+    rdfs:label "High" .
+
+ex:InTransport a ex:MobilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "In Transport" .
+
+ex:InfrastructureOverload a ex:ModelDegradationCause,
+        owl:NamedIndividual ;
+    rdfs:label "Infrastructure Overload" .
+
+ex:Inoperative a ex:OperationalStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Inoperative" ;
+    rdfs:comment "Total failure. Cannot process or receive requests." .
+
+ex:IntermittentComm a ex:CommunicationLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Intermittent" .
+
+ex:LocalModelTier a ex:ModelTier,
+        owl:NamedIndividual ;
+    rdfs:label "Local (Mist/Device)" ;
+    rdfs:comment "Minimal model. No third-party data. For users without consent or connectivity." .
+
+ex:LowBattery a ex:ModelDegradationCause,
+        owl:NamedIndividual ;
+    rdfs:label "Low Battery" .
+
+ex:LowDensity a ex:PopulationDensity,
+        owl:NamedIndividual ;
+    rdfs:label "Low Density" .
+
+ex:LowEnergy a ex:EnergyLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Low" .
+
+ex:LowResidual a ex:ResidualCapacity,
+        owl:NamedIndividual ;
+    rdfs:label "Low" .
+
+ex:LowWorkload a ex:WorkloadLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Low" .
+
+ex:MediumDensity a ex:PopulationDensity,
+        owl:NamedIndividual ;
+    rdfs:label "Medium Density" .
+
+ex:MediumEnergy a ex:EnergyLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Medium" .
+
+ex:MediumResidual a ex:ResidualCapacity,
+        owl:NamedIndividual ;
+    rdfs:label "Medium" .
+
+ex:MediumWorkload a ex:WorkloadLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Medium" .
+
+ex:Migratable a ex:AdaptabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Migratable" .
+
+ex:MigratableAndScalable a ex:AdaptabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Migratable and Scalable" .
+
+ex:MinimalProcessing a ex:ProcessingLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Minimal" .
+
+ex:MorningWindow a ex:TrafficWindow,
+        owl:NamedIndividual ;
+    rdfs:label "Morning Window" ;
+    rdfs:comment "High demand on wake-up: sleep calculation + daily stress prediction." .
+
+ex:Near a ex:DistanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Near" .
+
+ex:NightWindow a ex:TrafficWindow,
+        owl:NamedIndividual ;
+    rdfs:label "Night Window" ;
+    rdfs:comment "High demand at night: physiological parametrized data upload to continuum." .
+
+ex:NoConnectionComm a ex:CommunicationLevel,
+        owl:NamedIndividual ;
+    rdfs:label "No Connection" .
+
+ex:NoNearbyNodes a ex:ModelDegradationCause,
+        owl:NamedIndividual ;
+    rdfs:label "No Nearby Nodes" .
+
+ex:NoWorkload a ex:WorkloadLevel,
+        owl:NamedIndividual ;
+    rdfs:label "No Workload" .
+
+ex:NotAdaptable a ex:AdaptabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Not Adaptable" .
+
+ex:NotAdequate a ex:ProfitabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Not Adequate" .
+
+ex:NotAvailable a ex:AvailabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Not Available" .
+
+ex:ObligationPolicyType a ex:PolicyType,
+        owl:NamedIndividual ;
+    rdfs:label "Obligation Policy" .
+
+ex:Operational a ex:OperationalStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Operational" .
+
+ex:Optimal a ex:PerformanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Optimal" .
+
+ex:Partial a ex:AvailabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Partial" .
+
+ex:ProhibitionPolicyType a ex:PolicyType,
+        owl:NamedIndividual ;
+    rdfs:label "Prohibition Policy" .
+
+ex:PurposeClinicalMonitoring a ex:ProcessingPurpose,
+        owl:NamedIndividual ;
+    rdfs:label "Clinical monitoring" .
+
+ex:PurposeCommunityFederatedLearning a ex:ProcessingPurpose,
+        owl:NamedIndividual ;
+    rdfs:label "Community federated learning" .
+
+ex:PurposeGlobalFederatedLearning a ex:ProcessingPurpose,
+        owl:NamedIndividual ;
+    rdfs:label "Global federated learning" .
+
+ex:PurposeInfrastructureAdaptation a ex:ProcessingPurpose,
+        owl:NamedIndividual ;
+    rdfs:label "Infrastructure adaptation" .
+
+ex:PurposeLocalPrediction a ex:ProcessingPurpose,
+        owl:NamedIndividual ;
+    rdfs:label "Local stress prediction" .
+
+ex:RangeCommunityAgg a ex:ConsentRange,
+        owl:NamedIndividual ;
+    rdfs:label "Community Aggregation" ;
+    rdfs:comment "Aggregated or noisy updates may be processed at edge/fog/community level; no global aggregation is authorised." .
+
+ex:RangeGlobalAgg a ex:ConsentRange,
+        owl:NamedIndividual ;
+    rdfs:label "Global Aggregation" ;
+    rdfs:comment "Anonymized and privacy-protected updates may participate in global/cloud federated learning." .
+
+ex:RangeLocalOnly a ex:ConsentRange,
+        owl:NamedIndividual ;
+    rdfs:label "Local Only" ;
+    rdfs:comment "Processing is limited to the wearable/mobile device and raw physiological data must not leave the personal area." .
+
+ex:ReducedProcessing a ex:ProcessingLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Reduced" .
+
+ex:Running a ex:MobilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Running" .
+
+ex:SaturatedWorkload a ex:WorkloadLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Saturated" .
+
+ex:Scalable a ex:AdaptabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Scalable" .
+
+ex:StableComm a ex:CommunicationLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Stable" .
+
+ex:Still a ex:MobilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Still" .
+
+ex:SymptomCommunicationLoss a ex:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Communication loss" .
+
+ex:SymptomConsentLocalOnly a ex:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Consent local only" .
+
+ex:SymptomNodeRecoveryPending a ex:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Node recovery pending" .
+
+ex:SymptomNone a ex:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "No relevant symptom" .
+
+ex:SymptomRestrictedZoneBoundary a ex:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Restricted zone boundary" .
+
+ex:SymptomRuralLowConnectivity a ex:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Rural low connectivity" .
+
+ex:SymptomSaturatedWorkload a ex:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Saturated workload" .
+
+ex:TimingHigh a ex:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "High" .
+
+ex:TimingLow a ex:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Low" .
+
+ex:TimingMedium a ex:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Medium" .
+
+ex:TimingVeryHigh a ex:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very High" .
+
+ex:TimingVeryLow a ex:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Low" .
+
+ex:VariableComm a ex:CommunicationLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Variable" .
+
+ex:VeryClose a ex:DistanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Close" .
+
+ex:VeryFar a ex:DistanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Far" .
+
+ex:VeryLowEnergy a ex:EnergyLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Low" .
+
+ex:Walking a ex:MobilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Walking" .
+
+<http://example.org/smartcity/modules/core-vocabulary> a owl:Ontology ;
+    rdfs:label "Continuum Monitoring Core Vocabulary"@en ;
+    rdfs:comment "Controlled values shared by any continuum monitoring domain."@en ;
+    owl:imports <http://example.org/smartcity> ;
+    owl:versionInfo "2.3.0" .

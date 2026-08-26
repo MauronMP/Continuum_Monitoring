@@ -1,0 +1,50 @@
+version = "1.0"
+
+# A source-selection plan is evaluated before load balancing. "cloud" and
+# "fog" are single-authority queries. "edges" is evaluated at the three data
+# owners and merged as a set. "cloud_edges" joins global governance projections
+# with private edge fragments without moving raw observations to cloud/fog.
+
+[scopes]
+cloud = [
+  "BASE-Q04", "BASE-Q06", "BASE-Q29", "BASE-Q31", "BASE-Q32",
+  "EXT-Q01", "EXT-Q02", "EXT-Q09", "EXT-Q10", "EXT-Q11",
+  "EXT-Q13", "EXT-Q03", "EXT-Q04", "EXT-Q05", "EXT-Q06", "EXT-Q07",
+  "EXT-Q08", "EXT-Q22", "EXT-Q24", "EXT-Q25", "EXT-Q26", "EXT-Q27",
+  "EXT-Q33", "EXT-Q34",
+]
+
+fog = [
+  "BASE-Q08", "BASE-Q12", "BASE-Q13", "BASE-Q14",
+  "BASE-Q16", "BASE-Q18", "BASE-Q22", "BASE-Q24",
+  "BASE-Q26", "BASE-Q27", "BASE-Q30", "BASE-Q33", "BASE-Q34", "BASE-Q35",
+  "EXT-Q15", "EXT-Q16", "EXT-Q17", "EXT-Q18",
+  "EXT-Q19", "EXT-Q20", "EXT-Q21", "EXT-Q23", "EXT-Q28",
+  "EXT-Q29", "EXT-Q30", "EXT-Q31", "EXT-Q32",
+]
+
+edges = [
+  "BASE-Q01", "BASE-Q02", "BASE-Q03", "BASE-Q05", "BASE-Q07",
+  "BASE-Q09", "BASE-Q10", "BASE-Q11", "BASE-Q17", "BASE-Q19",
+  "BASE-Q15", "BASE-Q20", "BASE-Q21", "BASE-Q23", "BASE-Q25",
+  "EXT-Q12", "EXT-Q14",
+]
+
+cloud_edges = [
+  "BASE-Q28",
+]
+
+[merge]
+single = [
+  "BASE-Q33",
+]
+
+[privacy]
+restricted = [
+  "BASE-Q03", "BASE-Q05", "BASE-Q09", "BASE-Q10", "BASE-Q11",
+  "BASE-Q17", "BASE-Q20", "BASE-Q23", "BASE-Q25", "BASE-Q28",
+]
+confidential = [
+  "BASE-Q01", "BASE-Q15", "EXT-Q03", "EXT-Q04", "EXT-Q05",
+  "EXT-Q06", "EXT-Q07", "EXT-Q08", "EXT-Q22", "EXT-Q24",
+]

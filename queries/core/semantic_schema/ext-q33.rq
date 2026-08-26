@@ -1,0 +1,22 @@
+# ================================================================================================
+# Category: semantic_schema
+
+# Inventario de shapes SHACL operacionales definidas en la ontología
+# Expectativa: Inspección. Debe mostrar al menos FederatedLearningSessionShape.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?shape ?targetClass ?sparqlMessage
+WHERE {
+  ?shape a sh:NodeShape ;
+         sh:targetClass ?targetClass .
+  OPTIONAL { ?shape sh:sparql/sh:message ?sparqlMessage . }
+}
+ORDER BY ?shape
+
+# ------------------------------------------------------------------------------------------------

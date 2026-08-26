@@ -1,0 +1,39 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q33 · Average resource usage per node type
+# Level   : Advanced
+# Scenario: All (infrastructure load summary)
+# ----------------------------------------------------------------
+SELECT ?nodeType
+       (AVG(xsd:decimal(?resourcePct)) AS ?avgUsage)
+       ((MAX(xsd:decimal(?resourcePct)) + 0.0) AS ?maxUsage)
+WHERE {
+  ?node a ?nodeType .
+  VALUES ?nodeType { ex:CloudNode ex:FogNode ex:EdgeNode }
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:resourceUsagePercent ?resourcePct .
+}
+GROUP BY ?nodeType
+ORDER BY DESC(?avgUsage)
+
+# EXPECTED (approximate, multiple states per node):
+# | nodeType    | avgUsage | maxUsage |
+# |-------------|----------|----------|
+# | EdgeNode    | ~59.0    | 99.0     |
+# | FogNode     | ~55.0    | 55.0     |
+# | CloudNode   | ~25.0    | 25.0     |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------

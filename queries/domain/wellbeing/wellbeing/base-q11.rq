@@ -1,0 +1,26 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q11 · SCENARIO 1 — Verify normal state (all green)
+# Level   : Intermediate
+# Scenario: 1
+# ----------------------------------------------------------------
+SELECT ?node ?workload ?performance ?availability ?profitability
+WHERE {
+  ex:Eval_S1 ex:evaluatesNode ?node .
+  ex:Eval_S1 ex:hasProfitability ?prof .
+  ?prof rdfs:label ?profitability .
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasWorkload ?wl . ?wl rdfs:label ?workload .
+  ?ns ex:hasPerformance ?perf . ?perf rdfs:label ?performance .
+  ?ns ex:hasAvailability ?av . ?av rdfs:label ?availability .
+}

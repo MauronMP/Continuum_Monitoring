@@ -1,0 +1,25 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q22 · Detect models with degradation causes
+# Level   : Advanced
+# Scenario: 4, 5, 7 (degradation analysis)
+# ----------------------------------------------------------------
+SELECT ?model ?version ?tierLabel ?causeLabel ?lastUpdated
+WHERE {
+  ?model a ex:AIModel .
+  ?model ex:modelVersion ?version .
+  ?model ex:hasModelTier ?tier .    ?tier rdfs:label ?tierLabel .
+  ?model ex:hasDegradationCause ?dc . ?dc rdfs:label ?causeLabel .
+  OPTIONAL { ?model ex:lastUpdated ?lastUpdated }
+}
+ORDER BY ?tierLabel

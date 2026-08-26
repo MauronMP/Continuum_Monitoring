@@ -1,0 +1,16 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.org/smartcity>
+    a owl:Ontology ;
+    rdfs:label "Continuum Monitoring Ontology"@en ;
+    rdfs:comment "Assembly ontology for policy-aware monitoring across the computing continuum."@en ;
+    owl:imports
+        <http://example.org/smartcity/modules/foundation>,
+        <http://example.org/smartcity/modules/topology>,
+        <http://example.org/smartcity/modules/observability>,
+        <http://example.org/smartcity/modules/governance>,
+        <http://example.org/smartcity/modules/orchestration>,
+        <http://example.org/smartcity/modules/federation>,
+        <http://example.org/smartcity/modules/deployment> ;
+    owl:versionInfo "2.3.0" .

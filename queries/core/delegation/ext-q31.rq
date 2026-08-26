@@ -1,0 +1,26 @@
+# ================================================================================================
+
+# Delegaciones directas node-to-node sin DelegationEvent reificado equivalente
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?fromNode ?toNode
+WHERE {
+  ?fromNode ex:delegatesTo ?toNode .
+  FILTER NOT EXISTS { ?fromNode a ex:DelegationEvent . }
+  FILTER NOT EXISTS {
+    ?fromNode ex:hasDelegation ?delegation .
+    ?delegation a ex:DelegationEvent ;
+                ex:delegatedBy ?fromNode ;
+                ex:delegatesTo ?toNode .
+  }
+}
+ORDER BY ?fromNode ?toNode
+
+# ------------------------------------------------------------------------------------------------

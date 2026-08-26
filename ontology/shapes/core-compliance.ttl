@@ -1,0 +1,235 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/smartcity/shapes/core-compliance>
+    a owl:Ontology ;
+    rdfs:label "Continuum Monitoring Core Compliance Shapes"@en ;
+    rdfs:comment "Closed-world validation rules for temporal, governance, trust, AHP and delegation policies."@en ;
+    owl:versionInfo "2.3.0" .
+
+ex:TemporalStateShape
+    a sh:NodeShape ;
+    sh:targetClass ex:State ;
+    sh:property [
+        sh:path ex:validFrom ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "Every State must have exactly one xsd:dateTime validFrom."@en
+    ] ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "validTo must be later than or equal to validFrom."@en ;
+        sh:select """
+            PREFIX ex: <http://example.org/smartcity#>
+            SELECT $this
+            WHERE {
+              $this ex:validFrom ?from ; ex:validTo ?to .
+              FILTER (?to < ?from)
+            }
+        """
+    ] .
+
+ex:NodeStateTrustShape
+    a sh:NodeShape ;
+    sh:targetClass ex:NodeState ;
+    sh:property [
+        sh:path ex:hasTrustScore ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:message "NodeState requires one trust score in [0,1]."@en
+    ] ;
+    sh:property [
+        sh:path ex:hasTrustWeight ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:message "NodeState requires one trust weight in [0,1]."@en
+    ] .
+
+ex:SemanticContractShape
+    a sh:NodeShape ;
+    sh:targetClass ex:SemanticContract ;
+    sh:property [
+        sh:path ex:contractSubject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:User
+    ] ;
+    sh:property [
+        sh:path ex:hasConsentRange ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:ConsentRange
+    ] ;
+    sh:property [
+        sh:path ex:hasProcessingPurpose ;
+        sh:minCount 1 ;
+        sh:class ex:ProcessingPurpose
+    ] ;
+    sh:property [
+        sh:path ex:governedBy ;
+        sh:minCount 1 ;
+        sh:class ex:Policy
+    ] .
+
+ex:PolicyShape
+    a sh:NodeShape ;
+    sh:targetClass ex:Policy ;
+    sh:property [
+        sh:path ex:hasPolicyType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:PolicyType
+    ] ;
+    sh:property [
+        sh:path ex:hasPolicyAction ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string
+    ] ;
+    sh:property [
+        sh:path ex:hasPolicyStatement ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string
+    ] .
+
+ex:EvaluationAuditShape
+    a sh:NodeShape ;
+    sh:targetClass ex:EvaluationState ;
+    sh:property [
+        sh:path ex:hasAHPScore ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1
+    ] ;
+    sh:property [
+        sh:path ex:hasEvaluationTicketID ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string
+    ] ;
+    sh:property [
+        sh:path ex:hasDetectedSymptom ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:MAPESymptom
+    ] ;
+    sh:property [
+        sh:path ex:appliesPolicy ;
+        sh:minCount 1 ;
+        sh:class ex:Policy
+    ] ;
+    sh:property [
+        sh:path ex:auditsContract ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:SemanticContract
+    ] ;
+    sh:property [
+        sh:path ex:hasConsentRange ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:ConsentRange
+    ] ;
+    sh:property [
+        sh:path ex:selectedModelTier ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:ModelTier
+    ] ;
+    sh:property [
+        sh:path ex:hasSelectionJustification ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string
+    ] ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "AHP latency, privacy, model-quality and trust weights must all exist, be in [0,1], and sum to 1."@en ;
+        sh:select """
+            PREFIX ex: <http://example.org/smartcity#>
+            SELECT $this
+            WHERE {
+              OPTIONAL { $this ex:hasLatencyWeight ?latency . }
+              OPTIONAL { $this ex:hasPrivacyWeight ?privacy . }
+              OPTIONAL { $this ex:hasModelQualityWeight ?quality . }
+              OPTIONAL { $this ex:hasTrustWeight ?trust . }
+              FILTER (
+                !BOUND(?latency) || !BOUND(?privacy) || !BOUND(?quality) || !BOUND(?trust)
+                || ?latency < 0 || ?latency > 1
+                || ?privacy < 0 || ?privacy > 1
+                || ?quality < 0 || ?quality > 1
+                || ?trust < 0 || ?trust > 1
+                || ABS((?latency + ?privacy + ?quality + ?trust) - 1.0) > 0.01
+              )
+            }
+        """
+    ] .
+
+ex:DelegationEventShape
+    a sh:NodeShape ;
+    sh:targetClass ex:DelegationEvent ;
+    sh:property [
+        sh:path ex:delegatedBy ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:ComputationalNode
+    ] ;
+    sh:property [
+        sh:path ex:delegatesTo ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:ComputationalNode
+    ] ;
+    sh:property [
+        sh:path ex:triggeredByState ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:State
+    ] ;
+    sh:property [
+        sh:path ex:expiresOnRecoveryOf ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class ex:ComputationalNode
+    ] ;
+    sh:property [
+        sh:path ex:hasRecoveryCondition ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string
+    ] .
+
+ex:GradientUpdatePrivacyShape
+    a sh:NodeShape ;
+    sh:targetClass ex:ModelGradientUpdate ;
+    sh:property [
+        sh:path ex:hasNoiseApplied ;
+        sh:hasValue true ;
+        sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path ex:hasAnonymizationApplied ;
+        sh:hasValue true ;
+        sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path ex:hasPrivacyMechanism ;
+        sh:qualifiedMinCount 1 ;
+        sh:qualifiedValueShape [
+            sh:class ex:DifferentialPrivacyMechanism
+        ]
+    ] .

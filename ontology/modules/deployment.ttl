@@ -1,0 +1,55 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/smartcity/modules/deployment>
+    a owl:Ontology ;
+    rdfs:label "Continuum deployment and fragmentation module"@en ;
+    owl:imports <http://example.org/smartcity/modules/foundation> ;
+    owl:versionInfo "2.3.0" .
+
+ex:DeploymentFragment a owl:Class ;
+    rdfs:label "Deployment fragment"@en .
+
+ex:SemanticNodeProfile a owl:Class ;
+    rdfs:label "Semantic node profile"@en .
+
+ex:AuthorityScope a owl:Class ;
+    rdfs:label "Authority scope"@en .
+
+ex:PrivacyClass a owl:Class ;
+    rdfs:label "Privacy class"@en .
+
+ex:hostedAt a owl:ObjectProperty ;
+    rdfs:domain ex:DeploymentFragment ;
+    rdfs:range ex:ComputationalNode .
+
+ex:authoritativeFor a owl:ObjectProperty ;
+    rdfs:domain ex:DeploymentFragment ;
+    rdfs:range ex:AuthorityScope .
+
+ex:replicaOf a owl:ObjectProperty ;
+    rdfs:domain ex:DeploymentFragment ;
+    rdfs:range ex:DeploymentFragment .
+
+ex:hasPrivacyClass a owl:ObjectProperty ;
+    rdfs:domain ex:DeploymentFragment ;
+    rdfs:range ex:PrivacyClass .
+
+ex:usesEntailmentProfile a owl:DatatypeProperty ;
+    rdfs:domain ex:SemanticNodeProfile ;
+    rdfs:range xsd:string .
+
+ex:graphIRI a owl:DatatypeProperty ;
+    rdfs:domain ex:DeploymentFragment ;
+    rdfs:range xsd:anyURI .
+
+ex:ontologyDigest a owl:DatatypeProperty ;
+    rdfs:domain ex:SemanticNodeProfile ;
+    rdfs:range xsd:string .
+
+ex:LocalPrivateData a ex:PrivacyClass .
+ex:RegionalAnonymizedData a ex:PrivacyClass .
+ex:GlobalAggregateData a ex:PrivacyClass .
+ex:PublicSemanticSchema a ex:PrivacyClass .

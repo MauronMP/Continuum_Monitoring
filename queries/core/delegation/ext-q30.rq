@@ -1,0 +1,25 @@
+# ================================================================================================
+
+# Delegaciones abiertas sin validTo pero con condición de recuperación
+# Expectativa: Revisión. No es necesariamente error si existe expiresOnRecoveryOf/hasRecoveryCondition.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?delegation ?delegatedBy ?delegatesTo ?expiresOnRecoveryOf ?recoveryCondition ?validFrom
+WHERE {
+  ?delegation a ex:DelegationEvent ;
+              ex:delegatedBy ?delegatedBy ;
+              ex:delegatesTo ?delegatesTo ;
+              ex:validFrom ?validFrom .
+  FILTER NOT EXISTS { ?delegation ex:validTo ?validTo . }
+  OPTIONAL { ?delegation ex:expiresOnRecoveryOf ?expiresOnRecoveryOf . }
+  OPTIONAL { ?delegation ex:hasRecoveryCondition ?recoveryCondition . }
+}
+ORDER BY ?delegation
+
+# ------------------------------------------------------------------------------------------------

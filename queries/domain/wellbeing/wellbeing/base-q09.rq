@@ -1,0 +1,29 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q09 · Get user states with predicted stress level and mobility
+# Level   : Intermediate
+# Scenario: 1,2,4,5,7,8
+# ----------------------------------------------------------------
+SELECT ?stateLabel ?mobilityLabel ?personStatusLabel ?stressLabel ?feedback
+WHERE {
+  ?us a ex:UserState .
+  ?us rdfs:label ?stateLabel .
+  ?us ex:hasMobility ?mob .
+  ?mob rdfs:label ?mobilityLabel .
+  ?us ex:hasPersonStatus ?ps .
+  ?ps rdfs:label ?personStatusLabel .
+  ?us ex:hasPredictedStressLevel ?sl .
+  ?sl rdfs:label ?stressLabel .
+  OPTIONAL { ?us ex:userFeedbackScore ?feedback }
+}
+ORDER BY ?stressLabel

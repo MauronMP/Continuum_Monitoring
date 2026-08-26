@@ -1,0 +1,34 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q25 · Identify users whose data CAN be used for global training
+# Level   : Advanced
+# Scenario: 5, 6 (consent + data readiness gate)
+# ----------------------------------------------------------------
+SELECT ?userName ?anonID ?consentLabel ?dataType ?dataReady ?sendTimestamp
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?userName .
+  ?user ex:anonymizedID ?anonID .
+  ?user ex:hasConsent ?c .     ?c rdfs:label ?consentLabel .
+  ?user ex:hasWearable ?w .
+  ?w ex:hasDeviceState ?ds .
+  ?ds ex:parametrizedDataReady ?dataReady .
+  OPTIONAL {
+    ?pd a ex:ParametrizedData .
+    ?pd ex:generatedBy ?w .
+    ?pd a ?dataType .
+    ?pd ex:sendTimestamp ?sendTimestamp .
+  }
+  FILTER (?c = ex:ConsentGiven && ?dataReady = "true"^^xsd:boolean)
+}
+ORDER BY ?userName

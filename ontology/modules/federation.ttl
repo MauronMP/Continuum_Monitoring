@@ -1,0 +1,109 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:ModelGradientUpdate a owl:Class ;
+    rdfs:label "Model Gradient Update" ;
+    rdfs:comment "Federated learning update that may leave a mobile device only after anonymization and noise addition." ;
+    rdfs:subClassOf ex:ParametrizedData .
+
+ex:aggregatesData a owl:ObjectProperty ;
+    rdfs:label "aggregates data" ;
+    rdfs:domain ex:ComputationalNode ;
+    rdfs:range ex:ParametrizedData .
+
+ex:dataType a owl:DatatypeProperty ;
+    rdfs:label "data type sent" ;
+    rdfs:comment "E.g.: model_parameters, gradients, parametrized_sleep_data." ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range xsd:string .
+
+ex:hasAnonymizationApplied a owl:DatatypeProperty ;
+    rdfs:label "has anonymization applied" ;
+    rdfs:domain ex:PrivacyProtectedResource ;
+    rdfs:range xsd:boolean .
+
+ex:hasNoiseApplied a owl:DatatypeProperty ;
+    rdfs:label "has noise applied" ;
+    rdfs:domain ex:PrivacyProtectedResource ;
+    rdfs:range xsd:boolean .
+
+ex:hasPrivacyBudget a owl:DatatypeProperty ;
+    rdfs:label "has privacy budget" ;
+    rdfs:comment "Differential privacy epsilon value for the FL session." ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range xsd:decimal .
+
+ex:hasPrivacyMechanism a owl:ObjectProperty ;
+    rdfs:label "has privacy mechanism" ;
+    rdfs:domain ex:PrivacyProtectedResource ;
+    rdfs:range ex:PrivacyMechanism .
+
+ex:involvedNode a owl:ObjectProperty ;
+    rdfs:label "involved node" ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range ex:ComputationalNode .
+
+ex:isRedundant a owl:DatatypeProperty ;
+    rdfs:label "is redundant" ;
+    rdfs:comment "Redundant or repetitive data — candidate for elimination to reduce traffic." ;
+    rdfs:domain ex:ParametrizedData ;
+    rdfs:range xsd:boolean .
+
+ex:modelVersion a owl:DatatypeProperty ;
+    rdfs:label "model version" ;
+    rdfs:domain ex:AIModel ;
+    rdfs:range xsd:string .
+
+ex:noiseLevel a owl:DatatypeProperty ;
+    rdfs:label "noise level" ;
+    rdfs:comment "Magnitude of noise injected into gradients or model parameters before transfer." ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range xsd:decimal .
+
+ex:originatesFromDevice a owl:ObjectProperty ;
+    rdfs:label "originates from device" ;
+    rdfs:domain ex:ParametrizedData ;
+    rdfs:range ex:MobileDevice .
+
+ex:sendTimestamp a owl:DatatypeProperty ;
+    rdfs:label "send timestamp" ;
+    rdfs:domain ex:ParametrizedData ;
+    rdfs:range xsd:dateTime .
+
+ex:sentToNode a owl:ObjectProperty ;
+    rdfs:label "sent to node" ;
+    rdfs:domain ex:ParametrizedData ;
+    rdfs:range ex:ComputationalNode .
+
+ex:sessionTime a owl:DatatypeProperty ;
+    rdfs:label "session time" ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range xsd:dateTime .
+
+ex:transfersData a owl:ObjectProperty ;
+    rdfs:label "transfers data" ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range ex:ParametrizedData .
+
+ex:updatesModel a owl:ObjectProperty ;
+    rdfs:label "updates model" ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range ex:AIModel .
+
+<http://example.org/smartcity/modules/federation> a owl:Ontology ;
+    owl:imports
+        <http://example.org/smartcity/modules/foundation>,
+        <http://example.org/smartcity/modules/governance>,
+        <http://example.org/smartcity/modules/orchestration> ;
+    owl:versionInfo "2.3.0" .
+
+ex:FederatedLearningSession a owl:Class ;
+    rdfs:label "Federated Learning Session" ;
+    rdfs:comment "Event of parameter/model transfer between continuum layers (HFL)." ;
+    rdfs:subClassOf ex:ConsentRequiredResource,
+        ex:ConsentScopedResource,
+        ex:GovernedResource,
+        ex:PrivacyProtectedResource,
+        ex:PurposeScopedResource .

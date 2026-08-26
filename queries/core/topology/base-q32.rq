@@ -1,0 +1,24 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q32 · Count AI models per tier
+# Level   : Advanced
+# Scenario: All (model tier distribution)
+# ----------------------------------------------------------------
+SELECT ?tierLabel (COUNT(?model) AS ?modelCount)
+WHERE {
+  ?model a ex:AIModel .
+  ?model ex:hasModelTier ?tier .
+  ?tier rdfs:label ?tierLabel .
+}
+GROUP BY ?tierLabel
+ORDER BY ?tierLabel

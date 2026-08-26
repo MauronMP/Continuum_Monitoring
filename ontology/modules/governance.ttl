@@ -1,0 +1,141 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:DifferentialPrivacyMechanism a owl:Class ;
+    rdfs:label "Differential Privacy Mechanism" ;
+    rdfs:subClassOf ex:PrivacyMechanism .
+
+ex:anonymizedID a owl:DatatypeProperty ;
+    rdfs:label "anonymized ID" ;
+    rdfs:domain ex:User ;
+    rdfs:range xsd:string .
+
+ex:appliesInZone a owl:ObjectProperty ;
+    rdfs:label "applies in zone" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range ex:CityArea .
+
+ex:appliesTo a owl:ObjectProperty ;
+    rdfs:label "applies to" ;
+    rdfs:domain ex:Permission .
+
+ex:contractSubject a owl:ObjectProperty ;
+    rdfs:label "contract subject" ;
+    rdfs:domain ex:SemanticContract ;
+    rdfs:range ex:User .
+
+ex:governedBy a owl:ObjectProperty ;
+    rdfs:label "governed by" ;
+    rdfs:comment "Links users, nodes, services, zones or sessions to the applicable policy according to location and processing context." ;
+    rdfs:domain ex:GovernedResource ;
+    rdfs:range ex:Policy .
+
+ex:hasActiveConsentRange a owl:ObjectProperty ;
+    rdfs:label "has active consent range" ;
+    rdfs:comment "Current consent-aware scope inferred from the active semantic contract." ;
+    rdfs:domain ex:User ;
+    rdfs:range ex:ConsentRange .
+
+ex:hasConsent a owl:ObjectProperty ;
+    rdfs:label "has consent" ;
+    rdfs:domain ex:User ;
+    rdfs:range ex:ConsentStatus .
+
+ex:hasConsentRange a owl:ObjectProperty ;
+    rdfs:label "has consent range" ;
+    rdfs:domain ex:ConsentScopedResource ;
+    rdfs:range ex:ConsentRange .
+
+ex:hasPermission a owl:ObjectProperty ;
+    rdfs:label "has permission" ;
+    rdfs:domain ex:Role ;
+    rdfs:range ex:Permission .
+
+ex:hasPolicyAction a owl:DatatypeProperty ;
+    rdfs:label "has policy action" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range xsd:string .
+
+ex:hasPolicyStatement a owl:DatatypeProperty ;
+    rdfs:label "has policy statement" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range xsd:string .
+
+ex:hasPolicyType a owl:ObjectProperty ;
+    rdfs:label "has policy type" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range ex:PolicyType .
+
+ex:hasProcessingPurpose a owl:ObjectProperty ;
+    rdfs:label "has processing purpose" ;
+    rdfs:domain ex:PurposeScopedResource ;
+    rdfs:range ex:ProcessingPurpose .
+
+ex:hasRole a owl:ObjectProperty ;
+    rdfs:label "has role" ;
+    rdfs:domain foaf:Person ;
+    rdfs:range ex:Role .
+
+ex:hasSemanticContract a owl:ObjectProperty ;
+    rdfs:label "has semantic contract" ;
+    rdfs:domain ex:User ;
+    rdfs:range ex:SemanticContract .
+
+ex:requiresConsent a owl:DatatypeProperty ;
+    rdfs:label "requires consent" ;
+    rdfs:comment "Boolean marker used by RBAC and by continuum processing policies. The required consent scope is expressed with ex:requiresConsentRange." ;
+    rdfs:domain ex:ConsentRequiredResource ;
+    rdfs:range xsd:boolean .
+
+ex:requiresConsentRange a owl:ObjectProperty ;
+    rdfs:label "requires consent range" ;
+    rdfs:comment "Minimum consent-aware processing scope required for an action, policy, model tier or FL session." ;
+    rdfs:domain ex:ConsentRequiredResource ;
+    rdfs:range ex:ConsentRange .
+
+<http://example.org/smartcity/modules/governance> a owl:Ontology ;
+    owl:imports
+        <http://example.org/smartcity/modules/foundation>,
+        <http://example.org/smartcity/modules/observability>,
+        <http://example.org/smartcity/modules/topology> ;
+    owl:versionInfo "2.3.0" .
+
+ex:ConsentStatus a owl:Class ;
+    rdfs:label "Consent Status" ;
+    rdfs:comment "Determines whether the user allows their data to be used for model training." .
+
+ex:PolicyType a owl:Class ;
+    rdfs:label "Policy Type" .
+
+ex:PrivacyMechanism a owl:Class ;
+    rdfs:label "Privacy Mechanism" .
+
+ex:Permission a owl:Class ;
+    rdfs:label "Permission" ;
+    rdfs:subClassOf ex:ConsentRequiredResource,
+        ex:PurposeScopedResource .
+
+ex:Role a owl:Class ;
+    rdfs:label "Access Role" .
+
+ex:SemanticContract a owl:Class ;
+    rdfs:label "Semantic Contract" ;
+    rdfs:comment "Formal agreement between a user and the system, binding the user, an active consent range, permitted purposes, policies and temporal validity." ;
+    rdfs:subClassOf ex:ConsentScopedResource,
+        ex:GovernedResource,
+        ex:PurposeScopedResource,
+        ex:State .
+
+ex:ConsentRange a owl:Class ;
+    rdfs:label "Consent Range" ;
+    rdfs:comment "Consent scope replacing the previous binary-only interpretation. It controls where and how data/model updates may be processed across the continuum." .
+
+ex:Policy a owl:Class ;
+    rdfs:label "Policy" ;
+    rdfs:comment "Governance rule that can represent obligations, abstentions or prohibitions over nodes, users, data flows and zones." ;
+    rdfs:subClassOf ex:ConsentRequiredResource,
+        ex:ConsentScopedResource,
+        ex:PurposeScopedResource .

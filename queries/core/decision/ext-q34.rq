@@ -1,0 +1,63 @@
+# ================================================================================================
+
+# Dashboard compacto de conteos por eje de validación
+# Expectativa: Inspección. Da una visión rápida de cobertura de contratos, políticas, evaluaciones, FL y delegaciones.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?metric (COUNT(DISTINCT ?item) AS ?count)
+WHERE {
+  {
+    BIND("Consent ranges" AS ?metric)
+    ?item a ex:ConsentRange .
+  }
+  UNION
+  {
+    BIND("Semantic contracts" AS ?metric)
+    ?item a ex:SemanticContract .
+  }
+  UNION
+  {
+    BIND("Policies" AS ?metric)
+    ?item a ex:Policy .
+  }
+  UNION
+  {
+    BIND("Policy types" AS ?metric)
+    ?item a ex:PolicyType .
+  }
+  UNION
+  {
+    BIND("Node states with trustScore" AS ?metric)
+    ?item a ex:NodeState ; ex:hasTrustScore ?score .
+  }
+  UNION
+  {
+    BIND("Evaluation audit tickets" AS ?metric)
+    ?item a ex:EvaluationState ; ex:hasEvaluationTicketID ?ticket .
+  }
+  UNION
+  {
+    BIND("FL sessions with privacyBudget" AS ?metric)
+    ?item a ex:FederatedLearningSession ; ex:hasPrivacyBudget ?epsilon .
+  }
+  UNION
+  {
+    BIND("Model gradient updates" AS ?metric)
+    ?item a ex:ModelGradientUpdate .
+  }
+  UNION
+  {
+    BIND("Temporal delegation events" AS ?metric)
+    ?item a ex:DelegationEvent .
+  }
+}
+GROUP BY ?metric
+ORDER BY ?metric
+
+# ------------------------------------------------------------------------------------------------

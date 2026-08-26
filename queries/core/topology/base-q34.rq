@@ -1,0 +1,26 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q34 · Find all nodes that cover a RestrictedZone
+# Level   : Advanced
+# Scenario: 8 (restricted zone audit)
+# ----------------------------------------------------------------
+SELECT ?node ?nodeLabel ?zone ?zoneLabel ?connLabel ?workloadLabel
+WHERE {
+  ?node ex:coversArea ?zone .
+  ?zone a ex:RestrictedZone .
+  ?node rdfs:label ?nodeLabel .
+  ?zone rdfs:label ?zoneLabel .
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasCommunication ?comm . ?comm rdfs:label ?connLabel .
+  ?ns ex:hasWorkload ?wl .        ?wl rdfs:label ?workloadLabel .
+}

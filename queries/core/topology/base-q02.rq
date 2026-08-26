@@ -1,0 +1,23 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q02 · List all computational nodes and their type
+# Level   : Simple
+# Scenario: All (infrastructure)
+# ----------------------------------------------------------------
+SELECT ?node ?type ?elasticity
+WHERE {
+  ?node a ?type .
+  ?type rdfs:subClassOf* ex:ComputationalNode .
+  OPTIONAL { ?node ex:hasElasticity ?elasticity }
+}
+ORDER BY ?type

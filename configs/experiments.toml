@@ -1,0 +1,133 @@
+[experiment]
+repetitions = 3
+request_timeout_seconds = 180
+seed = 2026
+query_rounds = 3
+warmup_query_rounds = 1
+
+[scale_out]
+users = 500
+target_triples = 25000
+rule_count = 25
+node_counts = [1, 3, 5]
+padding_mode = "neutral"
+
+[reasoning_hardware]
+
+[[reasoning_hardware.profiles]]
+name = "triples-25000"
+dimension = "target_triples"
+users = 500
+target_triples = 25000
+rule_count = 25
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "triples-50000"
+dimension = "target_triples"
+users = 500
+target_triples = 50000
+rule_count = 25
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "triples-100000"
+dimension = "target_triples"
+users = 500
+target_triples = 100000
+rule_count = 25
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "triples-250000"
+dimension = "target_triples"
+users = 500
+target_triples = 250000
+rule_count = 25
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "triples-500000"
+dimension = "target_triples"
+users = 500
+target_triples = 500000
+rule_count = 25
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "rules-0"
+dimension = "rule_count"
+users = 500
+target_triples = 50000
+rule_count = 0
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "rules-25"
+dimension = "rule_count"
+users = 500
+target_triples = 50000
+rule_count = 25
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "rules-50"
+dimension = "rule_count"
+users = 500
+target_triples = 50000
+rule_count = 50
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "rules-100"
+dimension = "rule_count"
+users = 500
+target_triples = 50000
+rule_count = 100
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "rules-250"
+dimension = "rule_count"
+users = 500
+target_triples = 50000
+rule_count = 250
+padding_mode = "neutral"
+
+[[reasoning_hardware.profiles]]
+name = "users-500"
+dimension = "users"
+users = 500
+target_triples = 0
+rule_count = 25
+
+[[reasoning_hardware.profiles]]
+name = "users-1000"
+dimension = "users"
+users = 1000
+target_triples = 0
+rule_count = 25
+
+[[reasoning_hardware.profiles]]
+name = "users-2500"
+dimension = "users"
+users = 2500
+target_triples = 0
+rule_count = 25
+
+[[reasoning_hardware.profiles]]
+name = "users-5000"
+dimension = "users"
+users = 5000
+target_triples = 0
+rule_count = 25
+
+[[reasoning_hardware.profiles]]
+name = "users-10000"
+dimension = "users"
+users = 10000
+target_triples = 0
+rule_count = 25
+
+[distributed_ontology]
+users = [0, 500, 1000, 2500, 5000, 10000]

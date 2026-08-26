@@ -1,0 +1,37 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:Agitated a ex:PersonStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Agitated" .
+
+ex:Asleep a ex:PersonStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Asleep" .
+
+ex:Calm a ex:PersonStatus,
+        owl:NamedIndividual ;
+    rdfs:label "Calm" .
+
+ex:StressCritical a ex:StressLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Critical" .
+
+ex:StressHigh a ex:StressLevel,
+        owl:NamedIndividual ;
+    rdfs:label "High" .
+
+ex:StressLow a ex:StressLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Low" .
+
+ex:StressMedium a ex:StressLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Medium" .
+
+<http://example.org/smartcity/modules/wellbeing-vocabulary> a owl:Ontology ;
+    rdfs:label "Continuum Monitoring Wellbeing Vocabulary"@en ;
+    rdfs:comment "Controlled values for the optional wellbeing profile."@en ;
+    owl:imports <http://example.org/smartcity/modules/wellbeing> ;
+    owl:versionInfo "2.3.0" .

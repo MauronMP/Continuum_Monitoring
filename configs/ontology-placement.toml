@@ -1,0 +1,53 @@
+version = "1.0"
+
+# The immutable schema is deliberately replicated: it is small, avoids remote
+# schema lookups during reasoning and lets every worker interpret its local
+# ABox.  Domain vocabulary and validation shapes are placed only where they are
+# needed.  Paths are relative to the project root.
+[roles.cloud]
+profile = "ontology/profiles/cloud.ttl"
+files = [
+  "ontology/core/schema.ttl",
+  "ontology/modules/foundation.ttl",
+  "ontology/modules/topology.ttl",
+  "ontology/modules/observability.ttl",
+  "ontology/modules/governance.ttl",
+  "ontology/modules/orchestration.ttl",
+  "ontology/modules/federation.ttl",
+  "ontology/modules/deployment.ttl",
+  "ontology/core/vocabulary.ttl",
+  "ontology/domains/wellbeing/schema.ttl",
+  "ontology/domains/wellbeing/vocabulary.ttl",
+  "ontology/shapes/core-compliance.ttl",
+  "ontology/shapes/federated-learning.ttl",
+]
+
+[roles.fog]
+profile = "ontology/profiles/fog.ttl"
+files = [
+  "ontology/core/schema.ttl",
+  "ontology/modules/foundation.ttl",
+  "ontology/modules/topology.ttl",
+  "ontology/modules/observability.ttl",
+  "ontology/modules/governance.ttl",
+  "ontology/modules/orchestration.ttl",
+  "ontology/modules/federation.ttl",
+  "ontology/modules/deployment.ttl",
+  "ontology/core/vocabulary.ttl",
+]
+
+[roles.edge]
+profile = "ontology/profiles/edge.ttl"
+files = [
+  "ontology/core/schema.ttl",
+  "ontology/modules/foundation.ttl",
+  "ontology/modules/topology.ttl",
+  "ontology/modules/observability.ttl",
+  "ontology/modules/governance.ttl",
+  "ontology/modules/orchestration.ttl",
+  "ontology/modules/federation.ttl",
+  "ontology/modules/deployment.ttl",
+  "ontology/core/vocabulary.ttl",
+  "ontology/domains/wellbeing/schema.ttl",
+  "ontology/domains/wellbeing/vocabulary.ttl",
+]

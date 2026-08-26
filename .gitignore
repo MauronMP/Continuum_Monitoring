@@ -1,0 +1,14 @@
+.DS_Store
+.pytest_cache/
+__pycache__/
+*.egg-info/
+*.py[cod]
+.venv/
+build/
+dist/
+outputs/**/*.csv
+outputs/**/*.json
+outputs/**/*.png
+outputs/**/*.pdf
+outputs/**/*.svg
+outputs/**/runtime/

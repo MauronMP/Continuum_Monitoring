@@ -1,0 +1,25 @@
+# ================================================================================================
+
+# Estado de nodos con workload, comunicación, capacidad residual, trust score y trust weight
+# Expectativa: Inspección. Permite comprobar que MAPE-K puede consultar confianza dinámica.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?node ?state ?workload ?communication ?residualCapacity ?trustScore ?trustWeight
+WHERE {
+  ?node ex:hasNodeState ?state .
+  ?state a ex:NodeState .
+  OPTIONAL { ?state ex:hasWorkload ?workload . }
+  OPTIONAL { ?state ex:hasCommunication ?communication . }
+  OPTIONAL { ?state ex:hasResidualCapacity ?residualCapacity . }
+  OPTIONAL { ?state ex:hasTrustScore ?trustScore . }
+  OPTIONAL { ?state ex:hasTrustWeight ?trustWeight . }
+}
+ORDER BY DESC(?trustScore) ?node
+
+# ------------------------------------------------------------------------------------------------

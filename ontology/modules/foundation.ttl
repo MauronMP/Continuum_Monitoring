@@ -1,0 +1,130 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix saref: <https://saref.etsi.org/core/> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:ComputationalNode a owl:Class ;
+    rdfs:label "Computational Node" ;
+    rdfs:comment "Continuum architecture node capable of hosting models and processing data." ;
+    rdfs:subClassOf ex:DelegableEntity,
+        ex:GovernedResource,
+        saref:Device .
+
+ex:ConsentRequiredResource a owl:Class ;
+    rdfs:label "Consent Required Resource" .
+
+ex:NonUser a owl:Class ;
+    rdfs:label "Non-User" ;
+    rdfs:comment "Person in the environment without a wearable or active participation." ;
+    rdfs:subClassOf foaf:Person .
+
+ex:ParametrizedData a owl:Class ;
+    rdfs:label "Parametrized Data" ;
+    rdfs:comment "Pre-computed and aggregated data. Raw physiological data never leaves the device." ;
+    rdfs:subClassOf ex:PrivacyProtectedResource .
+
+ex:ProcessingPurpose a owl:Class ;
+    rdfs:label "Processing Purpose" ;
+    rdfs:comment "Purpose for which data, model parameters or predictions are processed." .
+
+ex:PurposeScopedResource a owl:Class ;
+    rdfs:label "Purpose Scoped Resource" .
+
+ex:StateTriggeredDecision a owl:Class ;
+    rdfs:label "State Triggered Decision" .
+
+ex:State a owl:Class ;
+    rdfs:label "State" ;
+    rdfs:comment "Dynamic state of any entity. Temporally bounded and automatically derived." .
+
+ex:TrafficWindow a owl:Class ;
+    rdfs:label "Traffic Window" ;
+    rdfs:comment "Time interval with high demand (morning: wake-up; night: physiological data upload)." .
+
+ex:TrustWeightedEntity a owl:Class ;
+    rdfs:label "Trust Weighted Entity" .
+
+ex:derivedFrom a owl:ObjectProperty ;
+    rdfs:label "derived from" ;
+    rdfs:comment "SOSA observation that originated this state and provides its timestamp." ;
+    rdfs:domain ex:State ;
+    rdfs:range sosa:Observation .
+
+ex:hasMobileDevice a owl:ObjectProperty ;
+    rdfs:label "has mobile device" ;
+    rdfs:domain ex:User ;
+    rdfs:range ex:MobileDevice .
+
+ex:stateDuration a owl:DatatypeProperty ;
+    rdfs:label "state duration" ;
+    rdfs:comment "Computed as validTo - validFrom." ;
+    rdfs:domain ex:State ;
+    rdfs:range xsd:duration .
+
+ex:validFrom a owl:DatatypeProperty ;
+    rdfs:label "valid from" ;
+    rdfs:comment "State start. Automatically derived from the originating observation." ;
+    rdfs:domain ex:State ;
+    rdfs:range xsd:dateTime .
+
+ex:validTo a owl:DatatypeProperty ;
+    rdfs:label "valid to" ;
+    rdfs:comment "State end. Closed when a new observation produces a different state." ;
+    rdfs:domain ex:State ;
+    rdfs:range xsd:dateTime .
+
+<http://example.org/smartcity/modules/foundation> a owl:Ontology ;
+    owl:versionInfo "2.3.0" .
+
+geo:Feature a owl:Class .
+
+geo:Geometry a owl:Class .
+
+geo:hasGeometry a owl:ObjectProperty .
+
+sosa:Platform a owl:Class .
+
+sosa:Sensor a owl:Class .
+
+sosa:hasFeatureOfInterest a owl:ObjectProperty .
+
+sosa:hasSimpleResult a owl:DatatypeProperty .
+
+sosa:isHostedBy a owl:ObjectProperty .
+
+sosa:madeBySensor a owl:ObjectProperty .
+
+sosa:observedProperty a owl:ObjectProperty .
+
+sosa:resultTime a owl:DatatypeProperty .
+
+foaf:name a owl:AnnotationProperty .
+
+ex:ConsentScopedResource a owl:Class ;
+    rdfs:label "Consent Scoped Resource" .
+
+ex:DelegableEntity a owl:Class ;
+    rdfs:label "Delegable Entity" .
+
+ex:PrivacyProtectedResource a owl:Class ;
+    rdfs:label "Privacy Protected Resource" .
+
+ex:User a owl:Class ;
+    rdfs:label "User" ;
+    rdfs:comment "System participant with a wearable device." ;
+    rdfs:subClassOf ex:ConsentScopedResource,
+        ex:GovernedResource,
+        foaf:Person .
+
+sosa:Observation a owl:Class .
+
+saref:Device a owl:Class .
+
+ex:GovernedResource a owl:Class ;
+    rdfs:label "Governed Resource" .
+
+foaf:Person a owl:Class .

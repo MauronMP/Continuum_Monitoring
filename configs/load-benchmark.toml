@@ -1,0 +1,219 @@
+[load]
+repetitions = 3
+duration_seconds = 2.0
+batch_size = 25
+queue_capacity_events = 500
+request_timeout_seconds = 120
+point_timeout_seconds = 180
+recovery_timeout_seconds = 180
+seed = 2026
+
+# One-factor-at-a-time profiles. Fixed values remain at the baseline so each
+# series has one unambiguous independent variable.
+
+[[profiles]]
+name = "eps-50"
+dimension = "events_per_second"
+events_per_second = 50
+users = 500
+target_triples = 25000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "eps-200"
+dimension = "events_per_second"
+events_per_second = 200
+users = 500
+target_triples = 25000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "eps-500"
+dimension = "events_per_second"
+events_per_second = 500
+users = 500
+target_triples = 25000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "eps-1000"
+dimension = "events_per_second"
+events_per_second = 1000
+users = 500
+target_triples = 25000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "eps-2500"
+dimension = "events_per_second"
+events_per_second = 2500
+users = 500
+target_triples = 25000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "triples-25000"
+dimension = "target_triples"
+events_per_second = 200
+users = 500
+target_triples = 25000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "triples-50000"
+dimension = "target_triples"
+events_per_second = 200
+users = 500
+target_triples = 50000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "triples-100000"
+dimension = "target_triples"
+events_per_second = 200
+users = 500
+target_triples = 100000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "triples-250000"
+dimension = "target_triples"
+events_per_second = 200
+users = 500
+target_triples = 250000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "triples-500000"
+dimension = "target_triples"
+events_per_second = 200
+users = 500
+target_triples = 500000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "rules-0"
+dimension = "rule_count"
+events_per_second = 200
+users = 500
+target_triples = 50000
+rule_count = 0
+node_count = 5
+
+[[profiles]]
+name = "rules-25"
+dimension = "rule_count"
+events_per_second = 200
+users = 500
+target_triples = 50000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "rules-50"
+dimension = "rule_count"
+events_per_second = 200
+users = 500
+target_triples = 50000
+rule_count = 50
+node_count = 5
+
+[[profiles]]
+name = "rules-100"
+dimension = "rule_count"
+events_per_second = 200
+users = 500
+target_triples = 50000
+rule_count = 100
+node_count = 5
+
+[[profiles]]
+name = "rules-250"
+dimension = "rule_count"
+events_per_second = 200
+users = 500
+target_triples = 50000
+rule_count = 250
+node_count = 5
+
+[[profiles]]
+name = "nodes-1"
+dimension = "node_count"
+events_per_second = 200
+users = 500
+target_triples = 50000
+rule_count = 25
+node_count = 1
+
+[[profiles]]
+name = "nodes-3"
+dimension = "node_count"
+events_per_second = 200
+users = 500
+target_triples = 50000
+rule_count = 25
+node_count = 3
+
+[[profiles]]
+name = "nodes-5"
+dimension = "node_count"
+events_per_second = 200
+users = 500
+target_triples = 50000
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "users-500"
+dimension = "users"
+events_per_second = 200
+users = 500
+target_triples = 0
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "users-1000"
+dimension = "users"
+events_per_second = 200
+users = 1000
+target_triples = 0
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "users-2500"
+dimension = "users"
+events_per_second = 200
+users = 2500
+target_triples = 0
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "users-5000"
+dimension = "users"
+events_per_second = 200
+users = 5000
+target_triples = 0
+rule_count = 25
+node_count = 5
+
+[[profiles]]
+name = "users-10000"
+dimension = "users"
+events_per_second = 200
+users = 10000
+target_triples = 0
+rule_count = 25
+node_count = 5

@@ -1,0 +1,45 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q21 · Evaluation summary: all scenarios profitability + migration
+# Level   : Advanced
+# Scenario: All (cross-evaluation dashboard)
+# ----------------------------------------------------------------
+SELECT ?eval ?nodeName ?profLabel ?migTimeLabel ?migCostLabel ?validFrom
+WHERE {
+  ?eval a ex:EvaluationState .
+  ?eval rdfs:label ?evalLabel .
+  ?eval ex:evaluatesNode ?node .
+  ?node rdfs:label ?nodeName .
+  ?eval ex:hasProfitability ?prof .    ?prof rdfs:label ?profLabel .
+  ?eval ex:hasMigrationTime ?mt .      ?mt rdfs:label ?migTimeLabel .
+  ?eval ex:hasMigrationCost ?mc .      ?mc rdfs:label ?migCostLabel .
+  OPTIONAL { ?eval ex:validFrom ?validFrom }
+}
+ORDER BY ?validFrom
+
+# EXPECTED (one row per evaluation state, ordered by time):
+# | eval        | nodeName     | profitability | migTime  | migCost  | validFrom        |
+# |-------------|--------------|---------------|----------|----------|------------------|
+# | Eval_S8     | InternalEdge | Adequate      | Very Low | Very Low | 02:05            |
+# | Eval_S6     | CloudNode1   | Adequate      | Very Low | Very Low | 03:10            |
+# | Eval_S7     | MobileC      | Adequate      | High     | High     | 10:05 (rural)    |
+# | Eval_S1     | EdgeNode1    | Adequate      | Low      | Low      | 09:05            |
+# | Eval_S5     | MobileA      | Adequate      | Low      | Low      | 09:05 (local)    |
+# | Eval_S2     | EdgeNode1    | Not Adequate  | Medium   | Medium   | 11:05            |
+# | Eval_S3     | FogNode1     | Adequate      | Low      | Low      | 11:12            |
+# | Eval_S4     | EdgeNode2    | Not Adequate  | Very High| Very High| 12:05            |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------

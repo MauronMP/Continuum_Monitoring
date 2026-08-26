@@ -1,0 +1,139 @@
+@prefix ex: <http://example.org/smartcity#> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix saref: <https://saref.etsi.org/core/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:CloudNode a owl:Class ;
+    rdfs:label "Cloud Node" ;
+    rdfs:comment "Cloud node. Global model. Dynamic elasticity and scalability." ;
+    rdfs:subClassOf ex:ComputationalNode .
+
+ex:EdgeNode a owl:Class ;
+    rdfs:label "Edge Node" ;
+    rdfs:comment "Edge node. Processes locally. No resource elasticity." ;
+    rdfs:subClassOf ex:ComputationalNode .
+
+ex:FogNode a owl:Class ;
+    rdfs:label "Fog Node" ;
+    rdfs:comment "Fog node. Aggregates community/zone data. No resource elasticity." ;
+    rdfs:subClassOf ex:ComputationalNode .
+
+ex:MistNode a owl:Class ;
+    rdfs:label "Mist Node" ;
+    rdfs:comment "Closest node to the user. Minimal capacity, very low latency." ;
+    rdfs:subClassOf ex:ComputationalNode .
+
+ex:MobileDevice a owl:Class ;
+    rdfs:label "Mobile Device" ;
+    rdfs:comment "User smartphone. Acts as a personal Mist/Edge node." ;
+    rdfs:subClassOf ex:MistNode .
+
+ex:RestrictedZone a owl:Class ;
+    rdfs:label "Restricted Zone" ;
+    rdfs:comment "No external internet. Internally centralized architecture (care home, hospital)." ;
+    rdfs:subClassOf ex:CityArea .
+
+ex:RuralZone a owl:Class ;
+    rdfs:label "Rural Zone" ;
+    rdfs:comment "Few nodes. Predominance of local retention and controlled transmission." ;
+    rdfs:subClassOf ex:CityArea .
+
+ex:UrbanZone a owl:Class ;
+    rdfs:label "Urban Zone" ;
+    rdfs:comment "High node and user density. More communication options." ;
+    rdfs:subClassOf ex:CityArea .
+
+ex:belongsToCommunity a owl:ObjectProperty ;
+    rdfs:label "belongs to community" ;
+    rdfs:domain ex:User ;
+    rdfs:range ex:Community .
+
+ex:connectsTo a owl:ObjectProperty ;
+    rdfs:label "connects to" ;
+    rdfs:domain saref:Device ;
+    rdfs:range ex:ComputationalNode .
+
+ex:coversArea a owl:ObjectProperty ;
+    rdfs:label "covers area" ;
+    rdfs:domain ex:ComputationalNode ;
+    rdfs:range ex:CityArea .
+
+ex:hasDistance a owl:ObjectProperty ;
+    rdfs:label "has distance" ;
+    rdfs:domain ex:NodeUserRelation ;
+    rdfs:range ex:DistanceLevel .
+
+ex:hasElasticity a owl:DatatypeProperty ;
+    rdfs:label "has elasticity" ;
+    rdfs:domain ex:ComputationalNode ;
+    rdfs:range xsd:boolean .
+
+ex:hasGeometry a owl:ObjectProperty ;
+    rdfs:label "has geometry" ;
+    rdfs:domain ex:CityArea ;
+    rdfs:range geo:Geometry ;
+    rdfs:subPropertyOf geo:hasGeometry .
+
+ex:hasNeighborNode a owl:ObjectProperty ;
+    rdfs:label "has neighbor node" ;
+    rdfs:comment "Adjacent node to which requests can be delegated." ;
+    rdfs:domain ex:ComputationalNode ;
+    rdfs:range ex:ComputationalNode .
+
+ex:hasPopulationDensity a owl:ObjectProperty ;
+    rdfs:label "has population density" ;
+    rdfs:domain ex:CityArea ;
+    rdfs:range ex:PopulationDensity .
+
+ex:isPreferredNode a owl:DatatypeProperty ;
+    rdfs:label "is preferred node" ;
+    rdfs:comment "Historical preferred node for this user based on zone and load." ;
+    rdfs:domain ex:NodeUserRelation ;
+    rdfs:range xsd:boolean .
+
+ex:locatedIn a owl:ObjectProperty ;
+    rdfs:label "located in" .
+
+ex:locatedInZone a owl:ObjectProperty ;
+    rdfs:label "located in zone" ;
+    rdfs:domain ex:User ;
+    rdfs:range ex:CityArea .
+
+ex:relatesNode a owl:ObjectProperty ;
+    rdfs:label "relates node" ;
+    rdfs:domain ex:NodeUserRelation ;
+    rdfs:range ex:ComputationalNode .
+
+ex:relatesUser a owl:ObjectProperty ;
+    rdfs:label "relates user" ;
+    rdfs:domain ex:NodeUserRelation ;
+    rdfs:range ex:User .
+
+<http://example.org/smartcity/modules/topology> a owl:Ontology ;
+    owl:imports <http://example.org/smartcity/modules/foundation> ;
+    owl:versionInfo "2.3.0" .
+
+ex:Community a owl:Class ;
+    rdfs:label "Community" ;
+    rdfs:comment "Group of users with similar mobility patterns and routines (neighbourhood, floor, hospital ward)." .
+
+ex:DistanceLevel a owl:Class ;
+    rdfs:label "Distance Level" .
+
+ex:PopulationDensity a owl:Class ;
+    rdfs:label "Population Density" .
+
+ex:UrbanEnvironment a owl:Class ;
+    rdfs:label "Urban Environment" ;
+    rdfs:comment "Geographic and density context that conditions system connectivity and behaviour." .
+
+ex:NodeUserRelation a owl:Class ;
+    rdfs:label "Node-User Relation" ;
+    rdfs:comment "Captures distance and connectivity between a node and a user at a given instant." .
+
+ex:CityArea a owl:Class ;
+    rdfs:label "City Area" ;
+    rdfs:subClassOf ex:GovernedResource,
+        ex:UrbanEnvironment .

@@ -1,0 +1,70 @@
+name: continuum-semantic-engines
+
+x-python-engine: &python-engine
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+  image: continuum-benchmark-node:latest
+  init: true
+  restart: "no"
+  cpus: "2.0"
+  mem_limit: 3g
+  # Avoid periodic probe processes perturbing short timing samples. The
+  # coordinator calls /health synchronously before every experiment.
+  healthcheck:
+    disable: true
+  command:
+    - python
+    - -m
+    - continuum_bench.external_node
+    - --host
+    - 0.0.0.0
+    - --port
+    - "8080"
+  networks:
+    - engines
+
+x-java-engine: &java-engine
+  build:
+    context: .
+    dockerfile: docker/engines/Dockerfile
+  image: continuum-semantic-java-engines:latest
+  init: true
+  restart: "no"
+  cpus: "2.0"
+  mem_limit: 3g
+  networks:
+    - engines
+
+services:
+  rdflib:
+    <<: *python-engine
+    environment:
+      CONTINUUM_ENGINE: rdflib
+    ports:
+      - "8291:8080"
+
+  jena:
+    <<: *java-engine
+    environment:
+      CONTINUUM_ENGINE: jena
+    ports:
+      - "8292:8080"
+
+  rdf4j:
+    <<: *java-engine
+    environment:
+      CONTINUUM_ENGINE: rdf4j
+    ports:
+      - "8293:8080"
+
+  oxigraph:
+    <<: *python-engine
+    environment:
+      CONTINUUM_ENGINE: oxigraph
+    ports:
+      - "8294:8080"
+
+networks:
+  engines:
+    driver: bridge

@@ -1,0 +1,70 @@
+order,id,tier,category,kind,expectation,path,title
+1,BASE-Q01,core,consent,select,any,queries/core/consent/base-q01.rq,Q01 · List all users and their consent status
+2,BASE-Q02,core,topology,select,any,queries/core/topology/base-q02.rq,Q02 · List all computational nodes and their type
+3,BASE-Q03,domain,wellbeing,select,any,queries/domain/wellbeing/wellbeing/base-q03.rq,Q03 · List all wearables and their owners
+4,BASE-Q04,core,topology,select,any,queries/core/topology/base-q04.rq,Q04 · List all AI models and their tier/layer
+5,BASE-Q05,domain,wellbeing,select,any,queries/domain/wellbeing/wellbeing/base-q05.rq,Q05 · List all physiological sensors and the device hosting them
+6,BASE-Q06,core,access_control,select,any,queries/core/access_control/base-q06.rq,Q06 · List all RBAC roles and their permissions
+7,BASE-Q07,core,observability,select,any,queries/core/observability/base-q07.rq,Q07 · Get all node states and their workload
+8,BASE-Q08,core,observability,select,any,queries/core/observability/base-q08.rq,Q08 · Find nodes in Saturated or Not Available state
+9,BASE-Q09,domain,wellbeing,select,any,queries/domain/wellbeing/wellbeing/base-q09.rq,Q09 · Get user states with predicted stress level and mobility
+10,BASE-Q10,domain,observability,select,any,queries/domain/wellbeing/observability/base-q10.rq,Q10 · Check device connection status per user
+11,BASE-Q11,domain,wellbeing,select,any,queries/domain/wellbeing/wellbeing/base-q11.rq,Q11 · SCENARIO 1 — Verify normal state (all green)
+12,BASE-Q12,core,migration,select,any,queries/core/migration/base-q12.rq,Q12 · SCENARIO 2 — Detect saturated edges vs available fog
+13,BASE-Q13,core,migration,select,any,queries/core/migration/base-q13.rq,Q13 · SCENARIO 3 — Verify migration: Edge delegates to Fog
+14,BASE-Q14,core,migration,select,any,queries/core/migration/base-q14.rq,Q14 · SCENARIO 4 — Find failed/degraded nodes and their cause
+15,BASE-Q15,core,access_control,select,any,queries/core/access_control/base-q15.rq,Q15 · SCENARIO 5 — Verify users with denied consent use local model
+16,BASE-Q16,core,federation,select,any,queries/core/federation/base-q16.rq,Q16 · SCENARIO 6 — Verify full federated learning chain
+17,BASE-Q17,domain,context,select,any,queries/domain/wellbeing/context/base-q17.rq,Q17 · SCENARIO 7 — Rural zone: verify retention conditions
+18,BASE-Q18,core,context,select,any,queries/core/context/base-q18.rq,Q18 · SCENARIO 8 — Restricted zone: internal node covers area
+19,BASE-Q19,core,decision,select,any,queries/core/decision/base-q19.rq,Q19 · Find all nodes eligible for migration (available + low/medium workload)
+20,BASE-Q20,domain,consent,select,any,queries/domain/wellbeing/consent/base-q20.rq,Q20 · Full user profile: consent → device → state → stress → zone
+21,BASE-Q21,core,decision,select,any,queries/core/decision/base-q21.rq,Q21 · Evaluation summary: all scenarios profitability + migration
+22,BASE-Q22,core,migration,select,any,queries/core/migration/base-q22.rq,Q22 · Detect models with degradation causes
+23,BASE-Q23,core,topology,select,any,queries/core/topology/base-q23.rq,Q23 · Node–User distance matrix across all NodeUserRelations
+24,BASE-Q24,core,federation,select,any,queries/core/federation/base-q24.rq,Q24 · Federated learning: full chain from device to cloud
+25,BASE-Q25,domain,access_control,select,any,queries/domain/wellbeing/access_control/base-q25.rq,Q25 · Identify users whose data CAN be used for global training
+26,BASE-Q26,core,observability,ask,true,queries/core/observability/base-q26.rq,Q26 · ASK: Is there any saturated node?
+27,BASE-Q27,core,migration,ask,true,queries/core/migration/base-q27.rq,Q27 · ASK: Does any model have a degradation cause?
+28,BASE-Q28,domain,access_control,ask,true,queries/domain/wellbeing/access_control/base-q28.rq,Q28 · ASK: Is there a user with denied consent that still
+29,BASE-Q29,core,topology,ask,true,queries/core/topology/base-q29.rq,Q29 · ASK: Is the Cloud node elastic?
+30,BASE-Q30,core,federation,ask,true,queries/core/federation/base-q30.rq,Q30 · ASK: Is there at least one federated session that
+31,BASE-Q31,core,consent,select,any,queries/core/consent/base-q31.rq,Q31 · Count users per consent status
+32,BASE-Q32,core,topology,select,any,queries/core/topology/base-q32.rq,Q32 · Count AI models per tier
+33,BASE-Q33,core,observability,select,any,queries/core/observability/base-q33.rq,Q33 · Average resource usage per node type
+34,BASE-Q34,core,topology,select,any,queries/core/topology/base-q34.rq,Q34 · Find all nodes that cover a RestrictedZone
+35,BASE-Q35,core,migration,select,any,queries/core/migration/base-q35.rq,Q35 · Full degradation path: node failure → model degradation → evaluation
+36,EXT-Q01,core,semantic_schema,inventory,non_empty,queries/core/semantic_schema/ext-q01.rq,01_inventory_extension_constructs
+37,EXT-Q02,core,consent,select,any,queries/core/consent/ext-q02.rq,02_consent_ranges_enumeration
+38,EXT-Q03,core,contract_compliance,report,non_empty,queries/core/contract_compliance/ext-q03.rq,03_semantic_contracts_report
+39,EXT-Q04,core,contract_compliance,violation,zero_rows,queries/core/contract_compliance/ext-q04.rq,04_violation_semantic_contract_missing_required_fields
+40,EXT-Q05,core,contract_compliance,violation,zero_rows,queries/core/contract_compliance/ext-q05.rq,05_violation_user_active_consent_mismatch_contract
+41,EXT-Q06,core,contract_compliance,violation,zero_rows,queries/core/contract_compliance/ext-q06.rq,06_violation_fl_required_consent_range_not_met
+42,EXT-Q07,core,contract_compliance,review,any,queries/core/contract_compliance/ext-q07.rq,07_review_user_governed_policies_vs_active_consent
+43,EXT-Q08,core,contract_compliance,violation,zero_rows,queries/core/contract_compliance/ext-q08.rq,08_violation_selected_model_tier_exceeds_contract_consent
+44,EXT-Q09,core,policy,inventory,non_empty,queries/core/policy/ext-q09.rq,09_policies_inventory
+45,EXT-Q10,core,policy,violation,zero_rows,queries/core/policy/ext-q10.rq,10_violation_policy_missing_type_action_statement
+46,EXT-Q11,core,policy,violation,zero_rows,queries/core/policy/ext-q11.rq,11_violation_policy_zone_not_governed_by_same_policy
+47,EXT-Q12,core,policy,report,non_empty,queries/core/policy/ext-q12.rq,12_governance_links_report
+48,EXT-Q13,core,policy,violation,zero_rows,queries/core/policy/ext-q13.rq,13_violation_restricted_zone_selected_cloud_tier
+49,EXT-Q14,core,observability,report,non_empty,queries/core/observability/ext-q14.rq,14_node_trust_state_report
+50,EXT-Q15,core,observability,violation,zero_rows,queries/core/observability/ext-q15.rq,15_violation_node_state_missing_or_invalid_trust
+51,EXT-Q16,core,migration,violation,zero_rows,queries/core/migration/ext-q16.rq,16_violation_saturated_or_disconnected_eval_without_trust_policy
+52,EXT-Q17,core,migration,violation,zero_rows,queries/core/migration/ext-q17.rq,17_violation_delegation_target_not_more_trusted_than_origin
+53,EXT-Q18,core,decision,report,non_empty,queries/core/decision/ext-q18.rq,18_ahp_evaluation_report
+54,EXT-Q19,core,access_control,violation,zero_rows,queries/core/access_control/ext-q19.rq,19_violation_evaluation_missing_ahp_fields
+55,EXT-Q20,core,decision,violation,zero_rows,queries/core/decision/ext-q20.rq,20_violation_ahp_numeric_values_outside_range
+56,EXT-Q21,core,decision,violation,zero_rows,queries/core/decision/ext-q21.rq,21_violation_ahp_weights_not_normalized
+57,EXT-Q22,core,policy,violation,zero_rows,queries/core/policy/ext-q22.rq,22_violation_evaluation_audit_ticket_incomplete
+58,EXT-Q23,core,policy,violation,zero_rows,queries/core/policy/ext-q23.rq,23_violation_symptom_policy_mapping_missing
+59,EXT-Q24,core,contract_compliance,violation,zero_rows,queries/core/contract_compliance/ext-q24.rq,24_violation_evaluation_consent_range_mismatch_contract
+60,EXT-Q25,core,privacy,report,non_empty,queries/core/privacy/ext-q25.rq,25_federated_learning_privacy_report
+61,EXT-Q26,core,privacy,violation,zero_rows,queries/core/privacy/ext-q26.rq,26_violation_gradient_transfer_without_dp_noise_or_anonymization
+62,EXT-Q27,core,privacy,violation,zero_rows,queries/core/privacy/ext-q27.rq,27_violation_fl_missing_or_invalid_privacy_budget_noise
+63,EXT-Q28,core,delegation,report,non_empty,queries/core/delegation/ext-q28.rq,28_delegation_events_report
+64,EXT-Q29,core,delegation,violation,zero_rows,queries/core/delegation/ext-q29.rq,29_violation_delegation_event_incomplete_temporal
+65,EXT-Q30,core,delegation,review,any,queries/core/delegation/ext-q30.rq,30_review_open_delegations_without_validTo
+66,EXT-Q31,core,delegation,violation,zero_rows,queries/core/delegation/ext-q31.rq,31_violation_direct_delegation_not_backed_by_temporal_event
+67,EXT-Q32,core,delegation,violation,zero_rows,queries/core/delegation/ext-q32.rq,32_violation_delegation_trigger_state_not_linked_to_delegator
+68,EXT-Q33,core,semantic_schema,inventory,non_empty,queries/core/semantic_schema/ext-q33.rq,33_shacl_shapes_inventory
+69,EXT-Q34,core,decision,report,non_empty,queries/core/decision/ext-q34.rq,34_overall_compliance_dashboard

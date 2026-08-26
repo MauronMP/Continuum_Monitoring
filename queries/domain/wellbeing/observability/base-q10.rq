@@ -1,0 +1,29 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q10 · Check device connection status per user
+# Level   : Intermediate
+# Scenario: 1, 4, 5, 7 (connectivity)
+# ----------------------------------------------------------------
+SELECT ?userName ?wearable ?batteryLabel ?connLabel ?dataReady
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?userName .
+  ?user ex:hasWearable ?wearable .
+  ?wearable ex:hasDeviceState ?ds .
+  ?ds ex:hasBatteryLevel ?bat .
+  ?bat rdfs:label ?batteryLabel .
+  ?ds ex:hasConnectionStatus ?conn .
+  ?conn rdfs:label ?connLabel .
+  ?ds ex:parametrizedDataReady ?dataReady .
+}
+ORDER BY ?userName

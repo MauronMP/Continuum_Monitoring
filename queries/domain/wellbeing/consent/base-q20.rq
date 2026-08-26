@@ -1,0 +1,37 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q20 · Full user profile: consent → device → state → stress → zone
+# Level   : Advanced
+# Scenario: All (complete profile join)
+# ----------------------------------------------------------------
+SELECT ?name ?consentLabel ?wearableType ?batteryLabel ?connLabel
+       ?mobilityLabel ?stressLabel ?feedback ?zoneName
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?name .
+  ?user ex:hasConsent ?c .       ?c rdfs:label ?consentLabel .
+  ?user ex:hasWearable ?w .
+  ?w a ?wearableType .
+  ?w ex:hasDeviceState ?ds .
+  ?ds ex:hasBatteryLevel ?bat .  ?bat rdfs:label ?batteryLabel .
+  ?ds ex:hasConnectionStatus ?conn . ?conn rdfs:label ?connLabel .
+  ?user ex:hasUserState ?us .
+  ?us ex:hasMobility ?mob .      ?mob rdfs:label ?mobilityLabel .
+  ?us ex:hasPredictedStressLevel ?sl . ?sl rdfs:label ?stressLabel .
+  OPTIONAL { ?us ex:userFeedbackScore ?feedback }
+  OPTIONAL {
+    ?user ex:locatedInZone ?zone .
+    ?zone rdfs:label ?zoneName .
+  }
+}
+ORDER BY ?name

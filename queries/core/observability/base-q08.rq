@@ -1,0 +1,27 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q08 · Find nodes in Saturated or Not Available state
+# Level   : Intermediate
+# Scenario: 2, 4 (saturation / failure detection)
+# ----------------------------------------------------------------
+SELECT ?node ?workloadLabel ?availLabel ?opStatusLabel
+WHERE {
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasWorkload ?wl .
+  ?wl rdfs:label ?workloadLabel .
+  ?ns ex:hasAvailability ?av .
+  ?av rdfs:label ?availLabel .
+  ?ns ex:hasOperationalStatus ?op .
+  ?op rdfs:label ?opStatusLabel .
+  FILTER (?wl = ex:SaturatedWorkload || ?av = ex:NotAvailable)
+}

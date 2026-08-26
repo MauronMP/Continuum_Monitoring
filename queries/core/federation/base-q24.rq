@@ -1,0 +1,43 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q24 · Federated learning: full chain from device to cloud
+# Level   : Advanced
+# Scenario: 6 (HFL audit trail)
+# ----------------------------------------------------------------
+SELECT ?session ?sessionTime ?fromNode ?fromType ?toModel ?modelVersion ?tierLabel
+WHERE {
+  ?session a ex:FederatedLearningSession .
+  ?session ex:sessionTime ?sessionTime .
+  ?session ex:involvedNode ?fromNode .
+  ?fromNode a ?fromType . ?fromType rdfs:subClassOf* ex:ComputationalNode .
+  ?session ex:updatesModel ?toModel .
+  ?toModel ex:modelVersion ?modelVersion .
+  ?toModel ex:hasModelTier ?tier . ?tier rdfs:label ?tierLabel .
+}
+ORDER BY ?sessionTime ?fromType
+
+# EXPECTED (all HFL sessions combined):
+# | session              | sessionTime | fromNode   | fromType    | toModel      | version | tier           |
+# |----------------------|-------------|------------|-------------|--------------|---------|----------------|
+# | FL_S3_EdgeToFog      | 11:10       | EdgeNode1  | EdgeNode    | ModelFog1    | 1.8.0   | Fog/Community  |
+# | FL_S3_EdgeToFog      | 11:10       | FogNode1   | FogNode     | ModelFog1    | 1.8.0   | Fog/Community  |
+# | FL_S6_EdgeToCloud    | 03:00       | CloudNode1 | CloudNode   | ModelCloud1  | 2.1.0   | Cloud/Global   |
+# | FL_S6_EdgeToCloud    | 03:00       | EdgeNode1  | EdgeNode    | ModelCloud1  | 2.1.0   | Cloud/Global   |
+# | FL_S6_EdgeToCloud    | 03:00       | FogNode1   | FogNode     | ModelCloud1  | 2.1.0   | Cloud/Global   |
+# | FL_S6_DownloadToEdge | 04:00       | CloudNode1 | CloudNode   | ModelEdge1   | 1.2.0   | Edge           |
+# | FL_S6_DownloadToEdge | 04:00       | EdgeNode1  | EdgeNode    | ModelEdge1   | 1.2.0   | Edge           |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------

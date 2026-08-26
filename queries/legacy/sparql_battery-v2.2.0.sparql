@@ -1,0 +1,2731 @@
+# ################################################################################################
+# PART A — BASE / LEGACY SCENARIO QUERY BATTERY
+# ################################################################################################
+
+# ================================================================================================
+# START QUERY BASE-Q01: Q01 · List all users and their consent status
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q01 · List all users and their consent status
+# Level   : Simple
+# Scenario: All (consent model)
+# ----------------------------------------------------------------
+SELECT ?user ?name ?consentLabel
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?name .
+  ?user ex:hasConsent ?consent .
+  ?consent rdfs:label ?consentLabel .
+}
+ORDER BY ?name
+
+# EXPECTED:
+# | user    | name          | consentLabel    |
+# |---------|---------------|-----------------|
+# | UserA   | Participant A | Consent Given   |
+# | UserB   | Participant B | Consent Denied  |
+# | UserC   | Participant C | Consent Given   |
+# | UserD   | Participant D | Consent Given   |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q01: Q01 · List all users and their consent status
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q02: Q02 · List all computational nodes and their type
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q02 · List all computational nodes and their type
+# Level   : Simple
+# Scenario: All (infrastructure)
+# ----------------------------------------------------------------
+SELECT ?node ?type ?elasticity
+WHERE {
+  ?node a ?type .
+  ?type rdfs:subClassOf* ex:ComputationalNode .
+  OPTIONAL { ?node ex:hasElasticity ?elasticity }
+}
+ORDER BY ?type
+
+# EXPECTED:
+# | node                  | type       | elasticity |
+# |-----------------------|------------|------------|
+# | CloudNode1            | CloudNode  | true       |
+# | EdgeNode1             | EdgeNode   | false      |
+# | EdgeNode2             | EdgeNode   | false      |
+# | InternalEdgeFacility  | EdgeNode   | false      |
+# | MobileA               | MobileDevice | (null)  |
+# | MobileC               | MobileDevice | (null)  |
+# | FogNode1              | FogNode    | false      |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q02: Q02 · List all computational nodes and their type
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q03: Q03 · List all wearables and their owners
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q03 · List all wearables and their owners
+# Level   : Simple
+# Scenario: All (device–user relationship)
+# ----------------------------------------------------------------
+SELECT ?userName ?wearable ?wType
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?userName .
+  ?user ex:hasWearable ?wearable .
+  ?wearable a ?wType .
+  ?wType rdfs:subClassOf ex:Wearable .
+}
+ORDER BY ?userName
+
+# EXPECTED:
+# | userName      | wearable | wType      |
+# |---------------|----------|------------|
+# | Participant A | WatchA   | SmartWatch |
+# | Participant B | RingB    | SmartRing  |
+# | Participant C | BandC    | SmartBand  |
+# | Participant D | WatchD   | SmartWatch |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q03: Q03 · List all wearables and their owners
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q04: Q04 · List all AI models and their tier/layer
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q04 · List all AI models and their tier/layer
+# Level   : Simple
+# Scenario: All (model hierarchy)
+# ----------------------------------------------------------------
+SELECT ?model ?version ?tierLabel
+WHERE {
+  ?model a ex:AIModel .
+  ?model ex:modelVersion ?version .
+  ?model ex:hasModelTier ?tier .
+  ?tier rdfs:label ?tierLabel .
+}
+ORDER BY ?tierLabel
+
+# EXPECTED:
+# | model        | version | tierLabel            |
+# |--------------|---------|----------------------|
+# | ModelCloud1  | 2.1.0   | Cloud / Global       |
+# | ModelEdge1   | 1.2.0   | Edge                 |
+# | ModelFog1    | 1.8.0   | Fog / Community      |
+# | ModelLocal1  | 0.9.0   | Local (Mist/Device)  |
+# | ModelLocalB  | 0.8.0   | Local (Mist/Device)  |
+# | ModelLocal_C | 1.0.0   | Local (Mist/Device)  |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q04: Q04 · List all AI models and their tier/layer
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q05: Q05 · List all physiological sensors and the device hosting them
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q05 · List all physiological sensors and the device hosting them
+# Level   : Simple
+# Scenario: All (sensor layer)
+# ----------------------------------------------------------------
+SELECT ?sensor ?sensorType ?device
+WHERE {
+  ?sensor a ?sensorType .
+  ?sensorType rdfs:subClassOf* ex:PhysiologicalSensor .
+  ?sensor sosa:isHostedBy ?device .
+}
+ORDER BY ?sensorType
+
+# EXPECTED:
+# | sensor       | sensorType        | device |
+# |--------------|-------------------|--------|
+# | AccelSensorA | AccelerometerSensor | WatchA |
+# | EDASensorA   | EDASensor         | WatchA |
+# | HRSensorA    | HeartRateSensor   | WatchA |
+# | SleepSensorA | SleepSensor       | WatchA |
+# | SpO2SensorA  | SpO2Sensor        | WatchA |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q05: Q05 · List all physiological sensors and the device hosting them
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q06: Q06 · List all RBAC roles and their permissions
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q06 · List all RBAC roles and their permissions
+# Level   : Simple
+# Scenario: All (access control)
+# ----------------------------------------------------------------
+SELECT ?roleLabel ?permLabel ?requiresConsent
+WHERE {
+  ?role a ex:Role .
+  ?role rdfs:label ?roleLabel .
+  ?role ex:hasPermission ?perm .
+  ?perm rdfs:label ?permLabel .
+  OPTIONAL { ?perm ex:requiresConsent ?requiresConsent }
+}
+ORDER BY ?roleLabel ?permLabel
+
+# EXPECTED:
+# | roleLabel    | permLabel                  | requiresConsent |
+# |--------------|----------------------------|-----------------|
+# | Administrator| Manage Infrastructure      | false           |
+# | Administrator| Read Physiological Data    | true            |
+# | Administrator| Read Sleep Data            | true            |
+# | Administrator| Train Global Model         | true            |
+# | Doctor       | Read Physiological Data    | true            |
+# | Doctor       | Read Sleep Data            | true            |
+# | Doctor       | Read Stress Prediction     | false           |
+# | End User     | Read Stress Prediction     | false           |
+# | Researcher   | Read Stress Prediction     | false           |
+# | Researcher   | Train Global Model         | true            |
+
+
+# ================================================================
+# BLOCK 2 — STATE QUERIES (Level: Simple–Intermediate)
+# ================================================================
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q06: Q06 · List all RBAC roles and their permissions
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q07: Q07 · Get all node states and their workload
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q07 · Get all node states and their workload
+# Level   : Simple
+# Scenario: 1,2,3,4,6,7,8
+# ----------------------------------------------------------------
+SELECT ?node ?workloadLabel ?resourcePct ?queued
+WHERE {
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasWorkload ?wl .
+  ?wl rdfs:label ?workloadLabel .
+  OPTIONAL { ?ns ex:resourceUsagePercent ?resourcePct }
+  OPTIONAL { ?ns ex:queuedRequests ?queued }
+}
+ORDER BY DESC(?resourcePct)
+
+# EXPECTED (sorted by resource usage desc):
+# | node        | workloadLabel | resourcePct | queued |
+# |-------------|---------------|-------------|--------|
+# | EdgeNode2   | Saturated     | 99.0        | 25     |
+# | EdgeNode1   | Saturated     | 92.0        | 15     |  (S2)
+# | FogNode1    | Medium        | 55.0        | 4      |
+# | MobileC     | Low           | 40.0        | 0      |
+# | EdgeNode1   | Low           | 30.0        | 1      |  (S1)
+# | CloudNode1  | Low           | 25.0        | 0      |
+# | InternalEdge| Low           | 20.0        | 2      |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q07: Q07 · Get all node states and their workload
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q08: Q08 · Find nodes in Saturated or Not Available state
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q08 · Find nodes in Saturated or Not Available state
+# Level   : Intermediate
+# Scenario: 2, 4 (saturation / failure detection)
+# ----------------------------------------------------------------
+SELECT ?node ?workloadLabel ?availLabel ?opStatusLabel
+WHERE {
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasWorkload ?wl .
+  ?wl rdfs:label ?workloadLabel .
+  ?ns ex:hasAvailability ?av .
+  ?av rdfs:label ?availLabel .
+  ?ns ex:hasOperationalStatus ?op .
+  ?op rdfs:label ?opStatusLabel .
+  FILTER (?wl = ex:SaturatedWorkload || ?av = ex:NotAvailable)
+}
+
+# EXPECTED:
+# | node      | workloadLabel | availLabel   | opStatusLabel |
+# |-----------|---------------|--------------|---------------|
+# | EdgeNode1 | Saturated     | Partial      | Operational   |  (S2)
+# | EdgeNode2 | Saturated     | Not Available| Compute Only  |  (S4)
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q08: Q08 · Find nodes in Saturated or Not Available state
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q09: Q09 · Get user states with predicted stress level and mobility
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q09 · Get user states with predicted stress level and mobility
+# Level   : Intermediate
+# Scenario: 1,2,4,5,7,8
+# ----------------------------------------------------------------
+SELECT ?stateLabel ?mobilityLabel ?personStatusLabel ?stressLabel ?feedback
+WHERE {
+  ?us a ex:UserState .
+  ?us rdfs:label ?stateLabel .
+  ?us ex:hasMobility ?mob .
+  ?mob rdfs:label ?mobilityLabel .
+  ?us ex:hasPersonStatus ?ps .
+  ?ps rdfs:label ?personStatusLabel .
+  ?us ex:hasPredictedStressLevel ?sl .
+  ?sl rdfs:label ?stressLabel .
+  OPTIONAL { ?us ex:userFeedbackScore ?feedback }
+}
+ORDER BY ?stressLabel
+
+# EXPECTED:
+# | stateLabel            | mobilityLabel | personStatus | stressLabel | feedback |
+# |-----------------------|---------------|--------------|-------------|----------|
+# | User State S8 - D     | Still         | Asleep       | Low         | (null)   |
+# | User State S1 - A     | Still         | Calm         | Low         | 5        |
+# | User State S5 - B     | Still         | Calm         | Low         | 4        |
+# | User State S7 - C     | Walking       | Calm         | Medium      | 3        |
+# | User State S2 - Event | Walking       | Agitated     | High        | 2        |
+# | User State S4 - S4    | In Transport  | Agitated     | Critical    | (null)   |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q09: Q09 · Get user states with predicted stress level and mobility
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q10: Q10 · Check device connection status per user
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q10 · Check device connection status per user
+# Level   : Intermediate
+# Scenario: 1, 4, 5, 7 (connectivity)
+# ----------------------------------------------------------------
+SELECT ?userName ?wearable ?batteryLabel ?connLabel ?dataReady
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?userName .
+  ?user ex:hasWearable ?wearable .
+  ?wearable ex:hasDeviceState ?ds .
+  ?ds ex:hasBatteryLevel ?bat .
+  ?bat rdfs:label ?batteryLabel .
+  ?ds ex:hasConnectionStatus ?conn .
+  ?conn rdfs:label ?connLabel .
+  ?ds ex:parametrizedDataReady ?dataReady .
+}
+ORDER BY ?userName
+
+# EXPECTED:
+# | userName      | wearable | batteryLabel | connLabel     | dataReady |
+# |---------------|----------|--------------|---------------|-----------|
+# | Participant A | WatchA   | High         | Connected     | true      |  (S1)
+# | Participant A | WatchA   | Low          | Airplane Mode | false     |  (S4)
+# | Participant B | RingB    | Medium       | Connected     | true      |
+# | Participant C | BandC    | Medium       | Intermittent  | true      |
+
+
+# ================================================================
+# BLOCK 3 — SCENARIO-SPECIFIC QUERIES (Level: Intermediate)
+# ================================================================
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q10: Q10 · Check device connection status per user
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q11: Q11 · SCENARIO 1 — Verify normal state (all green)
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q11 · SCENARIO 1 — Verify normal state (all green)
+# Level   : Intermediate
+# Scenario: 1
+# ----------------------------------------------------------------
+SELECT ?node ?workload ?performance ?availability ?profitability
+WHERE {
+  ex:Eval_S1 ex:evaluatesNode ?node .
+  ex:Eval_S1 ex:hasProfitability ?prof .
+  ?prof rdfs:label ?profitability .
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasWorkload ?wl . ?wl rdfs:label ?workload .
+  ?ns ex:hasPerformance ?perf . ?perf rdfs:label ?performance .
+  ?ns ex:hasAvailability ?av . ?av rdfs:label ?availability .
+}
+
+# EXPECTED:
+# | node      | workload | performance | availability | profitability |
+# |-----------|----------|-------------|--------------|---------------|
+# | EdgeNode1 | Low      | Optimal     | Available    | Adequate      |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q11: Q11 · SCENARIO 1 — Verify normal state (all green)
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q12: Q12 · SCENARIO 2 — Detect saturated edges vs available fog
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q12 · SCENARIO 2 — Detect saturated edges vs available fog
+# Level   : Intermediate
+# Scenario: 2
+# ----------------------------------------------------------------
+SELECT ?nodeType ?nodeLabel ?workloadLabel ?availLabel ?resourcePct
+WHERE {
+  ?node ex:hasNodeState ?ns .
+  ?node rdfs:label ?nodeLabel .
+  ?node a ?nodeType .
+  ?nodeType rdfs:subClassOf ex:ComputationalNode .
+  ?ns ex:hasWorkload ?wl . ?wl rdfs:label ?workloadLabel .
+  ?ns ex:hasAvailability ?av . ?av rdfs:label ?availLabel .
+  ?ns ex:resourceUsagePercent ?resourcePct .
+  FILTER (?nodeType IN (ex:EdgeNode, ex:FogNode))
+}
+ORDER BY DESC(?resourcePct)
+
+# EXPECTED:
+# | nodeType | nodeLabel               | workload  | availability | resourcePct |
+# |----------|-------------------------|-----------|--------------|-------------|
+# | EdgeNode | Edge Node 1 - City Ctr  | Saturated | Partial      | 92.0        |
+# | FogNode  | Fog Node 1 - Centre     | Medium    | Available    | 55.0        |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q12: Q12 · SCENARIO 2 — Detect saturated edges vs available fog
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q13: Q13 · SCENARIO 3 — Verify migration: Edge delegates to Fog
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q13 · SCENARIO 3 — Verify migration: Edge delegates to Fog
+# Level   : Intermediate
+# Scenario: 3
+# ----------------------------------------------------------------
+SELECT ?sourceNode ?targetNode ?flSession ?dataTypeSent
+WHERE {
+  ?sourceNode ex:delegatesTo ?targetNode .
+  ?flSession a ex:FederatedLearningSession .
+  ?flSession ex:involvedNode ?sourceNode .
+  ?flSession ex:involvedNode ?targetNode .
+  ?flSession ex:dataType ?dataTypeSent .
+  FILTER (?sourceNode != ?targetNode)
+}
+
+# EXPECTED:
+# | sourceNode | targetNode | flSession         | dataTypeSent     |
+# |------------|------------|-------------------|------------------|
+# | EdgeNode1  | FogNode1   | FL_S3_EdgeToFog   | model_gradients  |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q13: Q13 · SCENARIO 3 — Verify migration: Edge delegates to Fog
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q14: Q14 · SCENARIO 4 — Find failed/degraded nodes and their cause
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q14 · SCENARIO 4 — Find failed/degraded nodes and their cause
+# Level   : Intermediate
+# Scenario: 4
+# ----------------------------------------------------------------
+SELECT ?node ?opStatusLabel ?commLabel ?model ?degradCause
+WHERE {
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasOperationalStatus ?op .
+  ?op rdfs:label ?opStatusLabel .
+  ?ns ex:hasCommunication ?comm .
+  ?comm rdfs:label ?commLabel .
+  OPTIONAL {
+    ?model ex:hostedOnNode ?node .
+    ?model ex:hasDegradationCause ?dc .
+    ?dc rdfs:label ?degradCause .
+  }
+  FILTER (?op IN (ex:ComputeOnly, ex:Inoperative))
+}
+
+# EXPECTED:
+# | node      | opStatusLabel | commLabel     | model      | degradCause        |
+# |-----------|---------------|---------------|------------|--------------------|
+# | EdgeNode2 | Compute Only  | No Connection | ModelEdge1 | Communication Loss |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q14: Q14 · SCENARIO 4 — Find failed/degraded nodes and their cause
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q15: Q15 · SCENARIO 5 — Verify users with denied consent use local model
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q15 · SCENARIO 5 — Verify users with denied consent use local model
+# Level   : Intermediate
+# Scenario: 5
+# ----------------------------------------------------------------
+SELECT ?userName ?consentLabel ?modelLabel ?tierLabel ?degradCause
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?userName .
+  ?user ex:hasConsent ?consent .
+  ?consent rdfs:label ?consentLabel .
+  ?model a ex:AIModel .
+  ?model rdfs:label ?modelLabel .
+  ?model ex:hasModelTier ?tier .
+  ?tier rdfs:label ?tierLabel .
+  OPTIONAL {
+    ?model ex:hasDegradationCause ?dc .
+    ?dc rdfs:label ?degradCause .
+  }
+  FILTER (?consent = ex:ConsentDenied)
+  FILTER (?tierLabel = "Local (Mist/Device)")
+}
+
+# EXPECTED:
+# | userName      | consentLabel   | modelLabel          | tierLabel          | degradCause      |
+# |---------------|----------------|---------------------|--------------------|------------------|
+# | Participant B | Consent Denied | Local Model Ring B  | Local (Mist/Device)| No Nearby Nodes  |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q15: Q15 · SCENARIO 5 — Verify users with denied consent use local model
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q16: Q16 · SCENARIO 6 — Verify full federated learning chain
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q16 · SCENARIO 6 — Verify full federated learning chain
+# Level   : Intermediate
+# Scenario: 6
+# ----------------------------------------------------------------
+SELECT ?session ?sessionTime ?dataType ?involvedNode ?updatedModel ?modelVersion
+WHERE {
+  ?session a ex:FederatedLearningSession .
+  ?session ex:sessionTime ?sessionTime .
+  ?session ex:dataType ?dataType .
+  ?session ex:involvedNode ?involvedNode .
+  ?session ex:updatesModel ?updatedModel .
+  ?updatedModel ex:modelVersion ?modelVersion .
+  FILTER (?session IN (ex:FL_S6_EdgeToCloud, ex:FL_S6_DownloadToEdge))
+}
+ORDER BY ?session ?involvedNode
+
+# EXPECTED (multiple rows per session):
+# | session              | sessionTime       | dataType                   | involvedNode | updatedModel | modelVersion |
+# |----------------------|-------------------|----------------------------|--------------|--------------|--------------|
+# | FL_S6_DownloadToEdge | 04T04:00:00       | improved_model_parameters  | CloudNode1   | ModelEdge1   | 1.2.0        |
+# | FL_S6_DownloadToEdge | 04T04:00:00       | improved_model_parameters  | EdgeNode1    | ModelEdge1   | 1.2.0        |
+# | FL_S6_EdgeToCloud    | 04T03:00:00       | global_model_parameters    | CloudNode1   | ModelCloud1  | 2.1.0        |
+# | FL_S6_EdgeToCloud    | 04T03:00:00       | global_model_parameters    | EdgeNode1    | ModelCloud1  | 2.1.0        |
+# | FL_S6_EdgeToCloud    | 04T03:00:00       | global_model_parameters    | FogNode1     | ModelCloud1  | 2.1.0        |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q16: Q16 · SCENARIO 6 — Verify full federated learning chain
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q17: Q17 · SCENARIO 7 — Rural zone: verify retention conditions
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q17 · SCENARIO 7 — Rural zone: verify retention conditions
+# Level   : Intermediate
+# Scenario: 7
+# ----------------------------------------------------------------
+SELECT ?userName ?zone ?connLabel ?batteryLabel ?dataReady ?profitability ?migTime
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?userName .
+  ?user ex:locatedInZone ?zone .
+  ?zone a ex:RuralZone .
+  ?user ex:hasWearable ?w .
+  ?w ex:hasDeviceState ?ds .
+  ?ds ex:hasConnectionStatus ?conn . ?conn rdfs:label ?connLabel .
+  ?ds ex:hasBatteryLevel ?bat .     ?bat rdfs:label ?batteryLabel .
+  ?ds ex:parametrizedDataReady ?dataReady .
+  ?eval ex:hasProfitability ?prof .  ?prof rdfs:label ?profitability .
+  ?eval ex:hasMigrationTime ?mt .    ?mt rdfs:label ?migTime .
+}
+
+# EXPECTED:
+# | userName      | zone          | connLabel    | batteryLabel | dataReady | profitability | migTime |
+# |---------------|---------------|--------------|--------------|-----------|---------------|---------|
+# | Participant C | NorthRuralZone| Intermittent | Medium       | true      | Adequate      | High    |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q17: Q17 · SCENARIO 7 — Rural zone: verify retention conditions
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q18: Q18 · SCENARIO 8 — Restricted zone: internal node covers area
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q18 · SCENARIO 8 — Restricted zone: internal node covers area
+# Level   : Intermediate
+# Scenario: 8
+# ----------------------------------------------------------------
+SELECT ?node ?zone ?zoneType ?connLabel ?opStatus ?resourcePct
+WHERE {
+  ?node ex:coversArea ?zone .
+  ?zone a ?zoneType .
+  ?zoneType rdfs:subClassOf* ex:CityArea .
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasCommunication ?comm . ?comm rdfs:label ?connLabel .
+  ?ns ex:hasOperationalStatus ?op . ?op rdfs:label ?opStatus .
+  ?ns ex:resourceUsagePercent ?resourcePct .
+  FILTER (?zoneType = ex:RestrictedZone)
+}
+
+# EXPECTED:
+# | node                  | zone          | zoneType       | connLabel | opStatus    | resourcePct |
+# |-----------------------|---------------|----------------|-----------|-------------|-------------|
+# | InternalEdgeFacility  | CareFacility1 | RestrictedZone | Stable    | Operational | 20.0        |
+
+
+# ================================================================
+# BLOCK 4 — CROSS-SCENARIO QUERIES (Level: Advanced)
+# ================================================================
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q18: Q18 · SCENARIO 8 — Restricted zone: internal node covers area
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q19: Q19 · Find all nodes eligible for migration (available + low/medium workload)
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q19 · Find all nodes eligible for migration (available + low/medium workload)
+# Level   : eAdvanced
+# Scenario: 2, 3 (migration decision support)
+# ----------------------------------------------------------------
+SELECT ?node ?nodeType ?workloadLabel ?availLabel ?commLabel ?residualLabel ?resourcePct
+WHERE {
+  ?node a ?nodeType .
+  ?nodeType rdfs:subClassOf+ ex:ComputationalNode .
+  ?node ex:hasNodeState ?ns .
+  OPTIONAL {
+    ?ns ex:hasAvailability ?av .
+    ?av rdfs:label ?availLabel .
+  }
+  OPTIONAL {
+    ?ns ex:hasWorkload ?wl .
+    ?wl rdfs:label ?workloadLabel .
+  }
+  OPTIONAL {
+    ?ns ex:hasCommunication ?comm .
+    ?comm rdfs:label ?commLabel .
+  }
+  OPTIONAL {
+    ?ns ex:hasResidualCapacity ?rc .
+    ?rc rdfs:label ?residualLabel .
+  }
+  OPTIONAL {
+    ?ns ex:resourceUsagePercent ?resourcePct .
+  }
+  FILTER (?av IN (ex:Available, ex:Partial))
+  FILTER (?wl IN (ex:NoWorkload, ex:LowWorkload, ex:MediumWorkload))
+  FILTER (?comm IN (ex:StableComm, ex:VariableComm, ex:IntermittentComm))
+}
+ORDER BY ?resourcePct
+
+# EXPECTED (candidates, sorted by lowest resource usage first):
+# | node                 | nodeType   | workload | availability | comm     | residual | resourcePct |
+# |----------------------|------------|----------|--------------|----------|----------|-------------|
+# | InternalEdgeFacility | EdgeNode   | Low      | Available    | Stable   | High     | 20.0        |
+# | CloudNode1           | CloudNode  | Low      | Available    | Stable   | High     | 25.0        |
+# | EdgeNode1            | EdgeNode   | Low      | Available    | Stable   | High     | 30.0        |  (S1)
+# | MobileC              | MobileDevice | Low    | Partial      | Intermittent | Medium | 40.0     |
+# | FogNode1             | FogNode    | Medium   | Available    | Stable   | Medium   | 55.0        |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q19: Q19 · Find all nodes eligible for migration (available + low/medium workload)
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q20: Q20 · Full user profile: consent → device → state → stress → zone
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q20 · Full user profile: consent → device → state → stress → zone
+# Level   : Advanced
+# Scenario: All (complete profile join)
+# ----------------------------------------------------------------
+SELECT ?name ?consentLabel ?wearableType ?batteryLabel ?connLabel
+       ?mobilityLabel ?stressLabel ?feedback ?zoneName
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?name .
+  ?user ex:hasConsent ?c .       ?c rdfs:label ?consentLabel .
+  ?user ex:hasWearable ?w .
+  ?w a ?wearableType .
+  ?w ex:hasDeviceState ?ds .
+  ?ds ex:hasBatteryLevel ?bat .  ?bat rdfs:label ?batteryLabel .
+  ?ds ex:hasConnectionStatus ?conn . ?conn rdfs:label ?connLabel .
+  ?user ex:hasUserState ?us .
+  ?us ex:hasMobility ?mob .      ?mob rdfs:label ?mobilityLabel .
+  ?us ex:hasPredictedStressLevel ?sl . ?sl rdfs:label ?stressLabel .
+  OPTIONAL { ?us ex:userFeedbackScore ?feedback }
+  OPTIONAL {
+    ?user ex:locatedInZone ?zone .
+    ?zone rdfs:label ?zoneName .
+  }
+}
+ORDER BY ?name
+
+# EXPECTED:
+# | name     | consent       | wearableType | battery | conn          | mobility  | stress   | feedback | zone         |
+# |----------|---------------|--------------|---------|---------------|-----------|----------|----------|--------------|
+# | Part. A  | Consent Given | SmartWatch   | High    | Connected     | Still     | Low      | 5        | City Centre  |
+# | Part. A  | Consent Given | SmartWatch   | Low     | Airplane Mode | InTransport | Critical| (null) | City Centre  |
+# | Part. B  | Consent Denied| SmartRing    | Medium  | Connected     | Still     | Low      | 4        | (null)       |
+# | Part. C  | Consent Given | SmartBand    | Medium  | Intermittent  | Walking   | Medium   | 3        | North Rural  |
+# | Part. D  | Consent Given | SmartWatch   | (null)  | (null)        | Still     | Low      | (null)   | Care Facility|
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q20: Q20 · Full user profile: consent → device → state → stress → zone
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q21: Q21 · Evaluation summary: all scenarios profitability + migration
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q21 · Evaluation summary: all scenarios profitability + migration
+# Level   : Advanced
+# Scenario: All (cross-evaluation dashboard)
+# ----------------------------------------------------------------
+SELECT ?eval ?nodeName ?profLabel ?migTimeLabel ?migCostLabel ?validFrom
+WHERE {
+  ?eval a ex:EvaluationState .
+  ?eval rdfs:label ?evalLabel .
+  ?eval ex:evaluatesNode ?node .
+  ?node rdfs:label ?nodeName .
+  ?eval ex:hasProfitability ?prof .    ?prof rdfs:label ?profLabel .
+  ?eval ex:hasMigrationTime ?mt .      ?mt rdfs:label ?migTimeLabel .
+  ?eval ex:hasMigrationCost ?mc .      ?mc rdfs:label ?migCostLabel .
+  OPTIONAL { ?eval ex:validFrom ?validFrom }
+}
+ORDER BY ?validFrom
+
+# EXPECTED (one row per evaluation state, ordered by time):
+# | eval        | nodeName     | profitability | migTime  | migCost  | validFrom        |
+# |-------------|--------------|---------------|----------|----------|------------------|
+# | Eval_S8     | InternalEdge | Adequate      | Very Low | Very Low | 02:05            |
+# | Eval_S6     | CloudNode1   | Adequate      | Very Low | Very Low | 03:10            |
+# | Eval_S7     | MobileC      | Adequate      | High     | High     | 10:05 (rural)    |
+# | Eval_S1     | EdgeNode1    | Adequate      | Low      | Low      | 09:05            |
+# | Eval_S5     | MobileA      | Adequate      | Low      | Low      | 09:05 (local)    |
+# | Eval_S2     | EdgeNode1    | Not Adequate  | Medium   | Medium   | 11:05            |
+# | Eval_S3     | FogNode1     | Adequate      | Low      | Low      | 11:12            |
+# | Eval_S4     | EdgeNode2    | Not Adequate  | Very High| Very High| 12:05            |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q21: Q21 · Evaluation summary: all scenarios profitability + migration
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q22: Q22 · Detect models with degradation causes
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q22 · Detect models with degradation causes
+# Level   : Advanced
+# Scenario: 4, 5, 7 (degradation analysis)
+# ----------------------------------------------------------------
+SELECT ?model ?version ?tierLabel ?nodeName ?causeLabel ?lastUpdated
+WHERE {
+  ?model a ex:AIModel .
+  ?model ex:modelVersion ?version .
+  ?model ex:hasModelTier ?tier .    ?tier rdfs:label ?tierLabel .
+  ?model ex:hasDegradationCause ?dc . ?dc rdfs:label ?causeLabel .
+  OPTIONAL { ?model ex:hostedOnNode ?node . ?node rdfs:label ?nodeName }
+  OPTIONAL { ?model ex:lastUpdated ?lastUpdated }
+}
+ORDER BY ?tierLabel
+
+# EXPECTED:
+# | model        | version | tierLabel          | nodeName     | causeLabel         | lastUpdated       |
+# |--------------|---------|--------------------|--------------|--------------------|-------------------|
+# | ModelEdge1   | 1.2.0   | Edge               | Edge Node 1  | Communication Loss | 2026-05-04T10:10  |
+# | ModelLocalB  | 0.8.0   | Local (Mist/Device)| (null)       | No Nearby Nodes    | (null)            |
+# | ModelLocal_C | 1.0.0   | Local (Mist/Device)| (null)       | No Nearby Nodes    | (null)            |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q22: Q22 · Detect models with degradation causes
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q23: Q23 · Node–User distance matrix across all NodeUserRelations
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q23 · Node–User distance matrix across all NodeUserRelations
+# Level   : Advanced
+# Scenario: 1, 2, 3 (proximity-based routing)
+# ----------------------------------------------------------------
+SELECT ?userName ?nodeName ?nodeType ?distLabel ?isPreferred ?validFrom
+WHERE {
+  ?rel a ex:NodeUserRelation .
+  ?rel ex:relatesUser ?user .  ?user foaf:name ?userName .
+  ?rel ex:relatesNode ?node .  ?node rdfs:label ?nodeName .
+  ?node a ?nodeType . ?nodeType rdfs:subClassOf* ex:ComputationalNode .
+  ?rel ex:hasDistance ?dist .  ?dist rdfs:label ?distLabel .
+  OPTIONAL { ?rel ex:isPreferredNode ?isPreferred }
+  OPTIONAL { ?rel ex:validFrom ?validFrom }
+}
+ORDER BY ?userName ?distLabel
+
+# EXPECTED:
+# | userName      | nodeName              | nodeType | distLabel | isPreferred | validFrom |
+# |---------------|-----------------------|----------|-----------|-------------|-----------|
+# | Participant A | Edge Node 1 - Centre  | EdgeNode | Close     | true        | 10:01     |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q23: Q23 · Node–User distance matrix across all NodeUserRelations
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q24: Q24 · Federated learning: full chain from device to cloud
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q24 · Federated learning: full chain from device to cloud
+# Level   : Advanced
+# Scenario: 6 (HFL audit trail)
+# ----------------------------------------------------------------
+SELECT ?session ?sessionTime ?fromNode ?fromType ?toModel ?modelVersion ?tierLabel
+WHERE {
+  ?session a ex:FederatedLearningSession .
+  ?session ex:sessionTime ?sessionTime .
+  ?session ex:involvedNode ?fromNode .
+  ?fromNode a ?fromType . ?fromType rdfs:subClassOf* ex:ComputationalNode .
+  ?session ex:updatesModel ?toModel .
+  ?toModel ex:modelVersion ?modelVersion .
+  ?toModel ex:hasModelTier ?tier . ?tier rdfs:label ?tierLabel .
+}
+ORDER BY ?sessionTime ?fromType
+
+# EXPECTED (all HFL sessions combined):
+# | session              | sessionTime | fromNode   | fromType    | toModel      | version | tier           |
+# |----------------------|-------------|------------|-------------|--------------|---------|----------------|
+# | FL_S3_EdgeToFog      | 11:10       | EdgeNode1  | EdgeNode    | ModelFog1    | 1.8.0   | Fog/Community  |
+# | FL_S3_EdgeToFog      | 11:10       | FogNode1   | FogNode     | ModelFog1    | 1.8.0   | Fog/Community  |
+# | FL_S6_EdgeToCloud    | 03:00       | CloudNode1 | CloudNode   | ModelCloud1  | 2.1.0   | Cloud/Global   |
+# | FL_S6_EdgeToCloud    | 03:00       | EdgeNode1  | EdgeNode    | ModelCloud1  | 2.1.0   | Cloud/Global   |
+# | FL_S6_EdgeToCloud    | 03:00       | FogNode1   | FogNode     | ModelCloud1  | 2.1.0   | Cloud/Global   |
+# | FL_S6_DownloadToEdge | 04:00       | CloudNode1 | CloudNode   | ModelEdge1   | 1.2.0   | Edge           |
+# | FL_S6_DownloadToEdge | 04:00       | EdgeNode1  | EdgeNode    | ModelEdge1   | 1.2.0   | Edge           |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q24: Q24 · Federated learning: full chain from device to cloud
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q25: Q25 · Identify users whose data CAN be used for global training
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q25 · Identify users whose data CAN be used for global training
+# Level   : Advanced
+# Scenario: 5, 6 (consent + data readiness gate)
+# ----------------------------------------------------------------
+SELECT ?userName ?anonID ?consentLabel ?dataType ?dataReady ?sendTimestamp
+WHERE {
+  ?user a ex:User .
+  ?user foaf:name ?userName .
+  ?user ex:anonymizedID ?anonID .
+  ?user ex:hasConsent ?c .     ?c rdfs:label ?consentLabel .
+  ?user ex:hasWearable ?w .
+  ?w ex:hasDeviceState ?ds .
+  ?ds ex:parametrizedDataReady ?dataReady .
+  OPTIONAL {
+    ?pd a ex:ParametrizedData .
+    ?pd ex:generatedBy ?w .
+    ?pd a ?dataType .
+    ?pd ex:sendTimestamp ?sendTimestamp .
+  }
+  FILTER (?c = ex:ConsentGiven && ?dataReady = "true"^^xsd:boolean)
+}
+ORDER BY ?userName
+
+# EXPECTED:
+# | userName      | anonID    | consentLabel  | dataType                   | dataReady | sendTimestamp |
+# |---------------|-----------|---------------|----------------------------|-----------|---------------|
+# | Participant A | USR-A001  | Consent Given | SleepParametrizedData      | true      | 07:15         |
+# | Participant A | USR-A001  | Consent Given | PhysiologicalParametrizedData| true    | 22:30         |
+# Note: Participant B excluded (ConsentDenied)
+# Note: Participant C included only if device connected (intermittent)
+
+
+# ================================================================
+# BLOCK 5 — ASK QUERIES — Boolean verification (Level: Simple)
+# ================================================================
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q25: Q25 · Identify users whose data CAN be used for global training
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q26: Q26 · ASK: Is there any saturated node?
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q26 · ASK: Is there any saturated node?
+# ----------------------------------------------------------------
+ASK {
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasWorkload ex:SaturatedWorkload .
+}
+# EXPECTED: true  (EdgeNode1 S2, EdgeNode2 S4)
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q26: Q26 · ASK: Is there any saturated node?
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q27: Q27 · ASK: Does any model have a degradation cause?
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q27 · ASK: Does any model have a degradation cause?
+# ----------------------------------------------------------------
+ASK {
+  ?model a ex:AIModel .
+  ?model ex:hasDegradationCause ?cause .
+}
+# EXPECTED: true  (ModelEdge1, ModelLocalB, ModelLocal_C)
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q27: Q27 · ASK: Does any model have a degradation cause?
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q28: Q28 · ASK: Is there a user with denied consent that still
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q28 · ASK: Is there a user with denied consent that still
+#            has parametrized data ready on their device?
+# ----------------------------------------------------------------
+ASK {
+  ?user ex:hasConsent ex:ConsentDenied .
+  ?user ex:hasWearable ?w .
+  ?w ex:hasDeviceState ?ds .
+  ?ds ex:parametrizedDataReady "true"^^xsd:boolean .
+}
+# EXPECTED: true  (Participant B — local data ready but not sent)
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q28: Q28 · ASK: Is there a user with denied consent that still
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q29: Q29 · ASK: Is the Cloud node elastic?
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q29 · ASK: Is the Cloud node elastic?
+# ----------------------------------------------------------------
+ASK {
+  ?node a ex:CloudNode .
+  ?node ex:hasElasticity "true"^^xsd:boolean .
+}
+# EXPECTED: true
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q29: Q29 · ASK: Is the Cloud node elastic?
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q30: Q30 · ASK: Is there at least one federated session that
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q30 · ASK: Is there at least one federated session that
+#            updated the global cloud model?
+# ----------------------------------------------------------------
+ASK {
+  ?session a ex:FederatedLearningSession .
+  ?session ex:updatesModel ?m .
+  ?m ex:hasModelTier ex:CloudModelTier .
+}
+# EXPECTED: true  (FL_S6_EdgeToCloud)
+
+
+# ================================================================
+# BLOCK 6 — AGGREGATE QUERIES (Level: Advanced)
+# ================================================================
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q30: Q30 · ASK: Is there at least one federated session that
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q31: Q31 · Count users per consent status
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q31 · Count users per consent status
+# Level   : Advanced
+# Scenario: All (consent distribution)
+# ----------------------------------------------------------------
+SELECT ?consentLabel (COUNT(?user) AS ?count)
+WHERE {
+  ?user a ex:User .
+  ?user ex:hasConsent ?c .
+  ?c rdfs:label ?consentLabel .
+}
+GROUP BY ?consentLabel
+ORDER BY DESC(?count)
+
+# EXPECTED:
+# | consentLabel   | count |
+# |----------------|-------|
+# | Consent Given  | 3     |
+# | Consent Denied | 1     |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q31: Q31 · Count users per consent status
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q32: Q32 · Count AI models per tier
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q32 · Count AI models per tier
+# Level   : Advanced
+# Scenario: All (model tier distribution)
+# ----------------------------------------------------------------
+SELECT ?tierLabel (COUNT(?model) AS ?modelCount)
+WHERE {
+  ?model a ex:AIModel .
+  ?model ex:hasModelTier ?tier .
+  ?tier rdfs:label ?tierLabel .
+}
+GROUP BY ?tierLabel
+ORDER BY ?tierLabel
+
+# EXPECTED:
+# | tierLabel            | modelCount |
+# |----------------------|------------|
+# | Cloud / Global       | 1          |
+# | Edge                 | 1          |
+# | Fog / Community      | 1          |
+# | Local (Mist/Device)  | 3          |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q32: Q32 · Count AI models per tier
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q33: Q33 · Average resource usage per node type
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q33 · Average resource usage per node type
+# Level   : Advanced
+# Scenario: All (infrastructure load summary)
+# ----------------------------------------------------------------
+SELECT ?nodeType (AVG(?resourcePct) AS ?avgUsage) (MAX(?resourcePct) AS ?maxUsage)
+WHERE {
+  ?node a ?nodeType .
+  ?nodeType rdfs:subClassOf* ex:ComputationalNode .
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:resourceUsagePercent ?resourcePct .
+}
+GROUP BY ?nodeType
+ORDER BY DESC(?avgUsage)
+
+# EXPECTED (approximate, multiple states per node):
+# | nodeType    | avgUsage | maxUsage |
+# |-------------|----------|----------|
+# | EdgeNode    | ~59.0    | 99.0     |
+# | FogNode     | ~55.0    | 55.0     |
+# | MobileDevice| ~40.0    | 40.0     |
+# | CloudNode   | ~25.0    | 25.0     |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q33: Q33 · Average resource usage per node type
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q34: Q34 · Find all nodes that cover a RestrictedZone
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q34 · Find all nodes that cover a RestrictedZone
+# Level   : Advanced
+# Scenario: 8 (restricted zone audit)
+# ----------------------------------------------------------------
+SELECT ?node ?nodeLabel ?zone ?zoneLabel ?connLabel ?workloadLabel
+WHERE {
+  ?node ex:coversArea ?zone .
+  ?zone a ex:RestrictedZone .
+  ?node rdfs:label ?nodeLabel .
+  ?zone rdfs:label ?zoneLabel .
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasCommunication ?comm . ?comm rdfs:label ?connLabel .
+  ?ns ex:hasWorkload ?wl .        ?wl rdfs:label ?workloadLabel .
+}
+
+# EXPECTED:
+# | node                 | nodeLabel                    | zone          | zoneLabel              | connLabel | workloadLabel |
+# |----------------------|------------------------------|---------------|------------------------|-----------|---------------|
+# | InternalEdgeFacility | Internal Edge - Care Facility| CareFacility1 | Senior Care Facility A | Stable    | Low           |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q34: Q34 · Find all nodes that cover a RestrictedZone
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY BASE-Q35: Q35 · Full degradation path: node failure → model degradation → evaluation
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q35 · Full degradation path: node failure → model degradation → evaluation
+# Level   : Advanced
+# Scenario: 4 (failure impact chain)
+# ----------------------------------------------------------------
+SELECT ?node ?opStatus ?comm ?model ?degradCause ?profitability ?migTime ?migCost
+WHERE {
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasOperationalStatus ?op .    ?op rdfs:label ?opStatus .
+  ?ns ex:hasCommunication ?comm_ind .  ?comm_ind rdfs:label ?comm .
+  OPTIONAL {
+    ?model ex:hostedOnNode ?node .
+    ?model ex:hasDegradationCause ?dc . ?dc rdfs:label ?degradCause .
+  }
+  OPTIONAL {
+    ?eval ex:evaluatesNode ?node .
+    ?eval ex:hasProfitability ?prof .   ?prof rdfs:label ?profitability .
+    ?eval ex:hasMigrationTime ?mt .     ?mt rdfs:label ?migTime .
+    ?eval ex:hasMigrationCost ?mc .     ?mc rdfs:label ?migCost .
+  }
+  FILTER (?op IN (ex:ComputeOnly, ex:Inoperative))
+}
+
+# EXPECTED:
+# | node      | opStatus     | comm          | model      | degradCause        | profitability | migTime   | migCost   |
+# |-----------|--------------|---------------|------------|--------------------|---------------|-----------|-----------|
+# | EdgeNode2 | Compute Only | No Connection | ModelEdge1 | Communication Loss | Not Adequate  | Very High | Very High |
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY BASE-Q35: Q35 · Full degradation path: node failure → model degradation → evaluation
+# ------------------------------------------------------------------------------------------------
+
+# ################################################################################################
+# PART B — EXTENDED v2.1 COMPLIANCE QUERY BATTERY
+# ################################################################################################
+
+# ================================================================================================
+# START QUERY EXT-Q01: 01_inventory_extension_constructs
+# ================================================================================================
+
+# Inventario de clases, propiedades e individuos clave creados en v2.1
+# Expectativa: Inspección. Debe devolver todos o casi todos los constructos de la extensión.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?construct ?type ?label
+WHERE {
+  VALUES ?construct {
+    ex:ConsentRange ex:SemanticContract ex:ProcessingPurpose
+    ex:hasSemanticContract ex:contractSubject ex:hasActiveConsentRange
+    ex:hasConsentRange ex:requiresConsentRange ex:hasProcessingPurpose
+    ex:hasTrustScore ex:hasTrustWeight
+    ex:hasLatencyWeight ex:hasPrivacyWeight ex:hasModelQualityWeight
+    ex:hasAHPScore ex:selectedModelTier ex:hasSelectionJustification
+    ex:PrivacyMechanism ex:DifferentialPrivacyMechanism ex:ModelGradientUpdate
+    ex:hasPrivacyBudget ex:noiseLevel ex:hasNoiseApplied ex:hasAnonymizationApplied
+    ex:Policy ex:PolicyType ex:hasPolicyType ex:governedBy ex:appliesPolicy
+    ex:DelegationEvent ex:hasDelegation ex:delegatedBy ex:triggeredByState
+  }
+  OPTIONAL { ?construct a ?type . }
+  OPTIONAL { ?construct rdfs:label ?label . }
+}
+ORDER BY ?construct ?type
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q01: 01_inventory_extension_constructs
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q02: 02_consent_ranges_enumeration
+# ================================================================================================
+
+# Enumeración de rangos de consentimiento
+# Expectativa: Inspección. Deben aparecer LocalOnly, CommunityAgg y GlobalAgg.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?range ?label ?comment
+WHERE {
+  ?range a ex:ConsentRange .
+  OPTIONAL { ?range rdfs:label ?label . }
+  OPTIONAL { ?range rdfs:comment ?comment . }
+}
+ORDER BY ?range
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q02: 02_consent_ranges_enumeration
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q03: 03_semantic_contracts_report
+# ================================================================================================
+
+# Contratos semánticos activos por usuario, rango y propósito
+# Expectativa: Inspección. Permite comprobar que cada usuario queda vinculado a contrato, rango y propósito.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?user ?contract ?activeRange ?contractRange
+       (GROUP_CONCAT(DISTINCT STRAFTER(STR(?purpose), "#"); separator=", ") AS ?purposes)
+       (GROUP_CONCAT(DISTINCT STRAFTER(STR(?policy), "#"); separator=", ") AS ?policies)
+       ?validFrom ?validTo
+WHERE {
+  ?user a ex:User ;
+        ex:hasSemanticContract ?contract ;
+        ex:hasActiveConsentRange ?activeRange .
+  ?contract a ex:SemanticContract ;
+            ex:contractSubject ?user ;
+            ex:hasConsentRange ?contractRange .
+  OPTIONAL { ?contract ex:hasProcessingPurpose ?purpose . }
+  OPTIONAL { ?contract ex:governedBy ?policy . }
+  OPTIONAL { ?contract ex:validFrom ?validFrom . }
+  OPTIONAL { ?contract ex:validTo ?validTo . }
+}
+GROUP BY ?user ?contract ?activeRange ?contractRange ?validFrom ?validTo
+ORDER BY ?user
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q03: 03_semantic_contracts_report
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q04: 04_violation_semantic_contract_missing_required_fields
+# ================================================================================================
+
+# Contratos semánticos incompletos
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?contract ?missingField
+WHERE {
+  ?contract a ex:SemanticContract .
+  VALUES (?property ?missingField) {
+    (ex:contractSubject      "contractSubject")
+    (ex:hasConsentRange     "hasConsentRange")
+    (ex:hasProcessingPurpose "hasProcessingPurpose")
+    (ex:validFrom           "validFrom")
+    (ex:governedBy          "governedBy")
+  }
+  FILTER NOT EXISTS { ?contract ?property ?value . }
+}
+ORDER BY ?contract ?missingField
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q04: 04_violation_semantic_contract_missing_required_fields
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q05: 05_violation_user_active_consent_mismatch_contract
+# ================================================================================================
+
+# Desalineación entre consentimiento activo del usuario y contrato semántico
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?user ?contract ?activeRange ?contractRange
+WHERE {
+  ?user a ex:User ;
+        ex:hasSemanticContract ?contract ;
+        ex:hasActiveConsentRange ?activeRange .
+  ?contract ex:contractSubject ?user ;
+            ex:hasConsentRange ?contractRange .
+  FILTER (?activeRange != ?contractRange)
+}
+ORDER BY ?user
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q05: 05_violation_user_active_consent_mismatch_contract
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q06: 06_violation_fl_required_consent_range_not_met
+# ================================================================================================
+
+# Sesiones FL cuyo rango efectivo no alcanza el rango requerido
+# Expectativa: Incumplimiento. Debe devolver 0 filas para sesiones que requieren consentimiento.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?flSession ?requiredRange ?actualRange ?requiredRank ?actualRank
+WHERE {
+  ?flSession a ex:FederatedLearningSession ;
+             ex:requiresConsent true ;
+             ex:requiresConsentRange ?requiredRange .
+  OPTIONAL { ?flSession ex:hasConsentRange ?actualRange . }
+
+  VALUES (?requiredRange ?requiredRank) {
+    (ex:RangeLocalOnly 1)
+    (ex:RangeCommunityAgg 2)
+    (ex:RangeGlobalAgg 3)
+  }
+  OPTIONAL {
+    VALUES (?actualRange ?actualRank) {
+      (ex:RangeLocalOnly 1)
+      (ex:RangeCommunityAgg 2)
+      (ex:RangeGlobalAgg 3)
+    }
+  }
+  FILTER (!BOUND(?actualRange) || ?actualRank < ?requiredRank)
+}
+ORDER BY ?flSession
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q06: 06_violation_fl_required_consent_range_not_met
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q07: 07_review_user_governed_policies_vs_active_consent
+# ================================================================================================
+
+# Políticas aplicables a usuarios comparadas con su consentimiento activo
+# Expectativa: Revisión. Filas con status=BLOCKED_BY_CONSENT indican políticas/acciones que no deberían ejecutarse para ese usuario.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?user ?activeRange ?policy ?policyType ?requiredRange
+       (IF(?activeRank >= ?requiredRank, "OK", "BLOCKED_BY_CONSENT") AS ?status)
+WHERE {
+  ?user a ex:User ;
+        ex:hasActiveConsentRange ?activeRange ;
+        ex:governedBy ?policy .
+  ?policy a ex:Policy ;
+          ex:hasPolicyType ?policyType .
+  OPTIONAL { ?policy ex:requiresConsentRange ?requiredRange . }
+
+  VALUES (?activeRange ?activeRank) {
+    (ex:RangeLocalOnly 1)
+    (ex:RangeCommunityAgg 2)
+    (ex:RangeGlobalAgg 3)
+  }
+  BIND(COALESCE(?requiredRange, ex:RangeLocalOnly) AS ?effectiveRequiredRange)
+  VALUES (?effectiveRequiredRange ?requiredRank) {
+    (ex:RangeLocalOnly 1)
+    (ex:RangeCommunityAgg 2)
+    (ex:RangeGlobalAgg 3)
+  }
+}
+ORDER BY ?user ?policy
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q07: 07_review_user_governed_policies_vs_active_consent
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q08: 08_violation_selected_model_tier_exceeds_contract_consent
+# ================================================================================================
+
+# Modelo seleccionado por AHP incompatible con el rango de consentimiento del contrato auditado
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?contract ?contractRange ?selectedTier ?contractRank ?tierRequiredRank
+WHERE {
+  ?evaluation a ex:EvaluationState ;
+              ex:auditsContract ?contract ;
+              ex:selectedModelTier ?selectedTier .
+  ?contract ex:hasConsentRange ?contractRange .
+
+  VALUES (?contractRange ?contractRank) {
+    (ex:RangeLocalOnly 1)
+    (ex:RangeCommunityAgg 2)
+    (ex:RangeGlobalAgg 3)
+  }
+  VALUES (?selectedTier ?tierRequiredRank) {
+    (ex:LocalModelTier 1)
+    (ex:EdgeModelTier 2)
+    (ex:FogModelTier 2)
+    (ex:CloudModelTier 3)
+  }
+  FILTER (?tierRequiredRank > ?contractRank)
+}
+ORDER BY ?evaluation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q08: 08_violation_selected_model_tier_exceeds_contract_consent
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q09: 09_policies_inventory
+# ================================================================================================
+
+# Inventario de políticas, tipos, zonas, acciones y rangos requeridos
+# Expectativa: Inspección. Permite auditar obligación, abstención y prohibición.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?policy ?label ?policyType ?zone ?requiresConsent ?requiresRange ?action ?statement
+WHERE {
+  ?policy a ex:Policy .
+  OPTIONAL { ?policy rdfs:label ?label . }
+  OPTIONAL { ?policy ex:hasPolicyType ?policyType . }
+  OPTIONAL { ?policy ex:appliesInZone ?zone . }
+  OPTIONAL { ?policy ex:requiresConsent ?requiresConsent . }
+  OPTIONAL { ?policy ex:requiresConsentRange ?requiresRange . }
+  OPTIONAL { ?policy ex:hasPolicyAction ?action . }
+  OPTIONAL { ?policy ex:hasPolicyStatement ?statement . }
+}
+ORDER BY ?policy
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q09: 09_policies_inventory
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q10: 10_violation_policy_missing_type_action_statement
+# ================================================================================================
+
+# Políticas incompletas: sin tipo, acción o declaración textual
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?policy ?missingField
+WHERE {
+  ?policy a ex:Policy .
+  VALUES (?property ?missingField) {
+    (ex:hasPolicyType      "hasPolicyType")
+    (ex:hasPolicyAction    "hasPolicyAction")
+    (ex:hasPolicyStatement "hasPolicyStatement")
+  }
+  FILTER NOT EXISTS { ?policy ?property ?value . }
+}
+ORDER BY ?policy ?missingField
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q10: 10_violation_policy_missing_type_action_statement
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q11: 11_violation_policy_zone_not_governed_by_same_policy
+# ================================================================================================
+
+# Políticas con zona declarada pero no enlazadas desde la zona mediante governedBy
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?policy ?zone
+WHERE {
+  ?policy a ex:Policy ;
+          ex:appliesInZone ?zone .
+  FILTER NOT EXISTS { ?zone ex:governedBy ?policy . }
+}
+ORDER BY ?zone ?policy
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q11: 11_violation_policy_zone_not_governed_by_same_policy
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q12: 12_governance_links_report
+# ================================================================================================
+
+# Entidades gobernadas por políticas
+# Expectativa: Inspección. Muestra usuarios, nodos, zonas, servicios o sesiones vinculados a políticas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?entity ?entityType ?policy ?policyType ?policyAction
+WHERE {
+  ?entity ex:governedBy ?policy .
+  OPTIONAL { ?entity a ?entityType . }
+  ?policy a ex:Policy .
+  OPTIONAL { ?policy ex:hasPolicyType ?policyType . }
+  OPTIONAL { ?policy ex:hasPolicyAction ?policyAction . }
+}
+ORDER BY ?entity ?policy
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q12: 12_governance_links_report
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q13: 13_violation_restricted_zone_selected_cloud_tier
+# ================================================================================================
+
+# Evaluaciones de zona restringida que seleccionan CloudModelTier
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?policy ?selectedTier ?justification
+WHERE {
+  ?evaluation a ex:EvaluationState ;
+              ex:appliesPolicy ?policy ;
+              ex:selectedModelTier ?selectedTier .
+  ?policy a ex:Policy ;
+          ex:appliesInZone ex:CareFacility1 .
+  OPTIONAL { ?evaluation ex:hasSelectionJustification ?justification . }
+  FILTER (?selectedTier = ex:CloudModelTier)
+}
+ORDER BY ?evaluation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q13: 13_violation_restricted_zone_selected_cloud_tier
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q14: 14_node_trust_state_report
+# ================================================================================================
+
+# Estado de nodos con workload, comunicación, capacidad residual, trust score y trust weight
+# Expectativa: Inspección. Permite comprobar que MAPE-K puede consultar confianza dinámica.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?node ?state ?workload ?communication ?residualCapacity ?trustScore ?trustWeight
+WHERE {
+  ?node ex:hasNodeState ?state .
+  ?state a ex:NodeState .
+  OPTIONAL { ?state ex:hasWorkload ?workload . }
+  OPTIONAL { ?state ex:hasCommunication ?communication . }
+  OPTIONAL { ?state ex:hasResidualCapacity ?residualCapacity . }
+  OPTIONAL { ?state ex:hasTrustScore ?trustScore . }
+  OPTIONAL { ?state ex:hasTrustWeight ?trustWeight . }
+}
+ORDER BY DESC(?trustScore) ?node
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q14: 14_node_trust_state_report
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q15: 15_violation_node_state_missing_or_invalid_trust
+# ================================================================================================
+
+# NodeState sin trust score/weight o con valores fuera de [0,1]
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?state ?problem ?value
+WHERE {
+  {
+    ?state a ex:NodeState .
+    FILTER NOT EXISTS { ?state ex:hasTrustScore ?score . }
+    BIND("missing hasTrustScore" AS ?problem)
+  }
+  UNION
+  {
+    ?state a ex:NodeState .
+    FILTER NOT EXISTS { ?state ex:hasTrustWeight ?weight . }
+    BIND("missing hasTrustWeight" AS ?problem)
+  }
+  UNION
+  {
+    ?state a ex:NodeState ; ex:hasTrustScore ?value .
+    FILTER (?value < 0 || ?value > 1)
+    BIND("hasTrustScore outside [0,1]" AS ?problem)
+  }
+  UNION
+  {
+    ?state a ex:NodeState ; ex:hasTrustWeight ?value .
+    FILTER (?value < 0 || ?value > 1)
+    BIND("hasTrustWeight outside [0,1]" AS ?problem)
+  }
+}
+ORDER BY ?state ?problem
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q15: 15_violation_node_state_missing_or_invalid_trust
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q16: 16_violation_saturated_or_disconnected_eval_without_trust_policy
+# ================================================================================================
+
+# Evaluaciones disparadas por saturación o desconexión sin política trust-based
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?state ?workload ?communication ?symptom
+WHERE {
+  ?evaluation a ex:EvaluationState ;
+              ex:triggeredByState ?state ;
+              ex:hasDetectedSymptom ?symptom .
+  ?state a ex:NodeState .
+  OPTIONAL { ?state ex:hasWorkload ?workload . }
+  OPTIONAL { ?state ex:hasCommunication ?communication . }
+  FILTER (?workload = ex:SaturatedWorkload || ?communication = ex:NoConnectionComm)
+  FILTER NOT EXISTS { ?evaluation ex:appliesPolicy ex:TrustBasedNodeSelectionPolicy . }
+}
+ORDER BY ?evaluation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q16: 16_violation_saturated_or_disconnected_eval_without_trust_policy
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q17: 17_violation_delegation_target_not_more_trusted_than_origin
+# ================================================================================================
+
+# Delegaciones donde el nodo destino no tiene mayor trustScore que el estado origen
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?delegation ?originNode ?originState ?originTrust ?targetNode ?targetState ?targetTrust
+WHERE {
+  ?delegation a ex:DelegationEvent ;
+              ex:delegatedBy ?originNode ;
+              ex:delegatesTo ?targetNode ;
+              ex:triggeredByState ?originState .
+  ?originState ex:hasTrustScore ?originTrust .
+  ?targetNode ex:hasNodeState ?targetState .
+  ?targetState ex:hasTrustScore ?targetTrust .
+  FILTER (?targetTrust <= ?originTrust)
+}
+ORDER BY ?delegation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q17: 17_violation_delegation_target_not_more_trusted_than_origin
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q18: 18_ahp_evaluation_report
+# ================================================================================================
+
+# Reporte AHP por EvaluationState: pesos, score, tier elegido y justificación
+# Expectativa: Inspección. El balance de pesos debe explicar el tier seleccionado.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?ticket ?symptom ?contract ?consentRange
+       ?latencyWeight ?privacyWeight ?modelQualityWeight ?trustWeight
+       ((?latencyWeight + ?privacyWeight + ?modelQualityWeight) AS ?criteriaWeightSum)
+       ((?latencyWeight + ?privacyWeight + ?modelQualityWeight + ?trustWeight) AS ?criteriaPlusTrustSum)
+       ?ahpScore ?selectedTier ?justification
+WHERE {
+  ?evaluation a ex:EvaluationState .
+  OPTIONAL { ?evaluation ex:hasEvaluationTicketID ?ticket . }
+  OPTIONAL { ?evaluation ex:hasDetectedSymptom ?symptom . }
+  OPTIONAL { ?evaluation ex:auditsContract ?contract . }
+  OPTIONAL { ?evaluation ex:hasConsentRange ?consentRange . }
+  ?evaluation ex:hasLatencyWeight ?latencyWeight ;
+              ex:hasPrivacyWeight ?privacyWeight ;
+              ex:hasModelQualityWeight ?modelQualityWeight ;
+              ex:hasTrustWeight ?trustWeight ;
+              ex:hasAHPScore ?ahpScore ;
+              ex:selectedModelTier ?selectedTier .
+  OPTIONAL { ?evaluation ex:hasSelectionJustification ?justification . }
+}
+ORDER BY ?evaluation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q18: 18_ahp_evaluation_report
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q19: 19_violation_evaluation_missing_ahp_fields
+# ================================================================================================
+
+# EvaluationState sin campos AHP obligatorios
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?missingField
+WHERE {
+  ?evaluation a ex:EvaluationState .
+  VALUES (?property ?missingField) {
+    (ex:hasLatencyWeight      "hasLatencyWeight")
+    (ex:hasPrivacyWeight      "hasPrivacyWeight")
+    (ex:hasModelQualityWeight "hasModelQualityWeight")
+    (ex:hasTrustWeight        "hasTrustWeight")
+    (ex:hasAHPScore           "hasAHPScore")
+    (ex:selectedModelTier     "selectedModelTier")
+    (ex:hasSelectionJustification "hasSelectionJustification")
+  }
+  FILTER NOT EXISTS { ?evaluation ?property ?value . }
+}
+ORDER BY ?evaluation ?missingField
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q19: 19_violation_evaluation_missing_ahp_fields
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q20: 20_violation_ahp_numeric_values_outside_range
+# ================================================================================================
+
+# Pesos AHP, trustWeight o AHP score fuera del rango [0,1]
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?property ?value
+WHERE {
+  ?evaluation a ex:EvaluationState ;
+              ?property ?value .
+  VALUES ?property {
+    ex:hasLatencyWeight
+    ex:hasPrivacyWeight
+    ex:hasModelQualityWeight
+    ex:hasTrustWeight
+    ex:hasAHPScore
+  }
+  FILTER (?value < 0 || ?value > 1)
+}
+ORDER BY ?evaluation ?property
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q20: 20_violation_ahp_numeric_values_outside_range
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q21: 21_violation_ahp_weights_not_normalized
+# ================================================================================================
+
+# Evaluaciones cuyos cuatro pesos de decisión no suman aproximadamente 1.
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?latencyWeight ?privacyWeight ?modelQualityWeight ?trustWeight
+       ((?latencyWeight + ?privacyWeight + ?modelQualityWeight + ?trustWeight) AS ?sumWeights)
+WHERE {
+  ?evaluation a ex:EvaluationState ;
+              ex:hasLatencyWeight ?latencyWeight ;
+              ex:hasPrivacyWeight ?privacyWeight ;
+              ex:hasModelQualityWeight ?modelQualityWeight ;
+              ex:hasTrustWeight ?trustWeight .
+  FILTER (ABS((?latencyWeight + ?privacyWeight + ?modelQualityWeight + ?trustWeight) - 1.0) > 0.01)
+}
+ORDER BY ?evaluation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q21: 21_violation_ahp_weights_not_normalized
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q22: 22_violation_evaluation_audit_ticket_incomplete
+# ================================================================================================
+
+# EvaluationState que no funciona como ticket de auditoría completo
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?missingField
+WHERE {
+  ?evaluation a ex:EvaluationState .
+  VALUES (?property ?missingField) {
+    (ex:hasEvaluationTicketID "hasEvaluationTicketID")
+    (ex:hasDetectedSymptom    "hasDetectedSymptom")
+    (ex:appliesPolicy         "appliesPolicy")
+    (ex:auditsContract        "auditsContract")
+    (ex:hasConsentRange       "hasConsentRange")
+    (ex:selectedModelTier     "selectedModelTier")
+    (ex:hasSelectionJustification "hasSelectionJustification")
+  }
+  FILTER NOT EXISTS { ?evaluation ?property ?value . }
+}
+ORDER BY ?evaluation ?missingField
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q22: 22_violation_evaluation_audit_ticket_incomplete
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q23: 23_violation_symptom_policy_mapping_missing
+# ================================================================================================
+
+# Síntomas MAPE-K sin política esperada asociada en el ticket de auditoría
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?symptom ?requiredPolicy
+WHERE {
+  VALUES (?symptom ?requiredPolicy) {
+    (ex:SymptomSaturatedWorkload       ex:TrustBasedNodeSelectionPolicy)
+    (ex:SymptomCommunicationLoss       ex:TrustBasedNodeSelectionPolicy)
+    (ex:SymptomConsentLocalOnly        ex:ConsentAwareProcessingPolicy)
+    (ex:SymptomRuralLowConnectivity    ex:RuralLocalRetentionPolicy)
+    (ex:SymptomRestrictedZoneBoundary  ex:RestrictedZoneNoExternalTransferPolicy)
+  }
+  ?evaluation a ex:EvaluationState ;
+              ex:hasDetectedSymptom ?symptom .
+  FILTER NOT EXISTS { ?evaluation ex:appliesPolicy ?requiredPolicy . }
+}
+ORDER BY ?evaluation ?symptom
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q23: 23_violation_symptom_policy_mapping_missing
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q24: 24_violation_evaluation_consent_range_mismatch_contract
+# ================================================================================================
+
+# Ticket de auditoría cuyo rango de consentimiento no coincide con el contrato auditado
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?evaluation ?contract ?evaluationRange ?contractRange
+WHERE {
+  ?evaluation a ex:EvaluationState ;
+              ex:auditsContract ?contract ;
+              ex:hasConsentRange ?evaluationRange .
+  ?contract ex:hasConsentRange ?contractRange .
+  FILTER (?evaluationRange != ?contractRange)
+}
+ORDER BY ?evaluation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q24: 24_violation_evaluation_consent_range_mismatch_contract
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q25: 25_federated_learning_privacy_report
+# ================================================================================================
+
+# Reporte de privacidad diferencial y flujos de datos en sesiones FL
+# Expectativa: Inspección. Muestra epsilon, ruido, mecanismos, datos transferidos y destino.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?flSession ?dataType ?epsilon ?noise ?sessionNoiseApplied ?sessionAnonApplied
+       ?transferredData ?originDevice ?destinationNode
+       (GROUP_CONCAT(DISTINCT STRAFTER(STR(?mechanism), "#"); separator=", ") AS ?privacyMechanisms)
+WHERE {
+  ?flSession a ex:FederatedLearningSession .
+  OPTIONAL { ?flSession ex:dataType ?dataType . }
+  OPTIONAL { ?flSession ex:hasPrivacyBudget ?epsilon . }
+  OPTIONAL { ?flSession ex:noiseLevel ?noise . }
+  OPTIONAL { ?flSession ex:hasNoiseApplied ?sessionNoiseApplied . }
+  OPTIONAL { ?flSession ex:hasAnonymizationApplied ?sessionAnonApplied . }
+  OPTIONAL { ?flSession ex:hasPrivacyMechanism ?mechanism . }
+  OPTIONAL {
+    ?flSession ex:transfersData ?transferredData .
+    OPTIONAL { ?transferredData ex:originatesFromDevice ?originDevice . }
+    OPTIONAL { ?transferredData ex:sentToNode ?destinationNode . }
+  }
+}
+GROUP BY ?flSession ?dataType ?epsilon ?noise ?sessionNoiseApplied ?sessionAnonApplied ?transferredData ?originDevice ?destinationNode
+ORDER BY ?flSession ?transferredData
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q25: 25_federated_learning_privacy_report
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q26: 26_violation_gradient_transfer_without_dp_noise_or_anonymization
+# ================================================================================================
+
+# Gradientes que salen de un MobileDevice sin DP, ruido o anonimización en sesión y dato transferido
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?flSession ?gradient ?originDevice ?destinationNode
+WHERE {
+  ?flSession a ex:FederatedLearningSession ;
+             ex:transfersData ?gradient .
+  ?gradient a ex:ModelGradientUpdate ;
+            ex:originatesFromDevice ?originDevice .
+  ?originDevice a ex:MobileDevice .
+  OPTIONAL { ?gradient ex:sentToNode ?destinationNode . }
+
+  FILTER (
+    NOT EXISTS { ?flSession ex:hasNoiseApplied true . }
+    || NOT EXISTS { ?flSession ex:hasAnonymizationApplied true . }
+    || NOT EXISTS { ?flSession ex:hasPrivacyMechanism ex:DifferentialPrivacy . }
+    || NOT EXISTS { ?gradient ex:hasNoiseApplied true . }
+    || NOT EXISTS { ?gradient ex:hasAnonymizationApplied true . }
+    || NOT EXISTS { ?gradient ex:hasPrivacyMechanism ex:DifferentialPrivacy . }
+  )
+}
+ORDER BY ?flSession ?gradient
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q26: 26_violation_gradient_transfer_without_dp_noise_or_anonymization
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q27: 27_violation_fl_missing_or_invalid_privacy_budget_noise
+# ================================================================================================
+
+# Sesiones FL sin epsilon/noiseLevel o con valores negativos
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?flSession ?problem ?value
+WHERE {
+  {
+    ?flSession a ex:FederatedLearningSession .
+    FILTER NOT EXISTS { ?flSession ex:hasPrivacyBudget ?epsilon . }
+    BIND("missing hasPrivacyBudget" AS ?problem)
+  }
+  UNION
+  {
+    ?flSession a ex:FederatedLearningSession .
+    FILTER NOT EXISTS { ?flSession ex:noiseLevel ?noise . }
+    BIND("missing noiseLevel" AS ?problem)
+  }
+  UNION
+  {
+    ?flSession a ex:FederatedLearningSession ; ex:hasPrivacyBudget ?value .
+    FILTER (?value < 0)
+    BIND("negative hasPrivacyBudget" AS ?problem)
+  }
+  UNION
+  {
+    ?flSession a ex:FederatedLearningSession ; ex:noiseLevel ?value .
+    FILTER (?value < 0)
+    BIND("negative noiseLevel" AS ?problem)
+  }
+}
+ORDER BY ?flSession ?problem
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q27: 27_violation_fl_missing_or_invalid_privacy_budget_noise
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q28: 28_delegation_events_report
+# ================================================================================================
+
+# Reporte de delegaciones temporales
+# Expectativa: Inspección. Muestra delegador, delegado, estado detonante, validez y condición de recuperación.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?delegation ?delegatedBy ?delegatesTo ?triggeredByState ?expiresOnRecoveryOf
+       ?validFrom ?validTo ?recoveryCondition
+WHERE {
+  ?delegation a ex:DelegationEvent ;
+              ex:delegatedBy ?delegatedBy ;
+              ex:delegatesTo ?delegatesTo .
+  OPTIONAL { ?delegation ex:triggeredByState ?triggeredByState . }
+  OPTIONAL { ?delegation ex:expiresOnRecoveryOf ?expiresOnRecoveryOf . }
+  OPTIONAL { ?delegation ex:validFrom ?validFrom . }
+  OPTIONAL { ?delegation ex:validTo ?validTo . }
+  OPTIONAL { ?delegation ex:hasRecoveryCondition ?recoveryCondition . }
+}
+ORDER BY ?delegation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q28: 28_delegation_events_report
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q29: 29_violation_delegation_event_incomplete_temporal
+# ================================================================================================
+
+# DelegationEvent incompleto o sin temporalidad suficiente
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?delegation ?problem
+WHERE {
+  {
+    ?delegation a ex:DelegationEvent .
+    FILTER NOT EXISTS { ?delegation ex:delegatedBy ?node . }
+    BIND("missing delegatedBy" AS ?problem)
+  }
+  UNION
+  {
+    ?delegation a ex:DelegationEvent .
+    FILTER NOT EXISTS { ?delegation ex:delegatesTo ?node . }
+    BIND("missing delegatesTo" AS ?problem)
+  }
+  UNION
+  {
+    ?delegation a ex:DelegationEvent .
+    FILTER NOT EXISTS { ?delegation ex:triggeredByState ?state . }
+    BIND("missing triggeredByState" AS ?problem)
+  }
+  UNION
+  {
+    ?delegation a ex:DelegationEvent .
+    FILTER NOT EXISTS { ?delegation ex:validFrom ?start . }
+    BIND("missing validFrom" AS ?problem)
+  }
+  UNION
+  {
+    ?delegation a ex:DelegationEvent .
+    FILTER NOT EXISTS { ?delegation ex:validTo ?end . }
+    FILTER NOT EXISTS { ?delegation ex:hasRecoveryCondition ?condition . }
+    FILTER NOT EXISTS { ?delegation ex:expiresOnRecoveryOf ?node . }
+    BIND("missing validTo and recovery condition" AS ?problem)
+  }
+}
+ORDER BY ?delegation ?problem
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q29: 29_violation_delegation_event_incomplete_temporal
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q30: 30_review_open_delegations_without_validTo
+# ================================================================================================
+
+# Delegaciones abiertas sin validTo pero con condición de recuperación
+# Expectativa: Revisión. No es necesariamente error si existe expiresOnRecoveryOf/hasRecoveryCondition.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?delegation ?delegatedBy ?delegatesTo ?expiresOnRecoveryOf ?recoveryCondition ?validFrom
+WHERE {
+  ?delegation a ex:DelegationEvent ;
+              ex:delegatedBy ?delegatedBy ;
+              ex:delegatesTo ?delegatesTo ;
+              ex:validFrom ?validFrom .
+  FILTER NOT EXISTS { ?delegation ex:validTo ?validTo . }
+  OPTIONAL { ?delegation ex:expiresOnRecoveryOf ?expiresOnRecoveryOf . }
+  OPTIONAL { ?delegation ex:hasRecoveryCondition ?recoveryCondition . }
+}
+ORDER BY ?delegation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q30: 30_review_open_delegations_without_validTo
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q31: 31_violation_direct_delegation_not_backed_by_temporal_event
+# ================================================================================================
+
+# Delegaciones directas node-to-node sin DelegationEvent reificado equivalente
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?fromNode ?toNode
+WHERE {
+  ?fromNode ex:delegatesTo ?toNode .
+  FILTER NOT EXISTS { ?fromNode a ex:DelegationEvent . }
+  FILTER NOT EXISTS {
+    ?fromNode ex:hasDelegation ?delegation .
+    ?delegation a ex:DelegationEvent ;
+                ex:delegatedBy ?fromNode ;
+                ex:delegatesTo ?toNode .
+  }
+}
+ORDER BY ?fromNode ?toNode
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q31: 31_violation_direct_delegation_not_backed_by_temporal_event
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q32: 32_violation_delegation_trigger_state_not_linked_to_delegator
+# ================================================================================================
+
+# DelegationEvent cuyo estado detonante no está enlazado al nodo delegador mediante hasNodeState
+# Expectativa: Incumplimiento. Debe devolver 0 filas si todos los estados históricos están enlazados al nodo correspondiente.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?delegation ?delegatedBy ?triggeredByState
+WHERE {
+  ?delegation a ex:DelegationEvent ;
+              ex:delegatedBy ?delegatedBy ;
+              ex:triggeredByState ?triggeredByState .
+  FILTER NOT EXISTS { ?delegatedBy ex:hasNodeState ?triggeredByState . }
+}
+ORDER BY ?delegation
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q32: 32_violation_delegation_trigger_state_not_linked_to_delegator
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q33: 33_shacl_shapes_inventory
+# ================================================================================================
+
+# Inventario de shapes SHACL operacionales definidas en la ontología
+# Expectativa: Inspección. Debe mostrar al menos FederatedLearningSessionShape.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?shape ?targetClass ?sparqlMessage
+WHERE {
+  ?shape a sh:NodeShape ;
+         sh:targetClass ?targetClass .
+  OPTIONAL { ?shape sh:sparql/sh:message ?sparqlMessage . }
+}
+ORDER BY ?shape
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q33: 33_shacl_shapes_inventory
+# ------------------------------------------------------------------------------------------------
+
+# ================================================================================================
+# START QUERY EXT-Q34: 34_overall_compliance_dashboard
+# ================================================================================================
+
+# Dashboard compacto de conteos por eje de validación
+# Expectativa: Inspección. Da una visión rápida de cobertura de contratos, políticas, evaluaciones, FL y delegaciones.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?metric (COUNT(DISTINCT ?item) AS ?count)
+WHERE {
+  {
+    BIND("Consent ranges" AS ?metric)
+    ?item a ex:ConsentRange .
+  }
+  UNION
+  {
+    BIND("Semantic contracts" AS ?metric)
+    ?item a ex:SemanticContract .
+  }
+  UNION
+  {
+    BIND("Policies" AS ?metric)
+    ?item a ex:Policy .
+  }
+  UNION
+  {
+    BIND("Policy types" AS ?metric)
+    ?item a ex:PolicyType .
+  }
+  UNION
+  {
+    BIND("Node states with trustScore" AS ?metric)
+    ?item a ex:NodeState ; ex:hasTrustScore ?score .
+  }
+  UNION
+  {
+    BIND("Evaluation audit tickets" AS ?metric)
+    ?item a ex:EvaluationState ; ex:hasEvaluationTicketID ?ticket .
+  }
+  UNION
+  {
+    BIND("FL sessions with privacyBudget" AS ?metric)
+    ?item a ex:FederatedLearningSession ; ex:hasPrivacyBudget ?epsilon .
+  }
+  UNION
+  {
+    BIND("Model gradient updates" AS ?metric)
+    ?item a ex:ModelGradientUpdate .
+  }
+  UNION
+  {
+    BIND("Temporal delegation events" AS ?metric)
+    ?item a ex:DelegationEvent .
+  }
+}
+GROUP BY ?metric
+ORDER BY ?metric
+
+# ------------------------------------------------------------------------------------------------
+# END QUERY EXT-Q34: 34_overall_compliance_dashboard
+# ------------------------------------------------------------------------------------------------

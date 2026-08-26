@@ -1,0 +1,41 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q16 · SCENARIO 6 — Verify full federated learning chain
+# Level   : Intermediate
+# Scenario: 6
+# ----------------------------------------------------------------
+SELECT ?session ?sessionTime ?dataType ?involvedNode ?updatedModel ?modelVersion
+WHERE {
+  ?session a ex:FederatedLearningSession .
+  ?session ex:sessionTime ?sessionTime .
+  ?session ex:dataType ?dataType .
+  ?session ex:involvedNode ?involvedNode .
+  ?session ex:updatesModel ?updatedModel .
+  ?updatedModel ex:modelVersion ?modelVersion .
+  FILTER (?session IN (ex:FL_S6_EdgeToCloud, ex:FL_S6_DownloadToEdge))
+}
+ORDER BY ?session ?involvedNode
+
+# EXPECTED (multiple rows per session):
+# | session              | sessionTime       | dataType                   | involvedNode | updatedModel | modelVersion |
+# |----------------------|-------------------|----------------------------|--------------|--------------|--------------|
+# | FL_S6_DownloadToEdge | 04T04:00:00       | improved_model_parameters  | CloudNode1   | ModelEdge1   | 1.2.0        |
+# | FL_S6_DownloadToEdge | 04T04:00:00       | improved_model_parameters  | EdgeNode1    | ModelEdge1   | 1.2.0        |
+# | FL_S6_EdgeToCloud    | 04T03:00:00       | global_model_parameters    | CloudNode1   | ModelCloud1  | 2.1.0        |
+# | FL_S6_EdgeToCloud    | 04T03:00:00       | global_model_parameters    | EdgeNode1    | ModelCloud1  | 2.1.0        |
+# | FL_S6_EdgeToCloud    | 04T03:00:00       | global_model_parameters    | FogNode1     | ModelCloud1  | 2.1.0        |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------

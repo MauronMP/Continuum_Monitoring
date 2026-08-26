@@ -1,0 +1,33 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q35 · Full degradation path: node failure → model degradation → evaluation
+# Level   : Advanced
+# Scenario: 4 (failure impact chain)
+# ----------------------------------------------------------------
+SELECT ?node ?opStatus ?comm ?model ?degradCause ?profitability ?migTime ?migCost
+WHERE {
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasOperationalStatus ?op .    ?op rdfs:label ?opStatus .
+  ?ns ex:hasCommunication ?comm_ind .  ?comm_ind rdfs:label ?comm .
+  OPTIONAL {
+    ?model ex:hostedOnNode ?node .
+    ?model ex:hasDegradationCause ?dc . ?dc rdfs:label ?degradCause .
+  }
+  OPTIONAL {
+    ?eval ex:evaluatesNode ?node .
+    ?eval ex:hasProfitability ?prof .   ?prof rdfs:label ?profitability .
+    ?eval ex:hasMigrationTime ?mt .     ?mt rdfs:label ?migTime .
+    ?eval ex:hasMigrationCost ?mc .     ?mc rdfs:label ?migCost .
+  }
+  FILTER (?op IN (ex:ComputeOnly, ex:Inoperative))
+}

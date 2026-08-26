@@ -1,0 +1,33 @@
+# ================================================================================================
+
+# Gradientes que salen de un MobileDevice sin DP, ruido o anonimización en sesión y dato transferido
+# Expectativa: Incumplimiento. Debe devolver 0 filas.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?flSession ?gradient ?originDevice ?destinationNode
+WHERE {
+  ?flSession a ex:FederatedLearningSession ;
+             ex:transfersData ?gradient .
+  ?gradient a ex:ModelGradientUpdate ;
+            ex:originatesFromDevice ?originDevice .
+  ?originDevice a ex:MobileDevice .
+  OPTIONAL { ?gradient ex:sentToNode ?destinationNode . }
+
+  FILTER (
+    NOT EXISTS { ?flSession ex:hasNoiseApplied true . }
+    || NOT EXISTS { ?flSession ex:hasAnonymizationApplied true . }
+    || NOT EXISTS { ?flSession ex:hasPrivacyMechanism ex:DifferentialPrivacy . }
+    || NOT EXISTS { ?gradient ex:hasNoiseApplied true . }
+    || NOT EXISTS { ?gradient ex:hasAnonymizationApplied true . }
+    || NOT EXISTS { ?gradient ex:hasPrivacyMechanism ex:DifferentialPrivacy . }
+  )
+}
+ORDER BY ?flSession ?gradient
+
+# ------------------------------------------------------------------------------------------------

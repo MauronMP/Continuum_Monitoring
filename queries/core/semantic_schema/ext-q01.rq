@@ -1,0 +1,33 @@
+# ================================================================================================
+# Category: semantic_schema
+
+# Inventario de clases, propiedades e individuos clave creados en v2.1
+# Expectativa: Inspección. Debe devolver todos o casi todos los constructos de la extensión.
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+SELECT ?construct ?type ?label
+WHERE {
+  VALUES ?construct {
+    ex:ConsentRange ex:SemanticContract ex:ProcessingPurpose
+    ex:hasSemanticContract ex:contractSubject ex:hasActiveConsentRange
+    ex:hasConsentRange ex:requiresConsentRange ex:hasProcessingPurpose
+    ex:hasTrustScore ex:hasTrustWeight
+    ex:hasLatencyWeight ex:hasPrivacyWeight ex:hasModelQualityWeight
+    ex:hasAHPScore ex:selectedModelTier ex:hasSelectionJustification
+    ex:PrivacyMechanism ex:DifferentialPrivacyMechanism ex:ModelGradientUpdate
+    ex:hasPrivacyBudget ex:noiseLevel ex:hasNoiseApplied ex:hasAnonymizationApplied
+    ex:Policy ex:PolicyType ex:hasPolicyType ex:governedBy ex:appliesPolicy
+    ex:DelegationEvent ex:hasDelegation ex:delegatedBy ex:triggeredByState
+  }
+  OPTIONAL { ?construct a ?type . }
+  OPTIONAL { ?construct rdfs:label ?label . }
+}
+ORDER BY ?construct ?type
+
+# ------------------------------------------------------------------------------------------------

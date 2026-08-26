@@ -1,0 +1,41 @@
+# ================================================================================================
+
+PREFIX ex:   <http://example.org/smartcity#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX saref:<https://saref.etsi.org/core/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+
+# Q07 · Get all node states and their workload
+# Level   : Simple
+# Scenario: 1,2,3,4,6,7,8
+# ----------------------------------------------------------------
+SELECT ?node ?workloadLabel ?resourcePct ?queued
+WHERE {
+  ?node ex:hasNodeState ?ns .
+  ?ns ex:hasWorkload ?wl .
+  ?wl rdfs:label ?workloadLabel .
+  OPTIONAL { ?ns ex:resourceUsagePercent ?resourcePct }
+  OPTIONAL { ?ns ex:queuedRequests ?queued }
+}
+ORDER BY DESC(?resourcePct)
+
+# EXPECTED (sorted by resource usage desc):
+# | node        | workloadLabel | resourcePct | queued |
+# |-------------|---------------|-------------|--------|
+# | EdgeNode2   | Saturated     | 99.0        | 25     |
+# | EdgeNode1   | Saturated     | 92.0        | 15     |  (S2)
+# | FogNode1    | Medium        | 55.0        | 4      |
+# | MobileC     | Low           | 40.0        | 0      |
+# | EdgeNode1   | Low           | 30.0        | 1      |  (S1)
+# | CloudNode1  | Low           | 25.0        | 0      |
+# | InternalEdge| Low           | 20.0        | 2      |
+
+
+# ----------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------
