@@ -9,11 +9,12 @@ RUN mvn -B -q package -DskipTests
 FROM eclipse-temurin:25-jre
 
 ENV CONTINUUM_ENGINE=jena \
-    CONTINUUM_PORT=8080
+    CONTINUUM_PORT=8080 \
+    JAVA_TOOL_OPTIONS="-Xms128m -Xmx2g"
 
 WORKDIR /app
 COPY --from=build /build/target/semantic-engine-service-0.1.0.jar /app/engine.jar
 
 EXPOSE 8080
 
-CMD ["java", "-Xms256m", "-Xmx2g", "-jar", "/app/engine.jar"]
+CMD ["java", "-jar", "/app/engine.jar"]

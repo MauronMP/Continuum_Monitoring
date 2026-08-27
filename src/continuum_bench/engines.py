@@ -57,10 +57,10 @@ def _request(
         ) from error
 
 
-def discover(urls: Iterable[str]) -> list[EngineEndpoint]:
+def discover(urls: Iterable[str], *, timeout: float = 5.0) -> list[EngineEndpoint]:
     endpoints = []
     for url in urls:
-        health = _request(url, "/health")
+        health = _request(url, "/health", timeout=timeout)
         if health.get("status") != "ok":
             raise RuntimeError(f"Unhealthy semantic engine: {url}")
         if health.get("service") != ENGINE_SERVICE:

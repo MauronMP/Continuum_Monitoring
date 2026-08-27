@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import shlex
 import signal
@@ -18,6 +18,7 @@ from urllib.error import URLError
 
 from .distributed import _request
 from .protocol import worker_health_error
+from .environment import physical_checks, require_checks
 
 
 _SSH_OPTIONS = (
@@ -88,6 +89,15 @@ def load_physical_inventory(
     )
     if not remote_dir.startswith("/") or not remote_python.startswith("/"):
         raise ValueError("remote_dir and remote_python must be absolute paths")
+    directory = PurePosixPath(remote_dir)
+    if (
+        len(directory.parts) < 3
+        or ".." in directory.parts
+        or str(directory) in {f"/home/{user}", f"/Users/{user}", "/root", "/tmp", "/var/tmp"}
+        or not PurePosixPath(remote_python).is_relative_to(directory)
+        or ".." in PurePosixPath(remote_python).parts
+    ):
+        raise ValueError("Use a dedicated remote_dir below the user's home and a remote_python inside that directory; broad deployment targets are unsafe")
     return PhysicalInventory(
         path=path,
         ssh_user=user,
@@ -99,7 +109,10 @@ def load_physical_inventory(
 
 def _run(command: list[str]) -> None:
     print(f"[physical-cluster] exec={shlex.join(command)}", flush=True)
-    subprocess.run(command, check=True)
+    try:
+        subprocess.run(command, check=True)
+    except FileNotFoundError as error:
+        raise RuntimeError(f"Required command not installed: {command[0]}. Run 'python3 tools/doctor.py --physical'.") from error
 
 
 def _ssh(target: str, *remote_command: str) -> list[str]:
@@ -130,16 +143,22 @@ def authorize_cluster(inventory: PhysicalInventory) -> None:
 def _verify_key_auth(inventory: PhysicalInventory) -> None:
     """Fail before lifecycle work instead of blocking on password prompts."""
     failed: list[str] = []
+    require_checks([item for item in physical_checks() if item.name == "ssh"])
     for node in inventory.nodes:
         if node.local:
             continue
         target = f"{inventory.ssh_user}@{node.host}"
-        result = subprocess.run(
-            _ssh(target, "true"),
-            check=False,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            result = subprocess.run(
+                _ssh(target, "true"),
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=20,
+            )
+        except (OSError, subprocess.TimeoutExpired) as error:
+            failed.append(f"{target}: {error}")
+            continue
         if result.returncode != 0:
             detail = (result.stderr or result.stdout).strip()
             failed.append(f"{target}: {detail or 'authentication failed'}")
@@ -152,12 +171,43 @@ def _verify_key_auth(inventory: PhysicalInventory) -> None:
         )
 
 
+def _verify_remote_dependencies(inventory: PhysicalInventory) -> None:
+    """Check every remote before rsync mutates any deployed release."""
+    require_checks([item for item in physical_checks() if item.name in {"ssh", "rsync"}])
+    python_check = (
+        "import sys, venv, ensurepip; "
+        "assert sys.version_info >= (3, 11), 'Python >=3.11 required'; "
+        "print(sys.version.split()[0])"
+    )
+    command = " && ".join([
+        "command -v rsync", "command -v pgrep", "command -v nohup",
+        "python3 -c " + shlex.quote(python_check),
+    ])
+    failures = []
+    for node in inventory.nodes:
+        if node.local:
+            continue
+        target = f"{inventory.ssh_user}@{node.host}"
+        try:
+            result = subprocess.run(_ssh(target, command), capture_output=True, text=True, timeout=25, check=False)
+            if result.returncode:
+                failures.append(f"{target}: {(result.stderr or result.stdout).strip()}")
+        except (OSError, subprocess.TimeoutExpired) as error:
+            failures.append(f"{target}: {error}")
+    if failures:
+        raise RuntimeError(
+            "Remote prerequisites failed before copying any files. Install Python >=3.11, python3-venv, rsync and procps on every Raspberry. "
+            + "; ".join(failures)
+        )
+
+
 def deploy_cluster(
     root: Path,
     inventory: PhysicalInventory,
 ) -> None:
     """Copy only worker runtime assets and install minimal dependencies."""
     _verify_key_auth(inventory)
+    _verify_remote_dependencies(inventory)
     sources = (
         root / "src",
         root / "configs",
@@ -175,10 +225,8 @@ def deploy_cluster(
         _run(
             _ssh(
                 target,
-                "mkdir",
-                "-p",
-                inventory.remote_dir,
-                f"{inventory.remote_dir}/runtime",
+                "mkdir -p " + shlex.quote(inventory.remote_dir) + " "
+                + shlex.quote(f"{inventory.remote_dir}/runtime"),
             )
         )
         for source in sources:
@@ -194,13 +242,13 @@ def deploy_cluster(
                     "-e",
                     _RSYNC_SSH,
                     str(source),
-                    f"{target}:{inventory.remote_dir}/",
+                    f"{target}:{shlex.quote(inventory.remote_dir + '/')}",
                 ]
             )
         setup = (
             f"python3 -m venv {shlex.quote(inventory.remote_dir + '/.venv-node')}"
             f" && {shlex.quote(inventory.remote_dir + '/.venv-node/bin/pip')}"
-            f" install -r "
+            f" install --only-binary=:all: --retries 2 --timeout 60 -r "
             f"{shlex.quote(inventory.remote_dir + '/requirements-node.txt')}"
         )
         _run(_ssh(target, setup))

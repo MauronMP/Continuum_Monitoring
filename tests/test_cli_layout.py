@@ -13,6 +13,16 @@ def test_distributed_layout_defaults_to_sharded():
     assert physical.layout == "sharded"
 
 
+def test_default_smoke_checks_docker_before_running_python(config, monkeypatch):
+    from continuum_bench import engine_stack
+    import pytest
+
+    monkeypatch.setattr(engine_stack, "preflight", lambda root: (_ for _ in ()).throw(RuntimeError("docker.sock permission denied")))
+    monkeypatch.setattr(cli, "run_cumulative", lambda config: pytest.fail("Python benchmark must not start before Docker preflight"))
+    with pytest.raises(RuntimeError, match="docker.sock"):
+        cli.main(["--config", str(config.root / "configs/smoke-cumulative.toml"), "benchmark", "cumulative"])
+
+
 def test_distributed_layout_accepts_replicated():
     parser = cli._parser()
 

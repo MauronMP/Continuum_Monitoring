@@ -35,6 +35,12 @@ wellbeing en cloud/edge y shapes solo en cloud.
 
 ## Arranque y salud
 
+En un clon nuevo prepare primero Python e imágenes con
+`python3 tools/bootstrap.py --with-docker`. Para problemas de Ubuntu Server,
+permisos, Compose o descargas consulte [Instalación y diagnóstico](INSTALLATION.md).
+Solo cloud construye la imagen que comparten los cinco nodos; las imágenes
+del proyecto no se intentan descargar de Docker Hub.
+
 ```bash
 docker compose up -d --build
 docker compose ps

@@ -1,10 +1,9 @@
 name: continuum-benchmark
 
 x-node: &node
-  build:
-    context: .
-    dockerfile: docker/Dockerfile
   image: continuum-benchmark-node:latest
+  # A local project image, not an image published on Docker Hub.
+  pull_policy: never
   init: true
   restart: "no"
   cpus: "${CONTINUUM_NODE_CPUS:-1.0}"
@@ -15,11 +14,15 @@ x-node: &node
 services:
   cloud:
     <<: *node
+    # Build once for all five services; avoid concurrent exports to one tag.
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     hostname: cloud
     environment:
       CONTINUUM_ROLE: cloud
     ports:
-      - "8191:8080"
+      - "127.0.0.1:8191:8080"
 
   fog:
     <<: *node
@@ -27,7 +30,7 @@ services:
     environment:
       CONTINUUM_ROLE: fog
     ports:
-      - "8192:8080"
+      - "127.0.0.1:8192:8080"
 
   edge1:
     <<: *node
@@ -35,7 +38,7 @@ services:
     environment:
       CONTINUUM_ROLE: edge1
     ports:
-      - "8193:8080"
+      - "127.0.0.1:8193:8080"
 
   edge2:
     <<: *node
@@ -43,7 +46,7 @@ services:
     environment:
       CONTINUUM_ROLE: edge2
     ports:
-      - "8194:8080"
+      - "127.0.0.1:8194:8080"
 
   edge3:
     <<: *node
@@ -51,7 +54,7 @@ services:
     environment:
       CONTINUUM_ROLE: edge3
     ports:
-      - "8195:8080"
+      - "127.0.0.1:8195:8080"
 
 networks:
   continuum:

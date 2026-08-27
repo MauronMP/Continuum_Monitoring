@@ -32,7 +32,8 @@ núcleo común, wellbeing en cloud/edge y shapes solo en cloud.
 
 Requisitos previos:
 
-- Raspberry Pi OS de 32 bits con `python3`, `python3-venv`, `ssh` y `rsync`;
+- Raspberry Pi OS de 32 bits con Python >=3.11, `python3-venv`, `ssh`, `rsync`
+  y `procps`;
 - IP fija y puerto TCP 8391 accesible desde el Mac;
 - autenticación SSH por clave;
 - reloj sincronizado mediante NTP;
@@ -84,6 +85,9 @@ y homogeneizar Java 25 antes de añadir ese experimento.
 `deploy` usa `rsync --delete` exclusivamente dentro de los directorios
 release-owned `src`, `configs`, `ontology` y `queries`; así elimina consultas
 v2 obsoletas sin tocar `.venv-node`, `runtime`, logs ni el directorio padre.
+Primero comprueba todos los remotos sin modificar ficheros y rechaza rutas de
+despliegue amplias; después instala las versiones exactas de RDFLib, OWL-RL y
+PyParsing de `requirements-node.txt`. No instala paquetes del sistema con sudo.
 `stop` localiza el worker por ejecutable, rol y puerto, por lo que recupera un servicio
 si su fichero PID quedó obsoleto. `start` detecta servicios ya sanos y no crea
 una segunda instancia; al arrancar uno nuevo verifica que el PID escrito sea el

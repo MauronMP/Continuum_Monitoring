@@ -22,6 +22,10 @@ def _parser() -> argparse.ArgumentParser:
         help="TOML configuration file (default: configs/benchmark.toml)",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+    doctor = subparsers.add_parser("doctor", help="Read-only installation, Docker and SSH diagnostics")
+    doctor.add_argument("--docker", action="store_true")
+    doctor.add_argument("--physical", action="store_true")
+    doctor.add_argument("--json", action="store_true")
     subparsers.add_parser("validate", help="Run syntax, policy and reasoner checks")
     benchmark = subparsers.add_parser("benchmark", help="Run benchmark suites")
     benchmark.add_argument(
@@ -438,7 +442,19 @@ def _run_default_product_engines(
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    if args.command == "doctor":
+        from .environment import main as doctor_main
+        options = ["--root", str(Path(args.config).resolve().parents[1])]
+        options += [f"--{name}" for name in ("docker", "physical", "json") if getattr(args, name)]
+        return doctor_main(options)
     config = load_config(args.config)
+
+    if (
+        args.command == "benchmark" and not args.python_only
+        or args.command == "docker" and not args.topology_only
+    ):
+        from .engine_stack import preflight
+        preflight(config.root)
 
     if args.command == "validate":
         report = validate_project(config)

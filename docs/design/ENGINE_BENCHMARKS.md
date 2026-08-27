@@ -42,9 +42,18 @@ productos externos. `--keep-engine-services` deja los servicios arrancados para
 diagnóstico. El subcomando `engines` se conserva como interfaz avanzada para
 endpoints personalizados.
 
+Antes de ejecutar la parte Python, los comandos automáticos validan Docker,
+Compose y acceso al daemon. Prepare un clon nuevo con
+`python3 tools/bootstrap.py --with-docker`; para diagnosticar Ubuntu Server use
+`python3 tools/doctor.py --docker`. Los logs de build/arranque/cierre están en
+`outputs/runtime/setup/`, con el error original y sin cambiar permisos del host.
+Véase [instalación y diagnóstico](INSTALLATION.md).
+
 Los motores se ejecutan secuencialmente para evitar que compitan entre sí por
-CPU y memoria durante una medición. Todos tienen el mismo límite de 2 CPU y
-3 GiB. Antes de medir se ejecuta por defecto un warm-up por motor y dataset,
+CPU y memoria durante una medición. Todos tienen por defecto el mismo límite
+de 2 CPU y 3 GiB, configurable explícitamente mediante `.env.example`. El heap
+Java por defecto es `-Xms128m -Xmx2g`; no se cambian los límites automáticamente.
+Antes de medir se ejecuta por defecto un warm-up por motor y dataset,
 excluido de los CSV. Puede cambiarse con `--warmups N`; para una prueba puramente
 funcional y más rápida se admite `--warmups 0`. La terminal informa de warm-up,
 motor, régimen de inferencia, repetición, etapa/categoría o bloque/usuarios.

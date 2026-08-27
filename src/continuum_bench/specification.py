@@ -9,6 +9,7 @@ from rdflib.namespace import OWL
 
 from .queries import QueryMeasurement, QuerySpec
 from .reasoners import REASONING_CONTRACT
+from .environment import installed_versions
 
 
 EX = Namespace("http://example.org/smartcity#")
@@ -47,6 +48,7 @@ def release_identity() -> dict[str, Any]:
         "query_count": len(EXPECTED_QUERY_IDS),
         "policy_artifact": "POLICIES-REV-01",
         "reasoning_contract": REASONING_CONTRACT,
+        "runtime_versions": installed_versions(),
     }
 
 

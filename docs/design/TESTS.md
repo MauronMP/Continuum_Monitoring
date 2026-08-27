@@ -4,6 +4,11 @@ El proyecto distingue tres niveles: validación semántica, smoke automatizado y
 benchmark experimental. Esta separación evita usar una corrida científica larga
 como test de desarrollo.
 
+Para un clon nuevo use `python3 tools/bootstrap.py`. Antes de los smokes Docker
+use `python3 tools/doctor.py --docker` o prepare sus imágenes mediante
+`python3 tools/bootstrap.py --with-docker`. Las instrucciones de Ubuntu Server,
+WSL2, dependencias fijadas y workers están en [INSTALLATION.md](INSTALLATION.md).
+
 ## 1. Validación semántica
 
 ```bash

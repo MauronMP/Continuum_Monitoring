@@ -1,14 +1,12 @@
 name: continuum-semantic-engines
 
 x-python-engine: &python-engine
-  build:
-    context: .
-    dockerfile: docker/Dockerfile
   image: continuum-benchmark-node:latest
+  pull_policy: never
   init: true
   restart: "no"
-  cpus: "2.0"
-  mem_limit: 3g
+  cpus: "${CONTINUUM_ENGINE_CPUS:-2.0}"
+  mem_limit: "${CONTINUUM_ENGINE_MEMORY:-3g}"
   # Avoid periodic probe processes perturbing short timing samples. The
   # coordinator calls /health synchronously before every experiment.
   healthcheck:
@@ -25,45 +23,51 @@ x-python-engine: &python-engine
     - engines
 
 x-java-engine: &java-engine
-  build:
-    context: .
-    dockerfile: docker/engines/Dockerfile
   image: continuum-semantic-java-engines:latest
+  pull_policy: never
   init: true
   restart: "no"
-  cpus: "2.0"
-  mem_limit: 3g
+  cpus: "${CONTINUUM_ENGINE_CPUS:-2.0}"
+  mem_limit: "${CONTINUUM_ENGINE_MEMORY:-3g}"
   networks:
     - engines
 
 services:
   rdflib:
     <<: *python-engine
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     environment:
       CONTINUUM_ENGINE: rdflib
     ports:
-      - "8291:8080"
+      - "127.0.0.1:8291:8080"
 
   jena:
     <<: *java-engine
+    build:
+      context: .
+      dockerfile: docker/engines/Dockerfile
     environment:
       CONTINUUM_ENGINE: jena
+      JAVA_TOOL_OPTIONS: "${CONTINUUM_JAVA_OPTIONS:--Xms128m -Xmx2g}"
     ports:
-      - "8292:8080"
+      - "127.0.0.1:8292:8080"
 
   rdf4j:
     <<: *java-engine
     environment:
       CONTINUUM_ENGINE: rdf4j
+      JAVA_TOOL_OPTIONS: "${CONTINUUM_JAVA_OPTIONS:--Xms128m -Xmx2g}"
     ports:
-      - "8293:8080"
+      - "127.0.0.1:8293:8080"
 
   oxigraph:
     <<: *python-engine
     environment:
       CONTINUUM_ENGINE: oxigraph
     ports:
-      - "8294:8080"
+      - "127.0.0.1:8294:8080"
 
 networks:
   engines:

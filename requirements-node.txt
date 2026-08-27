@@ -1,3 +1,4 @@
 # Minimal pure-Python worker dependencies for 32-bit Raspberry Pi OS.
-owlrl>=7.1,<8
-rdflib>=7.1,<8
+owlrl==7.6.2
+rdflib==7.6.0
+pyparsing==3.3.2

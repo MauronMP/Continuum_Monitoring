@@ -88,7 +88,7 @@ def test_engine_discovery_requires_the_v3_service_protocol(monkeypatch):
         "http://oxigraph": ("oxigraph", "none"),
     }
 
-    def health(url, path):
+    def health(url, path, **kwargs):
         name, inference = names[url]
         return {
             "status": "ok",
@@ -111,7 +111,7 @@ def test_engine_discovery_rejects_a_legacy_service(monkeypatch):
     monkeypatch.setattr(
         engines,
         "_request",
-        lambda *args: {
+        lambda *args, **kwargs: {
             "status": "ok",
             "engine": "jena",
             "version": "legacy",
@@ -127,7 +127,7 @@ def test_engine_discovery_rejects_rdflib_without_datatype_correction(monkeypatch
     monkeypatch.setattr(
         engines,
         "_request",
-        lambda *args: {
+        lambda *args, **kwargs: {
             "status": "ok",
             "service": "continuum-semantic-engine",
             "protocol_version": "2",

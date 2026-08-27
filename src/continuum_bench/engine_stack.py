@@ -2,15 +2,23 @@
 
 from __future__ import annotations
 
-from contextlib import contextmanager
+import argparse
 import os
+import sys
+from contextlib import contextmanager
 from pathlib import Path
-import subprocess
 from time import monotonic, sleep
 from typing import Iterator
 
 from .engines import EngineEndpoint, discover
-
+from .environment import (
+    docker_checks,
+    docker_environment,
+    project_checks,
+    require_checks,
+    runtime_checks,
+)
+from .processes import run_logged
 
 DEFAULT_ENGINE_URLS = (
     "http://127.0.0.1:8291",
@@ -21,37 +29,48 @@ DEFAULT_ENGINE_URLS = (
 
 
 def _compose(root: Path, *arguments: str) -> None:
-    compose_file = root / "docker-compose.engines.yml"
-    environment = os.environ.copy()
-    docker_desktop_bin = Path(
-        "/Applications/Docker.app/Contents/Resources/bin"
+    timeout = float(os.environ.get("CONTINUUM_COMPOSE_TIMEOUT", "1200"))
+    run_logged(
+        [
+            "docker",
+            "compose",
+            "-f",
+            str(root / "docker-compose.engines.yml"),
+            *arguments,
+        ],
+        root=root,
+        environment=docker_environment(),
+        timeout=timeout if arguments and arguments[0] in {"build", "up"} else 60,
+        label="compose",
     )
-    if docker_desktop_bin.is_dir():
-        environment["PATH"] = (
-            f"{docker_desktop_bin}{os.pathsep}"
-            f"{environment.get('PATH', '')}"
-        )
-    try:
-        subprocess.run(
-            [
-                "docker",
-                "compose",
-                "-f",
-                str(compose_file),
-                *arguments,
-            ],
-            cwd=root,
-            env=environment,
-            check=True,
-        )
-    except FileNotFoundError as error:
-        raise RuntimeError(
-            "Docker is required for the automatic Jena/RDF4J engine tests"
-        ) from error
-    except subprocess.CalledProcessError as error:
-        raise RuntimeError(
-            "Docker Compose could not manage the semantic-engine stack"
-        ) from error
+
+
+def preflight(root: Path) -> None:
+    """Fail before spending time on Python benchmarks when Docker is unusable."""
+    checks = runtime_checks() + project_checks(root) + docker_checks(root)
+    for check in checks:
+        if check.status == "warning":
+            print(f"[engine-stack] warning={check.detail} {check.hint}", flush=True)
+    require_checks(checks)
+
+
+def prepare_images(root: Path, *, checked: bool = False) -> None:
+    if not checked:
+        preflight(root)
+    # Each pair shares an image. Building representatives once avoids parallel
+    # exports to the same tag and reduces load on small Ubuntu hosts.
+    _compose(root, "build", "rdflib")
+    _compose(root, "build", "jena")
+
+
+def _diagnose_startup(root: Path) -> None:
+    for arguments in (("ps", "-a"), ("logs", "--no-color", "--tail", "60")):
+        try:
+            _compose(root, *arguments)
+        except Exception as error:
+            print(
+                f"[engine-stack] diagnostics_error={error}", file=sys.stderr, flush=True
+            )
 
 
 def _ready(
@@ -62,7 +81,7 @@ def _ready(
     last_error: Exception | None = None
     while monotonic() < deadline:
         try:
-            return discover(urls)
+            return discover(urls, timeout=2.0)
         except Exception as error:  # Services cross a process boundary.
             last_error = error
             sleep(0.5)
@@ -93,14 +112,56 @@ def semantic_engine_stack(
             "[engine-stack] status=starting services=rdflib,jena,rdf4j,oxigraph",
             flush=True,
         )
-        _compose(root, "up", "-d", "--build")
-        started_here = True
-        _ready(urls)
+        preflight(root)
+        try:
+            prepare_images(root, checked=True)
+            _compose(root, "up", "-d", "--no-build")
+            started_here = True
+            _ready(urls)
+        except Exception as error:
+            _diagnose_startup(root)
+            error.add_note(
+                "Se conservan los servicios para diagnóstico. Los logs están en "
+                "outputs/runtime/setup/. No se han eliminado imágenes ni volúmenes. "
+                "Tras revisar, puede detener este stack con "
+                "'docker compose -f docker-compose.engines.yml down'."
+            )
+            raise
         print("[engine-stack] status=ready", flush=True)
 
+    primary_error: BaseException | None = None
     try:
         yield urls
+    except BaseException as error:
+        primary_error = error
+        raise
     finally:
         if started_here and not keep_running:
             print("[engine-stack] status=stopping", flush=True)
-            _compose(root, "down")
+            try:
+                _compose(root, "down")
+            except Exception as error:
+                if primary_error is None:
+                    error.add_note(
+                        "Las pruebas finalizaron; el fallo ocurrió al retirar los servicios Docker."
+                    )
+                    raise
+                primary_error.add_note(f"Además falló el cierre de Compose: {error}")
+                print(
+                    f"[engine-stack] cleanup_error={error}", file=sys.stderr, flush=True
+                )
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Prepare independent semantic-engine images without starting benchmarks."
+    )
+    parser.add_argument("action", choices=("prepare",))
+    parser.add_argument("--root", type=Path, default=Path.cwd())
+    args = parser.parse_args(argv)
+    prepare_images(args.root.resolve())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

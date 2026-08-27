@@ -1,0 +1,10 @@
+# Kept in sync with pyproject.toml by tests/test_installation.py.
+-c constraints.txt
+matplotlib
+numpy
+owlrl
+pyoxigraph
+pyshacl
+rdflib
+# Allows package installation without a network-dependent build environment.
+setuptools

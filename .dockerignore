@@ -1,5 +1,8 @@
 .git
 .venv
+.venv-node
+.cache
+.env
 .pytest_cache
 __pycache__
 *.pyc
@@ -10,4 +13,3 @@ outputs
 docs
 tests
 .DS_Store
-

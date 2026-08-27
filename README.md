@@ -30,10 +30,33 @@ determinan si una consulta pertenece al núcleo o al dominio.
 
 ## Instalación
 
+El coordinador necesita **Python >=3.11 de 64 bits**, Git y Linux/macOS.
+En Windows use WSL2. Docker Engine/Desktop con el plugin `docker compose`
+solo es necesario para los contenedores y los productos semánticos; Java y
+Maven se instalan dentro de sus imágenes, no en el host.
+
 ```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -e ".[dev]"
+# Diagnóstico antes de instalar paquetes (solo biblioteca estándar)
+python3 tools/doctor.py
+
+# Entorno local, versiones fijadas y comprobación de dependencias
+python3 tools/bootstrap.py
+
+# Para los smokes completos: comprobar Docker y preparar las imágenes
+python3 tools/doctor.py --docker
+python3 tools/bootstrap.py --with-docker
 ```
+
+En Ubuntu Server no basta con tener el cliente Docker: `docker info` debe
+funcionar con el mismo usuario y sin `sudo`. El instalador no cambia grupos,
+permisos del socket, repositorios APT ni servicios del sistema. La guía de
+[instalación y portabilidad](docs/design/INSTALLATION.md) explica el requisito
+administrativo inicial y los errores habituales.
+
+Los smokes comprueban Docker **antes** de ejecutar los benchmarks Python.
+Los fallos conservan comando, código de salida y últimas líneas del proceso;
+el log completo queda en `outputs/runtime/setup/`. Para comprobar solo Python
+sin Docker use los comandos `benchmark ... --python-only` descritos abajo.
 
 ## Validación
 
