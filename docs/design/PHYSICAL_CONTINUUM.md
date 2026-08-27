@@ -81,8 +81,10 @@ y homogeneizar Java 25 antes de añadir ese experimento.
 .venv/bin/continuum-bench physical stop --ssh-user SU_USUARIO
 ```
 
-`deploy` no usa `rsync --delete`: no elimina ficheros remotos. `stop` localiza
-el worker por ejecutable, rol y puerto, por lo que también recupera un servicio
+`deploy` usa `rsync --delete` exclusivamente dentro de los directorios
+release-owned `src`, `configs`, `ontology` y `queries`; así elimina consultas
+v2 obsoletas sin tocar `.venv-node`, `runtime`, logs ni el directorio padre.
+`stop` localiza el worker por ejecutable, rol y puerto, por lo que recupera un servicio
 si su fichero PID quedó obsoleto. `start` detecta servicios ya sanos y no crea
 una segunda instancia; al arrancar uno nuevo verifica que el PID escrito sea el
 del proceso Python y que siga vivo.
@@ -94,8 +96,9 @@ créela una sola vez con `ssh-keygen -t ed25519`.
 
 El puerto físico `8391` se mantiene separado del `8080` empleado por otros
 workers o despliegues Docker. El endpoint `/health` se acepta únicamente cuando
-identifica `service=continuum-benchmark-node`, la versión de protocolo esperada
-y el rol exacto del inventario; una respuesta genérica `status=ok` no basta.
+identifica `service=continuum-benchmark-node`, protocolo v5,
+`ontology_version=3.0.0`, `query_count=115` y el rol exacto del inventario; una
+respuesta genérica `status=ok` no basta.
 
 ## Ejecución replicada
 
@@ -162,7 +165,7 @@ La calibración:
 - queda registrada en `calibration_wall_ms_excluded` y `node-runs.csv`;
 - permite que cloud, fog y edges reciban cantidades distintas de consultas.
 
-Antes se repetía en cada repetición, añadiendo 69 consultas × 5 nodos sin que
+Antes se repetía en cada repetición, añadiendo 115 consultas × 5 nodos sin que
 ese coste apareciera en `total_wall_ms`. La reutilización elimina ese trabajo
 redundante y mantiene simétricas las repeticiones mediante la preparación
 independiente de calibración.

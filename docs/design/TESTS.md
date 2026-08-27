@@ -12,13 +12,24 @@ como test de desarrollo.
 
 Comprueba:
 
-- carga de los siete módulos Turtle;
-- catálogo sin IDs duplicados y presencia de los 69 `.rq`;
-- ejecución de las 69 consultas sobre el grafo de referencia;
+- carga de los 13 artefactos generados desde la fuente v3 más el módulo de
+  despliegue del benchmark (14 Turtle de ejecución; los dos shapes están
+  incluidos en ese conjunto);
+- catálogo sin IDs duplicados y presencia de los 115 `.rq`;
+- ejecución de las 115 consultas sobre el grafo de referencia;
+- contrato v3 de RF/RNF/RV, políticas, mecanismos y escenarios;
+- IDs desconocidos y cobertura observable: 102/116 requisitos y 69/79
+  políticas aparecen en la trazabilidad consulta-a-especificación;
 - expectativas `true`, `non_empty` y `zero_rows`;
-- conformidad de todas las shapes SHACL;
+- conformidad de todas las shapes SHACL (las advertencias de migración se
+  reportan, pero no se convierten en falsas violaciones);
 - materialización RDFS, OWL RL y RDFS+OWL RL;
-- ausencia de individuos tipados como `owl:Nothing`.
+- ausencia de individuos tipados como `owl:Nothing` y cero incumplimientos en
+  las 32 consultas `violation` tras cada materialización;
+- equivalencia de las 115 consultas entre monolito y fragmentación por
+  autoridad;
+- compatibilidad de protocolo, versión v3, catálogo y `reasoning_contract` en
+  workers Docker/físicos (al descubrirlos en los tests de integración).
 
 Un fallo devuelve código de salida distinto de cero.
 
@@ -33,8 +44,8 @@ materialización RDFS y resultados temporales. Verifica que:
 
 - las categorías se añaden en el orden configurado;
 - el número de consultas crece de forma monótona;
-- se ejecutan las catorce etapas;
-- la etapa final contiene exactamente los 69 IDs.
+- se ejecutan las dieciséis etapas;
+- la etapa final contiene exactamente los 115 IDs.
 
 ## 3. Smoke pytest de escalabilidad
 
@@ -47,8 +58,8 @@ y una materialización RDFS. Verifica que:
 
 - el número de triples aumenta con el volumen;
 - se conservan ambos bloques de datos;
-- cada bloque ejecuta exactamente las 69 consultas;
-- el CSV detallado contiene los 69 IDs para cada volumen.
+- cada bloque ejecuta exactamente las 115 consultas;
+- el CSV detallado contiene los 115 IDs para cada volumen.
 
 ## 4. Smoke medible acumulativo
 
@@ -70,26 +81,39 @@ referencia y añade:
 1. topology;
 2. semantic_schema;
 3. observability;
-4. decision;
-5. consent;
-6. contract_compliance;
-7. access_control;
-8. policy;
-9. migration;
-10. delegation;
-11. federation;
-12. privacy;
-13. context;
-14. wellbeing.
+4. identity_consent;
+5. data_lifecycle;
+6. security_identity;
+7. context_zones;
+8. trust;
+9. decision;
+10. policy_governance;
+11. adaptation;
+12. delegation;
+13. federation;
+14. audit_temporal;
+15. validation;
+16. wellbeing.
 
 Después ejecuta automáticamente el mismo acumulativo con Jena, RDF4J,
 RDFLib/OWL-RL y Oxigraph. El usuario no selecciona motores ni arranca su Compose.
 
+Si Docker no está disponible, la comprobación funcional local equivalente es:
+
+```bash
+.venv/bin/continuum-bench \
+  --config configs/smoke-cumulative.toml \
+  benchmark cumulative --python-only
+```
+
+Esta variante valida los tres perfiles RDFLib/OWL-RL, pero no sustituye la
+comparación entre productos del ejecutable `continuum-smoke-cumulative`.
+
 La terminal informa antes y después de cada etapa:
 
 ```text
-[cumulative] reasoner=owlrl repetition=1/1 stage=9/14
-category=migration cumulative_queries=52 status=running
+[cumulative] reasoner=owlrl repetition=1/1 stage=11/16
+category=adaptation cumulative_queries=84 status=running
 ```
 
 Salida:
@@ -118,14 +142,26 @@ Equivalente explícito:
 ```
 
 Genera bloques deterministas de 5 y 25 usuarios. Para cada volumen y cada uno de
-los tres perfiles locales ejecuta las 69 consultas. A continuación repite
+los tres perfiles locales ejecuta las 115 consultas. A continuación repite
 automáticamente los bloques en Jena, RDF4J, RDFLib/OWL-RL y Oxigraph.
+
+Cada volumen se reconstruye desde el mismo grafo base; `25` significa 25
+usuarios totales, no 5 anteriores más otros 25. Así cada punto es independiente,
+reproducible y no hereda cachés ni inferencias del bloque previo.
+
+Sin daemon Docker puede verificarse solo el pipeline Python con:
+
+```bash
+.venv/bin/continuum-bench \
+  --config configs/smoke-scalability.toml \
+  benchmark scalability --python-only
+```
 
 La terminal identifica el bloque y el razonador activo:
 
 ```text
 [scalability] block=2/2 users=25 reasoner=rdfs_owlrl
-repetition=1/1 queries=69 phase=reasoning status=running
+repetition=1/1 queries=115 phase=reasoning status=running
 ```
 
 Salida:
@@ -154,6 +190,16 @@ La suite adicional valida catálogo, consultas, preservación del monolito legad
 SHACL, los tres razonadores, determinismo del generador sintético, reconstrucción
 isomorfa de fragmentos, privacidad sintética y compatibilidad de los informes
 con resultados replicados o particionados.
+
+La regresión RDFS verifica que los booleanos no se sustituyen por enteros ni
+se mezclan idiomas, conservando equivalencias numéricas válidas. El camino
+N-Triples del servicio externo ejecuta las 115 consultas con 0, 5 y 25 usuarios
+en RDFLib y Oxigraph. EXT-Q68 se prueba también con datos deliberadamente
+inválidos para asegurar que sigue detectando incumplimientos reales:
+
+```bash
+.venv/bin/python -m pytest tests/test_reasoners.py tests/test_external_engines.py
+```
 
 Pruebas focalizadas de distribución e informes:
 
@@ -323,9 +369,9 @@ monolítica se ejecuta por defecto, fuera de los tiempos.
 ```
 
 En el acumulativo cada motor prepara una vez el grafo de referencia y ejecuta
-los conjuntos crecientes de 6 a 69 consultas en las 14 categorías. En
+los conjuntos crecientes de 4 a 115 consultas en las 16 categorías. En
 escalabilidad cada motor vuelve a preparar el grafo de cada bloque sintético y
-ejecuta las 69 consultas.
+ejecuta las 115 consultas.
 
 El comando falla si una expectativa funcional no se cumple o si los tres
 razonadores discrepan en el resultado observable. La cardinalidad exacta se
@@ -398,3 +444,9 @@ flujo distribuido.
   o utilización real de CPU.
 - Los tests pytest de distribución son locales y no sustituyen un smoke
   end-to-end con los cinco servicios.
+- Que el test termine correctamente prueba equivalencia funcional y produce
+  mediciones; no prueba por sí solo que cinco nodos sean más rápidos. El
+  speedup debe calcularse sobre el mismo release, dataset, razonador, consultas,
+  repeticiones y política de calentamiento.
+- El timeout es un resultado censurado, no una latencia ordinaria: debe
+  informarse junto con la tasa de timeouts y nunca descartarse del agregado.

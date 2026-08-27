@@ -1,33 +1,33 @@
-# ================================================================================================
-# Category: semantic_schema
-
-# Inventario de clases, propiedades e individuos clave creados en v2.1
-# Expectativa: Inspección. Debe devolver todos o casi todos los constructos de la extensión.
-
-PREFIX ex:   <http://example.org/smartcity#>
-PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+# Type: inventory
+# Purpose: Verificar versión de ontología y artefactos versionados asociados.
+# Requirements: RF-68, RNF-39, RV-01, RV-03
+# Policies: P-VAL-01, P-VAL-04
+# Current v3.0.0 result: 6 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl:  <http://www.w3.org/2002/07/owl#>
-PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
-PREFIX sh:   <http://www.w3.org/ns/shacl#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT ?construct ?type ?label
-WHERE {
-  VALUES ?construct {
-    ex:ConsentRange ex:SemanticContract ex:ProcessingPurpose
-    ex:hasSemanticContract ex:contractSubject ex:hasActiveConsentRange
-    ex:hasConsentRange ex:requiresConsentRange ex:hasProcessingPurpose
-    ex:hasTrustScore ex:hasTrustWeight
-    ex:hasLatencyWeight ex:hasPrivacyWeight ex:hasModelQualityWeight
-    ex:hasAHPScore ex:selectedModelTier ex:hasSelectionJustification
-    ex:PrivacyMechanism ex:DifferentialPrivacyMechanism ex:ModelGradientUpdate
-    ex:hasPrivacyBudget ex:noiseLevel ex:hasNoiseApplied ex:hasAnonymizationApplied
-    ex:Policy ex:PolicyType ex:hasPolicyType ex:governedBy ex:appliesPolicy
-    ex:DelegationEvent ex:hasDelegation ex:delegatedBy ex:triggeredByState
+SELECT ?ontology ?versionInfo ?versionIRI ?artifact ?artifactType ?identifier ?artifactVersion ?status WHERE {
+  VALUES ?ontology { <http://example.org/smartcity> }
+  OPTIONAL { ?ontology owl:versionInfo ?versionInfo }
+  OPTIONAL { ?ontology owl:versionIRI ?versionIRI }
+  OPTIONAL {
+    VALUES ?artifactType {
+      :OntologyArtifact :RequirementsArtifact :PolicyArtifact
+      :ScenarioArtifact :QueryCatalog :AcceptanceProfile
+    }
+    ?artifact a ?artifactType .
+    OPTIONAL { ?artifact :artifactIdentifier ?identifier }
+    OPTIONAL { ?artifact :artifactVersion ?artifactVersion }
+    OPTIONAL { ?artifact :artifactStatus ?status }
   }
-  OPTIONAL { ?construct a ?type . }
-  OPTIONAL { ?construct rdfs:label ?label . }
 }
-ORDER BY ?construct ?type
-
-# ------------------------------------------------------------------------------------------------
+ORDER BY ?artifactType ?artifact

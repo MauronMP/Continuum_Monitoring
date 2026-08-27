@@ -46,7 +46,7 @@ def test_cloud_and_fog_pass_synthetic_privacy_gate(config):
 
 def test_reference_links_to_private_objects_stay_at_their_authority(config):
     fragments = build_fragments(config, 0)
-    private_link = (EX.Eval_S5, EX.evaluatesNode, EX.MobileA)
+    private_link = (EX.Eval_S5, EX.evaluatesNode, EX.RingB)
     containing_roles = {
         role
         for role, graph in fragments.graphs.items()
@@ -66,7 +66,7 @@ def test_reference_links_to_private_objects_stay_at_their_authority(config):
     assert any("evaluatesNode" in violation for violation in violations)
 
 
-def test_q17_and_q19_edge_union_matches_monolith(config):
+def test_q17_and_q20_edge_union_matches_monolith(config):
     users = 10
     monolith = load_graph(
         config.resolve(path) for path in config.ontology_files
@@ -81,7 +81,7 @@ def test_q17_and_q19_edge_union_matches_monolith(config):
         )
     }
 
-    for query_id in ("BASE-Q17", "BASE-Q19"):
+    for query_id in ("BASE-Q17", "BASE-Q20"):
         expected = execute_query_detailed(monolith, specs[query_id])
         edge_results = [
             execute_query_detailed(fragments.graphs[role], specs[query_id])
@@ -112,10 +112,10 @@ def test_single_authority_queries_preserve_complete_bindings(config):
     }
 
     for query_id, role in (
-        ("BASE-Q22", "fog"),
-        ("BASE-Q33", "fog"),
+        ("BASE-Q19", "fog"),
+        ("BASE-Q33", "edge2"),
         ("EXT-Q03", "cloud"),
-        ("EXT-Q25", "cloud"),
+        ("EXT-Q80", "cloud"),
     ):
         expected = execute_query_detailed(monolith, specs[query_id])
         actual = execute_query_detailed(
@@ -140,7 +140,7 @@ def test_single_authority_aggregates_are_exact_without_synthetic_data(config):
     }
 
     for query_id, role in (
-        ("BASE-Q33", "fog"),
+        ("BASE-Q33", "edge2"),
         ("EXT-Q03", "cloud"),
     ):
         expected = execute_query_detailed(monolith, specs[query_id])
@@ -150,6 +150,39 @@ def test_single_authority_aggregates_are_exact_without_synthetic_data(config):
         )
 
         assert sorted(actual.result_keys) == sorted(expected.result_keys)
+
+
+def test_v3_execution_plan_preserves_all_monolithic_results(config):
+    """Every v3 query must keep its result under authority fragmentation."""
+
+    monolith = load_graph(
+        config.resolve(path) for path in config.ontology_files
+    )
+    fragments = build_fragments(config, 0)
+    specs = load_catalog(
+        config.resolve(config.query_catalog),
+        config.root,
+    )
+
+    for spec in specs:
+        expected = execute_query_detailed(monolith, spec)
+        roles = (
+            ("edge1", "edge2", "edge3")
+            if spec.execution_scope == "edges"
+            else (spec.execution_scope,)
+        )
+        parts = [
+            execute_query_detailed(fragments.graphs[role], spec)
+            for role in roles
+        ]
+        if spec.kind == "ask":
+            actual_ask = any(bool(part.measurement.ask_result) for part in parts)
+            assert actual_ask == expected.measurement.ask_result, spec.id
+        else:
+            actual_keys = {
+                key for part in parts for key in part.result_keys
+            }
+            assert actual_keys == set(expected.result_keys), spec.id
 
 
 def test_resource_aggregate_normalizes_equal_numeric_lexical_forms(config):

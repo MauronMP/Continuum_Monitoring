@@ -182,10 +182,15 @@ def deploy_cluster(
             )
         )
         for source in sources:
+            rsync_options = ["rsync", "-az"]
+            if source.is_dir():
+                # Deployment directories are release-owned. Mirroring them
+                # removes stale v2 query/category files without touching the
+                # worker runtime, virtualenv, logs or any parent directory.
+                rsync_options.append("--delete")
             _run(
                 [
-                    "rsync",
-                    "-az",
+                    *rsync_options,
                     "-e",
                     _RSYNC_SSH,
                     str(source),

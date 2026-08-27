@@ -1,13 +1,20 @@
 import csv
+import json
 from pathlib import Path
 
 import pytest
 
 from continuum_bench.compare import compare_suite
+from continuum_bench.specification import release_identity
 
 
 def _write(path: Path, rows: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    if path.name == "summary.csv":
+        (path.parent / "metadata.json").write_text(
+            json.dumps(release_identity()),
+            encoding="utf-8",
+        )
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
         writer.writeheader()

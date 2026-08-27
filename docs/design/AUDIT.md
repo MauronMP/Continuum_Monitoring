@@ -1,48 +1,66 @@
-# Auditoría de ontología, consultas y políticas
+# Auditoría de ontología, consultas y políticas v3.0.0
 
 ## Resultado
 
-La versión modular 2.3 queda validada con 69 consultas, SHACL, tres perfiles semánticos y
-tres implementaciones RDFS independientes: Jena, RDF4J y RDFLib/OWL-RL.
-Oxigraph actúa como control SPARQL sin inferencia. Los documentos conservan
-trazabilidad completa de RF-01..RF-71, RNF-01..RNF-75, P-01..P-84 y M-01..M-50.
+La migración modular contiene 7.938 triples lógicos, 115 consultas (103 core y
+12 de dominio), 16 categorías, 72 RF, 39 RNF, 5 RV, 79 políticas, 55 mecanismos
+y 17 escenarios. El catálogo enlaza cada consulta con finalidad, requisitos,
+políticas, resultado de referencia, autoridad, privacidad y estrategia de
+fusión.
 
-## Problemas corregidos
+La puerta estructural valida Turtle, inventarios, SPARQL, SHACL, ausencia de
+`owl:Nothing`, privacidad y reconstrucción distribuida. Jena, RDF4J y
+RDFLib/OWL-RL cubren RDFS; Oxigraph es control SPARQL sin inferencia.
 
-| Hallazgo | Cambio |
+## Cambios aplicados
+
+| Hallazgo | Cambio v3 |
 |---|---|
-| TBox, ABox, shapes y dominio estaban en un único TTL | Separación en núcleo, vocabularios, perfil de bienestar, shapes y ejemplos |
-| 69 consultas en un fichero difícil de mantener | Un `.rq` por consulta y catálogo validado |
-| Clasificación histórica BASE/EXT no distinguía núcleo y tema | Nueva clasificación ortogonal `core/domain` y catorce categorías funcionales |
-| Tres `ServiceState` incumplían RNF-67 por no tener `validFrom` | Se añadieron marcas temporales |
-| `NodeState_S2_Edge1` no estaba enlazado al nodo y activaba EXT-Q32 | Se añadió `EdgeNode1 hasNodeState NodeState_S2_Edge1` |
-| Requisitos usaban ocho nombres distintos de los implementados | Documentación alineada con las propiedades canónicas |
-| Pesos AHP mezclaban normalización de tres y cuatro criterios | Los cuatro pesos suman 1 y EXT-Q21 lo verifica |
-| Solo había una shape de privacidad FL | Shapes para temporalidad, contratos, políticas, trust, AHP, auditoría, delegación y gradientes |
-| No existía ejecución reproducible | CLI, configuraciones, semilla, CSV, hashes y gráficas |
-| Los perfiles dependían de una única implementación | Comparación automática con Jena, RDF4J, RDFLib/OWL-RL y control Oxigraph |
-| El continuum replicaba grafo y shapes completos | Placement híbrido por rol y fragmentación ABox por autoridad |
-| La equivalencia distribuida solo comparaba cardinalidad | Digest exacto del bag de bindings y tratamiento seguro de agregaciones |
-| Las relaciones hacia objetos privados podían replicarse | Cierre de autoridad por sujeto/objeto y proyecciones mediante allowlist |
+| Fuente monolítica difícil de desplegar | 13 artefactos derivados, módulo de despliegue del benchmark y perfiles de placement |
+| 115 consultas en una batería única | Un `.rq` por consulta y catálogo generado |
+| Trazabilidad documental no ejecutable | RF/RNF/RV y políticas se validan contra IDs RDF |
+| Routing únicamente por categoría | Alcance por consulta: cloud, fog, edges o edge concreto |
+| Bnodes OWL/SHACL se duplicaban entre nodos | Skolemización determinista al modularizar |
+| Datos personales podían ascender por enlaces | Propiedad por autoridad y proyecciones allowlist |
+| Agregados federados no componibles | Autoridad única para agregados; unión solo para resultados componibles |
+| Variantes numéricas RDFS producían falsos desacuerdos | Conjunto canónico de bindings y normalización numérica |
+| Shapes `xsd:string` rechazaban textos `@es` | `sh:or` para string/rdf:langString y rango `rdfs:Literal` |
+| Generador aún emitía consentimiento binario v2 | ABox sintético v3 con ConsentRecord, pseudónimo, contrato, autorización y DataContext |
+| `EXT-Q25` combinaba OPTIONAL, OR correlacionado y tipos abiertos | Reescritura estándar con VALUES, UNION y anti-joins acotados |
+| Workers antiguos podían mezclarse con v3 | Protocolo v5 con versión 3.0.0 y 115 consultas en `/health` |
 
-## Decisiones de modelado
+## Estado de aceptación
 
-- OWL/RDFS se usa para inferencia de mundo abierto.
-- SHACL y consultas `violation_*` se usan para cumplimiento de mundo cerrado.
-- Los IDs BASE/EXT permanecen por compatibilidad documental; no son la nueva
-  arquitectura de categorías.
-- `http://example.org/smartcity#` se conserva para no romper todos los datos y
-  consumidores existentes. Antes de publicar la ontología como estándar externo
-  debe reservarse una URI persistente y publicar una migración `owl:equivalent*`
-  versionada.
-- El consentimiento binario se mantiene solo como compatibilidad; las decisiones
-  nuevas se basan en `SemanticContract` y `ConsentRange`.
+SHACL no presenta violaciones; conserva 57 advertencias de migración relativas a
+parámetros de aceptación, puntuaciones AHP, ventanas de confianza y fechas. Las
+consultas `EXT-Q76` y `EXT-Q77` confirman que el perfil y la campaña aún no están
+completos. Por ello la validación estructural puede ser correcta, pero
+`scientific_acceptance.ready` y `compliance_claim_permitted` permanecen falsos.
 
-## Riesgos que deben medirse en fases posteriores
+Este comportamiento es intencionado: una consulta `violation` vacía no se usa
+como certificado sin superar primero `EXT-Q01`, `EXT-Q02`, `EXT-Q05`, `EXT-Q76`
+y `EXT-Q77`.
 
-- consumo energético, temperatura y coste monetario;
-- memoria/CPU del host y cgroup, además de la telemetría de proceso disponible;
-- diferencias entre materialización previa y razonamiento del endpoint;
-- consistencia de reloj entre máquinas;
-- equivalencia de límites entre contenedores y equipos físicos;
-- persistencia, índices y calentamiento de caché.
+## Cobertura de trazabilidad pendiente
+
+La batería suministrada referencia 102 de los 116 requisitos (87,93 %) y 69 de
+las 79 políticas (87,34 %). Los 14 requisitos y 10 políticas restantes están
+declarados y son válidos, pero no tienen una consulta asociada en los metadatos
+v3 recibidos. `validate` publica las listas exactas como
+`unreferenced_requirements` y `unreferenced_policies`; no las convierte en un
+fallo estructural ni permite afirmar cobertura SPARQL del 100 %.
+
+## Decisiones y límites
+
+- OWL/RDFS representa conocimiento abierto; SHACL y consultas `violation`
+  comprueban restricciones cerradas.
+- El namespace `example.org` debe migrarse a una URI persistente antes de
+  publicar la ontología como estándar externo.
+- La fragmentación implementada es authority-aware con TBox local, no un
+  endpoint SPARQL Federation genérico.
+- Las métricas de coste son proxies de tiempo/recursos; no sustituyen energía o
+  coste monetario medido.
+- Los resultados v2.x son históricos y no deben combinarse estadísticamente con
+  corridas v3.0.0.
+- La eliminación de artefactos v2 del árbol de trabajo no corrige esta deuda:
+  para cerrarla hay que diseñar y versionar nuevas consultas en la fuente v3.

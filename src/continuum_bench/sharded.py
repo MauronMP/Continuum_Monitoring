@@ -31,6 +31,7 @@ from .queries import (
     result_digest,
 )
 from .reasoners import materialize
+from .specification import release_identity
 from .synthetic import add_synthetic_data
 
 
@@ -50,6 +51,10 @@ def _sources(
         return fog
     if spec.execution_scope == "edges":
         return edges
+    if spec.execution_scope in {"edge1", "edge2", "edge3"}:
+        return [
+            item for item in edges if item.role == spec.execution_scope
+        ]
     if spec.execution_scope == "cloud_edges":
         return cloud + edges
     raise ValueError(
@@ -400,6 +405,7 @@ def _metadata(
     validate_results: bool,
 ) -> dict[str, Any]:
     return {
+        **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),
         "platform": platform.platform(),
@@ -412,7 +418,10 @@ def _metadata(
         "repetitions": config.repetitions,
         "seed": config.seed,
         "result_validation": validate_results,
-        "result_validation_level": "exact-order-independent-result-bag",
+        "result_validation_level": (
+            "exact-order-independent-canonical-result-set; numeric lexical "
+            "forms and duplicate solution rows are normalized"
+        ),
         "timing_excludes_monolith_validation": True,
         "ontology_placement_manifest": str(
             (config.root / "configs/ontology-placement.toml").resolve()
@@ -672,6 +681,7 @@ def export_fragments(
     fragments = build_fragments(config, users)
     paths = write_fragments(fragments, output_dir)
     manifest = {
+        **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "synthetic_users": users,
         "logical_triples": len(fragments.union()),

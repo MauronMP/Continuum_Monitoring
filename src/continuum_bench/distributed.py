@@ -18,6 +18,7 @@ from .config import BenchmarkConfig
 from .csv_utils import write_dict_rows
 from .protocol import worker_health_error
 from .queries import QuerySpec, by_categories, load_catalog
+from .specification import release_identity
 
 
 @dataclass(frozen=True)
@@ -27,18 +28,25 @@ class Endpoint:
 
 
 CLOUD_CATEGORIES = {
-    "topology",
     "semantic_schema",
     "decision",
-    "consent",
-    "contract_compliance",
-    "policy",
+    "policy_governance",
+    "validation",
 }
-FOG_CATEGORIES = {"migration", "delegation", "federation", "privacy"}
+FOG_CATEGORIES = {
+    "topology",
+    "data_lifecycle",
+    "trust",
+    "adaptation",
+    "delegation",
+    "federation",
+    "audit_temporal",
+}
 EDGE_CATEGORIES = {
     "observability",
-    "access_control",
-    "context",
+    "identity_consent",
+    "security_identity",
+    "context_zones",
     "wellbeing",
 }
 
@@ -219,6 +227,7 @@ def _metadata(
     suite: str,
 ) -> dict[str, Any]:
     return {
+        **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),
         "platform": platform.platform(),

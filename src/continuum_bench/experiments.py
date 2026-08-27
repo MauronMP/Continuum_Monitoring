@@ -26,6 +26,7 @@ from .experiment_config import ExperimentConfig, ReasoningProfile
 from .load_benchmark import _local_timeout
 from .node import NodeRuntime
 from .queries import QuerySpec, execute_query_detailed, load_catalog
+from .specification import release_identity
 from .sharded import (
     _assignment as sharded_assignment,
     _baseline_counts,
@@ -101,6 +102,7 @@ def _metadata(
             | {"url": endpoint.url}
         )
     return {
+        **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "experiment": experiment,
         "architecture": target,

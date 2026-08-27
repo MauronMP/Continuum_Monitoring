@@ -74,6 +74,10 @@ public final class EngineServer {
             Map.of(
                 "status",
                 "ok",
+                "service",
+                "continuum-semantic-engine",
+                "protocol_version",
+                "2",
                 "engine",
                 adapter.name(),
                 "version",

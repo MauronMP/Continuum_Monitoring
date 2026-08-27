@@ -1,0 +1,24 @@
+# Type: violation
+# Purpose: Comparar niveles de rango mediante orden explícito Denied=0, Local=1, Community=2, Global=3.
+# Requirements: RF-35, RF-36
+# Policies: P-CONS-04, P-GOV-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?authorization ?effective ?consentRange ?contractRange WHERE {
+  VALUES (?effective ?eLevel) { (:RangeDenied 0) (:RangeLocalOnly 1) (:RangeCommunityAgg 2) (:RangeGlobalAgg 3) }
+  VALUES (?consentRange ?cLevel) { (:RangeDenied 0) (:RangeLocalOnly 1) (:RangeCommunityAgg 2) (:RangeGlobalAgg 3) }
+  VALUES (?contractRange ?kLevel) { (:RangeDenied 0) (:RangeLocalOnly 1) (:RangeCommunityAgg 2) (:RangeGlobalAgg 3) }
+  ?authorization a :AuthorizationDecision ; :hasEffectiveConsentRange ?effective ; :basedOnConsentRecord/:hasConsentRange ?consentRange ; :basedOnContract/:hasConsentRange ?contractRange .
+  FILTER(?eLevel > ?cLevel || ?eLevel > ?kLevel)
+}

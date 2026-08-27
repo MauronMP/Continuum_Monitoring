@@ -11,7 +11,7 @@ def test_status_rejects_wrong_worker_contract(config, monkeypatch):
         "_request",
         lambda *args, **kwargs: {
             "status": "ok",
-            "protocol_version": "4",
+            "protocol_version": "5",
             "node_role": "edge",
             "build_id": "continuum-v5-contract",
         },

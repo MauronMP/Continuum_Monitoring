@@ -1,25 +1,24 @@
-# ================================================================================================
-
-PREFIX ex:   <http://example.org/smartcity#>
+# Type: inventory
+# Purpose: Comprobar la asociación usuario-dispositivo vestible.
+# Requirements: RF-01, RF-70
+# Policies: P-INT-02
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX saref:<https://saref.etsi.org/core/>
-PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl:  <http://www.w3.org/2002/07/owl#>
-PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
-PREFIX sh:   <http://www.w3.org/ns/shacl#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-# Q03 · List all wearables and their owners
-# Level   : Simple
-# Scenario: All (device–user relationship)
-# ----------------------------------------------------------------
-SELECT ?userName ?wearable ?wType
-WHERE {
-  ?user a ex:User .
-  ?user foaf:name ?userName .
-  ?user ex:hasWearable ?wearable .
-  ?wearable a ?wType .
-  ?wType rdfs:subClassOf ex:Wearable .
+SELECT ?user ?wearable ?wearableType WHERE {
+  ?user a :User ; :hasWearable ?wearable .
+  ?wearable a ?wearableType .
+  ?wearableType rdfs:subClassOf* :Wearable .
+  FILTER(?wearableType != :Wearable)
 }
-ORDER BY ?userName
+ORDER BY ?user ?wearable

@@ -7,7 +7,7 @@
     a owl:Ontology ;
     rdfs:label "Continuum deployment and fragmentation module"@en ;
     owl:imports <http://example.org/smartcity/modules/foundation> ;
-    owl:versionInfo "2.3.0" .
+    owl:versionInfo "3.0.0" .
 
 ex:DeploymentFragment a owl:Class ;
     rdfs:label "Deployment fragment"@en .

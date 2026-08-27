@@ -1,0 +1,26 @@
+# Type: inventory
+# Purpose: Inspeccionar distribución y ciclo de vida de modelos.
+# Requirements: RF-11, RF-12, RF-13, RF-24, RF-70
+# Policies: P-FL-08, P-MODEL-01
+# Current v3.0.0 result: 7 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?model ?tier ?version ?updated ?host ?supersedes WHERE {
+  ?model a :AIModel .
+  OPTIONAL { ?model :hasModelTier ?tier }
+  OPTIONAL { ?model :modelVersion ?version }
+  OPTIONAL { ?model :lastUpdated ?updated }
+  OPTIONAL { ?model :hostedOnNode ?host }
+  OPTIONAL { ?model :supersedesModel ?supersedes }
+}
+ORDER BY ?model

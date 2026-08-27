@@ -1,0 +1,24 @@
+# Type: violation
+# Purpose: Detectar selectedAlternative ausente, no elegible o cuyo tier no coincide con selectedModelTier.
+# Requirements: RF-51, RF-54
+# Policies: P-MODEL-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?selected ?selectedTier ?alternativeTier ?eligible ?reason WHERE {
+  ?evaluation a :EvaluationState ; :selectedModelTier ?selectedTier .
+  OPTIONAL { ?evaluation :selectedAlternative ?selected . OPTIONAL { ?selected :alternativeModelTier ?alternativeTier } OPTIONAL { ?selected :isEligible ?eligible } }
+  BIND(IF(!BOUND(?selected), "missing-selectedAlternative", IF(BOUND(?eligible) && ?eligible = false, "selected-not-eligible", IF(BOUND(?alternativeTier) && ?alternativeTier != ?selectedTier, "tier-mismatch", ""))) AS ?reason)
+  FILTER(?reason != "")
+}
+ORDER BY ?evaluation

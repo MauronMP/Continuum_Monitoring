@@ -7,32 +7,27 @@
 
 ex:CloudNode a owl:Class ;
     rdfs:label "Cloud Node" ;
-    rdfs:comment "Cloud node. Global model. Dynamic elasticity and scalability." ;
+    rdfs:comment "Cloud continuum node for global processing. Selection is conditional on authorization and policies; it is not intrinsically preferred." ;
     rdfs:subClassOf ex:ComputationalNode .
 
 ex:EdgeNode a owl:Class ;
     rdfs:label "Edge Node" ;
-    rdfs:comment "Edge node. Processes locally. No resource elasticity." ;
+    rdfs:comment "Edge continuum node. It is external to the local scope defined for raw physiological observations. Elasticity is a node capability, not a class invariant." ;
     rdfs:subClassOf ex:ComputationalNode .
 
 ex:FogNode a owl:Class ;
     rdfs:label "Fog Node" ;
-    rdfs:comment "Fog node. Aggregates community/zone data. No resource elasticity." ;
-    rdfs:subClassOf ex:ComputationalNode .
-
-ex:MistNode a owl:Class ;
-    rdfs:label "Mist Node" ;
-    rdfs:comment "Closest node to the user. Minimal capacity, very low latency." ;
+    rdfs:comment "Fog continuum node for community/zone processing. Elasticity depends on deployment capability and is not fixed by the class." ;
     rdfs:subClassOf ex:ComputationalNode .
 
 ex:MobileDevice a owl:Class ;
     rdfs:label "Mobile Device" ;
-    rdfs:comment "User smartphone. Acts as a personal Mist/Edge node." ;
+    rdfs:comment "User smartphone acting as a personal Mist node. It belongs to the local processing scope when associated with the user." ;
     rdfs:subClassOf ex:MistNode .
 
 ex:RestrictedZone a owl:Class ;
     rdfs:label "Restricted Zone" ;
-    rdfs:comment "No external internet. Internally centralized architecture (care home, hospital)." ;
+    rdfs:comment "Geographic zone with hard restrictions on external processing/transfer. Raw physiological observations remain on wearable/mobile or authorised personal Mist; Edge, Fog and Cloud are external to local scope." ;
     rdfs:subClassOf ex:CityArea .
 
 ex:RuralZone a owl:Class ;
@@ -54,6 +49,12 @@ ex:connectsTo a owl:ObjectProperty ;
     rdfs:label "connects to" ;
     rdfs:domain saref:Device ;
     rdfs:range ex:ComputationalNode .
+
+ex:continuumLevel a owl:DatatypeProperty ;
+    rdfs:label "continuum level" ;
+    rdfs:comment "Physical/logical continuum level only; not a preference or quality ranking." ;
+    rdfs:domain ex:ModelTier ;
+    rdfs:range xsd:integer .
 
 ex:coversArea a owl:ObjectProperty ;
     rdfs:label "covers area" ;
@@ -112,8 +113,9 @@ ex:relatesUser a owl:ObjectProperty ;
     rdfs:range ex:User .
 
 <http://example.org/smartcity/modules/topology> a owl:Ontology ;
+    rdfs:label "Continuum topology module"@en ;
     owl:imports <http://example.org/smartcity/modules/foundation> ;
-    owl:versionInfo "2.3.0" .
+    owl:versionInfo "3.0.0" .
 
 ex:Community a owl:Class ;
     rdfs:label "Community" ;
@@ -122,6 +124,11 @@ ex:Community a owl:Class ;
 ex:DistanceLevel a owl:Class ;
     rdfs:label "Distance Level" .
 
+ex:MistNode a owl:Class ;
+    rdfs:label "Mist Node" ;
+    rdfs:comment "Closest node to the user. Minimal capacity, very low latency." ;
+    rdfs:subClassOf ex:ComputationalNode .
+
 ex:PopulationDensity a owl:Class ;
     rdfs:label "Population Density" .
 
@@ -129,11 +136,20 @@ ex:UrbanEnvironment a owl:Class ;
     rdfs:label "Urban Environment" ;
     rdfs:comment "Geographic and density context that conditions system connectivity and behaviour." .
 
+geo:Geometry a owl:Class .
+
+geo:hasGeometry a owl:ObjectProperty .
+
 ex:NodeUserRelation a owl:Class ;
     rdfs:label "Node-User Relation" ;
-    rdfs:comment "Captures distance and connectivity between a node and a user at a given instant." .
+    rdfs:comment "Captures distance and connectivity between a node and a user at a given instant." ;
+    rdfs:subClassOf ex:TemporalEntity .
 
 ex:CityArea a owl:Class ;
     rdfs:label "City Area" ;
-    rdfs:subClassOf ex:GovernedResource,
-        ex:UrbanEnvironment .
+    rdfs:subClassOf ex:UrbanEnvironment .
+
+ex:ComputationalNode a owl:Class ;
+    rdfs:label "Computational Node" ;
+    rdfs:comment "Continuum architecture node capable of hosting models and processing data." ;
+    rdfs:subClassOf saref:Device .

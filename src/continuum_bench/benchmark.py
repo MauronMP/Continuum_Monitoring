@@ -16,6 +16,7 @@ from .csv_utils import write_dict_rows
 from .ontology import graph_digest, load_graph
 from .queries import QuerySpec, by_categories, execute_query, load_catalog
 from .reasoners import materialize
+from .specification import release_identity
 from .synthetic import add_synthetic_data
 
 
@@ -35,6 +36,7 @@ def _percentile95(values: list[float]) -> float:
 
 def _metadata(config: BenchmarkConfig, graph: Graph) -> dict[str, Any]:
     return {
+        **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),
         "platform": platform.platform(),

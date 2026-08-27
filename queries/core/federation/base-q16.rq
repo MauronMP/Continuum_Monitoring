@@ -1,41 +1,28 @@
-# ================================================================================================
-
-PREFIX ex:   <http://example.org/smartcity#>
+# Type: report
+# Purpose: Trazar sesiones FL ascendentes/descendentes, payload y privacidad.
+# Requirements: RF-21, RF-22, RF-25, RF-56, RF-58
+# Policies: P-FL-01, P-FL-03, P-FL-05, P-FL-07
+# Current v3.0.0 result: 3 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX saref:<https://saref.etsi.org/core/>
-PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl:  <http://www.w3.org/2002/07/owl#>
-PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
-PREFIX sh:   <http://www.w3.org/ns/shacl#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-# Q16 · SCENARIO 6 — Verify full federated learning chain
-# Level   : Intermediate
-# Scenario: 6
-# ----------------------------------------------------------------
-SELECT ?session ?sessionTime ?dataType ?involvedNode ?updatedModel ?modelVersion
-WHERE {
-  ?session a ex:FederatedLearningSession .
-  ?session ex:sessionTime ?sessionTime .
-  ?session ex:dataType ?dataType .
-  ?session ex:involvedNode ?involvedNode .
-  ?session ex:updatesModel ?updatedModel .
-  ?updatedModel ex:modelVersion ?modelVersion .
-  FILTER (?session IN (ex:FL_S6_EdgeToCloud, ex:FL_S6_DownloadToEdge))
+SELECT ?session ?payload ?model ?budget ?noise ?privacy ?personal ?individualized WHERE {
+  ?session a :FederatedLearningSession ; :partOfScenario :S6 .
+  OPTIONAL { ?session :hasPayloadType ?payload }
+  OPTIONAL { ?session :updatesModel ?model }
+  OPTIONAL { ?session :hasPrivacyBudget ?budget }
+  OPTIONAL { ?session :noiseLevel ?noise }
+  OPTIONAL { ?session :hasPrivacyMechanism ?privacy }
+  OPTIONAL { ?session :containsPersonalData ?personal }
+  OPTIONAL { ?session :containsIndividualizedGradients ?individualized }
 }
-ORDER BY ?session ?involvedNode
-
-# EXPECTED (multiple rows per session):
-# | session              | sessionTime       | dataType                   | involvedNode | updatedModel | modelVersion |
-# |----------------------|-------------------|----------------------------|--------------|--------------|--------------|
-# | FL_S6_DownloadToEdge | 04T04:00:00       | improved_model_parameters  | CloudNode1   | ModelEdge1   | 1.2.0        |
-# | FL_S6_DownloadToEdge | 04T04:00:00       | improved_model_parameters  | EdgeNode1    | ModelEdge1   | 1.2.0        |
-# | FL_S6_EdgeToCloud    | 04T03:00:00       | global_model_parameters    | CloudNode1   | ModelCloud1  | 2.1.0        |
-# | FL_S6_EdgeToCloud    | 04T03:00:00       | global_model_parameters    | EdgeNode1    | ModelCloud1  | 2.1.0        |
-# | FL_S6_EdgeToCloud    | 04T03:00:00       | global_model_parameters    | FogNode1     | ModelCloud1  | 2.1.0        |
-
-
-# ----------------------------------------------------------------
-
-# ------------------------------------------------------------------------------------------------
+ORDER BY ?session ?privacy

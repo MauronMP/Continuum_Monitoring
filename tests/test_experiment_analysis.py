@@ -3,10 +3,13 @@ import json
 
 from continuum_bench.csv_utils import write_dict_rows
 from continuum_bench.experiment_analysis import analyze_experiments
+from continuum_bench.specification import release_identity
 
 
 def _write_json(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
+    if path.name == "metadata.json":
+        value = {**release_identity(), **value}
     path.write_text(json.dumps(value), encoding="utf-8")
 
 

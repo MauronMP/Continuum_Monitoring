@@ -1,0 +1,34 @@
+# Type: review
+# Purpose: Comprobar parámetros necesarios para interpretar RNF cuantitativos antes de una campaña de aceptación.
+# Requirements: RNF-01, RNF-02, RNF-04, RNF-05, RNF-06, RNF-08, RNF-09, RNF-14, RNF-21, RNF-34
+# Policies: P-OPS-01, P-VAL-03
+# Current v3.0.0 result: 9 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?profile ?missing WHERE {
+  ?profile a :AcceptanceProfile .
+  VALUES (?prop ?missing) {
+    (:T_inference_local "T_inference_local")
+    (:T_migration_max "T_migration_max")
+    (:T_sparql_monitor "T_sparql_monitor")
+    (:T_decision_max "T_decision_max")
+    (:E_device_max "E_device_max")
+    (:N_agents "N_agents")
+    (:T_node_join "T_node_join")
+    (:D_delegation_max "D_delegation_max")
+    (:T_reselection_max "T_reselection_max")
+    (:AHP_consistency_threshold "AHP_consistency_threshold")
+  }
+  FILTER NOT EXISTS { ?profile ?prop ?v }
+}
+ORDER BY ?missing

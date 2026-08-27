@@ -1,4 +1,4 @@
-version = "1.0"
+version = "3.0.0"
 
 # The immutable schema is deliberately replicated: it is small, avoids remote
 # schema lookups during reasoning and lets every worker interpret its local

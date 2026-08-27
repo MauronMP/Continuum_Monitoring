@@ -1,0 +1,33 @@
+# Type: dashboard
+# Purpose: Resumir cobertura estructural y elementos pendientes antes de aceptación científica.
+# Requirements: RF-68, RF-71, RV-01, RV-05
+# Policies: P-VAL-08
+# Current v3.0.0 result: 13 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?metric ?value WHERE {
+  { BIND("functional_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :FunctionalRequirement } } }
+  UNION { BIND("nonfunctional_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :NonFunctionalRequirement } } }
+  UNION { BIND("validation_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :ValidationRequirement } } }
+  UNION { BIND("policies" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :Policy } } }
+  UNION { BIND("mechanisms" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :MechanismSpecification } } }
+  UNION { BIND("scenarios" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :Scenario } } }
+  UNION { BIND("policy_category_relations" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :PolicyCategoryRelation } } }
+  UNION { BIND("shacl_shapes" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a sh:NodeShape } } }
+  UNION { BIND("evaluations" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :EvaluationState } } }
+  UNION { BIND("alternatives_pending_recalculation" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?e :hasDecisionAlternative ?x . FILTER NOT EXISTS { ?x :hasAHPScore ?score } } } }
+  UNION { BIND("trust_assessments_incomplete" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :TrustAssessment . FILTER(!EXISTS { ?x :trustWindowStart ?ws } || !EXISTS { ?x :trustWindowEnd ?we } || !EXISTS { ?x :hasTrustEvidence ?ev }) } } }
+  UNION { BIND("acceptance_parameters_missing" AS ?metric) { SELECT (COUNT(?prop) AS ?value) WHERE { VALUES ?prop { :T_inference_local :T_migration_max :T_sparql_monitor :T_decision_max :E_device_max :N_agents :T_node_join :D_delegation_max :T_reselection_max :AHP_consistency_threshold } FILTER NOT EXISTS { ?p a :AcceptanceProfile ; ?prop ?v } } } }
+  UNION { BIND("query_specs_in_ontology" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :QuerySpecification } } }
+}
+ORDER BY ?metric

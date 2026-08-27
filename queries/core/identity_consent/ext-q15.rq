@@ -1,0 +1,26 @@
+# Type: violation
+# Purpose: Detectar dos contratos del mismo usuario y propósito con intervalos de vigencia solapados.
+# Requirements: RF-33, RNF-22
+# Policies: P-CONS-02
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?user ?purpose ?c1 ?c2 WHERE {
+  ?c1 a :SemanticContract ; :contractSubject ?user ; :hasProcessingPurpose ?purpose ; :validFrom ?f1 .
+  ?c2 a :SemanticContract ; :contractSubject ?user ; :hasProcessingPurpose ?purpose ; :validFrom ?f2 .
+  FILTER(STR(?c1) < STR(?c2))
+  OPTIONAL { ?c1 :validTo ?t1 }
+  OPTIONAL { ?c2 :validTo ?t2 }
+  FILTER((!BOUND(?t1) || ?f2 < ?t1) && (!BOUND(?t2) || ?f1 < ?t2))
+}
+ORDER BY ?user ?purpose

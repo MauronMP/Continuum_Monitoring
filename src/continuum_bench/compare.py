@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .csv_utils import write_dict_rows
+from .result_contract import require_release_metadata
 
 
 def _read(path: Path) -> list[dict[str, str]]:
@@ -58,6 +59,8 @@ def compare_suite(
     output_root: Path,
     node_count: int = 5,
 ) -> tuple[Path, Path]:
+    require_release_metadata(monolith_root / suite)
+    require_release_metadata(docker_root / suite)
     monolith_summary = _read(monolith_root / suite / "summary.csv")
     docker_summary = _read(docker_root / suite / "summary.csv")
     docker_by_key = {

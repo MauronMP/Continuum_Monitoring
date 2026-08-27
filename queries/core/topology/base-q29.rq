@@ -1,18 +1,21 @@
-# ================================================================================================
-
-PREFIX ex:   <http://example.org/smartcity#>
+# Type: ASK
+# Purpose: Comprobar que la elasticidad se modela como capacidad del nodo y no como propiedad fija exclusiva de Cloud.
+# Requirements: RNF-07
+# Policies: P-OPS-02
+# Current v3.0.0 result: true
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX saref:<https://saref.etsi.org/core/>
-PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl:  <http://www.w3.org/2002/07/owl#>
-PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
-PREFIX sh:   <http://www.w3.org/ns/shacl#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-# Q29 · ASK: Is the Cloud node elastic?
-# ----------------------------------------------------------------
 ASK {
-  ?node a ex:CloudNode .
-  ?node ex:hasElasticity "true"^^xsd:boolean .
+  ?node :hasElasticity true ; a ?type .
+  FILTER(?type IN (:FogNode, :CloudNode))
 }

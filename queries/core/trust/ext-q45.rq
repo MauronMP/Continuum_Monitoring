@@ -1,0 +1,34 @@
+# Type: violation
+# Purpose: Detectar MigrationEvent/DelegationEvent cuando existe un snapshot del destino en el mismo escenario y dicho snapshot demuestra inelegibilidad dura o menor trust que el origen comparable.
+# Requirements: RF-18, RF-48
+# Policies: P-ADAPT-04, P-ADAPT-07
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?action ?scenario ?origin ?target ?reason WHERE {
+  VALUES ?actionType { :MigrationEvent :DelegationEvent :OffloadingEvent }
+  ?action a ?actionType ; :actionOriginNode ?origin ; :actionTargetNode ?target ; :partOfScenario ?scenario .
+  ?target :hasNodeState ?ts . ?ts :partOfScenario ?scenario .
+  {
+    { ?ts :hasAvailability :NotAvailable } UNION { ?ts :hasCommunication :NoConnectionComm } UNION { ?ts :hasWorkload :SaturatedWorkload } UNION { ?ts :hasOperationalStatus :Inoperative }
+    BIND("target-hard-ineligible" AS ?reason)
+  }
+  UNION
+  {
+    ?origin :hasNodeState ?os . ?os :partOfScenario ?scenario ; :hasTrustAssessment/:hasTrustScore ?originTrust .
+    ?ts :hasTrustAssessment/:hasTrustScore ?targetTrust .
+    FILTER(?targetTrust < ?originTrust)
+    BIND("target-lower-trust" AS ?reason)
+  }
+}
+ORDER BY ?action ?reason

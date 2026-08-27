@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 import random
 
 from rdflib import Graph, Literal, Namespace, RDF, RDFS
-from rdflib.namespace import FOAF, XSD
+from rdflib.namespace import XSD
 from rdflib.term import Node
 
 EX = Namespace("http://example.org/smartcity#")
@@ -34,14 +34,17 @@ def iter_synthetic_triples(
     randomizer = random.Random(seed)
 
     nodes: list = []
+    node_states: list = []
     for node_index in range((users + 99) // 100):
         node = SYN[f"edge-{node_index:05d}"]
         state = SYN[f"node-state-{node_index:05d}"]
+        trust = SYN[f"trust-assessment-{node_index:05d}"]
         nodes.append(node)
+        node_states.append(state)
         yield node, RDF.type, EX.EdgeNode
         yield node, EX.hasElasticity, Literal(False)
         yield node, EX.hasNodeState, state
-        yield node, EX.governedBy, EX.TrustBasedNodeSelectionPolicy
+        yield node, EX.governedBy, EX["P-NODE-01"]
         yield state, RDF.type, EX.NodeState
         yield state, EX.hasAvailability, EX.Available
         yield state, EX.hasCommunication, EX.StableComm
@@ -56,11 +59,7 @@ def iter_synthetic_triples(
                 datatype=XSD.decimal,
             ),
         )
-        yield (
-            state,
-            EX.hasTrustWeight,
-            Literal("0.25", datatype=XSD.decimal),
-        )
+        yield state, EX.hasTrustAssessment, trust
         yield (
             state,
             EX.resourceUsagePercent,
@@ -68,6 +67,12 @@ def iter_synthetic_triples(
         )
         yield state, EX.queuedRequests, Literal(2, datatype=XSD.integer)
         yield state, EX.validFrom, _time(node_index)
+        yield trust, RDF.type, EX.TrustAssessment
+        yield trust, EX.trustAssessmentForState, state
+        yield trust, EX.hasTrustScore, Literal("0.90", datatype=XSD.decimal)
+        yield trust, EX.trustRuleVersion, Literal("SYN-TRUST-v3")
+        yield trust, EX.trustWindowStart, _time(node_index)
+        yield trust, EX.trustWindowEnd, _time(node_index + 1)
 
     ranges = (EX.RangeLocalOnly, EX.RangeCommunityAgg, EX.RangeGlobalAgg)
     for index in range(users):
@@ -76,21 +81,42 @@ def iter_synthetic_triples(
         device_state = SYN[f"device-state-{index:08d}"]
         user_state = SYN[f"user-state-{index:08d}"]
         observation = SYN[f"observation-{index:08d}"]
+        parametrized = SYN[f"parametrized-data-{index:08d}"]
+        data_context = SYN[f"data-context-{index:08d}"]
+        identifier = SYN[f"pseudonym-{index:08d}"]
+        consent_record = SYN[f"consent-record-{index:08d}"]
         contract = SYN[f"contract-{index:08d}"]
+        authorization = SYN[f"authorization-{index:08d}"]
         relation = SYN[f"relation-{index:08d}"]
         node = nodes[index % len(nodes)]
+        node_state = node_states[index % len(node_states)]
         consent_range = ranges[index % len(ranges)]
-        consent = EX.ConsentDenied if consent_range == EX.RangeLocalOnly else EX.ConsentGiven
 
         yield user, RDF.type, EX.User
-        yield user, FOAF.name, Literal(f"Synthetic participant {index}")
-        yield user, EX.anonymizedID, Literal(f"SYN-{index:08d}")
-        yield user, EX.hasConsent, consent
         yield user, EX.hasActiveConsentRange, consent_range
+        yield user, EX.hasIdentifier, identifier
+        yield user, EX.hasConsentRecord, consent_record
         yield user, EX.hasSemanticContract, contract
+        yield user, EX.hasAuthorizationDecision, authorization
         yield user, EX.hasWearable, wearable
         yield user, EX.hasUserState, user_state
-        yield user, EX.governedBy, EX.ConsentAwareProcessingPolicy
+        yield user, EX.locatedInZone, EX.CityCentreZone
+        yield user, EX.governedBy, EX["P-CONS-01"]
+
+        yield identifier, RDF.type, EX.PseudonymousIdentifier
+        yield identifier, EX.identifierValue, Literal(f"SYN-{index:08d}")
+        yield identifier, EX.identifierScope, Literal("benchmark-v3")
+
+        yield consent_record, RDF.type, EX.ConsentRecord
+        yield consent_record, EX.consentSubject, user
+        yield consent_record, EX.hasConsentRange, consent_range
+        yield consent_record, EX.hasProcessingPurpose, EX.PurposeLocalPrediction
+        yield (
+            consent_record,
+            EX.hasAuthorizedDataCategory,
+            EX.PhysiologicalParametrizedCategory,
+        )
+        yield consent_record, EX.validFrom, _time(index)
 
         yield wearable, RDF.type, EX.SmartWatch
         yield wearable, EX.hasDeviceState, device_state
@@ -110,12 +136,42 @@ def iter_synthetic_triples(
         yield observation, RDF.type, EX.StressObservation
         yield observation, SOSA.resultTime, _time(index + 20_000)
 
+        yield data_context, RDF.type, EX.DataContext
+        yield data_context, EX.contextDeviceState, device_state
+        yield data_context, EX.contextNodeState, node_state
+        yield data_context, EX.contextProcessingLevel, EX.FullProcessing
+        yield data_context, EX.contextZone, EX.CityCentreZone
+        yield data_context, EX.contextPurpose, EX.PurposeLocalPrediction
+        yield data_context, EX.validFrom, _time(index + 20_000)
+
+        yield parametrized, RDF.type, EX.PhysiologicalParametrizedData
+        yield parametrized, EX.generatedBy, wearable
+        yield (
+            parametrized,
+            EX.hasDataCategory,
+            EX.PhysiologicalParametrizedCategory,
+        )
+        yield parametrized, EX.hasDataContext, data_context
+        yield parametrized, EX.hasDataCriticality, EX.NormalPriorityData
+        yield parametrized, EX.hasDataSensitivity, EX.SensitiveData
+        yield parametrized, EX.isRedundant, Literal(False)
+        yield parametrized, EX.sendTimestamp, _time(index + 20_001)
+        yield parametrized, EX.sentToNode, node
+
         yield contract, RDF.type, EX.SemanticContract
         yield contract, EX.contractSubject, user
         yield contract, EX.hasConsentRange, consent_range
         yield contract, EX.hasProcessingPurpose, EX.PurposeLocalPrediction
-        yield contract, EX.governedBy, EX.ConsentAwareProcessingPolicy
+        yield contract, EX.governedBy, EX["P-CONS-02"]
         yield contract, EX.validFrom, _time(index)
+
+        yield authorization, RDF.type, EX.AuthorizationDecision
+        yield authorization, EX.basedOnZone, EX.CityCentreZone
+        yield authorization, EX.hasEffectiveConsentRange, consent_range
+        yield authorization, EX.hasAuthorizationOutcome, EX.AuthorizationGranted
+        yield authorization, EX.basedOnConsentRecord, consent_record
+        yield authorization, EX.basedOnContract, contract
+        yield authorization, EX.validFrom, _time(index)
 
         yield relation, RDF.type, EX.NodeUserRelation
         yield relation, EX.relatesNode, node

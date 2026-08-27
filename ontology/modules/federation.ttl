@@ -1,5 +1,6 @@
 @prefix ex: <http://example.org/smartcity#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -13,21 +14,35 @@ ex:aggregatesData a owl:ObjectProperty ;
     rdfs:domain ex:ComputationalNode ;
     rdfs:range ex:ParametrizedData .
 
-ex:dataType a owl:DatatypeProperty ;
-    rdfs:label "data type sent" ;
-    rdfs:comment "E.g.: model_parameters, gradients, parametrized_sleep_data." ;
+ex:budgetForContract a owl:ObjectProperty ;
+    rdfs:label "budget for contract" ;
+    rdfs:domain ex:PrivacyBudgetAccount ;
+    rdfs:range ex:SemanticContract .
+
+ex:budgetForPurpose a owl:ObjectProperty ;
+    rdfs:label "budget for purpose" ;
+    rdfs:domain ex:PrivacyBudgetAccount ;
+    rdfs:range ex:ProcessingPurpose .
+
+ex:containsIndividualizedGradients a owl:DatatypeProperty ;
+    rdfs:label "contains individualized gradients" ;
     rdfs:domain ex:FederatedLearningSession ;
-    rdfs:range xsd:string .
+    rdfs:range xsd:boolean .
 
 ex:hasAnonymizationApplied a owl:DatatypeProperty ;
     rdfs:label "has anonymization applied" ;
-    rdfs:domain ex:PrivacyProtectedResource ;
+    rdfs:domain ex:ParametrizedData ;
     rdfs:range xsd:boolean .
 
 ex:hasNoiseApplied a owl:DatatypeProperty ;
     rdfs:label "has noise applied" ;
-    rdfs:domain ex:PrivacyProtectedResource ;
+    rdfs:domain ex:ParametrizedData ;
     rdfs:range xsd:boolean .
+
+ex:hasPayloadType a owl:ObjectProperty ;
+    rdfs:label "has payload type" ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range ex:PayloadType .
 
 ex:hasPrivacyBudget a owl:DatatypeProperty ;
     rdfs:label "has privacy budget" ;
@@ -35,9 +50,14 @@ ex:hasPrivacyBudget a owl:DatatypeProperty ;
     rdfs:domain ex:FederatedLearningSession ;
     rdfs:range xsd:decimal .
 
+ex:hasPrivacyBudgetAccount a owl:ObjectProperty ;
+    rdfs:label "has privacy budget account" ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range ex:PrivacyBudgetAccount .
+
 ex:hasPrivacyMechanism a owl:ObjectProperty ;
     rdfs:label "has privacy mechanism" ;
-    rdfs:domain ex:PrivacyProtectedResource ;
+    rdfs:domain <urn:continuum:ontology:3.0.0:node:97> ;
     rdfs:range ex:PrivacyMechanism .
 
 ex:involvedNode a owl:ObjectProperty ;
@@ -51,11 +71,6 @@ ex:isRedundant a owl:DatatypeProperty ;
     rdfs:domain ex:ParametrizedData ;
     rdfs:range xsd:boolean .
 
-ex:modelVersion a owl:DatatypeProperty ;
-    rdfs:label "model version" ;
-    rdfs:domain ex:AIModel ;
-    rdfs:range xsd:string .
-
 ex:noiseLevel a owl:DatatypeProperty ;
     rdfs:label "noise level" ;
     rdfs:comment "Magnitude of noise injected into gradients or model parameters before transfer." ;
@@ -66,6 +81,21 @@ ex:originatesFromDevice a owl:ObjectProperty ;
     rdfs:label "originates from device" ;
     rdfs:domain ex:ParametrizedData ;
     rdfs:range ex:MobileDevice .
+
+ex:privacyBudgetConsumed a owl:DatatypeProperty ;
+    rdfs:label "privacy budget consumed" ;
+    rdfs:domain ex:PrivacyBudgetAccount ;
+    rdfs:range xsd:decimal .
+
+ex:privacyBudgetMaximum a owl:DatatypeProperty ;
+    rdfs:label "privacy budget maximum" ;
+    rdfs:domain ex:PrivacyBudgetAccount ;
+    rdfs:range xsd:decimal .
+
+ex:privacyBudgetRemaining a owl:DatatypeProperty ;
+    rdfs:label "privacy budget remaining" ;
+    rdfs:domain ex:PrivacyBudgetAccount ;
+    rdfs:range xsd:decimal .
 
 ex:sendTimestamp a owl:DatatypeProperty ;
     rdfs:label "send timestamp" ;
@@ -93,17 +123,27 @@ ex:updatesModel a owl:ObjectProperty ;
     rdfs:range ex:AIModel .
 
 <http://example.org/smartcity/modules/federation> a owl:Ontology ;
-    owl:imports
-        <http://example.org/smartcity/modules/foundation>,
+    rdfs:label "Continuum federated learning module"@en ;
+    owl:imports <http://example.org/smartcity/modules/foundation>,
         <http://example.org/smartcity/modules/governance>,
         <http://example.org/smartcity/modules/orchestration> ;
-    owl:versionInfo "2.3.0" .
+    owl:versionInfo "3.0.0" .
+
+ex:PayloadType a owl:Class ;
+    rdfs:label "Payload Type" .
+
+<urn:continuum:ontology:3.0.0:node:97> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:98> .
+
+<urn:continuum:ontology:3.0.0:node:98> rdf:first ex:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:99> .
+
+<urn:continuum:ontology:3.0.0:node:99> rdf:first ex:ParametrizedData ;
+    rdf:rest () .
+
+ex:PrivacyBudgetAccount a owl:Class ;
+    rdfs:label "Privacy Budget Account" .
 
 ex:FederatedLearningSession a owl:Class ;
     rdfs:label "Federated Learning Session" ;
-    rdfs:comment "Event of parameter/model transfer between continuum layers (HFL)." ;
-    rdfs:subClassOf ex:ConsentRequiredResource,
-        ex:ConsentScopedResource,
-        ex:GovernedResource,
-        ex:PrivacyProtectedResource,
-        ex:PurposeScopedResource .
+    rdfs:comment "Event of parameter/model transfer between continuum layers (HFL)." .

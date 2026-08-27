@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import combinations
 from time import perf_counter_ns
 from typing import Type
 
@@ -10,7 +11,43 @@ from owlrl import (
     RDFS_OWLRL_Semantics,
     RDFS_Semantics,
 )
-from rdflib import Graph
+from rdflib import Graph, Literal
+
+
+REASONING_CONTRACT = "rdfs-literal-value-space-v1"
+
+
+class DatatypeAwareRDFSSemantics(RDFS_Semantics):
+    """Keep RDFS literal substitution inside RDF literal value spaces.
+
+    OWL-RL's one-time RDFS rules compare ``Literal.value`` Python objects.
+    Python equates True/1 and False/0 and ignores language tags on strings;
+    those are not interchangeable RDF literals.  Use RDFLib's datatype- and
+    language-aware value equality instead, retaining numeric equivalences.
+    Override the public hook, not installed dependency files, so the same
+    correction runs in the monolith, Docker engines and physical workers.
+    """
+
+    def one_time_rules(self) -> None:
+        literals = {
+            value for value in self.graph.objects()
+            if isinstance(value, Literal)
+        }
+        for left, right in combinations(literals, 2):
+            # Cheap rejection before the more expensive RDF value comparison.
+            # Python equality is necessary here, never sufficient.
+            if left.value != right.value:
+                continue
+            try:
+                equal = left.eq(right) is True
+            except (TypeError, ValueError):
+                equal = False
+            if not equal:
+                continue
+            for subject, predicate in self.graph.subject_predicates(left):
+                self.store_triple((subject, predicate, right))
+            for subject, predicate in self.graph.subject_predicates(right):
+                self.store_triple((subject, predicate, left))
 
 
 @dataclass(frozen=True)
@@ -26,7 +63,7 @@ class ReasoningMeasurement:
 
 
 _PROFILES: dict[str, Type] = {
-    "rdfs": RDFS_Semantics,
+    "rdfs": DatatypeAwareRDFSSemantics,
     "owlrl": OWLRL_Semantics,
     "rdfs_owlrl": RDFS_OWLRL_Semantics,
 }
@@ -62,4 +99,3 @@ def materialize(source: Graph, reasoner: str) -> ReasoningMeasurement:
         input_triples=input_triples,
         output_triples=len(graph),
     )
-

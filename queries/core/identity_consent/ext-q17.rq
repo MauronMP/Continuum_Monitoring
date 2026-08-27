@@ -1,0 +1,28 @@
+# Type: report
+# Purpose: Mostrar autorización efectiva utilizada por cada evaluación.
+# Requirements: RF-35, RF-36, RF-66
+# Policies: P-CONS-04, P-GOV-03
+# Current v3.0.0 result: 8 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?authorization ?outcome ?effectiveRange ?record ?contract ?zone ?from WHERE {
+  ?evaluation a :EvaluationState ; :hasAuthorizationDecision ?authorization .
+  ?authorization a :AuthorizationDecision .
+  OPTIONAL { ?authorization :hasAuthorizationOutcome ?outcome }
+  OPTIONAL { ?authorization :hasEffectiveConsentRange ?effectiveRange }
+  OPTIONAL { ?authorization :basedOnConsentRecord ?record }
+  OPTIONAL { ?authorization :basedOnContract ?contract }
+  OPTIONAL { ?authorization :basedOnZone ?zone }
+  OPTIONAL { ?authorization :validFrom ?from }
+}
+ORDER BY ?evaluation

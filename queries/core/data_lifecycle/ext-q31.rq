@@ -1,0 +1,26 @@
+# Type: report
+# Purpose: Inspeccionar registros de buffer/retención cuando existan, incluyendo temporalidad y seguridad.
+# Requirements: RF-08, RNF-12
+# Policies: P-DATA-05, P-DATA-07
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?record ?type ?data ?from ?to ?security WHERE {
+  VALUES ?type { :BufferRecord :RetentionEvent }
+  ?record a ?type .
+  OPTIONAL { ?record :carriesData ?data }
+  OPTIONAL { ?record :validFrom ?from }
+  OPTIONAL { ?record :validTo ?to }
+  OPTIONAL { ?record :appliedSecurityMechanism ?security }
+}
+ORDER BY ?record

@@ -18,7 +18,8 @@ from rdflib import Graph
 import owlrl
 
 from .queries import QueryMeasurement
-from .reasoners import materialize
+from .reasoners import REASONING_CONTRACT, materialize
+from .engine_protocol import ENGINE_PROTOCOL_VERSION, ENGINE_SERVICE
 
 
 class ExternalRuntime:
@@ -134,9 +135,12 @@ class Handler(BaseHTTPRequestHandler):
             200,
             {
                 "status": "ok",
+                "service": ENGINE_SERVICE,
+                "protocol_version": ENGINE_PROTOCOL_VERSION,
                 "engine": runtime.engine,
                 "version": runtime.version,
                 "inference_profile": runtime.inference_profile,
+                "reasoning_contract": REASONING_CONTRACT,
             },
         )
 

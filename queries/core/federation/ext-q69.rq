@@ -1,0 +1,31 @@
+# Type: report
+# Purpose: Auditar presupuesto por sesión, propósito y contrato, incluyendo cuenta acumulada cuando esté disponible.
+# Requirements: RF-56, RF-59, RNF-18
+# Policies: P-FL-04
+# Current v3.0.0 result: 2 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?session ?budget ?noise ?account ?contract ?purpose ?maximum ?consumed ?remaining ?status WHERE {
+  ?session a :FederatedLearningSession .
+  OPTIONAL { ?session :hasPrivacyBudget ?budget }
+  OPTIONAL { ?session :noiseLevel ?noise }
+  OPTIONAL { ?session :hasPrivacyBudgetAccount ?account .
+    OPTIONAL { ?account :budgetForContract ?contract }
+    OPTIONAL { ?account :budgetForPurpose ?purpose }
+    OPTIONAL { ?account :privacyBudgetMaximum ?maximum }
+    OPTIONAL { ?account :privacyBudgetConsumed ?consumed }
+    OPTIONAL { ?account :privacyBudgetRemaining ?remaining }
+    OPTIONAL { ?account :configurationStatus ?status }
+  }
+}
+ORDER BY ?session

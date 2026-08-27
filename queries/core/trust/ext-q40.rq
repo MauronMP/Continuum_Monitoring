@@ -1,0 +1,29 @@
+# Type: report
+# Purpose: Listar estados de nodo y TrustAssessment separado de los pesos AHP.
+# Requirements: RF-45, RF-49, RNF-32
+# Policies: P-NODE-03, P-NODE-04
+# Current v3.0.0 result: 7 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?node ?state ?trustAssessment ?score ?ruleVersion ?windowStart ?windowEnd ?configStatus WHERE {
+  ?node :hasNodeState ?state . ?state a :NodeState .
+  OPTIONAL {
+    ?state :hasTrustAssessment ?trustAssessment .
+    OPTIONAL { ?trustAssessment :hasTrustScore ?score }
+    OPTIONAL { ?trustAssessment :trustRuleVersion ?ruleVersion }
+    OPTIONAL { ?trustAssessment :trustWindowStart ?windowStart }
+    OPTIONAL { ?trustAssessment :trustWindowEnd ?windowEnd }
+    OPTIONAL { ?trustAssessment :configurationStatus ?configStatus }
+  }
+}
+ORDER BY ?node ?state

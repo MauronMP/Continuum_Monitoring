@@ -1,4 +1,4 @@
-# Continuum Monitoring Ontology Benchmark
+# Continuum Monitoring Ontology Benchmark v3.0.0
 
 Proyecto modular para validar y medir una ontología de monitorización de sistemas
 en el computing continuum. El núcleo es independiente del dominio; el perfil de
@@ -13,7 +13,8 @@ bienestar (wearables, estrés y sueño) es una extensión opcional.
   estrés y sueño.
 - `ontology/shapes`: reglas SHACL de cumplimiento cerrado.
 - `ontology/examples`: ABox de referencia con escenarios reproducibles.
-- `queries/core` y `queries/domain`: 69 consultas separadas por categoría y tipo.
+- `queries/core` y `queries/domain`: 115 consultas separadas por categoría,
+  tipo y nivel (`core`/`domain`).
 - `queries/catalog.csv`: catálogo único, orden acumulativo, finalidad y
   expectativa de cada consulta.
 - `queries/execution-plan.toml`: autoridad, privacidad y selección de fuentes
@@ -23,8 +24,9 @@ bienestar (wearables, estrés y sueño) es una extensión opcional.
 - `docker-compose.engines.yml`: comparación aislada RDFLib/Jena/RDF4J/Oxigraph.
 - `docs/reference`: requisitos, políticas y documentación revisada.
 
-La batería conserva los IDs `BASE-Qxx` y `EXT-Qxx` para trazabilidad histórica,
-pero la clasificación canónica nueva es `tier + category`.
+La batería v3 conserva `BASE-Q01–BASE-Q35` y amplía `EXT-Q01–EXT-Q80`.
+La clasificación operativa es `tier + category`; los prefijos BASE/EXT no
+determinan si una consulta pertenece al núcleo o al dominio.
 
 ## Instalación
 
@@ -42,11 +44,25 @@ python3 -m venv .venv
 La validación exige:
 
 - carga correcta de todos los módulos Turtle;
-- ejecución de las 69 consultas;
-- cero resultados en consultas de incumplimiento;
+- contrato v3.0.0: 72 RF, 39 RNF, 5 RV, 79 políticas, 55 mecanismos y 17
+  escenarios;
+- ejecución de las 115 consultas con la cardinalidad/booleano de referencia;
+- cero resultados en consultas de incumplimiento, tanto en los datos
+  afirmados como después de cada materialización;
 - conformidad SHACL;
 - ausencia de instancias de `owl:Nothing` tras materializar con RDFS, OWL RL y
   el cierre combinado RDFS+OWL RL.
+
+Además informa de forma explícita la cobertura de trazabilidad del catálogo:
+102/116 requisitos y 69/79 políticas están referenciados por al menos una
+consulta. Los identificadores restantes existen en la ontología, pero no deben
+presentarse como cobertura SPARQL hasta ampliar la batería.
+
+`ok=true` acredita integridad estructural y reproducibilidad del artefacto. La
+salida separada `scientific_acceptance` impide interpretar las consultas de
+incumplimiento como certificación mientras `EXT-Q76` y `EXT-Q77` documenten
+parámetros/campañas pendientes. Consulte
+[migración v3](docs/design/MIGRATION_V3.md).
 
 ## Benchmarks
 
@@ -69,15 +85,21 @@ No es necesario indicar motores ni endpoints. Docker debe estar disponible.
 .venv/bin/python -m continuum_bench benchmark cumulative
 .venv/bin/python -m continuum_bench benchmark scalability
 
-# Smoke acumulativo: 14 etapas, 69 consultas finales, 3 perfiles
+# Smoke acumulativo: 16 etapas, 115 consultas finales, 3 perfiles
 .venv/bin/continuum-smoke-cumulative
 
-# Smoke de escalabilidad: bloques de 5 y 25 usuarios, 69 consultas, 3 perfiles
+# Smoke de escalabilidad: bloques de 5 y 25 usuarios, 115 consultas, 3 perfiles
 .venv/bin/continuum-smoke-scalability
 ```
 
+Los dos ejecutables `continuum-smoke-*` incluyen también Jena, RDF4J,
+RDFLib/OWL-RL y Oxigraph y, por tanto, requieren que el daemon de Docker esté
+activo. Para verificar únicamente el pipeline Python cuando Docker no está
+disponible use los comandos explícitos con `--python-only` documentados en
+[TESTS.md](docs/design/TESTS.md); esa variante no es un smoke multimotor.
+
 El test acumulativo añade categorías en el orden configurado y vuelve a ejecutar
-todo el conjunto acumulado. La última etapa siempre contiene las 69 consultas.
+todo el conjunto acumulado. La última etapa siempre contiene las 115 consultas.
 El test de escalabilidad añade bloques deterministas de usuarios y estados
 sintéticos y ejecuta toda la batería en cada volumen.
 
@@ -107,8 +129,14 @@ CPU, memoria, disco, red, recuperación y timeouts:
 .venv/bin/continuum-bench load plot --show
 ```
 
-Tras cambios del worker se debe ejecutar `docker compose up -d --build` y
-volver a desplegar/reiniciar el cluster físico. Consulte el
+Tras esta migración se debe ejecutar `docker compose up -d --build` y volver a
+desplegar/reiniciar el clúster físico. El protocolo v5 rechaza workers que no
+publiquen `ontology_version=3.0.0`, `query_count=115` y
+`reasoning_contract=rdfs-literal-value-space-v1`. Este último evita reutilizar
+el cierre RDFS anterior que mezclaba booleanos y enteros (fallo EXT-Q68).
+Las corridas previas a la corrección deben repetirse; consulte los
+[comandos de actualización Docker](docs/design/DOCKER_BENCHMARKS.md#actualización-tras-el-fallo-ext-q68)
+y el
 [benchmark de carga multidimensional](docs/design/LOAD_BENCHMARKS.md).
 Cuando ya existen resultados, `outputs/load/analysis/REPORT.md` resume la
 comparabilidad, los límites y los valores de referencia de la última corrida.
@@ -247,7 +275,6 @@ PNG de inspección y figuras vectoriales. Consulte
 [tres experimentos separados](docs/design/THREE_EXPERIMENTS.md),
 [taxonomía](docs/design/CATEGORIES.md),
 [Docker](docs/design/DOCKER_BENCHMARKS.md),
-[resultados de referencia](docs/design/RESULTS.md) y
 [auditoría](docs/design/AUDIT.md).
 
 ## Pruebas automatizadas separadas
@@ -360,8 +387,8 @@ Consulte la [guía del continuum físico](docs/design/PHYSICAL_CONTINUUM.md).
 | Físico particionado | `physical` | ABox por autoridad + perfiles | `outputs/physical/sharded/` |
 
 Cada comando de benchmark acepta `cumulative`, `scalability` o `all`. Las
-comparaciones nuevas verifican un digest independiente del orden que conserva
-la multiplicidad de los bindings, además de cardinalidad y ASK. Los CSV antiguos
+comparaciones nuevas verifican un digest independiente del orden sobre el
+conjunto canónico de bindings, además de cardinalidad y ASK. Los CSV antiguos
 sin digest usan el fallback `cardinality_ask`, indicado en
 `validation_level`; este fallback no prueba igualdad de bindings. Los costes por
 nodo son proxies de duración, no medidas de energía o coste monetario.

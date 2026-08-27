@@ -1,0 +1,22 @@
+# Type: violation
+# Purpose: Detectar TransferEvent con dato sensible sin mecanismo que declare protectsInTransit=true.
+# Requirements: RNF-15
+# Policies: P-DATA-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?transfer ?data WHERE {
+  ?transfer a :TransferEvent ; :carriesData ?data .
+  ?data :hasDataSensitivity :SensitiveData .
+  FILTER NOT EXISTS { ?transfer :appliedSecurityMechanism ?m . ?m :protectsInTransit true }
+}

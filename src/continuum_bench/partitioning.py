@@ -24,7 +24,6 @@ EDGE_ROLES = ("edge1", "edge2", "edge3")
 
 _SENSITIVE_CLASS_NAMES = {
     "User",
-    "MobileDevice",
     "Wearable",
     "SmartWatch",
     "SmartRing",
@@ -42,10 +41,30 @@ _SENSITIVE_CLASS_NAMES = {
     "PhysiologicalParametrizedData",
     "SleepParametrizedData",
     "ParametrizedData",
+    # Pseudonymous mobile compute identities may be shared under the v3 policy
+    # model. Raw/derived observations and personal context remain at their
+    # data-owner edge.
     "DeviceState",
     "UserState",
     "SemanticContract",
     "NodeUserRelation",
+    "ConsentRecord",
+    "AuthorizationDecision",
+    "Identifier",
+    "AnonymousIdentifier",
+    "PseudonymousIdentifier",
+    "DirectIdentifier",
+    "EvaluationState",
+    "DecisionAlternative",
+    "AdaptationAction",
+    "ModelSelectionAction",
+    "TransferEvent",
+    "DataContext",
+    "BufferRecord",
+    "RetentionEvent",
+    "DelegationEvent",
+    "ModelGradientUpdate",
+    "FederatedLearningSession",
 }
 _USER_COMPONENT_PREDICATES = {
     EX.hasWearable,
@@ -54,6 +73,22 @@ _USER_COMPONENT_PREDICATES = {
     EX.hasDeviceState,
     EX.derivedFrom,
     EX.hasSemanticContract,
+    EX.hasConsentRecord,
+    EX.consentSubject,
+    EX.hasIdentifier,
+    EX.evaluationUser,
+    EX.hasAuthorizationDecision,
+    EX.basedOnConsentRecord,
+    EX.hasDecisionAlternative,
+    EX.resultedInAction,
+    EX.hasDelegation,
+    EX.delegatedBy,
+    EX.transfersData,
+    EX.authorizedByEvaluation,
+    EX.hasDataContext,
+    EX.carriesData,
+    EX.transferSource,
+    EX.originatesFromDevice,
     EX.contractSubject,
     EX.generatedBy,
     EX.originatesFromDevice,
@@ -78,6 +113,8 @@ _GOVERNANCE_CONTRACT_PREDICATES = {
     EX.governedBy,
     EX.validFrom,
     EX.validTo,
+    EX.hasDecisionAlternative,
+    EX.hasAHPScore,
 }
 _CROSS_AUTHORITY_PROJECTION_PREDICATES = {
     # Evaluation tickets expose only a pseudonymous contract identifier.
@@ -95,6 +132,10 @@ _ALLOWED_SENSITIVE_PROJECTION_PREDICATES = {
     EX.hasProcessingPurpose,
     EX.validFrom,
     EX.validTo,
+    # Aggregated decision-quality evidence is projected without user identity
+    # so EXT-Q80 can remain a complete cloud-level validation query.
+    EX.hasDecisionAlternative,
+    EX.hasAHPScore,
     *_CROSS_AUTHORITY_PROJECTION_PREDICATES,
 }
 @dataclass(frozen=True)
@@ -283,6 +324,14 @@ def _add_reference_governance_projection(
             for predicate, object_ in reference.predicate_objects(subject):
                 if predicate in _GOVERNANCE_CONTRACT_PREDICATES:
                     target.add((subject, predicate, object_))
+        if EX.EvaluationState in types:
+            for predicate, object_ in reference.predicate_objects(subject):
+                if predicate in {RDF.type, EX.hasDecisionAlternative}:
+                    target.add((subject, predicate, object_))
+        if EX.DecisionAlternative in types:
+            for predicate, object_ in reference.predicate_objects(subject):
+                if predicate in {RDF.type, EX.hasAHPScore}:
+                    target.add((subject, predicate, object_))
 
 
 def _reference_fragments(
@@ -327,7 +376,7 @@ def _synthetic_owner(subject: object) -> str | None:
     if not text.startswith(SYNTHETIC_PREFIX):
         return None
     local = text[len(SYNTHETIC_PREFIX) :]
-    if local.startswith(("edge-", "node-state-")):
+    if local.startswith(("edge-", "node-state-", "trust-assessment-")):
         return "node-summary"
     match = re.search(r"-(\d+)$", local)
     return EDGE_ROLES[int(match.group(1)) % 3] if match else "cloud"

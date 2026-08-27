@@ -1,0 +1,3530 @@
+# SPARQL QUERY BATTERY — SMARTCITY CONTINUUM v3.0.0
+# Compatible con RDF/OWL/Turtle y SPARQL 1.1. Entorno de referencia: Apache Jena Fuseki.
+# Alineada con RF-01–RF-72, RNF-01–RNF-39, RV-01–RV-05, POLICIES-REV-01 y smartcity_continuum_v3.0.0.ttl.
+#
+# Familias:
+#   BASE-Q01–BASE-Q35 : inventario, operación, escenarios y agregados de continuidad.
+#   EXT-Q01–EXT-Q80   : validación v3 de trazabilidad, consentimiento, seguridad, zonas,
+#                       trust, decisión, adaptación, FL, auditoría y reproducibilidad.
+#
+# IMPORTANTE: una consulta violation_* con 0 filas solo es evidencia de cumplimiento
+# después de superar las precondiciones de EXT-Q01, EXT-Q02, EXT-Q05, EXT-Q76 y EXT-Q77.
+# Cada consulta es independiente; este fichero es un catálogo y no se ejecuta como una única sentencia SPARQL.
+
+
+# ==============================================================================
+# BASE — Operación, estructura y escenarios
+# ==============================================================================
+
+
+# START QUERY BASE-Q01: Usuarios, consentimiento activo e identificador externo
+# Type: inventory
+# Purpose: Inventariar usuarios y su rango de consentimiento activo sin recurrir al consentimiento binario heredado.
+# Requirements: RF-01, RF-32, RF-61, RF-70
+# Policies: P-CONS-01, P-DATA-02
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?name ?activeRange ?identifier ?identifierType WHERE {
+  ?user a :User .
+  OPTIONAL { ?user foaf:name ?name }
+  OPTIONAL { ?user :hasActiveConsentRange ?activeRange }
+  OPTIONAL {
+    ?user :hasIdentifier ?identifier .
+    ?identifier a ?identifierType .
+    FILTER(?identifierType IN (:PseudonymousIdentifier, :AnonymousIdentifier, :DirectIdentifier))
+  }
+}
+ORDER BY ?user
+# END QUERY BASE-Q01: Usuarios, consentimiento activo e identificador externo
+
+
+# START QUERY BASE-Q02: Nodos computacionales, tipo y elasticidad
+# Type: inventory
+# Purpose: Listar la infraestructura del continuum incluyendo nodos Mist, Edge, Fog y Cloud.
+# Requirements: RF-02, RF-05, RF-70
+# Policies: P-OPS-02, P-OPS-03
+# Current v3.0.0 result: 8 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?node ?nodeType ?elasticity WHERE {
+  ?node a ?nodeType .
+  ?nodeType rdfs:subClassOf* :ComputationalNode .
+  FILTER(?nodeType != :ComputationalNode)
+  OPTIONAL { ?node :hasElasticity ?elasticity }
+}
+ORDER BY ?node ?nodeType
+# END QUERY BASE-Q02: Nodos computacionales, tipo y elasticidad
+
+
+# START QUERY BASE-Q03: Wearables asociados a usuarios
+# Type: inventory
+# Purpose: Comprobar la asociación usuario-dispositivo vestible.
+# Requirements: RF-01, RF-70
+# Policies: P-INT-02
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?wearable ?wearableType WHERE {
+  ?user a :User ; :hasWearable ?wearable .
+  ?wearable a ?wearableType .
+  ?wearableType rdfs:subClassOf* :Wearable .
+  FILTER(?wearableType != :Wearable)
+}
+ORDER BY ?user ?wearable
+# END QUERY BASE-Q03: Wearables asociados a usuarios
+
+
+# START QUERY BASE-Q04: Modelos, tier, versión, host y linaje
+# Type: inventory
+# Purpose: Inspeccionar distribución y ciclo de vida de modelos.
+# Requirements: RF-11, RF-12, RF-13, RF-24, RF-70
+# Policies: P-FL-08, P-MODEL-01
+# Current v3.0.0 result: 7 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?model ?tier ?version ?updated ?host ?supersedes WHERE {
+  ?model a :AIModel .
+  OPTIONAL { ?model :hasModelTier ?tier }
+  OPTIONAL { ?model :modelVersion ?version }
+  OPTIONAL { ?model :lastUpdated ?updated }
+  OPTIONAL { ?model :hostedOnNode ?host }
+  OPTIONAL { ?model :supersedesModel ?supersedes }
+}
+ORDER BY ?model
+# END QUERY BASE-Q04: Modelos, tier, versión, host y linaje
+
+
+# START QUERY BASE-Q05: Sensores fisiológicos y dispositivo host
+# Type: inventory
+# Purpose: Validar la instrumentación fisiológica y la reutilización SOSA/SAREF.
+# Requirements: RF-06, RNF-25, RF-70
+# Policies: P-INT-01
+# Current v3.0.0 result: 5 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?sensor ?sensorType ?device WHERE {
+  ?sensor a ?sensorType .
+  ?sensorType rdfs:subClassOf* :PhysiologicalSensor .
+  FILTER(?sensorType != :PhysiologicalSensor)
+  OPTIONAL { ?device saref:consistsOf ?sensor }
+}
+ORDER BY ?device ?sensor
+# END QUERY BASE-Q05: Sensores fisiológicos y dispositivo host
+
+
+# START QUERY BASE-Q06: Roles y permisos RBAC
+# Type: inventory
+# Purpose: Inspeccionar roles, permisos y restricciones de consentimiento vinculadas al acceso.
+# Requirements: RF-37, RF-70
+# Policies: P-CONS-05
+# Current v3.0.0 result: 10 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?role ?permission ?requiredRange WHERE {
+  ?role a :Role .
+  OPTIONAL { ?role :hasPermission ?permission }
+  OPTIONAL { ?permission :requiresConsentRange ?requiredRange }
+}
+ORDER BY ?role ?permission
+# END QUERY BASE-Q06: Roles y permisos RBAC
+
+
+# START QUERY BASE-Q07: Estados de nodo y métricas operativas
+# Type: report
+# Purpose: Obtener carga, disponibilidad, comunicación, capacidad residual, recursos y trust actual asociado al estado.
+# Requirements: RF-05, RF-29, RF-45, RF-70
+# Policies: P-NODE-01, P-NODE-03, P-OPS-05
+# Current v3.0.0 result: 7 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?node ?state ?workload ?availability ?communication ?residual ?resourceUsage ?queued ?operational ?trust WHERE {
+  ?node :hasNodeState ?state .
+  ?state a :NodeState .
+  OPTIONAL { ?state :hasWorkload ?workload }
+  OPTIONAL { ?state :hasAvailability ?availability }
+  OPTIONAL { ?state :hasCommunication ?communication }
+  OPTIONAL { ?state :hasResidualCapacity ?residual }
+  OPTIONAL { ?state :resourceUsagePercent ?resourceUsage }
+  OPTIONAL { ?state :queuedRequests ?queued }
+  OPTIONAL { ?state :hasOperationalStatus ?operational }
+  OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
+}
+ORDER BY ?node ?state
+# END QUERY BASE-Q07: Estados de nodo y métricas operativas
+
+
+# START QUERY BASE-Q08: Nodos saturados, no disponibles o desconectados
+# Type: report
+# Purpose: Detectar estados no elegibles o críticos para selección/migración.
+# Requirements: RF-17, RF-47, RNF-12
+# Policies: P-NODE-01, P-NODE-02
+# Current v3.0.0 result: 2 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?node ?state ?workload ?availability ?communication ?operational WHERE {
+  ?node :hasNodeState ?state .
+  ?state a :NodeState .
+  OPTIONAL { ?state :hasWorkload ?workload }
+  OPTIONAL { ?state :hasAvailability ?availability }
+  OPTIONAL { ?state :hasCommunication ?communication }
+  OPTIONAL { ?state :hasOperationalStatus ?operational }
+  FILTER(
+    ?workload = :SaturatedWorkload ||
+    ?availability = :NotAvailable ||
+    ?communication = :NoConnectionComm ||
+    ?operational = :Inoperative
+  )
+}
+ORDER BY ?node
+# END QUERY BASE-Q08: Nodos saturados, no disponibles o desconectados
+
+
+# START QUERY BASE-Q09: Estados de usuario, movilidad y estrés
+# Type: report
+# Purpose: Monitorizar el contexto humano y sus estados temporales.
+# Requirements: RF-03, RF-30, RNF-35
+# Policies: P-GOV-05, P-OPS-05
+# Current v3.0.0 result: 6 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?state ?mobility ?stress ?personStatus ?from ?to WHERE {
+  ?user :hasUserState ?state .
+  ?state a :UserState .
+  OPTIONAL { ?state :hasMobility ?mobility }
+  OPTIONAL { ?state :hasPredictedStressLevel ?stress }
+  OPTIONAL { ?state :hasPersonStatus ?personStatus }
+  OPTIONAL { ?state :validFrom ?from }
+  OPTIONAL { ?state :validTo ?to }
+}
+ORDER BY ?user ?from
+# END QUERY BASE-Q09: Estados de usuario, movilidad y estrés
+
+
+# START QUERY BASE-Q10: Estado de dispositivos y puerta de transmisión
+# Type: report
+# Purpose: Inspeccionar batería, conectividad y disponibilidad de datos parametrizados.
+# Requirements: RF-04, RF-26, RF-27
+# Policies: P-DATA-04, P-DATA-06, P-DATA-07
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?device ?state ?battery ?connection ?dataReady ?from ?to WHERE {
+  ?user a :User .
+  { ?user :hasWearable ?device } UNION { ?user :hasMobileDevice ?device }
+  ?device :hasDeviceState ?state .
+  OPTIONAL { ?state :hasBatteryLevel ?battery }
+  OPTIONAL { ?state :hasConnectionStatus ?connection }
+  OPTIONAL { ?state :parametrizedDataReady ?dataReady }
+  OPTIONAL { ?state :validFrom ?from }
+  OPTIONAL { ?state :validTo ?to }
+}
+ORDER BY ?user ?device ?from
+# END QUERY BASE-Q10: Estado de dispositivos y puerta de transmisión
+
+
+# START QUERY BASE-Q11: Escenario S1 — operación normal
+# Type: report
+# Purpose: Validar la línea base de operación normal con evaluación y selección de modelo.
+# Requirements: RF-31, RF-72
+# Policies: P-VAL-07
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?node ?tier ?action ?profitability WHERE {
+  ?evaluation a :EvaluationState ; :partOfScenario :S1 .
+  OPTIONAL { ?evaluation :evaluatesNode ?node }
+  OPTIONAL { ?evaluation :selectedModelTier ?tier }
+  OPTIONAL { ?evaluation :resultedInAction ?action }
+  OPTIONAL { ?evaluation :hasProfitability ?profitability }
+}
+# END QUERY BASE-Q11: Escenario S1 — operación normal
+
+
+# START QUERY BASE-Q12: Escenario S2 — saturación y candidato Fog
+# Type: report
+# Purpose: Validar saturación Edge y disponibilidad de alternativa sin asumir automáticamente una migración.
+# Requirements: RF-17, RF-31
+# Policies: P-ADAPT-01, P-NODE-02
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?edgeState ?edgeTrust ?fogState ?fogTrust WHERE {
+  ?edgeState a :NodeState ; :partOfScenario :S2 ; :hasWorkload :SaturatedWorkload .
+  OPTIONAL { ?edgeState :hasTrustAssessment/:hasTrustScore ?edgeTrust }
+  ?fogState a :NodeState ; :partOfScenario :S2 ; :hasAvailability :Available .
+  OPTIONAL { ?fogState :hasTrustAssessment/:hasTrustScore ?fogTrust }
+}
+# END QUERY BASE-Q12: Escenario S2 — saturación y candidato Fog
+
+
+# START QUERY BASE-Q13: Escenario S3 — migración Edge → Fog
+# Type: report
+# Purpose: Validar que S3 se representa mediante MigrationEvent y no implica por sí mismo una sesión FL.
+# Requirements: RF-16, RF-17, RF-31
+# Policies: P-ADAPT-05, P-ADAPT-06
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?migration ?origin ?target ?service ?evaluation ?from ?to WHERE {
+  ?migration a :MigrationEvent ; :partOfScenario :S3 .
+  OPTIONAL { ?migration :actionOriginNode ?origin }
+  OPTIONAL { ?migration :actionTargetNode ?target }
+  OPTIONAL { ?migration :affectsService ?service }
+  OPTIONAL { ?migration :authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?migration :validFrom ?from }
+  OPTIONAL { ?migration :validTo ?to }
+}
+# END QUERY BASE-Q13: Escenario S3 — migración Edge → Fog
+
+
+# START QUERY BASE-Q14: Escenario S4 — fallo, delegación y degradación
+# Type: report
+# Purpose: Trazar fallo de nodo, delegación temporal y fallback/degradación.
+# Requirements: RF-17, RF-20, RF-62, RF-65
+# Policies: P-ADAPT-02, P-AUD-01, P-AUD-05
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?failedState ?symptom ?delegation ?target ?degradation ?evaluation WHERE {
+  ?failedState a :NodeState ; :partOfScenario :S4 .
+  OPTIONAL { ?evaluation a :EvaluationState ; :partOfScenario :S4 ; :hasDetectedSymptom ?symptom }
+  OPTIONAL { ?delegation a :DelegationEvent ; :partOfScenario :S4 ; :actionTargetNode ?target }
+  OPTIONAL { ?degradation a :DegradationEvent ; :partOfScenario :S4 }
+}
+# END QUERY BASE-Q14: Escenario S4 — fallo, delegación y degradación
+
+
+# START QUERY BASE-Q15: Escenario S5 — consentimiento local
+# Type: report
+# Purpose: Comprobar operación local autorizada para un usuario con RangeLocalOnly.
+# Requirements: RF-32, RF-36, RF-38
+# Policies: P-CONS-01, P-CONS-04, P-MODEL-06
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?activeRange ?authorization ?effectiveRange ?tier ?action WHERE {
+  ?evaluation a :EvaluationState ; :partOfScenario :S5 ; :evaluationUser ?user ; :hasAuthorizationDecision ?authorization ; :selectedModelTier ?tier .
+  ?user :hasActiveConsentRange ?activeRange .
+  ?authorization :hasEffectiveConsentRange ?effectiveRange .
+  OPTIONAL { ?evaluation :resultedInAction ?action }
+}
+# END QUERY BASE-Q15: Escenario S5 — consentimiento local
+
+
+# START QUERY BASE-Q16: Escenario S6 — aprendizaje federado protegido
+# Type: report
+# Purpose: Trazar sesiones FL ascendentes/descendentes, payload y privacidad.
+# Requirements: RF-21, RF-22, RF-25, RF-56, RF-58
+# Policies: P-FL-01, P-FL-03, P-FL-05, P-FL-07
+# Current v3.0.0 result: 3 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?session ?payload ?model ?budget ?noise ?privacy ?personal ?individualized WHERE {
+  ?session a :FederatedLearningSession ; :partOfScenario :S6 .
+  OPTIONAL { ?session :hasPayloadType ?payload }
+  OPTIONAL { ?session :updatesModel ?model }
+  OPTIONAL { ?session :hasPrivacyBudget ?budget }
+  OPTIONAL { ?session :noiseLevel ?noise }
+  OPTIONAL { ?session :hasPrivacyMechanism ?privacy }
+  OPTIONAL { ?session :containsPersonalData ?personal }
+  OPTIONAL { ?session :containsIndividualizedGradients ?individualized }
+}
+ORDER BY ?session ?privacy
+# END QUERY BASE-Q16: Escenario S6 — aprendizaje federado protegido
+
+
+# START QUERY BASE-Q17: Escenario S7 — zona rural y retención
+# Type: report
+# Purpose: Inspeccionar contexto rural, conectividad y acciones de retención/sincronización cuando existan.
+# Requirements: RF-08, RF-27, RF-31
+# Policies: P-ZONE-02, P-DATA-07
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?zone ?deviceState ?connection ?retention ?sync WHERE {
+  ?user a :User ; :locatedInZone ?zone .
+  ?zone a :RuralZone .
+  OPTIONAL { ?user (:hasWearable|:hasMobileDevice)/:hasDeviceState ?deviceState . ?deviceState :hasConnectionStatus ?connection }
+  OPTIONAL { ?retention a :RetentionEvent ; :partOfScenario :S7 }
+  OPTIONAL { ?sync a :SynchronizationEvent ; :partOfScenario :S7 }
+}
+# END QUERY BASE-Q17: Escenario S7 — zona rural y retención
+
+
+# START QUERY BASE-Q18: Escenario S8 — zona restringida y confinamiento local
+# Type: report
+# Purpose: Validar que el escenario restringido usa LocalModelTier y no Edge/Fog/Cloud para el procesamiento protegido.
+# Requirements: RF-42, RF-43, RF-60
+# Policies: P-ZONE-01, P-DATA-01
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?zone ?evaluation ?tier ?action WHERE {
+  ?evaluation a :EvaluationState ; :partOfScenario :S8 ; :evaluationUser ?user ; :evaluationZone ?zone ; :selectedModelTier ?tier .
+  OPTIONAL { ?evaluation :resultedInAction ?action }
+}
+# END QUERY BASE-Q18: Escenario S8 — zona restringida y confinamiento local
+
+
+# START QUERY BASE-Q19: Candidatos operativamente elegibles
+# Type: report
+# Purpose: Listar nodos con disponibilidad, comunicación, carga, capacidad y trust compatibles con selección.
+# Requirements: RF-18, RF-47, RF-48
+# Policies: P-NODE-02, P-NODE-05
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?node ?state ?workload ?availability ?communication ?residual ?trust WHERE {
+  ?node :hasNodeState ?state .
+  ?state :hasAvailability :Available ; :hasCommunication :StableComm ; :hasWorkload ?workload ; :hasResidualCapacity ?residual .
+  FILTER(?workload IN (:LowWorkload, :MediumWorkload))
+  FILTER(?residual IN (:MediumResidual, :HighResidual))
+  OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
+}
+ORDER BY DESC(?trust) ?node
+# END QUERY BASE-Q19: Candidatos operativamente elegibles
+
+
+# START QUERY BASE-Q20: Perfil semántico completo del usuario
+# Type: report
+# Purpose: Obtener usuario, dispositivos, zona, contrato, consentimiento y registro activo.
+# Requirements: RF-02, RF-33, RF-34, RF-70
+# Policies: P-CONS-02, P-CONS-03
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?name ?zone ?wearable ?mobile ?activeRange ?consentRecord ?contract WHERE {
+  ?user a :User .
+  OPTIONAL { ?user foaf:name ?name }
+  OPTIONAL { ?user :locatedInZone ?zone }
+  OPTIONAL { ?user :hasWearable ?wearable }
+  OPTIONAL { ?user :hasMobileDevice ?mobile }
+  OPTIONAL { ?user :hasActiveConsentRange ?activeRange }
+  OPTIONAL { ?user :hasConsentRecord ?consentRecord }
+  OPTIONAL { ?user :hasSemanticContract ?contract }
+}
+ORDER BY ?user
+# END QUERY BASE-Q20: Perfil semántico completo del usuario
+
+
+# START QUERY BASE-Q21: Resumen de EvaluationState y acción ejecutada
+# Type: report
+# Purpose: Resumir decisiones MAPE-K, tier, rentabilidad y acción resultante.
+# Requirements: RF-14, RF-15, RF-66
+# Policies: P-AUD-06, P-MODEL-05
+# Current v3.0.0 result: 11 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?scenario ?user ?node ?method ?tier ?profitability ?action ?from WHERE {
+  ?evaluation a :EvaluationState .
+  OPTIONAL { ?evaluation :partOfScenario ?scenario }
+  OPTIONAL { ?evaluation :evaluationUser ?user }
+  OPTIONAL { ?evaluation :evaluatesNode ?node }
+  OPTIONAL { ?evaluation :hasDecisionMethod ?method }
+  OPTIONAL { ?evaluation :selectedModelTier ?tier }
+  OPTIONAL { ?evaluation :hasProfitability ?profitability }
+  OPTIONAL { ?evaluation :resultedInAction ?action }
+  OPTIONAL { ?evaluation :validFrom ?from }
+}
+ORDER BY ?from ?evaluation
+# END QUERY BASE-Q21: Resumen de EvaluationState y acción ejecutada
+
+
+# START QUERY BASE-Q22: Modelos y eventos de degradación
+# Type: report
+# Purpose: Inspeccionar causas de degradación y acciones registradas.
+# Requirements: RF-20, RF-24
+# Policies: P-ADAPT-06, P-FL-08
+# Current v3.0.0 result: 3 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?model ?cause ?event ?service ?scenario WHERE {
+  { ?model a :AIModel ; :hasDegradationCause ?cause }
+  UNION
+  { ?event a :DegradationEvent . OPTIONAL { ?event :affectsModel ?model } OPTIONAL { ?event :affectsService ?service } OPTIONAL { ?event :hasDegradationCause ?cause } OPTIONAL { ?event :partOfScenario ?scenario } }
+}
+ORDER BY ?scenario ?model ?event
+# END QUERY BASE-Q22: Modelos y eventos de degradación
+
+
+# START QUERY BASE-Q23: Relaciones usuario–nodo y distancia
+# Type: report
+# Purpose: Inspeccionar asignación contextual entre usuarios y nodos.
+# Requirements: RF-02, RF-03, RF-18
+# Policies: P-NODE-02
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?relation ?user ?node ?distance ?preferred ?from ?to WHERE {
+  ?relation a :NodeUserRelation ; :relatesUser ?user ; :relatesNode ?node .
+  OPTIONAL { ?relation :hasDistance ?distance }
+  OPTIONAL { ?relation :isPreferredNode ?preferred }
+  OPTIONAL { ?relation :validFrom ?from }
+  OPTIONAL { ?relation :validTo ?to }
+}
+ORDER BY ?user ?from
+# END QUERY BASE-Q23: Relaciones usuario–nodo y distancia
+
+
+# START QUERY BASE-Q24: Cadena de aprendizaje federado
+# Type: report
+# Purpose: Trazar sesiones FL, nodos, payload, modelo, datos y presupuesto.
+# Requirements: RF-21, RF-22, RF-25, RF-59
+# Policies: P-FL-02, P-FL-04, P-FL-07
+# Current v3.0.0 result: 5 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?session ?scenario ?node ?payload ?model ?data ?budgetAccount ?budget ?noise WHERE {
+  ?session a :FederatedLearningSession .
+  OPTIONAL { ?session :partOfScenario ?scenario }
+  OPTIONAL { ?session :involvedNode ?node }
+  OPTIONAL { ?session :hasPayloadType ?payload }
+  OPTIONAL { ?session :updatesModel ?model }
+  OPTIONAL { ?session :transfersData ?data }
+  OPTIONAL { ?session :hasPrivacyBudgetAccount ?budgetAccount }
+  OPTIONAL { ?session :hasPrivacyBudget ?budget }
+  OPTIONAL { ?session :noiseLevel ?noise }
+}
+ORDER BY ?session ?node
+# END QUERY BASE-Q24: Cadena de aprendizaje federado
+
+
+# START QUERY BASE-Q25: Usuarios autorizados para FL global
+# Type: report
+# Purpose: Identificar usuarios cuya autorización efectiva permite RangeGlobalAgg para propósito federado global.
+# Requirements: RF-21, RF-32, RF-36
+# Policies: P-CONS-04, P-FL-02
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?user ?authorization ?effectiveRange ?contract WHERE {
+  ?authorization a :AuthorizationDecision ; :hasEffectiveConsentRange :RangeGlobalAgg ; :basedOnContract ?contract .
+  ?evaluation a :EvaluationState ; :hasAuthorizationDecision ?authorization ; :evaluationUser ?user ; :evaluationPurpose :PurposeGlobalFederatedLearning .
+}
+ORDER BY ?user
+# END QUERY BASE-Q25: Usuarios autorizados para FL global
+
+
+# START QUERY BASE-Q26: ASK — existe algún nodo saturado
+# Type: ASK
+# Purpose: Comprobación rápida de saturación.
+# Requirements: RF-05, RF-29
+# Policies: P-NODE-01
+# Current v3.0.0 result: true
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+ASK { ?state a :NodeState ; :hasWorkload :SaturatedWorkload . }
+# END QUERY BASE-Q26: ASK — existe algún nodo saturado
+
+
+# START QUERY BASE-Q27: ASK — existe degradación registrada
+# Type: ASK
+# Purpose: Comprobación rápida de existencia de degradación de modelo/servicio.
+# Requirements: RF-20
+# Policies: P-ADAPT-06
+# Current v3.0.0 result: true
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+ASK { { ?event a :DegradationEvent } UNION { ?model a :AIModel ; :hasDegradationCause ?cause } }
+# END QUERY BASE-Q27: ASK — existe degradación registrada
+
+
+# START QUERY BASE-Q28: ASK — existe transferencia externa que viole confinamiento o identidad
+# Type: ASK
+# Purpose: Detectar de forma rápida una transferencia externa de observación cruda o con identificador directo/no seguro.
+# Requirements: RF-36, RF-60, RF-61
+# Policies: P-CONS-04, P-DATA-04
+# Current v3.0.0 result: false
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+ASK {
+  ?transfer a :TransferEvent ; :transferDestination ?dest ; :carriesData ?data .
+  ?dest a ?destType .
+  FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
+  { ?data a ?rawType . FILTER(?rawType IN (:PhysiologicalObservation,:SleepObservation)) }
+  UNION
+  { ?transfer :usesIdentifier ?id . ?id a :DirectIdentifier }
+  UNION
+  { FILTER NOT EXISTS { ?transfer :usesIdentifier ?safe . ?safe a ?safeType . FILTER(?safeType IN (:PseudonymousIdentifier,:AnonymousIdentifier)) } }
+}
+# END QUERY BASE-Q28: ASK — existe transferencia externa que viole confinamiento o identidad
+
+
+# START QUERY BASE-Q29: ASK — existe capacidad elástica en Fog o Cloud
+# Type: ASK
+# Purpose: Comprobar que la elasticidad se modela como capacidad del nodo y no como propiedad fija exclusiva de Cloud.
+# Requirements: RNF-07
+# Policies: P-OPS-02
+# Current v3.0.0 result: true
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+ASK {
+  ?node :hasElasticity true ; a ?type .
+  FILTER(?type IN (:FogNode, :CloudNode))
+}
+# END QUERY BASE-Q29: ASK — existe capacidad elástica en Fog o Cloud
+
+
+# START QUERY BASE-Q30: ASK — existe sesión FL con Cloud
+# Type: ASK
+# Purpose: Confirmar existencia de aprendizaje federado global.
+# Requirements: RF-22
+# Policies: P-FL-01
+# Current v3.0.0 result: true
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+ASK { ?session a :FederatedLearningSession ; :involvedNode ?cloud . ?cloud a :CloudNode . }
+# END QUERY BASE-Q30: ASK — existe sesión FL con Cloud
+
+
+# START QUERY BASE-Q31: Conteo de usuarios por rango activo
+# Type: dashboard
+# Purpose: Agregar usuarios por rango de consentimiento activo.
+# Requirements: RF-32, RF-68
+# Policies: P-CONS-01
+# Current v3.0.0 result: 3 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?range (COUNT(DISTINCT ?user) AS ?users) WHERE {
+  ?user a :User ; :hasActiveConsentRange ?range .
+}
+GROUP BY ?range
+ORDER BY ?range
+# END QUERY BASE-Q31: Conteo de usuarios por rango activo
+
+
+# START QUERY BASE-Q32: Conteo de modelos por tier
+# Type: dashboard
+# Purpose: Resumir distribución de modelos por tier.
+# Requirements: RF-13, RF-68
+# Policies: P-MODEL-01
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?tier (COUNT(DISTINCT ?model) AS ?models) WHERE {
+  ?model a :AIModel ; :hasModelTier ?tier .
+}
+GROUP BY ?tier
+ORDER BY ?tier
+# END QUERY BASE-Q32: Conteo de modelos por tier
+
+
+# START QUERY BASE-Q33: Uso medio de recursos por tipo de nodo
+# Type: dashboard
+# Purpose: Calcular uso medio de recursos por tipo de nodo en estados instrumentados.
+# Requirements: RF-29, RNF-27
+# Policies: P-OPS-05
+# Current v3.0.0 result: 5 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?nodeType (AVG(?usage) AS ?avgUsage) (COUNT(?state) AS ?samples) WHERE {
+  ?node :hasNodeState ?state ; a ?nodeType .
+  ?state :resourceUsagePercent ?usage .
+  ?nodeType rdfs:subClassOf* :ComputationalNode .
+}
+GROUP BY ?nodeType
+ORDER BY ?nodeType
+# END QUERY BASE-Q33: Uso medio de recursos por tipo de nodo
+
+
+# START QUERY BASE-Q34: Nodos que cubren zonas restringidas
+# Type: report
+# Purpose: Inventariar infraestructura geográficamente asociada a RestrictedZone sin asumir que esté autorizada para procesar datos protegidos.
+# Requirements: RF-42, RF-43
+# Policies: P-ZONE-01
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?node ?zone WHERE {
+  ?zone a :RestrictedZone .
+  ?node :coversArea ?zone .
+}
+ORDER BY ?zone ?node
+# END QUERY BASE-Q34: Nodos que cubren zonas restringidas
+
+
+# START QUERY BASE-Q35: Cadena de fallo → evaluación → acción
+# Type: report
+# Purpose: Reconstruir decisiones asociadas a síntomas/fallos y su acción adaptativa final.
+# Requirements: RF-20, RF-65, RF-67
+# Policies: P-AUD-05, P-AUD-07
+# Current v3.0.0 result: 86 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?scenario ?symptom ?node ?policy ?action ?actionType WHERE {
+  ?evaluation a :EvaluationState ; :hasDetectedSymptom ?symptom ; :resultedInAction ?action .
+  OPTIONAL { ?evaluation :partOfScenario ?scenario }
+  OPTIONAL { ?evaluation :evaluatesNode ?node }
+  OPTIONAL { ?evaluation :appliedPolicy ?policy }
+  OPTIONAL { ?action a ?actionType . FILTER(?actionType != owl:NamedIndividual) }
+}
+ORDER BY ?scenario ?evaluation ?policy
+# END QUERY BASE-Q35: Cadena de fallo → evaluación → acción
+
+
+# ==============================================================================
+# EXT v3 — Inventario, artefactos y trazabilidad
+# ==============================================================================
+
+
+# START QUERY EXT-Q01: Inventario de versión y artefactos v3
+# Type: inventory
+# Purpose: Verificar versión de ontología y artefactos versionados asociados.
+# Requirements: RF-68, RNF-39, RV-01, RV-03
+# Policies: P-VAL-01, P-VAL-04
+# Current v3.0.0 result: 6 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?ontology ?versionInfo ?versionIRI ?artifact ?artifactType ?identifier ?artifactVersion ?status WHERE {
+  VALUES ?ontology { <http://example.org/smartcity> }
+  OPTIONAL { ?ontology owl:versionInfo ?versionInfo }
+  OPTIONAL { ?ontology owl:versionIRI ?versionIRI }
+  OPTIONAL {
+    VALUES ?artifactType {
+      :OntologyArtifact :RequirementsArtifact :PolicyArtifact
+      :ScenarioArtifact :QueryCatalog :AcceptanceProfile
+    }
+    ?artifact a ?artifactType .
+    OPTIONAL { ?artifact :artifactIdentifier ?identifier }
+    OPTIONAL { ?artifact :artifactVersion ?artifactVersion }
+    OPTIONAL { ?artifact :artifactStatus ?status }
+  }
+}
+ORDER BY ?artifactType ?artifact
+# END QUERY EXT-Q01: Inventario de versión y artefactos v3
+
+
+# START QUERY EXT-Q02: Cobertura de requisitos RF/RNF/RV
+# Type: dashboard
+# Purpose: Comprobar que los requisitos revisados están representados en la ontología.
+# Requirements: RV-04, RF-68
+# Policies: P-VAL-06
+# Current v3.0.0 result: 3 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?requirementType (COUNT(DISTINCT ?r) AS ?count) WHERE {
+  VALUES ?requirementType {
+    :FunctionalRequirement :NonFunctionalRequirement :ValidationRequirement
+  }
+  ?r a ?requirementType .
+}
+GROUP BY ?requirementType
+ORDER BY ?requirementType
+# END QUERY EXT-Q02: Cobertura de requisitos RF/RNF/RV
+
+
+# START QUERY EXT-Q03: Inventario completo de políticas
+# Type: inventory
+# Purpose: Listar las 79 políticas v3 con categoría, tipo y versión.
+# Requirements: RF-39, RF-40, RF-70
+# Policies: P-GOV-01, P-GOV-04
+# Current v3.0.0 result: 79 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?policy ?id ?category ?type ?version ?statement WHERE {
+  ?policy a :Policy ; :policyIdentifier ?id .
+  OPTIONAL { ?policy :belongsToPolicyCategory ?category }
+  OPTIONAL { ?policy :hasPolicyType ?type }
+  OPTIONAL { ?policy :policyVersion ?version }
+  OPTIONAL { ?policy :hasPolicyStatement ?statement }
+}
+ORDER BY ?id
+# END QUERY EXT-Q03: Inventario completo de políticas
+
+
+# START QUERY EXT-Q04: Inventario completo de mecanismos
+# Type: inventory
+# Purpose: Listar los 55 mecanismos y las políticas que soportan.
+# Requirements: RV-04
+# Policies: P-VAL-06
+# Current v3.0.0 result: 55 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?mechanism ?id ?description (GROUP_CONCAT(DISTINCT STR(?policy); separator=", ") AS ?policies) WHERE {
+  ?mechanism a :MechanismSpecification ; :mechanismIdentifier ?id .
+  OPTIONAL { ?mechanism :mechanismDescription ?description }
+  OPTIONAL { ?mechanism :supportsPolicy ?policy }
+}
+GROUP BY ?mechanism ?id ?description
+ORDER BY ?id
+# END QUERY EXT-Q04: Inventario completo de mecanismos
+
+
+# START QUERY EXT-Q05: Inventario de escenarios S1–S17
+# Type: inventory
+# Purpose: Verificar el artefacto versionado de escenarios y su cobertura.
+# Requirements: RF-31, RF-72, RV-03
+# Policies: P-VAL-07
+# Current v3.0.0 result: 17 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?scenario ?id ?artifact
+       (GROUP_CONCAT(DISTINCT STR(?policy); separator=", ") AS ?policies)
+       (GROUP_CONCAT(DISTINCT STR(?mechanism); separator=", ") AS ?mechanisms) WHERE {
+  ?scenario a :Scenario ; :scenarioIdentifier ?id .
+  OPTIONAL { ?scenario :definedInArtifact ?artifact }
+  OPTIONAL { ?scenario :scenarioPolicy ?policy }
+  OPTIONAL { ?scenario :scenarioMechanism ?mechanism }
+}
+GROUP BY ?scenario ?id ?artifact
+ORDER BY ?id
+# END QUERY EXT-Q05: Inventario de escenarios S1–S17
+
+
+# START QUERY EXT-Q06: Categorías de política
+# Type: inventory
+# Purpose: Inventariar las 12 categorías de gobernanza.
+# Requirements: RF-39, RF-40
+# Policies: P-GOV-01
+# Current v3.0.0 result: 12 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?category ?code ?label WHERE {
+  ?category a :PolicyCategory .
+  OPTIONAL { ?category :categoryCode ?code }
+  OPTIONAL { ?category rdfs:label ?label }
+}
+ORDER BY ?code
+# END QUERY EXT-Q06: Categorías de política
+
+
+# START QUERY EXT-Q07: Relaciones entre categorías de políticas
+# Type: report
+# Purpose: Inspeccionar la taxonomía de compatibilidad/conflicto y la estrategia de resolución cuando exista.
+# Requirements: RNF-22, RV-04
+# Policies: P-GOV-03
+# Current v3.0.0 result: 67 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?relation ?source ?target ?relationType ?code ?strategy WHERE {
+  ?relation a :PolicyCategoryRelation ; :relationSourceCategory ?source ; :relationTargetCategory ?target ; :hasPolicyRelationType ?relationType .
+  OPTIONAL { ?relationType :relationCode ?code }
+  OPTIONAL { ?relation :usesResolutionStrategy ?strategy }
+}
+ORDER BY ?source ?target
+# END QUERY EXT-Q07: Relaciones entre categorías de políticas
+
+
+# START QUERY EXT-Q08: Trazabilidad requisito → política → mecanismo
+# Type: report
+# Purpose: Mostrar trazabilidad individual de requisitos a políticas y mecanismos.
+# Requirements: RV-04, RNF-39
+# Policies: P-VAL-06
+# Current v3.0.0 result: 1089 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?requirement ?rid ?rtype ?policy ?mechanism WHERE {
+  VALUES ?rtype {
+    :FunctionalRequirement :NonFunctionalRequirement :ValidationRequirement
+  }
+  ?requirement a ?rtype ; :requirementIdentifier ?rid .
+  OPTIONAL { ?requirement :tracedToPolicy ?policy }
+  OPTIONAL { ?requirement :tracedToMechanism ?mechanism }
+}
+ORDER BY ?rid ?policy ?mechanism
+# END QUERY EXT-Q08: Trazabilidad requisito → política → mecanismo
+
+
+# START QUERY EXT-Q09: Revisión — requisito sin política ni mecanismo explícito
+# Type: review
+# Purpose: Listar requisitos que no tienen política ni mecanismo explícito; los requisitos puramente estructurales pueden ser válidos y deben trazarse a ontología/consulta en la matriz documental.
+# Requirements: RV-04
+# Policies: P-VAL-06
+# Current v3.0.0 result: 6 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?requirement ?rid WHERE {
+  ?requirement a :Requirement ; :requirementIdentifier ?rid .
+  FILTER NOT EXISTS { ?requirement :tracedToPolicy ?p }
+  FILTER NOT EXISTS { ?requirement :tracedToMechanism ?m }
+}
+ORDER BY ?rid
+# END QUERY EXT-Q09: Revisión — requisito sin política ni mecanismo explícito
+
+
+# START QUERY EXT-Q10: Incumplimiento — política o mecanismo incompleto
+# Type: violation
+# Purpose: Detectar políticas/mecanismos sin metadatos mínimos para gobernanza reproducible.
+# Requirements: RF-39, RF-40, RNF-20
+# Policies: P-GOV-01, P-GOV-04
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?resource ?kind ?missing WHERE {
+  {
+    ?resource a :Policy . BIND("Policy" AS ?kind)
+    VALUES (?prop ?missing) {
+      (:policyIdentifier "policyIdentifier")
+      (:belongsToPolicyCategory "belongsToPolicyCategory")
+      (:hasPolicyType "hasPolicyType")
+      (:policyVersion "policyVersion")
+      (:hasPolicyStatement "hasPolicyStatement")
+      (:recommendedMechanism "recommendedMechanism")
+    }
+    FILTER NOT EXISTS { ?resource ?prop ?v }
+  }
+  UNION
+  {
+    ?resource a :MechanismSpecification . BIND("Mechanism" AS ?kind)
+    VALUES (?prop ?missing) {
+      (:mechanismIdentifier "mechanismIdentifier")
+      (:mechanismDescription "mechanismDescription")
+      (:supportsPolicy "supportsPolicy")
+    }
+    FILTER NOT EXISTS { ?resource ?prop ?v }
+  }
+}
+ORDER BY ?kind ?resource ?missing
+# END QUERY EXT-Q10: Incumplimiento — política o mecanismo incompleto
+
+
+# ==============================================================================
+# EXT v3 — Consentimiento, contratos y autorización efectiva
+# ==============================================================================
+
+
+# START QUERY EXT-Q11: Reporte de ConsentRecord
+# Type: report
+# Purpose: Inspeccionar consentimiento independiente del contrato: sujeto, rango, propósito, categorías y vigencia.
+# Requirements: RF-32, RF-35
+# Policies: P-CONS-01, P-CONS-04
+# Current v3.0.0 result: 25 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?record ?user ?range ?purpose ?dataCategory ?from ?to WHERE {
+  ?record a :ConsentRecord ; :consentSubject ?user ; :hasConsentRange ?range .
+  OPTIONAL { ?record :hasProcessingPurpose ?purpose }
+  OPTIONAL { ?record :hasAuthorizedDataCategory ?dataCategory }
+  OPTIONAL { ?record :validFrom ?from }
+  OPTIONAL { ?record :validTo ?to }
+}
+ORDER BY ?user ?record ?purpose ?dataCategory
+# END QUERY EXT-Q11: Reporte de ConsentRecord
+
+
+# START QUERY EXT-Q12: Reporte de contratos semánticos
+# Type: report
+# Purpose: Inspeccionar contratos efectivos, rangos, propósitos, políticas y vigencia.
+# Requirements: RF-33, RF-34
+# Policies: P-CONS-02, P-CONS-03
+# Current v3.0.0 result: 28 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?contract ?user ?range ?purpose ?policy ?from ?to WHERE {
+  ?contract a :SemanticContract ; :contractSubject ?user ; :hasConsentRange ?range .
+  OPTIONAL { ?contract :hasProcessingPurpose ?purpose }
+  OPTIONAL { ?contract :governedBy ?policy }
+  OPTIONAL { ?contract :validFrom ?from }
+  OPTIONAL { ?contract :validTo ?to }
+}
+ORDER BY ?user ?contract ?purpose ?policy
+# END QUERY EXT-Q12: Reporte de contratos semánticos
+
+
+# START QUERY EXT-Q13: Incumplimiento — ConsentRecord incompleto
+# Type: violation
+# Purpose: Detectar registros de consentimiento sin sujeto, rango, propósito, categorías autorizadas o validFrom.
+# Requirements: RF-32, RF-35
+# Policies: P-CONS-01
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?record ?missing WHERE {
+  ?record a :ConsentRecord .
+  VALUES (?prop ?missing) {
+    (:consentSubject "consentSubject")
+    (:hasConsentRange "hasConsentRange")
+    (:hasProcessingPurpose "hasProcessingPurpose")
+    (:hasAuthorizedDataCategory "hasAuthorizedDataCategory")
+    (:validFrom "validFrom")
+  }
+  FILTER NOT EXISTS { ?record ?prop ?v }
+}
+ORDER BY ?record ?missing
+# END QUERY EXT-Q13: Incumplimiento — ConsentRecord incompleto
+
+
+# START QUERY EXT-Q14: Incumplimiento — contrato semántico incompleto
+# Type: violation
+# Purpose: Detectar contratos sin sujeto, rango, propósito, política o inicio de vigencia.
+# Requirements: RF-33, RF-34
+# Policies: P-CONS-02, P-CONS-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?contract ?missing WHERE {
+  ?contract a :SemanticContract .
+  VALUES (?prop ?missing) {
+    (:contractSubject "contractSubject")
+    (:hasConsentRange "hasConsentRange")
+    (:hasProcessingPurpose "hasProcessingPurpose")
+    (:governedBy "governedBy")
+    (:validFrom "validFrom")
+  }
+  FILTER NOT EXISTS { ?contract ?prop ?v }
+}
+ORDER BY ?contract ?missing
+# END QUERY EXT-Q14: Incumplimiento — contrato semántico incompleto
+
+
+# START QUERY EXT-Q15: Incumplimiento — contratos solapados para usuario y propósito
+# Type: violation
+# Purpose: Detectar dos contratos del mismo usuario y propósito con intervalos de vigencia solapados.
+# Requirements: RF-33, RNF-22
+# Policies: P-CONS-02
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?user ?purpose ?c1 ?c2 WHERE {
+  ?c1 a :SemanticContract ; :contractSubject ?user ; :hasProcessingPurpose ?purpose ; :validFrom ?f1 .
+  ?c2 a :SemanticContract ; :contractSubject ?user ; :hasProcessingPurpose ?purpose ; :validFrom ?f2 .
+  FILTER(STR(?c1) < STR(?c2))
+  OPTIONAL { ?c1 :validTo ?t1 }
+  OPTIONAL { ?c2 :validTo ?t2 }
+  FILTER((!BOUND(?t1) || ?f2 < ?t1) && (!BOUND(?t2) || ?f1 < ?t2))
+}
+ORDER BY ?user ?purpose
+# END QUERY EXT-Q15: Incumplimiento — contratos solapados para usuario y propósito
+
+
+# START QUERY EXT-Q16: Incumplimiento — rango activo no respaldado por ConsentRecord
+# Type: violation
+# Purpose: Comprobar que el rango activo del usuario coincide con al menos un ConsentRecord vigente asociado.
+# Requirements: RF-35
+# Policies: P-CONS-01, P-CONS-04
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?activeRange WHERE {
+  ?user a :User ; :hasActiveConsentRange ?activeRange .
+  FILTER NOT EXISTS {
+    ?user :hasConsentRecord ?record .
+    ?record :hasConsentRange ?activeRange .
+  }
+}
+ORDER BY ?user
+# END QUERY EXT-Q16: Incumplimiento — rango activo no respaldado por ConsentRecord
+
+
+# START QUERY EXT-Q17: Reporte de autorizaciones efectivas
+# Type: report
+# Purpose: Mostrar autorización efectiva utilizada por cada evaluación.
+# Requirements: RF-35, RF-36, RF-66
+# Policies: P-CONS-04, P-GOV-03
+# Current v3.0.0 result: 8 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?authorization ?outcome ?effectiveRange ?record ?contract ?zone ?from WHERE {
+  ?evaluation a :EvaluationState ; :hasAuthorizationDecision ?authorization .
+  ?authorization a :AuthorizationDecision .
+  OPTIONAL { ?authorization :hasAuthorizationOutcome ?outcome }
+  OPTIONAL { ?authorization :hasEffectiveConsentRange ?effectiveRange }
+  OPTIONAL { ?authorization :basedOnConsentRecord ?record }
+  OPTIONAL { ?authorization :basedOnContract ?contract }
+  OPTIONAL { ?authorization :basedOnZone ?zone }
+  OPTIONAL { ?authorization :validFrom ?from }
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q17: Reporte de autorizaciones efectivas
+
+
+# START QUERY EXT-Q18: Incumplimiento — autorización efectiva incompleta
+# Type: violation
+# Purpose: Detectar AuthorizationDecision sin outcome, rango efectivo, consentimiento, contrato, zona o validFrom.
+# Requirements: RF-35, RF-36
+# Policies: P-CONS-04
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?authorization ?missing WHERE {
+  ?authorization a :AuthorizationDecision .
+  VALUES (?prop ?missing) {
+    (:hasAuthorizationOutcome "hasAuthorizationOutcome")
+    (:hasEffectiveConsentRange "hasEffectiveConsentRange")
+    (:basedOnConsentRecord "basedOnConsentRecord")
+    (:basedOnContract "basedOnContract")
+    (:basedOnZone "basedOnZone")
+    (:validFrom "validFrom")
+  }
+  FILTER NOT EXISTS { ?authorization ?prop ?v }
+}
+ORDER BY ?authorization ?missing
+# END QUERY EXT-Q18: Incumplimiento — autorización efectiva incompleta
+
+
+# START QUERY EXT-Q19: Incumplimiento — autorización efectiva excede consentimiento o contrato
+# Type: violation
+# Purpose: Comparar niveles de rango mediante orden explícito Denied=0, Local=1, Community=2, Global=3.
+# Requirements: RF-35, RF-36
+# Policies: P-CONS-04, P-GOV-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?authorization ?effective ?consentRange ?contractRange WHERE {
+  VALUES (?effective ?eLevel) { (:RangeDenied 0) (:RangeLocalOnly 1) (:RangeCommunityAgg 2) (:RangeGlobalAgg 3) }
+  VALUES (?consentRange ?cLevel) { (:RangeDenied 0) (:RangeLocalOnly 1) (:RangeCommunityAgg 2) (:RangeGlobalAgg 3) }
+  VALUES (?contractRange ?kLevel) { (:RangeDenied 0) (:RangeLocalOnly 1) (:RangeCommunityAgg 2) (:RangeGlobalAgg 3) }
+  ?authorization a :AuthorizationDecision ; :hasEffectiveConsentRange ?effective ; :basedOnConsentRecord/:hasConsentRange ?consentRange ; :basedOnContract/:hasConsentRange ?contractRange .
+  FILTER(?eLevel > ?cLevel || ?eLevel > ?kLevel)
+}
+# END QUERY EXT-Q19: Incumplimiento — autorización efectiva excede consentimiento o contrato
+
+
+# START QUERY EXT-Q20: Incumplimiento — EvaluationState sin autorización concedida
+# Type: violation
+# Purpose: Detectar decisiones relevantes sin AuthorizationDecision concedida.
+# Requirements: RF-36, RF-66, RNF-28
+# Policies: P-CONS-04, P-AUD-06
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation WHERE {
+  ?evaluation a :EvaluationState .
+  FILTER NOT EXISTS { ?evaluation :hasAuthorizationDecision/:hasAuthorizationOutcome :AuthorizationGranted }
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q20: Incumplimiento — EvaluationState sin autorización concedida
+
+
+# START QUERY EXT-Q21: Inventario de rangos mínimos requeridos
+# Type: inventory
+# Purpose: Listar recursos que declaran requiresConsentRange para preparar validaciones de autorización.
+# Requirements: RF-37
+# Policies: P-CONS-05
+# Current v3.0.0 result: 11 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?resource ?type ?requiredRange WHERE {
+  ?resource :requiresConsentRange ?requiredRange .
+  OPTIONAL { ?resource a ?type . FILTER(?type != owl:NamedIndividual) }
+}
+ORDER BY ?resource ?type
+# END QUERY EXT-Q21: Inventario de rangos mínimos requeridos
+
+
+# ==============================================================================
+# EXT v3 — Datos, identidad, seguridad y transmisión
+# ==============================================================================
+
+
+# START QUERY EXT-Q22: Incumplimiento — observación fisiológica cruda fuera del ámbito local
+# Type: violation
+# Purpose: Detectar observaciones crudas enviadas a Edge/Fog/Cloud mediante sentToNode o TransferEvent.
+# Requirements: RF-10, RF-60, RNF-17
+# Policies: P-DATA-01, P-ZONE-01
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?raw ?destination ?via WHERE {
+  VALUES ?rawType { :PhysiologicalObservation :SleepObservation }
+  ?raw a ?rawType .
+  {
+    ?raw :sentToNode ?destination . BIND("sentToNode" AS ?via)
+  }
+  UNION
+  {
+    ?transfer a :TransferEvent ; :carriesData ?raw ; :transferDestination ?destination . BIND("TransferEvent" AS ?via)
+  }
+  VALUES ?destType { :EdgeNode :FogNode :CloudNode }
+  ?destination a ?destType .
+}
+ORDER BY ?raw
+# END QUERY EXT-Q22: Incumplimiento — observación fisiológica cruda fuera del ámbito local
+
+
+# START QUERY EXT-Q23: Reporte de transferencias externas de datos
+# Type: report
+# Purpose: Inspeccionar datos, categoría, sensibilidad, origen, destino, identificador y seguridad de cada transferencia.
+# Requirements: RF-09, RF-27, RF-61
+# Policies: P-DATA-02, P-DATA-03, P-DATA-10
+# Current v3.0.0 result: 3 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?transfer ?data ?category ?sensitivity ?criticality ?source ?destination ?identifier ?security ?from WHERE {
+  ?transfer a :TransferEvent ; :carriesData ?data ; :transferSource ?source ; :transferDestination ?destination .
+  OPTIONAL { ?data :hasDataCategory ?category }
+  OPTIONAL { ?data :hasDataSensitivity ?sensitivity }
+  OPTIONAL { ?data :hasDataCriticality ?criticality }
+  OPTIONAL { ?transfer :usesIdentifier ?identifier }
+  OPTIONAL { ?transfer :appliedSecurityMechanism ?security }
+  OPTIONAL { ?transfer :validFrom ?from }
+}
+ORDER BY ?from ?transfer
+# END QUERY EXT-Q23: Reporte de transferencias externas de datos
+
+
+# START QUERY EXT-Q24: Reporte de contexto de datos
+# Type: report
+# Purpose: Mostrar el contexto operativo persistido con cada dato parametrizado.
+# Requirements: RF-09, RF-30
+# Policies: P-DATA-10
+# Current v3.0.0 result: 2 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?data ?context ?deviceState ?nodeState ?processingLevel ?purpose ?zone ?from ?note WHERE {
+  ?data :hasDataContext ?context .
+  ?context a :DataContext .
+  OPTIONAL { ?context :contextDeviceState ?deviceState }
+  OPTIONAL { ?context :contextNodeState ?nodeState }
+  OPTIONAL { ?context :contextProcessingLevel ?processingLevel }
+  OPTIONAL { ?context :contextPurpose ?purpose }
+  OPTIONAL { ?context :contextZone ?zone }
+  OPTIONAL { ?context :validFrom ?from }
+  OPTIONAL { ?context :migrationNote ?note }
+}
+ORDER BY ?data
+# END QUERY EXT-Q24: Reporte de contexto de datos
+
+
+# START QUERY EXT-Q25: Incumplimiento — DataContext incompleto
+# Type: violation
+# Purpose: Detectar datos parametrizados transmitidos sin contexto mínimo.
+# Requirements: RF-09
+# Policies: P-DATA-10
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?data ?context ?missing WHERE {
+  VALUES ?dataType { :PhysiologicalParametrizedData :SleepParametrizedData }
+  ?data a ?dataType .
+  {
+    FILTER NOT EXISTS { ?data :hasDataContext ?anyContext }
+    VALUES (?prop ?missing) {
+      (:contextDeviceState "contextDeviceState")
+      (:contextNodeState "contextNodeState")
+      (:contextProcessingLevel "contextProcessingLevel")
+      (:contextPurpose "contextPurpose")
+      (:contextZone "contextZone")
+      (:validFrom "validFrom")
+    }
+  }
+  UNION
+  {
+    ?data :hasDataContext ?context .
+    VALUES (?prop ?missing) {
+      (:contextDeviceState "contextDeviceState")
+      (:contextNodeState "contextNodeState")
+      (:contextProcessingLevel "contextProcessingLevel")
+      (:contextPurpose "contextPurpose")
+      (:contextZone "contextZone")
+      (:validFrom "validFrom")
+    }
+    FILTER NOT EXISTS { ?context ?prop ?v }
+  }
+}
+ORDER BY ?data ?missing
+# END QUERY EXT-Q25: Incumplimiento — DataContext incompleto
+
+
+# START QUERY EXT-Q26: Inventario de identificadores
+# Type: inventory
+# Purpose: Listar identificadores por tipo y scope.
+# Requirements: RF-61, RNF-19
+# Policies: P-DATA-02
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?identifier ?identifierType ?scope ?value WHERE {
+  ?user a :User ; :hasIdentifier ?identifier .
+  VALUES ?identifierType {
+    :PseudonymousIdentifier :AnonymousIdentifier :DirectIdentifier
+  }
+  ?identifier a ?identifierType .
+  OPTIONAL { ?identifier :identifierScope ?scope }
+  OPTIONAL { ?identifier :identifierValue ?value }
+}
+ORDER BY ?user ?identifier
+# END QUERY EXT-Q26: Inventario de identificadores
+
+
+# START QUERY EXT-Q27: Incumplimiento — transferencia externa sin identificador seguro
+# Type: violation
+# Purpose: Detectar transferencias a Edge/Fog/Cloud sin pseudónimo o identificador anónimo.
+# Requirements: RF-61, RNF-17
+# Policies: P-DATA-02
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?transfer ?destination ?identifier WHERE {
+  ?transfer a :TransferEvent ; :transferDestination ?destination .
+  ?destination a ?destType .
+  FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
+  OPTIONAL { ?transfer :usesIdentifier ?identifier }
+  FILTER(!BOUND(?identifier) || NOT EXISTS { ?identifier a ?safeType . FILTER(?safeType IN (:PseudonymousIdentifier,:AnonymousIdentifier)) })
+}
+ORDER BY ?transfer
+# END QUERY EXT-Q27: Incumplimiento — transferencia externa sin identificador seguro
+
+
+# START QUERY EXT-Q28: Incumplimiento — identificador directo en flujo externo
+# Type: violation
+# Purpose: Detectar cualquier uso explícito de DirectIdentifier en transferencias externas.
+# Requirements: RF-61, RNF-17
+# Policies: P-DATA-02
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?transfer ?identifier ?destination WHERE {
+  ?transfer a :TransferEvent ; :usesIdentifier ?identifier ; :transferDestination ?destination .
+  ?identifier a :DirectIdentifier .
+  ?destination a ?destType .
+  FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
+}
+# END QUERY EXT-Q28: Incumplimiento — identificador directo en flujo externo
+
+
+# START QUERY EXT-Q29: Reporte de línea base de cifrado
+# Type: report
+# Purpose: Inspeccionar mecanismos de cifrado y sus garantías declaradas.
+# Requirements: RNF-15
+# Policies: P-DATA-03
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?mechanism ?version ?inTransit ?atRest WHERE {
+  ?mechanism a :EncryptionMechanism .
+  OPTIONAL { ?mechanism :securityBaselineVersion ?version }
+  OPTIONAL { ?mechanism :protectsInTransit ?inTransit }
+  OPTIONAL { ?mechanism :protectsAtRest ?atRest }
+}
+ORDER BY ?mechanism
+# END QUERY EXT-Q29: Reporte de línea base de cifrado
+
+
+# START QUERY EXT-Q30: Incumplimiento — transferencia sensible sin cifrado en tránsito
+# Type: violation
+# Purpose: Detectar TransferEvent con dato sensible sin mecanismo que declare protectsInTransit=true.
+# Requirements: RNF-15
+# Policies: P-DATA-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?transfer ?data WHERE {
+  ?transfer a :TransferEvent ; :carriesData ?data .
+  ?data :hasDataSensitivity :SensitiveData .
+  FILTER NOT EXISTS { ?transfer :appliedSecurityMechanism ?m . ?m :protectsInTransit true }
+}
+# END QUERY EXT-Q30: Incumplimiento — transferencia sensible sin cifrado en tránsito
+
+
+# START QUERY EXT-Q31: Reporte de buffers y retención
+# Type: report
+# Purpose: Inspeccionar registros de buffer/retención cuando existan, incluyendo temporalidad y seguridad.
+# Requirements: RF-08, RNF-12
+# Policies: P-DATA-05, P-DATA-07
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?record ?type ?data ?from ?to ?security WHERE {
+  VALUES ?type { :BufferRecord :RetentionEvent }
+  ?record a ?type .
+  OPTIONAL { ?record :carriesData ?data }
+  OPTIONAL { ?record :validFrom ?from }
+  OPTIONAL { ?record :validTo ?to }
+  OPTIONAL { ?record :appliedSecurityMechanism ?security }
+}
+ORDER BY ?record
+# END QUERY EXT-Q31: Reporte de buffers y retención
+
+
+# START QUERY EXT-Q32: Incumplimiento — buffer sensible sin protección en reposo
+# Type: violation
+# Purpose: Detectar buffers de datos sensibles sin mecanismo protectsAtRest=true.
+# Requirements: RNF-15, RNF-12
+# Policies: P-DATA-03, P-DATA-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?buffer ?data WHERE {
+  ?buffer a :BufferRecord ; :carriesData ?data .
+  ?data :hasDataSensitivity :SensitiveData .
+  FILTER NOT EXISTS { ?buffer :appliedSecurityMechanism ?m . ?m :protectsAtRest true }
+}
+# END QUERY EXT-Q32: Incumplimiento — buffer sensible sin protección en reposo
+
+
+# START QUERY EXT-Q33: Reporte de replicación y sincronización
+# Type: report
+# Purpose: Inspeccionar eventos de replicación/sincronización y su control de duplicados.
+# Requirements: RF-19, RNF-13
+# Policies: P-DATA-08
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?event ?type ?source ?target ?replica ?version ?idempotencyKey ?from WHERE {
+  VALUES ?type { :ReplicationEvent :SynchronizationEvent }
+  ?event a ?type .
+  OPTIONAL { ?event :replicationSource ?source }
+  OPTIONAL { ?event :replicationTarget ?target }
+  OPTIONAL { ?event :replicaOf ?replica }
+  OPTIONAL { ?event :replicationVersion ?version }
+  OPTIONAL { ?event :idempotencyKey ?idempotencyKey }
+  OPTIONAL { ?event :validFrom ?from }
+}
+ORDER BY ?event
+# END QUERY EXT-Q33: Reporte de replicación y sincronización
+
+
+# START QUERY EXT-Q34: Incumplimiento — replicación sin versión o idempotencia
+# Type: violation
+# Purpose: Detectar ReplicationEvent/SynchronizationEvent incompleto para reejecución segura.
+# Requirements: RF-19, RNF-13
+# Policies: P-DATA-08
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?event ?missing WHERE {
+  VALUES ?type { :ReplicationEvent :SynchronizationEvent }
+  ?event a ?type .
+  VALUES (?prop ?missing) { (:replicationVersion "replicationVersion") (:idempotencyKey "idempotencyKey") }
+  FILTER NOT EXISTS { ?event ?prop ?v }
+}
+ORDER BY ?event ?missing
+# END QUERY EXT-Q34: Incumplimiento — replicación sin versión o idempotencia
+
+
+# START QUERY EXT-Q35: Reporte de criticidad y prioridad de datos
+# Type: report
+# Purpose: Comprobar criticidad genérica independiente del nivel de estrés.
+# Requirements: RF-28
+# Policies: P-DATA-09
+# Current v3.0.0 result: 6 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?data ?category ?criticality ?redundant WHERE {
+  ?data :hasDataCategory ?category .
+  OPTIONAL { ?data :hasDataCriticality ?criticality }
+  OPTIONAL { ?data :isRedundant ?redundant }
+}
+ORDER BY ?criticality ?data
+# END QUERY EXT-Q35: Reporte de criticidad y prioridad de datos
+
+
+# ==============================================================================
+# EXT v3 — Zonas, nodos y confianza
+# ==============================================================================
+
+
+# START QUERY EXT-Q36: Reporte de zona restringida
+# Type: report
+# Purpose: Mostrar usuarios, evaluaciones y tiers asociados a RestrictedZone.
+# Requirements: RF-42, RF-43
+# Policies: P-ZONE-01
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?zone ?user ?evaluation ?tier ?action WHERE {
+  ?zone a :RestrictedZone .
+  OPTIONAL { ?user a :User ; :locatedInZone ?zone }
+  OPTIONAL { ?evaluation a :EvaluationState ; :evaluationZone ?zone ; :selectedModelTier ?tier . OPTIONAL { ?evaluation :resultedInAction ?action } }
+}
+ORDER BY ?zone ?user ?evaluation
+# END QUERY EXT-Q36: Reporte de zona restringida
+
+
+# START QUERY EXT-Q37: Incumplimiento — procesamiento/transferencia externa en RestrictedZone
+# Type: violation
+# Purpose: Detectar tier Edge/Fog/Cloud seleccionado o TransferEvent externo asociado a evaluación/usuario en RestrictedZone.
+# Requirements: RF-42, RF-43, RF-60
+# Policies: P-ZONE-01, P-GOV-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?subject ?violationType ?destinationOrTier WHERE {
+  {
+    ?evaluation a :EvaluationState ; :evaluationZone ?zone ; :selectedModelTier ?tier .
+    ?zone a :RestrictedZone .
+    FILTER(?tier IN (:EdgeModelTier,:FogModelTier,:CloudModelTier))
+    BIND(?evaluation AS ?subject) BIND("external-tier" AS ?violationType) BIND(?tier AS ?destinationOrTier)
+  }
+  UNION
+  {
+    ?user a :User ; :locatedInZone ?zone . ?zone a :RestrictedZone .
+    ?user (:hasWearable|:hasMobileDevice) ?device .
+    ?transfer a :TransferEvent ; :transferSource ?device ; :transferDestination ?dest .
+    ?dest a ?destType . FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
+    BIND(?transfer AS ?subject) BIND("external-transfer" AS ?violationType) BIND(?dest AS ?destinationOrTier)
+  }
+}
+ORDER BY ?subject
+# END QUERY EXT-Q37: Incumplimiento — procesamiento/transferencia externa en RestrictedZone
+
+
+# START QUERY EXT-Q38: Reporte de zona rural y ventanas de transmisión
+# Type: review
+# Purpose: Revisar usuarios rurales, conectividad y eventos de retención/sincronización; la ausencia de eventos no implica por sí sola incumplimiento si no había datos pendientes.
+# Requirements: RF-08, RF-27
+# Policies: P-ZONE-02, P-DATA-07
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?zone ?device ?state ?connection ?retention ?sync WHERE {
+  ?user a :User ; :locatedInZone ?zone . ?zone a :RuralZone .
+  OPTIONAL { ?user (:hasWearable|:hasMobileDevice) ?device . ?device :hasDeviceState ?state . OPTIONAL { ?state :hasConnectionStatus ?connection } }
+  OPTIONAL { ?retention a :RetentionEvent ; :partOfScenario ?scenario . FILTER(?scenario = :S7) }
+  OPTIONAL { ?sync a :SynchronizationEvent ; :partOfScenario ?scenario2 . FILTER(?scenario2 = :S7) }
+}
+ORDER BY ?user ?device
+# END QUERY EXT-Q38: Reporte de zona rural y ventanas de transmisión
+
+
+# START QUERY EXT-Q39: Reporte de procesamiento urbano condicionado
+# Type: report
+# Purpose: Inspeccionar evaluaciones urbanas junto con consentimiento efectivo y tier.
+# Requirements: RF-42
+# Policies: P-ZONE-03, P-CONS-04
+# Current v3.0.0 result: 5 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?zone ?authorization ?effectiveRange ?tier ?node WHERE {
+  ?evaluation a :EvaluationState ; :evaluationZone ?zone ; :hasAuthorizationDecision ?authorization ; :selectedModelTier ?tier .
+  ?zone a :UrbanZone .
+  ?authorization :hasEffectiveConsentRange ?effectiveRange .
+  OPTIONAL { ?evaluation :evaluatesNode ?node }
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q39: Reporte de procesamiento urbano condicionado
+
+
+# START QUERY EXT-Q40: Reporte de NodeState y trust reproducible
+# Type: report
+# Purpose: Listar estados de nodo y TrustAssessment separado de los pesos AHP.
+# Requirements: RF-45, RF-49, RNF-32
+# Policies: P-NODE-03, P-NODE-04
+# Current v3.0.0 result: 7 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?node ?state ?trustAssessment ?score ?ruleVersion ?windowStart ?windowEnd ?configStatus WHERE {
+  ?node :hasNodeState ?state . ?state a :NodeState .
+  OPTIONAL {
+    ?state :hasTrustAssessment ?trustAssessment .
+    OPTIONAL { ?trustAssessment :hasTrustScore ?score }
+    OPTIONAL { ?trustAssessment :trustRuleVersion ?ruleVersion }
+    OPTIONAL { ?trustAssessment :trustWindowStart ?windowStart }
+    OPTIONAL { ?trustAssessment :trustWindowEnd ?windowEnd }
+    OPTIONAL { ?trustAssessment :configurationStatus ?configStatus }
+  }
+}
+ORDER BY ?node ?state
+# END QUERY EXT-Q40: Reporte de NodeState y trust reproducible
+
+
+# START QUERY EXT-Q41: Incumplimiento — NodeState sin campos de elegibilidad
+# Type: violation
+# Purpose: Detectar estados de nodo sin disponibilidad, workload, comunicación, capacidad residual u operational status.
+# Requirements: RF-05, RF-47
+# Policies: P-NODE-01, P-NODE-02
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?state ?missing WHERE {
+  ?state a :NodeState .
+  VALUES (?prop ?missing) {
+    (:hasAvailability "hasAvailability")
+    (:hasWorkload "hasWorkload")
+    (:hasCommunication "hasCommunication")
+    (:hasResidualCapacity "hasResidualCapacity")
+    (:hasOperationalStatus "hasOperationalStatus")
+  }
+  FILTER NOT EXISTS { ?state ?prop ?v }
+}
+ORDER BY ?state ?missing
+# END QUERY EXT-Q41: Incumplimiento — NodeState sin campos de elegibilidad
+
+
+# START QUERY EXT-Q42: Candidatos elegibles ordenados por trust
+# Type: report
+# Purpose: Aplicar primero filtros duros y después exponer score de confianza para ordenación externa.
+# Requirements: RF-47, RF-48
+# Policies: P-NODE-02, P-NODE-05, P-MODEL-03
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?node ?state ?trust WHERE {
+  VALUES ?workload { :LowWorkload :MediumWorkload }
+  VALUES ?residual { :MediumResidual :HighResidual }
+  ?node :hasNodeState ?state .
+  ?state :hasAvailability :Available ; :hasCommunication :StableComm ; :hasWorkload ?workload ; :hasResidualCapacity ?residual ; :hasOperationalStatus :Operational .
+  ?state :hasTrustAssessment/:hasTrustScore ?trust .
+}
+ORDER BY DESC(?trust) ?node
+# END QUERY EXT-Q42: Candidatos elegibles ordenados por trust
+
+
+# START QUERY EXT-Q43: Revisión — TrustAssessment no plenamente reproducible
+# Type: review
+# Purpose: Señalar trust histórico sin versión, ventana o evidencia suficiente. Los datos migrados pueden aparecer aquí hasta ser re-medidos.
+# Requirements: RF-49, RNF-32
+# Policies: P-NODE-03
+# Current v3.0.0 result: 7 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?assessment ?state ?score ?ruleVersion ?windowStart ?windowEnd ?evidence ?configStatus WHERE {
+  ?assessment a :TrustAssessment ; :trustAssessmentForState ?state .
+  OPTIONAL { ?assessment :hasTrustScore ?score }
+  OPTIONAL { ?assessment :trustRuleVersion ?ruleVersion }
+  OPTIONAL { ?assessment :trustWindowStart ?windowStart }
+  OPTIONAL { ?assessment :trustWindowEnd ?windowEnd }
+  OPTIONAL { ?assessment :hasTrustEvidence ?evidence }
+  OPTIONAL { ?assessment :configurationStatus ?configStatus }
+  FILTER(!BOUND(?score) || !BOUND(?ruleVersion) || !BOUND(?windowStart) || !BOUND(?windowEnd) || !BOUND(?evidence))
+}
+ORDER BY ?assessment
+# END QUERY EXT-Q43: Revisión — TrustAssessment no plenamente reproducible
+
+
+# START QUERY EXT-Q44: Reporte de confianza externa usada en evaluación
+# Type: report
+# Purpose: Mostrar hasTrustWeight/TrustAssessment como criterio externo, separado de los tres pesos AHP.
+# Requirements: RF-46, RF-55
+# Policies: P-MODEL-03, P-NODE-05
+# Current v3.0.0 result: 10 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?latencyWeight ?privacyWeight ?qualityWeight ?externalTrustWeight ?nodeTrust WHERE {
+  ?evaluation a :EvaluationState .
+  OPTIONAL { ?evaluation :hasLatencyWeight ?latencyWeight }
+  OPTIONAL { ?evaluation :hasPrivacyWeight ?privacyWeight }
+  OPTIONAL { ?evaluation :hasModelQualityWeight ?qualityWeight }
+  OPTIONAL { ?evaluation :hasTrustWeight ?externalTrustWeight }
+  OPTIONAL { ?evaluation :evaluatesNode/:hasNodeState/:hasTrustAssessment/:hasTrustScore ?nodeTrust }
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q44: Reporte de confianza externa usada en evaluación
+
+
+# START QUERY EXT-Q45: Incumplimiento — destino adaptativo explícitamente no elegible
+# Type: violation
+# Purpose: Detectar MigrationEvent/DelegationEvent cuando existe un snapshot del destino en el mismo escenario y dicho snapshot demuestra inelegibilidad dura o menor trust que el origen comparable.
+# Requirements: RF-18, RF-48
+# Policies: P-ADAPT-04, P-ADAPT-07
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?action ?scenario ?origin ?target ?reason WHERE {
+  VALUES ?actionType { :MigrationEvent :DelegationEvent :OffloadingEvent }
+  ?action a ?actionType ; :actionOriginNode ?origin ; :actionTargetNode ?target ; :partOfScenario ?scenario .
+  ?target :hasNodeState ?ts . ?ts :partOfScenario ?scenario .
+  {
+    { ?ts :hasAvailability :NotAvailable } UNION { ?ts :hasCommunication :NoConnectionComm } UNION { ?ts :hasWorkload :SaturatedWorkload } UNION { ?ts :hasOperationalStatus :Inoperative }
+    BIND("target-hard-ineligible" AS ?reason)
+  }
+  UNION
+  {
+    ?origin :hasNodeState ?os . ?os :partOfScenario ?scenario ; :hasTrustAssessment/:hasTrustScore ?originTrust .
+    ?ts :hasTrustAssessment/:hasTrustScore ?targetTrust .
+    FILTER(?targetTrust < ?originTrust)
+    BIND("target-lower-trust" AS ?reason)
+  }
+}
+ORDER BY ?action ?reason
+# END QUERY EXT-Q45: Incumplimiento — destino adaptativo explícitamente no elegible
+
+
+# START QUERY EXT-Q46: Reporte completo de decisiones de modelo
+# Type: report
+# Purpose: Mostrar usuario, método, pesos, tier, justificación, trust externo y acción.
+# Requirements: RF-15, RF-51, RF-66
+# Policies: P-MODEL-01, P-MODEL-05, P-AUD-06
+# Current v3.0.0 result: 11 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?user ?method ?latency ?privacy ?quality ?trustExternal ?tier ?justification ?action WHERE {
+  ?evaluation a :EvaluationState .
+  OPTIONAL { ?evaluation :evaluationUser ?user }
+  OPTIONAL { ?evaluation :hasDecisionMethod ?method }
+  OPTIONAL { ?evaluation :hasLatencyWeight ?latency }
+  OPTIONAL { ?evaluation :hasPrivacyWeight ?privacy }
+  OPTIONAL { ?evaluation :hasModelQualityWeight ?quality }
+  OPTIONAL { ?evaluation :hasTrustWeight ?trustExternal }
+  OPTIONAL { ?evaluation :selectedModelTier ?tier }
+  OPTIONAL { ?evaluation :hasSelectionJustification ?justification }
+  OPTIONAL { ?evaluation :resultedInAction ?action }
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q46: Reporte completo de decisiones de modelo
+
+
+# START QUERY EXT-Q47: Incumplimiento — evaluación sin campos de decisión mínimos
+# Type: violation
+# Purpose: Detectar EvaluationState sin usuario, propósito, zona, contrato, autorización, método, tres pesos, tier, justificación, instante o acción.
+# Requirements: RF-54, RF-66, RNF-28
+# Policies: P-AUD-06
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?missing WHERE {
+  ?evaluation a :EvaluationState .
+  VALUES (?prop ?missing) {
+    (:evaluationUser "evaluationUser")
+    (:evaluationPurpose "evaluationPurpose")
+    (:evaluationZone "evaluationZone")
+    (:auditsContract "auditsContract")
+    (:hasAuthorizationDecision "hasAuthorizationDecision")
+    (:hasDecisionMethod "hasDecisionMethod")
+    (:hasLatencyWeight "hasLatencyWeight")
+    (:hasPrivacyWeight "hasPrivacyWeight")
+    (:hasModelQualityWeight "hasModelQualityWeight")
+    (:selectedModelTier "selectedModelTier")
+    (:hasSelectionJustification "hasSelectionJustification")
+    (:validFrom "validFrom")
+    (:resultedInAction "resultedInAction")
+  }
+  FILTER NOT EXISTS { ?evaluation ?prop ?v }
+}
+ORDER BY ?evaluation ?missing
+# END QUERY EXT-Q47: Incumplimiento — evaluación sin campos de decisión mínimos
+
+
+# START QUERY EXT-Q48: Incumplimiento — pesos multicriterio no normalizados
+# Type: violation
+# Purpose: Comprobar que latencia+privacidad+calidad=1 con tolerancia; trust se excluye.
+# Requirements: RF-50, RF-55, RNF-34
+# Policies: P-MODEL-02, P-MODEL-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?latency ?privacy ?quality ((?latency + ?privacy + ?quality) AS ?sum) WHERE {
+  ?evaluation a :EvaluationState ; :hasLatencyWeight ?latency ; :hasPrivacyWeight ?privacy ; :hasModelQualityWeight ?quality .
+  FILTER(ABS((?latency + ?privacy + ?quality) - 1.0) > 0.000001)
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q48: Incumplimiento — pesos multicriterio no normalizados
+
+
+# START QUERY EXT-Q49: Reporte de método y consistencia
+# Type: report
+# Purpose: Distinguir AHP real de weighted multicriteria y exponer ratio/umbral cuando aplica.
+# Requirements: RF-55, RNF-33, RNF-34
+# Policies: P-MODEL-04
+# Current v3.0.0 result: 8 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?method ?ratio ?threshold ?pairwiseCount WHERE {
+  ?evaluation a :EvaluationState ; :hasDecisionMethod ?method .
+  OPTIONAL { ?evaluation :hasConsistencyRatio ?ratio }
+  OPTIONAL { ?evaluation :hasConsistencyThreshold ?threshold }
+  {
+    SELECT ?evaluation (COUNT(?pc) AS ?pairwiseCount) WHERE {
+      ?evaluation a :EvaluationState . OPTIONAL { ?evaluation :hasPairwiseComparison ?pc }
+    } GROUP BY ?evaluation
+  }
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q49: Reporte de método y consistencia
+
+
+# START QUERY EXT-Q50: Incumplimiento — evaluación AHP sin consistencia válida
+# Type: violation
+# Purpose: Para AHPDecisionMethod exigir comparaciones, ratio, umbral y ratio≤umbral.
+# Requirements: RF-55, RNF-34
+# Policies: P-MODEL-04
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?ratio ?threshold ?pairwiseCount WHERE {
+  ?evaluation a :EvaluationState ; :hasDecisionMethod :AHPDecisionMethod .
+  OPTIONAL { ?evaluation :hasConsistencyRatio ?ratio }
+  OPTIONAL { ?evaluation :hasConsistencyThreshold ?threshold }
+  {
+    SELECT ?evaluation (COUNT(?pc) AS ?pairwiseCount) WHERE {
+      ?evaluation a :EvaluationState . OPTIONAL { ?evaluation :hasPairwiseComparison ?pc }
+    } GROUP BY ?evaluation
+  }
+  FILTER(!BOUND(?ratio) || !BOUND(?threshold) || ?pairwiseCount = 0 || ?ratio > ?threshold)
+}
+# END QUERY EXT-Q50: Incumplimiento — evaluación AHP sin consistencia válida
+
+
+# START QUERY EXT-Q51: Reporte de alternativas por evaluación
+# Type: report
+# Purpose: Mostrar cada tier candidato, elegibilidad, score y razón.
+# Requirements: RF-51, RNF-29
+# Policies: P-MODEL-05
+# Current v3.0.0 result: 32 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?alternative ?tier ?eligible ?score ?reason ?selected WHERE {
+  ?evaluation a :EvaluationState ; :hasDecisionAlternative ?alternative .
+  ?alternative :alternativeModelTier ?tier .
+  OPTIONAL { ?alternative :isEligible ?eligible }
+  OPTIONAL { ?alternative :hasAHPScore ?score }
+  OPTIONAL { ?alternative :eligibilityReason ?reason }
+  BIND(EXISTS { ?evaluation :selectedAlternative ?alternative } AS ?selected)
+}
+ORDER BY ?evaluation ?tier
+# END QUERY EXT-Q51: Reporte de alternativas por evaluación
+
+
+# START QUERY EXT-Q52: Revisión — alternativas pendientes de recalcular
+# Type: review
+# Purpose: Identificar alternativas migradas sin score/elegibilidad completos.
+# Requirements: RF-51, RNF-29, RNF-33
+# Policies: P-MODEL-05
+# Current v3.0.0 result: 32 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?alternative ?tier ?eligible ?score ?reason WHERE {
+  ?evaluation a :EvaluationState ; :hasDecisionAlternative ?alternative .
+  ?alternative :alternativeModelTier ?tier .
+  OPTIONAL { ?alternative :isEligible ?eligible }
+  OPTIONAL { ?alternative :hasAHPScore ?score }
+  OPTIONAL { ?alternative :eligibilityReason ?reason }
+  FILTER(!BOUND(?eligible) || !BOUND(?score))
+}
+ORDER BY ?evaluation ?tier
+# END QUERY EXT-Q52: Revisión — alternativas pendientes de recalcular
+
+
+# START QUERY EXT-Q53: Incumplimiento — alternativa seleccionada inválida
+# Type: violation
+# Purpose: Detectar selectedAlternative ausente, no elegible o cuyo tier no coincide con selectedModelTier.
+# Requirements: RF-51, RF-54
+# Policies: P-MODEL-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?selected ?selectedTier ?alternativeTier ?eligible ?reason WHERE {
+  ?evaluation a :EvaluationState ; :selectedModelTier ?selectedTier .
+  OPTIONAL { ?evaluation :selectedAlternative ?selected . OPTIONAL { ?selected :alternativeModelTier ?alternativeTier } OPTIONAL { ?selected :isEligible ?eligible } }
+  BIND(IF(!BOUND(?selected), "missing-selectedAlternative", IF(BOUND(?eligible) && ?eligible = false, "selected-not-eligible", IF(BOUND(?alternativeTier) && ?alternativeTier != ?selectedTier, "tier-mismatch", ""))) AS ?reason)
+  FILTER(?reason != "")
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q53: Incumplimiento — alternativa seleccionada inválida
+
+
+# START QUERY EXT-Q54: Reporte de calidad observada de modelo
+# Type: report
+# Purpose: Separar evidencia de calidad/predicción de hasModelQualityWeight.
+# Requirements: RF-14, RF-29, RNF-27
+# Policies: P-MODEL-08, P-OPS-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?subject ?observedQuality ?predictionConfidence ?estimatedError ?feedback WHERE {
+  VALUES ?type {
+    :EvaluationState :AIModel :StressObservation :SleepObservation
+  }
+  ?subject a ?type .
+  OPTIONAL { ?subject :observedModelQuality ?observedQuality }
+  OPTIONAL { ?subject :predictionConfidence ?predictionConfidence }
+  OPTIONAL { ?subject :estimatedPredictionError ?estimatedError }
+  OPTIONAL { ?subject :userFeedbackScore ?feedback }
+  FILTER(BOUND(?observedQuality) || BOUND(?predictionConfidence) || BOUND(?estimatedError) || BOUND(?feedback))
+}
+ORDER BY ?subject
+# END QUERY EXT-Q54: Reporte de calidad observada de modelo
+
+
+# START QUERY EXT-Q55: Revisión — evidencia de calidad insuficiente
+# Type: review
+# Purpose: Señalar evaluaciones que ponderan calidad pero no enlazan evidencia observada suficiente; puede reflejar datos heredados pendientes.
+# Requirements: RF-14, RF-54
+# Policies: P-MODEL-08
+# Current v3.0.0 result: 8 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?qualityWeight WHERE {
+  ?evaluation a :EvaluationState ; :hasModelQualityWeight ?qualityWeight .
+  FILTER NOT EXISTS { ?evaluation :observedModelQuality ?q }
+  FILTER NOT EXISTS { ?evaluation :predictionConfidence ?c }
+  FILTER NOT EXISTS { ?evaluation :estimatedPredictionError ?e }
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q55: Revisión — evidencia de calidad insuficiente
+
+
+# START QUERY EXT-Q56: Incumplimiento — Cloud seleccionado sin condiciones suficientes
+# Type: violation
+# Purpose: Detectar CloudModelTier cuando rango efectivo no sea global, zona sea restringida o autorización no esté concedida.
+# Requirements: RF-53
+# Policies: P-MODEL-07, P-ZONE-01, P-CONS-04
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?effectiveRange ?zone ?outcome ?reason WHERE {
+  ?evaluation a :EvaluationState ; :selectedModelTier :CloudModelTier ; :evaluationZone ?zone ; :hasAuthorizationDecision ?authorization .
+  OPTIONAL { ?authorization :hasEffectiveConsentRange ?effectiveRange }
+  OPTIONAL { ?authorization :hasAuthorizationOutcome ?outcome }
+  BIND(IF(!BOUND(?effectiveRange) || ?effectiveRange != :RangeGlobalAgg, "range-not-global", IF(EXISTS { ?zone a :RestrictedZone }, "restricted-zone", IF(!BOUND(?outcome) || ?outcome != :AuthorizationGranted, "authorization-not-granted", ""))) AS ?reason)
+  FILTER(?reason != "")
+}
+ORDER BY ?evaluation
+# END QUERY EXT-Q56: Incumplimiento — Cloud seleccionado sin condiciones suficientes
+
+
+# START QUERY EXT-Q57: Reporte de versionado y linaje de modelos
+# Type: report
+# Purpose: Inspeccionar versión, fecha, modelo previo y estado de linaje.
+# Requirements: RF-24
+# Policies: P-FL-08
+# Current v3.0.0 result: 7 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?model ?version ?updated ?supersedes ?lineageStatus WHERE {
+  ?model a :AIModel .
+  OPTIONAL { ?model :modelVersion ?version }
+  OPTIONAL { ?model :lastUpdated ?updated }
+  OPTIONAL { ?model :supersedesModel ?supersedes }
+  OPTIONAL { ?model :modelLineageStatus ?lineageStatus }
+}
+ORDER BY ?model
+# END QUERY EXT-Q57: Reporte de versionado y linaje de modelos
+
+
+# START QUERY EXT-Q58: Revisión — preparación de rollback
+# Type: review
+# Purpose: Listar RollbackEvent y modelos sin linaje suficiente para rollback reproducible.
+# Requirements: RF-24
+# Policies: P-FL-08
+# Current v3.0.0 result: 7 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?subject ?kind ?target ?status WHERE {
+  { ?subject a :RollbackEvent . BIND("rollback-event" AS ?kind) OPTIONAL { ?subject :rollbackTarget ?target } }
+  UNION
+  { ?subject a :AIModel . FILTER NOT EXISTS { ?subject :supersedesModel ?prev } BIND("model-without-predecessor" AS ?kind) OPTIONAL { ?subject :modelLineageStatus ?status } }
+}
+ORDER BY ?kind ?subject
+# END QUERY EXT-Q58: Revisión — preparación de rollback
+
+
+# ==============================================================================
+# EXT v3 — Adaptación, FL y delegación
+# ==============================================================================
+
+
+# START QUERY EXT-Q59: Reporte de acciones adaptativas
+# Type: report
+# Purpose: Listar acciones de adaptación y evaluación que las autorizó.
+# Requirements: RF-16, RF-17, RF-20, RF-66
+# Policies: P-ADAPT-06, P-AUD-06
+# Current v3.0.0 result: 11 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?action ?actionType ?scenario ?evaluation ?origin ?target ?service ?model ?from ?to WHERE {
+  ?action a :AdaptationAction ; a ?actionType .
+  FILTER(?actionType != :AdaptationAction && ?actionType != owl:NamedIndividual)
+  OPTIONAL { ?action :partOfScenario ?scenario }
+  OPTIONAL { ?action :authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?action :actionOriginNode ?origin }
+  OPTIONAL { ?action :actionTargetNode ?target }
+  OPTIONAL { ?action :affectsService ?service }
+  OPTIONAL { ?action :affectsModel ?model }
+  OPTIONAL { ?action :validFrom ?from }
+  OPTIONAL { ?action :validTo ?to }
+}
+ORDER BY ?scenario ?action
+# END QUERY EXT-Q59: Reporte de acciones adaptativas
+
+
+# START QUERY EXT-Q60: Reporte específico de migraciones
+# Type: report
+# Purpose: Inspeccionar MigrationEvent independiente de FL.
+# Requirements: RF-16, RF-17
+# Policies: P-ADAPT-05
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?migration ?scenario ?origin ?target ?evaluation ?service ?cost ?time ?from ?to WHERE {
+  ?migration a :MigrationEvent .
+  OPTIONAL { ?migration :partOfScenario ?scenario }
+  OPTIONAL { ?migration :actionOriginNode ?origin }
+  OPTIONAL { ?migration :actionTargetNode ?target }
+  OPTIONAL { ?migration :authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?migration :affectsService ?service }
+  OPTIONAL { ?evaluation :hasMigrationCost ?cost }
+  OPTIONAL { ?evaluation :hasMigrationTime ?time }
+  OPTIONAL { ?migration :validFrom ?from }
+  OPTIONAL { ?migration :validTo ?to }
+}
+ORDER BY ?migration
+# END QUERY EXT-Q60: Reporte específico de migraciones
+
+
+# START QUERY EXT-Q61: Incumplimiento — migración/delegación confundida con sesión FL
+# Type: violation
+# Purpose: Detectar un mismo individuo tipado simultáneamente como MigrationEvent/DelegationEvent y FederatedLearningSession.
+# Requirements: RF-16, RF-22
+# Policies: P-ADAPT-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?resource WHERE {
+  VALUES ?adaptType { :MigrationEvent :DelegationEvent :OffloadingEvent }
+  ?resource a :FederatedLearningSession ; a ?adaptType .
+}
+# END QUERY EXT-Q61: Incumplimiento — migración/delegación confundida con sesión FL
+
+
+# START QUERY EXT-Q62: Reporte de degradaciones
+# Type: report
+# Purpose: Listar DegradationEvent y causa explícita.
+# Requirements: RF-20
+# Policies: P-ADAPT-02, P-ADAPT-03, P-ADAPT-06
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?event ?scenario ?cause ?service ?model ?evaluation ?from ?to WHERE {
+  ?event a :DegradationEvent .
+  OPTIONAL { ?event :partOfScenario ?scenario }
+  OPTIONAL { ?event :hasDegradationCause ?cause }
+  OPTIONAL { ?event :affectsService ?service }
+  OPTIONAL { ?event :affectsModel ?model }
+  OPTIONAL { ?event :authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?event :validFrom ?from }
+  OPTIONAL { ?event :validTo ?to }
+}
+ORDER BY ?event
+# END QUERY EXT-Q62: Reporte de degradaciones
+
+
+# START QUERY EXT-Q63: Reporte de delegaciones temporales
+# Type: report
+# Purpose: Mostrar origen, destino, disparador, recuperación, profundidad, expiración planificada y cierre real.
+# Requirements: RF-62, RF-63, RF-64
+# Policies: P-AUD-01, P-AUD-02, P-AUD-03
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?delegation ?origin ?target ?triggerState ?recovery ?depth ?plannedExpiry ?from ?to WHERE {
+  ?delegation a :DelegationEvent .
+  OPTIONAL { ?delegation :actionOriginNode ?origin }
+  OPTIONAL { ?delegation :actionTargetNode ?target }
+  OPTIONAL { ?delegation :triggeredByState ?triggerState }
+  OPTIONAL { ?delegation :hasRecoveryCondition ?recovery }
+  OPTIONAL { ?delegation :delegationDepth ?depth }
+  OPTIONAL { ?delegation :plannedExpiry ?plannedExpiry }
+  OPTIONAL { ?delegation :validFrom ?from }
+  OPTIONAL { ?delegation :validTo ?to }
+}
+ORDER BY ?delegation
+# END QUERY EXT-Q63: Reporte de delegaciones temporales
+
+
+# START QUERY EXT-Q64: Incumplimiento — delegación incompleta
+# Type: violation
+# Purpose: Exigir origen, destino, causa/estado disparador, validFrom y condición de recuperación; validTo puede faltar mientras esté activa.
+# Requirements: RF-63
+# Policies: P-AUD-02
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?delegation ?missing WHERE {
+  ?delegation a :DelegationEvent .
+  VALUES (?prop ?missing) {
+    (:actionOriginNode "actionOriginNode")
+    (:actionTargetNode "actionTargetNode")
+    (:triggeredByState "triggeredByState")
+    (:validFrom "validFrom")
+    (:hasRecoveryCondition "hasRecoveryCondition")
+    (:delegationDepth "delegationDepth")
+  }
+  FILTER NOT EXISTS { ?delegation ?prop ?v }
+}
+ORDER BY ?delegation ?missing
+# END QUERY EXT-Q64: Incumplimiento — delegación incompleta
+
+
+# START QUERY EXT-Q65: Incumplimiento — profundidad de delegación excede perfil
+# Type: violation
+# Purpose: Comparar delegationDepth con D_delegation_max únicamente cuando el perfil esté configurado.
+# Requirements: RNF-14
+# Policies: P-AUD-04, P-OPS-01
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?delegation ?depth ?maxDepth ?profile WHERE {
+  ?delegation a :DelegationEvent ; :delegationDepth ?depth .
+  ?profile a :AcceptanceProfile ; :D_delegation_max ?maxDepth .
+  FILTER(?depth > ?maxDepth)
+}
+# END QUERY EXT-Q65: Incumplimiento — profundidad de delegación excede perfil
+
+
+# START QUERY EXT-Q66: Reporte de sesiones FL y payload
+# Type: report
+# Purpose: Distinguir flujo ascendente de gradientes y descendente de parámetros mejorados.
+# Requirements: RF-21, RF-22, RF-23, RF-25
+# Policies: P-FL-01, P-FL-06, P-FL-07
+# Current v3.0.0 result: 2 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?session ?payload ?purpose ?requiredRange ?model ?data ?personal ?individualized ?persistent WHERE {
+  ?session a :FederatedLearningSession .
+  OPTIONAL { ?session :hasPayloadType ?payload }
+  OPTIONAL { ?session :hasProcessingPurpose ?purpose }
+  OPTIONAL { ?session :requiresConsentRange ?requiredRange }
+  OPTIONAL { ?session :updatesModel ?model }
+  OPTIONAL { ?session :transfersData ?data }
+  OPTIONAL { ?session :containsPersonalData ?personal }
+  OPTIONAL { ?session :containsIndividualizedGradients ?individualized }
+  OPTIONAL { ?session :containsPersistentIdentifier ?persistent }
+}
+ORDER BY ?session
+# END QUERY EXT-Q66: Reporte de sesiones FL y payload
+
+
+# START QUERY EXT-Q67: Incumplimiento — sesión FL ascendente no autorizada
+# Type: violation
+# Purpose: Para payload de gradientes exigir RangeGlobalAgg, propósito global y ausencia de datos personales/identificador persistente.
+# Requirements: RF-21, RF-56
+# Policies: P-FL-02, P-FL-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?session ?range ?purpose ?personal ?persistent WHERE {
+  ?session a :FederatedLearningSession ; :hasPayloadType :ModelGradientsPayload .
+  OPTIONAL { ?session :hasConsentRange ?range }
+  OPTIONAL { ?session :hasProcessingPurpose ?purpose }
+  OPTIONAL { ?session :containsPersonalData ?personal }
+  OPTIONAL { ?session :containsPersistentIdentifier ?persistent }
+  FILTER(!BOUND(?range) || ?range != :RangeGlobalAgg || !BOUND(?purpose) || ?purpose != :PurposeGlobalFederatedLearning || (BOUND(?personal) && ?personal = true) || (BOUND(?persistent) && ?persistent = true))
+}
+# END QUERY EXT-Q67: Incumplimiento — sesión FL ascendente no autorizada
+
+
+# START QUERY EXT-Q68: Incumplimiento — gradiente sin anonimización, ruido o mecanismo de privacidad
+# Type: violation
+# Purpose: Validar protección fuerte de cada ModelGradientUpdate saliente.
+# Requirements: RF-57, RF-58, RNF-16, RNF-19
+# Policies: P-FL-03, P-FL-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?gradient ?noiseApplied ?anonApplied WHERE {
+  ?gradient a :ModelGradientUpdate ; :originatesFromDevice ?device ; :sentToNode ?dest .
+  OPTIONAL { ?gradient :hasNoiseApplied ?noiseApplied }
+  OPTIONAL { ?gradient :hasAnonymizationApplied ?anonApplied }
+  FILTER(!BOUND(?noiseApplied) || ?noiseApplied != true || !BOUND(?anonApplied) || ?anonApplied != true || NOT EXISTS { ?gradient :hasPrivacyMechanism ?m })
+}
+# END QUERY EXT-Q68: Incumplimiento — gradiente sin anonimización, ruido o mecanismo de privacidad
+
+
+# START QUERY EXT-Q69: Privacidad diferencial y contabilidad epsilon
+# Type: report
+# Purpose: Auditar presupuesto por sesión, propósito y contrato, incluyendo cuenta acumulada cuando esté disponible.
+# Requirements: RF-56, RF-59, RNF-18
+# Policies: P-FL-04
+# Current v3.0.0 result: 2 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?session ?budget ?noise ?account ?contract ?purpose ?maximum ?consumed ?remaining ?status WHERE {
+  ?session a :FederatedLearningSession .
+  OPTIONAL { ?session :hasPrivacyBudget ?budget }
+  OPTIONAL { ?session :noiseLevel ?noise }
+  OPTIONAL { ?session :hasPrivacyBudgetAccount ?account .
+    OPTIONAL { ?account :budgetForContract ?contract }
+    OPTIONAL { ?account :budgetForPurpose ?purpose }
+    OPTIONAL { ?account :privacyBudgetMaximum ?maximum }
+    OPTIONAL { ?account :privacyBudgetConsumed ?consumed }
+    OPTIONAL { ?account :privacyBudgetRemaining ?remaining }
+    OPTIONAL { ?account :configurationStatus ?status }
+  }
+}
+ORDER BY ?session
+# END QUERY EXT-Q69: Privacidad diferencial y contabilidad epsilon
+
+
+# ==============================================================================
+# EXT v3 — Auditoría, temporalidad, aceptación y validación
+# ==============================================================================
+
+
+# START QUERY EXT-Q70: Cadena completa de auditoría semántica
+# Type: report
+# Purpose: Reconstruir usuario→contrato→consentimiento efectivo→propósito→zona→política→nodo→alternativa→trust→tier→acción.
+# Requirements: RF-67, RNF-30
+# Policies: P-AUD-07
+# Current v3.0.0 result: 204 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?user ?contract ?effectiveRange ?purpose ?zone ?policy ?node ?alternative ?altTier ?altScore ?trust ?selectedTier ?action ?from WHERE {
+  ?evaluation a :EvaluationState ; :evaluationUser ?user ; :auditsContract ?contract ; :hasAuthorizationDecision/:hasEffectiveConsentRange ?effectiveRange ; :evaluationPurpose ?purpose ; :evaluationZone ?zone ; :selectedModelTier ?selectedTier ; :resultedInAction ?action ; :validFrom ?from .
+  OPTIONAL { ?evaluation :appliedPolicy ?policy }
+  OPTIONAL { ?evaluation :evaluatesNode ?node . OPTIONAL { ?node :hasNodeState/:hasTrustAssessment/:hasTrustScore ?trust } }
+  OPTIONAL { ?evaluation :hasDecisionAlternative ?alternative . ?alternative :alternativeModelTier ?altTier . OPTIONAL { ?alternative :hasAHPScore ?altScore } }
+}
+ORDER BY ?evaluation ?policy ?altTier
+# END QUERY EXT-Q70: Cadena completa de auditoría semántica
+
+
+# START QUERY EXT-Q71: Incumplimiento — ticket de auditoría incompleto
+# Type: violation
+# Purpose: Aplicar contenido mínimo de P-AUD-06, incluyendo alternativas y políticas.
+# Requirements: RF-54, RF-66, RNF-28, RNF-29
+# Policies: P-AUD-06
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?missing WHERE {
+  ?evaluation a :EvaluationState .
+  {
+    VALUES (?prop ?missing) {
+      (:hasDetectedSymptom "hasDetectedSymptom")
+      (:appliedPolicy "appliedPolicy")
+      (:auditsContract "auditsContract")
+      (:hasAuthorizationDecision "hasAuthorizationDecision")
+      (:hasDecisionAlternative "hasDecisionAlternative")
+      (:selectedModelTier "selectedModelTier")
+      (:hasSelectionJustification "hasSelectionJustification")
+      (:validFrom "validFrom")
+      (:resultedInAction "resultedInAction")
+    }
+    FILTER NOT EXISTS { ?evaluation ?prop ?v }
+  }
+  UNION
+  {
+    FILTER NOT EXISTS { ?evaluation :hasAuthorizationDecision/:hasEffectiveConsentRange ?r }
+    BIND("effectiveConsentRange" AS ?missing)
+  }
+}
+ORDER BY ?evaluation ?missing
+# END QUERY EXT-Q71: Incumplimiento — ticket de auditoría incompleto
+
+
+# START QUERY EXT-Q72: Incumplimiento — acción sin justificación de evaluación/política
+# Type: violation
+# Purpose: Detectar acciones adaptativas no autorizadas por EvaluationState o evaluaciones sin política aplicada.
+# Requirements: RF-65, RF-66
+# Policies: P-AUD-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?subject ?reason WHERE {
+  {
+    ?subject a :AdaptationAction .
+    FILTER NOT EXISTS { ?subject :authorizedByEvaluation ?evaluation }
+    BIND("action-without-evaluation" AS ?reason)
+  }
+  UNION
+  {
+    ?subject a :EvaluationState ; :resultedInAction ?action .
+    FILTER NOT EXISTS { ?subject :appliedPolicy ?policy }
+    BIND("evaluation-without-policy" AS ?reason)
+  }
+}
+ORDER BY ?subject
+# END QUERY EXT-Q72: Incumplimiento — acción sin justificación de evaluación/política
+
+
+# START QUERY EXT-Q73: Reporte de entidades temporales
+# Type: report
+# Purpose: Inspeccionar validFrom/validTo y diferenciar cierre real de plannedExpiry.
+# Requirements: RNF-35, RNF-36
+# Policies: P-GOV-05, P-AUD-02
+# Current v3.0.0 result: 79 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?entity ?type ?from ?to ?plannedExpiry WHERE {
+  ?entity a ?type .
+  ?type rdfs:subClassOf* :TemporalEntity .
+  FILTER(?type != :TemporalEntity)
+  OPTIONAL { ?entity :validFrom ?from }
+  OPTIONAL { ?entity :validTo ?to }
+  OPTIONAL { ?entity :plannedExpiry ?plannedExpiry }
+}
+ORDER BY ?entity ?type
+# END QUERY EXT-Q73: Reporte de entidades temporales
+
+
+# START QUERY EXT-Q74: Incumplimiento — entidad temporal sin validFrom o intervalo inválido
+# Type: violation
+# Purpose: Detectar temporal entities sin inicio o con validTo anterior a validFrom.
+# Requirements: RNF-36
+# Policies: P-GOV-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?entity ?from ?to ?reason WHERE {
+  ?entity a ?type . ?type rdfs:subClassOf* :TemporalEntity . FILTER(?type != :TemporalEntity && ?type != :TrustAssessment)
+  OPTIONAL { ?entity :validFrom ?from }
+  OPTIONAL { ?entity :validTo ?to }
+  BIND(IF(!BOUND(?from), "missing-validFrom", IF(BOUND(?to) && ?to < ?from, "validTo-before-validFrom", "")) AS ?reason)
+  FILTER(?reason != "")
+}
+ORDER BY ?entity
+# END QUERY EXT-Q74: Incumplimiento — entidad temporal sin validFrom o intervalo inválido
+
+
+# START QUERY EXT-Q75: Inventario de shapes SHACL v3
+# Type: inventory
+# Purpose: Listar shapes y severidades disponibles para validación estructural.
+# Requirements: RF-71, RV-01
+# Policies: P-VAL-03
+# Current v3.0.0 result: 74 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?shape ?targetClass ?path ?minCount ?maxCount ?severity ?message WHERE {
+  ?shape a sh:NodeShape .
+  OPTIONAL { ?shape sh:targetClass ?targetClass }
+  OPTIONAL { ?shape sh:property ?ps . OPTIONAL { ?ps sh:path ?path } OPTIONAL { ?ps sh:minCount ?minCount } OPTIONAL { ?ps sh:maxCount ?maxCount } OPTIONAL { ?ps sh:severity ?severity } OPTIONAL { ?ps sh:message ?message } }
+}
+ORDER BY ?shape ?path
+# END QUERY EXT-Q75: Inventario de shapes SHACL v3
+
+
+# START QUERY EXT-Q76: Revisión — perfil de aceptación incompleto
+# Type: review
+# Purpose: Comprobar parámetros necesarios para interpretar RNF cuantitativos antes de una campaña de aceptación.
+# Requirements: RNF-01, RNF-02, RNF-04, RNF-05, RNF-06, RNF-08, RNF-09, RNF-14, RNF-21, RNF-34
+# Policies: P-OPS-01, P-VAL-03
+# Current v3.0.0 result: 9 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?profile ?missing WHERE {
+  ?profile a :AcceptanceProfile .
+  VALUES (?prop ?missing) {
+    (:T_inference_local "T_inference_local")
+    (:T_migration_max "T_migration_max")
+    (:T_sparql_monitor "T_sparql_monitor")
+    (:T_decision_max "T_decision_max")
+    (:E_device_max "E_device_max")
+    (:N_agents "N_agents")
+    (:T_node_join "T_node_join")
+    (:D_delegation_max "D_delegation_max")
+    (:T_reselection_max "T_reselection_max")
+    (:AHP_consistency_threshold "AHP_consistency_threshold")
+  }
+  FILTER NOT EXISTS { ?profile ?prop ?v }
+}
+ORDER BY ?missing
+# END QUERY EXT-Q76: Revisión — perfil de aceptación incompleto
+
+
+# START QUERY EXT-Q77: Revisión — preparación de campaña reproducible
+# Type: review
+# Purpose: Verificar artefactos/versiones y ValidationCampaign antes de interpretar consultas de incumplimiento.
+# Requirements: RF-71, RF-72, RNF-39, RV-02, RV-03
+# Policies: P-VAL-03, P-VAL-04, P-VAL-07
+# Current v3.0.0 result: 6 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?check ?value WHERE {
+  {
+    BIND("ontology-version" AS ?check) <http://example.org/smartcity> owl:versionInfo ?value
+  }
+  UNION { BIND("ontology-artifact" AS ?check) ?a a :OntologyArtifact ; :artifactIdentifier ?value }
+  UNION { BIND("requirements-artifact" AS ?check) ?a a :RequirementsArtifact ; :artifactIdentifier ?value }
+  UNION { BIND("policy-artifact" AS ?check) ?a a :PolicyArtifact ; :artifactIdentifier ?value }
+  UNION { BIND("scenario-artifact" AS ?check) ?a a :ScenarioArtifact ; :artifactIdentifier ?value }
+  UNION { BIND("query-catalog-status" AS ?check) ?a a :QueryCatalog ; :artifactStatus ?value }
+  UNION { BIND("validation-campaign" AS ?check) ?a a :ValidationCampaign . BIND(STR(?a) AS ?value) }
+}
+ORDER BY ?check
+# END QUERY EXT-Q77: Revisión — preparación de campaña reproducible
+
+
+# START QUERY EXT-Q78: Reporte de resolución de conflictos de políticas
+# Type: report
+# Purpose: Listar relaciones no triviales y estrategia de resolución asociada.
+# Requirements: RNF-22
+# Policies: P-GOV-03
+# Current v3.0.0 result: 37 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?relation ?source ?target ?type ?code ?strategy WHERE {
+  ?relation a :PolicyCategoryRelation ; :relationSourceCategory ?source ; :relationTargetCategory ?target ; :hasPolicyRelationType ?type .
+  OPTIONAL { ?type :relationCode ?code }
+  OPTIONAL { ?relation :usesResolutionStrategy ?strategy }
+  FILTER(?code IN ("GEN","COR","CON","SHD","DEP"))
+}
+ORDER BY ?code ?source ?target
+# END QUERY EXT-Q78: Reporte de resolución de conflictos de políticas
+
+
+# START QUERY EXT-Q79: Incumplimiento — relación conflictiva sin estrategia de resolución
+# Type: violation
+# Purpose: Exigir estrategia explícita para relaciones de conflicto/generalización/shadowing; DEP puede resolverse por orden y se informa aparte.
+# Requirements: RNF-22
+# Policies: P-GOV-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?relation ?source ?target ?code WHERE {
+  ?relation a :PolicyCategoryRelation ; :relationSourceCategory ?source ; :relationTargetCategory ?target ; :hasPolicyRelationType ?type .
+  ?type :relationCode ?code .
+  FILTER(?code IN ("GEN","COR","CON","SHD"))
+  FILTER NOT EXISTS { ?relation :usesResolutionStrategy ?strategy }
+}
+ORDER BY ?code ?source ?target
+# END QUERY EXT-Q79: Incumplimiento — relación conflictiva sin estrategia de resolución
+
+
+# START QUERY EXT-Q80: Dashboard global v3 de cobertura y deuda de migración
+# Type: dashboard
+# Purpose: Resumir cobertura estructural y elementos pendientes antes de aceptación científica.
+# Requirements: RF-68, RF-71, RV-01, RV-05
+# Policies: P-VAL-08
+# Current v3.0.0 result: 13 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?metric ?value WHERE {
+  { BIND("functional_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :FunctionalRequirement } } }
+  UNION { BIND("nonfunctional_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :NonFunctionalRequirement } } }
+  UNION { BIND("validation_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :ValidationRequirement } } }
+  UNION { BIND("policies" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :Policy } } }
+  UNION { BIND("mechanisms" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :MechanismSpecification } } }
+  UNION { BIND("scenarios" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :Scenario } } }
+  UNION { BIND("policy_category_relations" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :PolicyCategoryRelation } } }
+  UNION { BIND("shacl_shapes" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a sh:NodeShape } } }
+  UNION { BIND("evaluations" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :EvaluationState } } }
+  UNION { BIND("alternatives_pending_recalculation" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?e :hasDecisionAlternative ?x . FILTER NOT EXISTS { ?x :hasAHPScore ?score } } } }
+  UNION { BIND("trust_assessments_incomplete" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :TrustAssessment . FILTER(!EXISTS { ?x :trustWindowStart ?ws } || !EXISTS { ?x :trustWindowEnd ?we } || !EXISTS { ?x :hasTrustEvidence ?ev }) } } }
+  UNION { BIND("acceptance_parameters_missing" AS ?metric) { SELECT (COUNT(?prop) AS ?value) WHERE { VALUES ?prop { :T_inference_local :T_migration_max :T_sparql_monitor :T_decision_max :E_device_max :N_agents :T_node_join :D_delegation_max :T_reselection_max :AHP_consistency_threshold } FILTER NOT EXISTS { ?p a :AcceptanceProfile ; ?prop ?v } } } }
+  UNION { BIND("query_specs_in_ontology" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :QuerySpecification } } }
+}
+ORDER BY ?metric
+# END QUERY EXT-Q80: Dashboard global v3 de cobertura y deuda de migración

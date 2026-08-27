@@ -1,0 +1,24 @@
+# Type: report
+# Purpose: Inspeccionar contexto rural, conectividad y acciones de retención/sincronización cuando existan.
+# Requirements: RF-08, RF-27, RF-31
+# Policies: P-ZONE-02, P-DATA-07
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?zone ?deviceState ?connection ?retention ?sync WHERE {
+  ?user a :User ; :locatedInZone ?zone .
+  ?zone a :RuralZone .
+  OPTIONAL { ?user (:hasWearable|:hasMobileDevice)/:hasDeviceState ?deviceState . ?deviceState :hasConnectionStatus ?connection }
+  OPTIONAL { ?retention a :RetentionEvent ; :partOfScenario :S7 }
+  OPTIONAL { ?sync a :SynchronizationEvent ; :partOfScenario :S7 }
+}

@@ -3,7 +3,9 @@ from urllib.error import URLError
 
 from continuum_bench import distributed
 from continuum_bench.distributed import Endpoint, _assignment
+from continuum_bench.protocol import worker_health_error
 from continuum_bench.queries import load_catalog
+from continuum_bench.reasoners import REASONING_CONTRACT
 
 
 def test_docker_role_assignment_routes_every_query_once(config):
@@ -19,8 +21,8 @@ def test_docker_role_assignment_routes_every_query_once(config):
     flattened = [
         spec.id for endpoint_specs in assigned.values() for spec in endpoint_specs
     ]
-    assert len(flattened) == 69
-    assert len(set(flattened)) == 69
+    assert len(flattened) == 115
+    assert len(set(flattened)) == 115
     assert assigned["http://cloud"]
     assert assigned["http://fog"]
     assert all(assigned[f"http://edge{index}"] for index in (1, 2, 3))
@@ -32,7 +34,7 @@ def test_discover_rejects_an_unrelated_health_service(monkeypatch):
         "_request",
         lambda *args, **kwargs: {
             "status": "ok",
-            "protocol_version": "4",
+            "protocol_version": "5",
             "node_role": "fog",
             "build_id": "continuum-v5-contract",
         },
@@ -80,3 +82,21 @@ def test_request_retries_a_transient_disconnect(monkeypatch):
         ("http://edge2/health", 9.0),
         ("http://edge2/health", 9.0),
     ]
+
+
+def test_worker_health_rejects_an_old_ontology_release():
+    health = {
+        "status": "ok",
+        "service": "continuum-benchmark-node",
+        "protocol_version": "5",
+        "ontology_version": "2.3.0",
+        "query_count": 69,
+        "role": "fog",
+    }
+
+    assert "ontology_version" in worker_health_error(health)
+
+    health.update(ontology_version="3.0.0", query_count=115)
+    assert "reasoning_contract" in worker_health_error(health)
+    health["reasoning_contract"] = REASONING_CONTRACT
+    assert worker_health_error(health, expected_role="fog") is None

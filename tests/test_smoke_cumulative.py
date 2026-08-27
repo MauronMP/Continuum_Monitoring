@@ -31,13 +31,13 @@ def test_cumulative_smoke_adds_every_category_and_finishes_with_all_queries(
     )
     query_counts = [int(row["query_count"]) for row in rows]
     assert query_counts == sorted(query_counts)
-    assert query_counts[-1] == 69
+    assert query_counts[-1] == 115
 
     detail = _rows(output / "query-runs.csv")
     final_stage_ids = {
         row["query_id"] for row in detail if int(row["stage"]) == len(rows)
     }
-    assert len(final_stage_ids) == 69
+    assert len(final_stage_ids) == 115
     assert all(len(row["result_digest"]) == 64 for row in detail)
 
     terminal = capsys.readouterr().out

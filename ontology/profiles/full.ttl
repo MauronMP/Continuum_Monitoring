@@ -10,4 +10,4 @@
         <http://example.org/smartcity/modules/deployment>,
         <http://example.org/smartcity/modules/wellbeing>,
         <http://example.org/smartcity/modules/wellbeing-vocabulary> ;
-    owl:versionInfo "2.3.0" .
+    owl:versionInfo "3.0.0" .

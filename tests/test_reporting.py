@@ -1,4 +1,5 @@
 import csv
+import json
 
 from continuum_bench.reporting import (
     ENGINE_LABELS,
@@ -9,6 +10,14 @@ from continuum_bench.reporting import (
     _node_cost_rows,
     plot_three_architectures,
 )
+from continuum_bench.specification import release_identity
+
+
+def _release(directory):
+    (directory / "metadata.json").write_text(
+        json.dumps(release_identity()),
+        encoding="utf-8",
+    )
 
 
 def test_node_costs_are_aggregated_per_role_and_run():
@@ -72,6 +81,7 @@ def test_product_summary_includes_all_semantic_engines(tmp_path):
     for suite in ("cumulative", "scalability"):
         directory = tmp_path / suite
         directory.mkdir()
+        _release(directory)
         with (directory / "summary.csv").open(
             "w",
             encoding="utf-8",
@@ -86,7 +96,7 @@ def test_product_summary_includes_all_semantic_engines(tmp_path):
                         "inference_profile": (
                             "none" if engine == "oxigraph" else "rdfs"
                         ),
-                        "stage": 14,
+                        "stage": 16,
                         "synthetic_users": 500,
                         "engine_total_ms": 10,
                         "prepare_ms": 2,
@@ -124,6 +134,7 @@ def test_distributed_summary_accepts_sharded_storage_metrics(tmp_path):
     for suite in ("cumulative", "scalability"):
         directory = tmp_path / suite
         directory.mkdir()
+        _release(directory)
         with (directory / "summary.csv").open(
             "w",
             encoding="utf-8",
@@ -135,9 +146,9 @@ def test_distributed_summary_accepts_sharded_storage_metrics(tmp_path):
                 writer.writerow(
                     {
                         "reasoner": reasoner,
-                        "stage": 14,
+                        "stage": 16,
                         "synthetic_users": 500,
-                        "query_count": 69,
+                        "query_count": 115,
                         "total_wall_ms": 20,
                         "prepare_wall_ms": 12,
                         "query_wall_ms": 8,
@@ -181,11 +192,12 @@ def test_three_architecture_plot_ignores_unrequested_layout_labels(tmp_path):
     reasoners = ("rdfs", "owlrl", "rdfs_owlrl")
     for architecture, root in roots.items():
         for suite, x_field, x_value in (
-            ("cumulative", "stage", 14),
+            ("cumulative", "stage", 16),
             ("scalability", "synthetic_users", 500),
         ):
             directory = root / suite
             directory.mkdir(parents=True)
+            _release(directory)
             value_field = (
                 "total_ms"
                 if architecture == "monolith"

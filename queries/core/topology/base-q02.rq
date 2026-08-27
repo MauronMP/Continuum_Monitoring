@@ -1,23 +1,24 @@
-# ================================================================================================
-
-PREFIX ex:   <http://example.org/smartcity#>
+# Type: inventory
+# Purpose: Listar la infraestructura del continuum incluyendo nodos Mist, Edge, Fog y Cloud.
+# Requirements: RF-02, RF-05, RF-70
+# Policies: P-OPS-02, P-OPS-03
+# Current v3.0.0 result: 8 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX saref:<https://saref.etsi.org/core/>
-PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl:  <http://www.w3.org/2002/07/owl#>
-PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
-PREFIX sh:   <http://www.w3.org/ns/shacl#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-# Q02 · List all computational nodes and their type
-# Level   : Simple
-# Scenario: All (infrastructure)
-# ----------------------------------------------------------------
-SELECT ?node ?type ?elasticity
-WHERE {
-  ?node a ?type .
-  ?type rdfs:subClassOf* ex:ComputationalNode .
-  OPTIONAL { ?node ex:hasElasticity ?elasticity }
+SELECT DISTINCT ?node ?nodeType ?elasticity WHERE {
+  ?node a ?nodeType .
+  ?nodeType rdfs:subClassOf* :ComputationalNode .
+  FILTER(?nodeType != :ComputationalNode)
+  OPTIONAL { ?node :hasElasticity ?elasticity }
 }
-ORDER BY ?type
+ORDER BY ?node ?nodeType

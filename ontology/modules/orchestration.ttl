@@ -1,17 +1,102 @@
 @prefix ex: <http://example.org/smartcity#> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:BufferRecord a owl:Class ;
+    rdfs:label "Buffer Record" ;
+    rdfs:comment "Temporary retained data record governed by authorization and storage policies." ;
+    rdfs:subClassOf ex:TemporalEntity .
+
+ex:DegradationEvent a owl:Class ;
+    rdfs:label "Degradation Event" ;
+    rdfs:subClassOf ex:AdaptationAction .
+
+ex:MigrationEvent a owl:Class ;
+    rdfs:label "Migration Event" ;
+    rdfs:subClassOf ex:AdaptationAction .
+
+ex:ModelSelectionAction a owl:Class ;
+    rdfs:label "Model Selection Action" ;
+    rdfs:subClassOf ex:AdaptationAction .
+
+ex:OffloadingEvent a owl:Class ;
+    rdfs:label "Offloading Event" ;
+    rdfs:subClassOf ex:AdaptationAction .
+
+ex:ParametrizedData a owl:Class ;
+    rdfs:label "Parametrized Data" ;
+    rdfs:comment "Pre-computed and aggregated data. Raw physiological data never leaves the device." .
+
+ex:RetentionEvent a owl:Class ;
+    rdfs:label "Retention Event" ;
+    rdfs:subClassOf ex:AdaptationAction .
+
+ex:ScalingEvent a owl:Class ;
+    rdfs:label "Scaling Event" ;
+    rdfs:subClassOf ex:AdaptationAction .
+
+ex:SynchronizationEvent a owl:Class ;
+    rdfs:label "Synchronization Event" ;
+    rdfs:subClassOf ex:AdaptationAction .
+
+ex:actionOriginNode a owl:ObjectProperty ;
+    rdfs:label "action origin node" ;
+    rdfs:domain ex:AdaptationAction ;
+    rdfs:range ex:ComputationalNode .
+
+ex:actionTargetNode a owl:ObjectProperty ;
+    rdfs:label "action target node" ;
+    rdfs:domain ex:AdaptationAction ;
+    rdfs:range ex:ComputationalNode .
+
+ex:affectsModel a owl:ObjectProperty ;
+    rdfs:label "affects model" ;
+    rdfs:domain ex:AdaptationAction ;
+    rdfs:range ex:AIModel .
+
+ex:affectsService a owl:ObjectProperty ;
+    rdfs:label "affects service" ;
+    rdfs:domain ex:AdaptationAction ;
+    rdfs:range ex:Service .
+
+ex:alternativeModelTier a owl:ObjectProperty ;
+    rdfs:label "alternative model tier" ;
+    rdfs:domain ex:DecisionAlternative ;
+    rdfs:range ex:ModelTier .
 
 ex:appliesPolicy a owl:ObjectProperty ;
     rdfs:label "applies policy" ;
+    rdfs:comment "Deprecated in v3.0.0; use ex:appliedPolicy.",
+        "Use appliedPolicy" ;
     rdfs:domain ex:EvaluationState ;
-    rdfs:range ex:Policy .
+    rdfs:range ex:Policy ;
+    owl:deprecated true .
 
 ex:auditsContract a owl:ObjectProperty ;
     rdfs:label "audits contract" ;
     rdfs:domain ex:EvaluationState ;
     rdfs:range ex:SemanticContract .
+
+ex:authorizedByEvaluation a owl:ObjectProperty ;
+    rdfs:label "authorized by evaluation" ;
+    rdfs:domain ex:AdaptationAction ;
+    rdfs:range ex:EvaluationState .
+
+ex:carriesData a owl:ObjectProperty ;
+    rdfs:label "carries data" ;
+    rdfs:domain ex:TransferEvent .
+
+ex:criterionA a owl:ObjectProperty ;
+    rdfs:label "criterion A" ;
+    rdfs:domain ex:PairwiseComparison .
+
+ex:criterionB a owl:ObjectProperty ;
+    rdfs:label "criterion B" ;
+    rdfs:domain ex:PairwiseComparison .
 
 ex:delegatedBy a owl:ObjectProperty ;
     rdfs:label "delegated by" ;
@@ -21,8 +106,29 @@ ex:delegatedBy a owl:ObjectProperty ;
 ex:delegatesTo a owl:ObjectProperty ;
     rdfs:label "delegates requests to" ;
     rdfs:comment "Used when a node is saturated or disconnected. For temporal delegation, use an ex:DelegationEvent with ex:validFrom/ex:validTo and ex:delegatedBy." ;
-    rdfs:domain ex:DelegableEntity ;
+    rdfs:domain <urn:continuum:ontology:3.0.0:node:94> ;
     rdfs:range ex:ComputationalNode .
+
+ex:delegationDepth a owl:DatatypeProperty ;
+    rdfs:label "delegation depth" ;
+    rdfs:domain ex:DelegationEvent ;
+    rdfs:range xsd:integer .
+
+ex:derivedFrom a owl:ObjectProperty ;
+    rdfs:label "derived from" ;
+    rdfs:comment "SOSA observation that originated this state and provides its timestamp." ;
+    rdfs:domain ex:State ;
+    rdfs:range sosa:Observation .
+
+ex:eligibilityReason a owl:DatatypeProperty ;
+    rdfs:label "eligibility reason" ;
+    rdfs:domain ex:DecisionAlternative ;
+    rdfs:range xsd:string .
+
+ex:estimatedPredictionError a owl:DatatypeProperty ;
+    rdfs:label "estimated prediction error" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range xsd:decimal .
 
 ex:evaluatesNode a owl:ObjectProperty ;
     rdfs:label "evaluates node" ;
@@ -34,14 +140,37 @@ ex:evaluatesService a owl:ObjectProperty ;
     rdfs:domain ex:EvaluationState ;
     rdfs:range ex:Service .
 
+ex:evaluationOrder a owl:DatatypeProperty ;
+    rdfs:label "evaluation order" ;
+    rdfs:domain ex:PolicyCategory ;
+    rdfs:range xsd:integer .
+
+ex:evaluationPurpose a owl:ObjectProperty ;
+    rdfs:label "evaluation purpose" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:ProcessingPurpose .
+
+ex:evaluationUser a owl:ObjectProperty ;
+    rdfs:label "evaluation user" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:User .
+
+ex:evaluationZone a owl:ObjectProperty ;
+    rdfs:label "evaluation zone" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:CityArea .
+
 ex:expiresOnRecoveryOf a owl:ObjectProperty ;
     rdfs:label "expires on recovery of" ;
+    rdfs:comment "Use semantic RecoveryCondition together with validTo/plannedExpiry." ;
     rdfs:domain ex:DelegationEvent ;
-    rdfs:range ex:ComputationalNode .
+    rdfs:range ex:ComputationalNode ;
+    owl:deprecated true .
 
 ex:hasAHPScore a owl:DatatypeProperty ;
-    rdfs:label "has AHP score" ;
-    rdfs:domain ex:EvaluationState ;
+    rdfs:label "has AHP / multicriteria score" ;
+    rdfs:comment "Score of a specific candidate alternative. For AHP it is the AHP result; for other methods the DecisionMethod identifies the scoring semantics." ;
+    rdfs:domain ex:DecisionAlternative ;
     rdfs:range xsd:decimal .
 
 ex:hasAdaptability a owl:ObjectProperty ;
@@ -49,9 +178,28 @@ ex:hasAdaptability a owl:ObjectProperty ;
     rdfs:domain ex:ServiceState ;
     rdfs:range ex:AdaptabilityLevel .
 
+ex:hasConsistencyRatio a owl:DatatypeProperty ;
+    rdfs:label "has consistency ratio" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range xsd:decimal .
+
+ex:hasConsistencyThreshold a owl:DatatypeProperty ;
+    rdfs:label "has consistency threshold" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range xsd:decimal .
+
+ex:hasDecisionAlternative a owl:ObjectProperty ;
+    rdfs:label "has decision alternative" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:DecisionAlternative .
+
+ex:hasDecisionMethod a owl:ObjectProperty ;
+    rdfs:label "has decision method" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:DecisionMethod .
+
 ex:hasDegradationCause a owl:ObjectProperty ;
     rdfs:label "has degradation cause" ;
-    rdfs:domain ex:AIModel ;
     rdfs:range ex:ModelDegradationCause .
 
 ex:hasDelegation a owl:ObjectProperty ;
@@ -94,6 +242,11 @@ ex:hasModelTier a owl:ObjectProperty ;
     rdfs:domain ex:AIModel ;
     rdfs:range ex:ModelTier .
 
+ex:hasPairwiseComparison a owl:ObjectProperty ;
+    rdfs:label "has pairwise comparison" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:PairwiseComparison .
+
 ex:hasPrivacyWeight a owl:DatatypeProperty ;
     rdfs:label "has privacy weight" ;
     rdfs:domain ex:EvaluationState ;
@@ -109,10 +262,14 @@ ex:hasProfitability a owl:ObjectProperty ;
     rdfs:domain ex:EvaluationState ;
     rdfs:range ex:ProfitabilityLevel .
 
-ex:hasRecoveryCondition a owl:DatatypeProperty ;
+ex:hasRecoveryCondition a owl:ObjectProperty ;
     rdfs:label "has recovery condition" ;
     rdfs:domain ex:DelegationEvent ;
-    rdfs:range xsd:string .
+    rdfs:range ex:RecoveryCondition .
+
+ex:hasReplicationEvent a owl:ObjectProperty ;
+    rdfs:label "has replication event" ;
+    rdfs:range ex:ReplicationEvent .
 
 ex:hasSelectionJustification a owl:DatatypeProperty ;
     rdfs:label "has selection justification" ;
@@ -125,9 +282,9 @@ ex:hasServiceState a owl:ObjectProperty ;
     rdfs:range ex:ServiceState .
 
 ex:hasTrustWeight a owl:DatatypeProperty ;
-    rdfs:label "has trust weight" ;
-    rdfs:comment "Dynamic weight consulted during the MAPE-K Analyse phase to prefer reliable nodes over saturated or unstable nodes." ;
-    rdfs:domain ex:TrustWeightedEntity ;
+    rdfs:label "has external trust weight" ;
+    rdfs:comment "External trust criterion used to filter/order already eligible alternatives. It is not part of AHP weight normalization." ;
+    rdfs:domain ex:EvaluationState ;
     rdfs:range xsd:decimal .
 
 ex:hostedOnNode a owl:ObjectProperty ;
@@ -145,10 +302,108 @@ ex:hostsService a owl:ObjectProperty ;
     rdfs:domain ex:ComputationalNode ;
     rdfs:range ex:Service .
 
+ex:idempotencyKey a owl:DatatypeProperty ;
+    rdfs:label "idempotency key" ;
+    rdfs:range xsd:string .
+
+ex:isEligible a owl:DatatypeProperty ;
+    rdfs:label "is eligible" ;
+    rdfs:domain ex:DecisionAlternative ;
+    rdfs:range xsd:boolean .
+
 ex:lastUpdated a owl:DatatypeProperty ;
     rdfs:label "last updated" ;
     rdfs:domain ex:AIModel ;
     rdfs:range xsd:dateTime .
+
+ex:legacyDecisionScore a owl:DatatypeProperty ;
+    rdfs:label "legacy decision score" ;
+    rdfs:comment "Legacy single winning score retained for provenance. It is not equivalent to v3 per-alternative scores." ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range xsd:decimal .
+
+ex:migrationNote a owl:DatatypeProperty ;
+    rdfs:label "migration note" ;
+    rdfs:range xsd:string .
+
+ex:migrationStatus a owl:DatatypeProperty ;
+    rdfs:label "migration status" ;
+    rdfs:range xsd:string .
+
+ex:modelLineageStatus a owl:DatatypeProperty ;
+    rdfs:label "model lineage status" ;
+    rdfs:domain ex:AIModel ;
+    rdfs:range xsd:string .
+
+ex:modelVersion a owl:DatatypeProperty ;
+    rdfs:label "model version" ;
+    rdfs:domain ex:AIModel ;
+    rdfs:range xsd:string .
+
+ex:observedModelQuality a owl:DatatypeProperty ;
+    rdfs:label "observed model quality" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range xsd:decimal .
+
+ex:pairwiseValue a owl:DatatypeProperty ;
+    rdfs:label "pairwise comparison value" ;
+    rdfs:domain ex:PairwiseComparison ;
+    rdfs:range xsd:decimal .
+
+ex:parentDelegation a owl:ObjectProperty ;
+    rdfs:label "parent delegation" ;
+    rdfs:domain ex:DelegationEvent ;
+    rdfs:range ex:DelegationEvent .
+
+ex:partOfScenario a owl:ObjectProperty ;
+    rdfs:label "part of scenario" ;
+    rdfs:range ex:Scenario .
+
+ex:plannedExpiry a owl:DatatypeProperty ;
+    rdfs:label "planned expiry" ;
+    rdfs:comment "Planned deadline distinct from effective closure validTo." ;
+    rdfs:domain ex:TemporalEntity ;
+    rdfs:range xsd:dateTime .
+
+ex:predictionConfidence a owl:DatatypeProperty ;
+    rdfs:label "prediction confidence" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range xsd:decimal .
+
+ex:replicaOf a owl:ObjectProperty ;
+    rdfs:label "replica of" .
+
+ex:replicationSource a owl:ObjectProperty ;
+    rdfs:label "replication source" ;
+    rdfs:domain ex:ReplicationEvent .
+
+ex:replicationTarget a owl:ObjectProperty ;
+    rdfs:label "replication target" ;
+    rdfs:domain ex:ReplicationEvent .
+
+ex:replicationVersion a owl:DatatypeProperty ;
+    rdfs:label "replication version" ;
+    rdfs:range xsd:string .
+
+ex:requiresRecalculation a owl:DatatypeProperty ;
+    rdfs:label "requires recalculation" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range xsd:boolean .
+
+ex:resultedInAction a owl:ObjectProperty ;
+    rdfs:label "resulted in action" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:AdaptationAction .
+
+ex:rollbackTarget a owl:ObjectProperty ;
+    rdfs:label "rollback target" ;
+    rdfs:domain ex:RollbackEvent ;
+    rdfs:range ex:AIModel .
+
+ex:selectedAlternative a owl:ObjectProperty ;
+    rdfs:label "selected alternative" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:DecisionAlternative .
 
 ex:selectedModelTier a owl:ObjectProperty ;
     rdfs:label "selected model tier" ;
@@ -156,24 +411,45 @@ ex:selectedModelTier a owl:ObjectProperty ;
     rdfs:domain ex:EvaluationState ;
     rdfs:range ex:ModelTier .
 
+ex:supersedesModel a owl:ObjectProperty ;
+    rdfs:label "supersedes model" ;
+    rdfs:domain ex:AIModel ;
+    rdfs:range ex:AIModel .
+
+ex:transferDestination a owl:ObjectProperty ;
+    rdfs:label "transfer destination" ;
+    rdfs:domain ex:TransferEvent .
+
+ex:transferSource a owl:ObjectProperty ;
+    rdfs:label "transfer source" ;
+    rdfs:domain ex:TransferEvent .
+
 ex:triggeredByState a owl:ObjectProperty ;
     rdfs:label "triggered by state" ;
-    rdfs:domain ex:StateTriggeredDecision ;
+    rdfs:domain <urn:continuum:ontology:3.0.0:node:91> ;
     rdfs:range ex:State .
 
+ex:usesModel a owl:ObjectProperty ;
+    rdfs:label "uses model" ;
+    rdfs:comment "Model used by a service. Distinct from hostsModel, whose subject is a ComputationalNode." ;
+    rdfs:domain ex:Service ;
+    rdfs:range ex:AIModel .
+
 <http://example.org/smartcity/modules/orchestration> a owl:Ontology ;
-    owl:imports
-        <http://example.org/smartcity/modules/foundation>,
+    rdfs:label "Continuum decision and adaptation module"@en ;
+    owl:imports <http://example.org/smartcity/modules/foundation>,
         <http://example.org/smartcity/modules/governance>,
-        <http://example.org/smartcity/modules/observability> ;
-    owl:versionInfo "2.3.0" .
+        <http://example.org/smartcity/modules/observability>,
+        <http://example.org/smartcity/modules/topology> ;
+    owl:versionInfo "3.0.0" .
+
+geo:Feature a owl:Class .
 
 ex:AdaptabilityLevel a owl:Class ;
     rdfs:label "Adaptability Level" .
 
-ex:MAPESymptom a owl:Class ;
-    rdfs:label "MAPE-K Symptom" ;
-    rdfs:comment "Symptom detected in the MAPE-K Monitor/Analyse phases and recorded for auditability." .
+ex:DecisionMethod a owl:Class ;
+    rdfs:label "Decision Method" .
 
 ex:MigrationCostLevel a owl:Class ;
     rdfs:label "Migration Cost Level" .
@@ -184,44 +460,77 @@ ex:MigrationTimeLevel a owl:Class ;
 ex:ModelDegradationCause a owl:Class ;
     rdfs:label "Model Degradation Cause" .
 
-ex:ProcessingLevel a owl:Class ;
-    rdfs:label "Processing Level" .
-
 ex:ProfitabilityLevel a owl:Class ;
     rdfs:label "Profitability Level" .
+
+ex:RecoveryCondition a owl:Class ;
+    rdfs:label "Recovery Condition" .
+
+ex:RollbackEvent a owl:Class ;
+    rdfs:label "Rollback Event" ;
+    rdfs:subClassOf ex:AdaptationAction .
+
+<urn:continuum:ontology:3.0.0:node:91> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:92> .
+
+<urn:continuum:ontology:3.0.0:node:92> rdf:first ex:DelegationEvent ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:93> .
+
+<urn:continuum:ontology:3.0.0:node:93> rdf:first ex:EvaluationState ;
+    rdf:rest () .
+
+<urn:continuum:ontology:3.0.0:node:94> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:95> .
+
+<urn:continuum:ontology:3.0.0:node:95> rdf:first ex:ComputationalNode ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:96> .
+
+<urn:continuum:ontology:3.0.0:node:96> rdf:first ex:DelegationEvent ;
+    rdf:rest () .
 
 ex:ModelTier a owl:Class ;
     rdfs:label "Model Tier" .
 
-ex:Service a owl:Class ;
-    rdfs:label "Service" ;
-    rdfs:comment "Stress prediction or any other continuum service." ;
-    rdfs:subClassOf ex:ConsentRequiredResource,
-        ex:GovernedResource .
+ex:ReplicationEvent a owl:Class ;
+    rdfs:label "Replication Event" ;
+    rdfs:comment "Controlled and idempotent replication or synchronization event." ;
+    rdfs:subClassOf ex:TemporalEntity .
 
 ex:ServiceState a owl:Class ;
     rdfs:label "Service State" ;
-    rdfs:subClassOf ex:ConsentRequiredResource,
-        ex:State .
+    rdfs:subClassOf ex:State .
+
+ex:TransferEvent a owl:Class ;
+    rdfs:label "Transfer Event" ;
+    rdfs:comment "Auditable transfer of data, model updates or other payloads." ;
+    rdfs:subClassOf ex:TemporalEntity .
+
+ex:PairwiseComparison a owl:Class ;
+    rdfs:label "Pairwise Comparison" .
+
+ex:Service a owl:Class ;
+    rdfs:label "Service" ;
+    rdfs:comment "Stress prediction or any other continuum service." .
+
+ex:DecisionAlternative a owl:Class ;
+    rdfs:label "Decision Alternative" .
 
 ex:DelegationEvent a owl:Class ;
     rdfs:label "Delegation Event" ;
     rdfs:comment "Reified temporal delegation that records delegator node, delegate node, cause, validity interval and recovery condition." ;
-    rdfs:subClassOf ex:DelegableEntity,
-        ex:State,
-        ex:StateTriggeredDecision .
+    rdfs:subClassOf ex:AdaptationAction,
+        ex:TemporalEntity .
 
 ex:AIModel a owl:Class ;
     rdfs:label "AI Model" ;
-    rdfs:comment "Stress prediction model. Exists at different quality levels per continuum layer." ;
-    rdfs:subClassOf ex:ConsentRequiredResource .
+    rdfs:comment "Stress prediction model. Exists at different quality levels per continuum layer." .
+
+ex:AdaptationAction a owl:Class ;
+    rdfs:label "Adaptation Action" ;
+    rdfs:comment "Auditable action produced by an EvaluationState." ;
+    rdfs:subClassOf ex:TemporalEntity .
 
 ex:EvaluationState a owl:Class ;
     rdfs:label "Evaluation State" ;
     rdfs:comment "Derived by reasoning over NodeState + UserState + NodeUserRelation." ;
-    rdfs:subClassOf ex:ConsentRequiredResource,
-        ex:ConsentScopedResource,
-        ex:PurposeScopedResource,
-        ex:State,
-        ex:StateTriggeredDecision,
-        ex:TrustWeightedEntity .
+    rdfs:subClassOf ex:State .

@@ -1,17 +1,105 @@
 @prefix ex: <http://example.org/smartcity#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:AHP_consistency_threshold a owl:DatatypeProperty ;
+    rdfs:label "AHP consistency threshold" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:decimal .
+
+ex:AnonymousIdentifier a owl:Class ;
+    rdfs:label "Anonymous Identifier" ;
+    rdfs:subClassOf ex:Identifier .
+
+ex:D_delegation_max a owl:DatatypeProperty ;
+    rdfs:label "maximum delegation depth" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:integer .
 
 ex:DifferentialPrivacyMechanism a owl:Class ;
     rdfs:label "Differential Privacy Mechanism" ;
     rdfs:subClassOf ex:PrivacyMechanism .
 
-ex:anonymizedID a owl:DatatypeProperty ;
-    rdfs:label "anonymized ID" ;
-    rdfs:domain ex:User ;
-    rdfs:range xsd:string .
+ex:DirectIdentifier a owl:Class ;
+    rdfs:label "Direct Identifier" ;
+    rdfs:subClassOf ex:Identifier .
+
+ex:E_device_max a owl:DatatypeProperty ;
+    rdfs:label "device energy threshold" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:decimal .
+
+ex:EncryptionMechanism a owl:Class ;
+    rdfs:label "Encryption Mechanism" ;
+    rdfs:subClassOf ex:SecurityMechanism .
+
+ex:FunctionalRequirement a owl:Class ;
+    rdfs:label "Functional Requirement" ;
+    rdfs:subClassOf ex:Requirement .
+
+ex:N_agents a owl:DatatypeProperty ;
+    rdfs:label "concurrent agent target" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:integer .
+
+ex:NonFunctionalRequirement a owl:Class ;
+    rdfs:label "Non-functional Requirement" ;
+    rdfs:subClassOf ex:Requirement .
+
+ex:PseudonymousIdentifier a owl:Class ;
+    rdfs:label "Pseudonymous Identifier" ;
+    rdfs:subClassOf ex:Identifier .
+
+ex:T_decision_max a owl:DatatypeProperty ;
+    rdfs:label "decision threshold" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:decimal .
+
+ex:T_inference_local a owl:DatatypeProperty ;
+    rdfs:label "local inference latency threshold (ms)" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:decimal .
+
+ex:T_migration_max a owl:DatatypeProperty ;
+    rdfs:label "migration interruption threshold" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:decimal .
+
+ex:T_node_join a owl:DatatypeProperty ;
+    rdfs:label "node join threshold" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:decimal .
+
+ex:T_reselection_max a owl:DatatypeProperty ;
+    rdfs:label "reselection threshold" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:decimal .
+
+ex:T_sparql_monitor a owl:DatatypeProperty ;
+    rdfs:label "SPARQL monitoring threshold" ;
+    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:range xsd:decimal .
+
+ex:ValidationRequirement a owl:Class ;
+    rdfs:label "Validation / Reproducibility Requirement" ;
+    rdfs:subClassOf ex:Requirement .
+
+ex:appliedMechanism a owl:ObjectProperty ;
+    rdfs:label "applied mechanism" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:MechanismSpecification .
+
+ex:appliedPolicy a owl:ObjectProperty ;
+    rdfs:label "applied policy" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:Policy .
+
+ex:appliedSecurityMechanism a owl:ObjectProperty ;
+    rdfs:label "applied security mechanism" ;
+    rdfs:range ex:SecurityMechanism .
 
 ex:appliesInZone a owl:ObjectProperty ;
     rdfs:label "applies in zone" ;
@@ -22,32 +110,150 @@ ex:appliesTo a owl:ObjectProperty ;
     rdfs:label "applies to" ;
     rdfs:domain ex:Permission .
 
+ex:appliesToZoneType a owl:ObjectProperty ;
+    rdfs:label "applies to zone type" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range owl:Class .
+
+ex:artifactIdentifier a owl:DatatypeProperty ;
+    rdfs:label "artifact identifier" ;
+    rdfs:domain ex:Artifact ;
+    rdfs:range xsd:string .
+
+ex:artifactStatus a owl:DatatypeProperty ;
+    rdfs:label "artifact status" ;
+    rdfs:domain ex:Artifact ;
+    rdfs:range xsd:string .
+
+ex:artifactVersion a owl:DatatypeProperty ;
+    rdfs:label "artifact version" ;
+    rdfs:domain ex:Artifact ;
+    rdfs:range xsd:string .
+
+ex:authorizationReason a owl:DatatypeProperty ;
+    rdfs:label "authorization reason" ;
+    rdfs:domain ex:AuthorizationDecision ;
+    rdfs:range xsd:string .
+
+ex:basedOnConsentRecord a owl:ObjectProperty ;
+    rdfs:label "based on consent record" ;
+    rdfs:domain ex:AuthorizationDecision ;
+    rdfs:range ex:ConsentRecord .
+
+ex:basedOnContract a owl:ObjectProperty ;
+    rdfs:label "based on contract" ;
+    rdfs:domain ex:AuthorizationDecision ;
+    rdfs:range ex:SemanticContract .
+
+ex:basedOnZone a owl:ObjectProperty ;
+    rdfs:label "based on zone" ;
+    rdfs:domain ex:AuthorizationDecision ;
+    rdfs:range ex:CityArea .
+
+ex:belongsToPolicyCategory a owl:ObjectProperty ;
+    rdfs:label "belongs to policy category" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range ex:PolicyCategory .
+
+ex:belongsToQueryCatalog a owl:ObjectProperty ;
+    rdfs:label "belongs to query catalog" ;
+    rdfs:domain ex:QuerySpecification ;
+    rdfs:range ex:QueryCatalog .
+
+ex:categoryCode a owl:DatatypeProperty ;
+    rdfs:label "category code" ;
+    rdfs:domain ex:PolicyCategory ;
+    rdfs:range xsd:string .
+
+ex:conditionExpression a owl:DatatypeProperty ;
+    rdfs:label "condition expression" ;
+    rdfs:domain ex:RecoveryCondition ;
+    rdfs:range xsd:string .
+
+ex:configurationStatus a owl:DatatypeProperty ;
+    rdfs:label "configuration status" ;
+    rdfs:range xsd:string .
+
+ex:consentSubject a owl:ObjectProperty ;
+    rdfs:label "consent subject" ;
+    rdfs:domain ex:ConsentRecord ;
+    rdfs:range ex:User .
+
+ex:containsPersistentIdentifier a owl:DatatypeProperty ;
+    rdfs:label "contains persistent identifier" ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range xsd:boolean .
+
+ex:containsPersonalData a owl:DatatypeProperty ;
+    rdfs:label "contains personal data" ;
+    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:range xsd:boolean .
+
 ex:contractSubject a owl:ObjectProperty ;
     rdfs:label "contract subject" ;
     rdfs:domain ex:SemanticContract ;
     rdfs:range ex:User .
 
+ex:definedInArtifact a owl:ObjectProperty ;
+    rdfs:label "defined in artifact" ;
+    rdfs:range ex:Artifact .
+
 ex:governedBy a owl:ObjectProperty ;
     rdfs:label "governed by" ;
     rdfs:comment "Links users, nodes, services, zones or sessions to the applicable policy according to location and processing context." ;
-    rdfs:domain ex:GovernedResource ;
     rdfs:range ex:Policy .
 
 ex:hasActiveConsentRange a owl:ObjectProperty ;
     rdfs:label "has active consent range" ;
-    rdfs:comment "Current consent-aware scope inferred from the active semantic contract." ;
+    rdfs:comment "Current user-declared range resolved from the active ConsentRecord. It is intentionally independent from the SemanticContract so inconsistencies can be detected." ;
     rdfs:domain ex:User ;
     rdfs:range ex:ConsentRange .
 
-ex:hasConsent a owl:ObjectProperty ;
-    rdfs:label "has consent" ;
-    rdfs:domain ex:User ;
-    rdfs:range ex:ConsentStatus .
+ex:hasAuthorizationDecision a owl:ObjectProperty ;
+    rdfs:label "has authorization decision" ;
+    rdfs:range ex:AuthorizationDecision .
+
+ex:hasAuthorizationOutcome a owl:ObjectProperty ;
+    rdfs:label "has authorization outcome" ;
+    rdfs:domain ex:AuthorizationDecision ;
+    rdfs:range ex:AuthorizationOutcome .
+
+ex:hasAuthorizedDataCategory a owl:ObjectProperty ;
+    rdfs:label "authorizes data category" ;
+    rdfs:domain ex:ConsentRecord ;
+    rdfs:range ex:DataCategory .
 
 ex:hasConsentRange a owl:ObjectProperty ;
     rdfs:label "has consent range" ;
-    rdfs:domain ex:ConsentScopedResource ;
+    rdfs:domain <urn:continuum:ontology:3.0.0:node:100> ;
     rdfs:range ex:ConsentRange .
+
+ex:hasConsentRecord a owl:ObjectProperty ;
+    rdfs:label "has consent record" ;
+    rdfs:domain ex:User ;
+    rdfs:range ex:ConsentRecord .
+
+ex:hasDataCategory a owl:ObjectProperty ;
+    rdfs:label "has data category" ;
+    rdfs:range ex:DataCategory .
+
+ex:hasDataCriticality a owl:ObjectProperty ;
+    rdfs:label "has data criticality" ;
+    rdfs:range ex:DataCriticality .
+
+ex:hasDataSensitivity a owl:ObjectProperty ;
+    rdfs:label "has data sensitivity" ;
+    rdfs:range ex:DataSensitivity .
+
+ex:hasEffectiveConsentRange a owl:ObjectProperty ;
+    rdfs:label "has effective consent range" ;
+    rdfs:domain ex:AuthorizationDecision ;
+    rdfs:range ex:ConsentRange .
+
+ex:hasIdentifier a owl:ObjectProperty ;
+    rdfs:label "has identifier" ;
+    rdfs:domain ex:User ;
+    rdfs:range ex:Identifier .
 
 ex:hasPermission a owl:ObjectProperty ;
     rdfs:label "has permission" ;
@@ -56,13 +262,20 @@ ex:hasPermission a owl:ObjectProperty ;
 
 ex:hasPolicyAction a owl:DatatypeProperty ;
     rdfs:label "has policy action" ;
+    rdfs:comment "Policy action is now described by the normative policy statement and linked mechanisms/actions; retained only for compatibility." ;
     rdfs:domain ex:Policy ;
-    rdfs:range xsd:string .
+    rdfs:range xsd:string ;
+    owl:deprecated true .
+
+ex:hasPolicyRelationType a owl:ObjectProperty ;
+    rdfs:label "has policy relation type" ;
+    rdfs:domain ex:PolicyCategoryRelation ;
+    rdfs:range ex:PolicyRelationType .
 
 ex:hasPolicyStatement a owl:DatatypeProperty ;
     rdfs:label "has policy statement" ;
     rdfs:domain ex:Policy ;
-    rdfs:range xsd:string .
+    rdfs:range rdfs:Literal .
 
 ex:hasPolicyType a owl:ObjectProperty ;
     rdfs:label "has policy type" ;
@@ -71,8 +284,18 @@ ex:hasPolicyType a owl:ObjectProperty ;
 
 ex:hasProcessingPurpose a owl:ObjectProperty ;
     rdfs:label "has processing purpose" ;
-    rdfs:domain ex:PurposeScopedResource ;
+    rdfs:domain <urn:continuum:ontology:3.0.0:node:106> ;
     rdfs:range ex:ProcessingPurpose .
+
+ex:hasProcessingScope a owl:ObjectProperty ;
+    rdfs:label "has processing scope" ;
+    rdfs:domain ex:ModelTier ;
+    rdfs:range ex:ProcessingScope .
+
+ex:hasQueryType a owl:ObjectProperty ;
+    rdfs:label "has query type" ;
+    rdfs:domain ex:QuerySpecification ;
+    rdfs:range ex:QueryType .
 
 ex:hasRole a owl:ObjectProperty ;
     rdfs:label "has role" ;
@@ -84,28 +307,216 @@ ex:hasSemanticContract a owl:ObjectProperty ;
     rdfs:domain ex:User ;
     rdfs:range ex:SemanticContract .
 
-ex:requiresConsent a owl:DatatypeProperty ;
-    rdfs:label "requires consent" ;
-    rdfs:comment "Boolean marker used by RBAC and by continuum processing policies. The required consent scope is expressed with ex:requiresConsentRange." ;
-    rdfs:domain ex:ConsentRequiredResource ;
+ex:hasValidationResult a owl:ObjectProperty ;
+    rdfs:label "has validation result" ;
+    rdfs:domain ex:ValidationCampaign ;
+    rdfs:range ex:ValidationResult .
+
+ex:identifierScope a owl:DatatypeProperty ;
+    rdfs:label "identifier scope" ;
+    rdfs:domain ex:Identifier ;
+    rdfs:range xsd:string .
+
+ex:identifierValue a owl:DatatypeProperty ;
+    rdfs:label "identifier value" ;
+    rdfs:domain ex:Identifier ;
+    rdfs:range xsd:string .
+
+ex:mechanismDescription a owl:DatatypeProperty ;
+    rdfs:label "mechanism description" ;
+    rdfs:domain ex:MechanismSpecification ;
+    rdfs:range rdfs:Literal .
+
+ex:mechanismIdentifier a owl:DatatypeProperty ;
+    rdfs:label "mechanism identifier" ;
+    rdfs:domain ex:MechanismSpecification ;
+    rdfs:range xsd:string .
+
+ex:policyArtifactUsed a owl:ObjectProperty ;
+    rdfs:label "policy artifact used" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:PolicyArtifact .
+
+ex:policyIdentifier a owl:DatatypeProperty ;
+    rdfs:label "policy identifier" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range xsd:string .
+
+ex:policyVersion a owl:DatatypeProperty ;
+    rdfs:label "policy version" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range xsd:string .
+
+ex:protectsAtRest a owl:DatatypeProperty ;
+    rdfs:label "protects at rest" ;
+    rdfs:domain ex:SecurityMechanism ;
     rdfs:range xsd:boolean .
+
+ex:protectsInTransit a owl:DatatypeProperty ;
+    rdfs:label "protects in transit" ;
+    rdfs:domain ex:SecurityMechanism ;
+    rdfs:range xsd:boolean .
+
+ex:queryIdentifier a owl:DatatypeProperty ;
+    rdfs:label "query identifier" ;
+    rdfs:domain ex:QuerySpecification ;
+    rdfs:range xsd:string .
+
+ex:queryInterpretation a owl:DatatypeProperty ;
+    rdfs:label "query interpretation" ;
+    rdfs:domain ex:QuerySpecification ;
+    rdfs:range xsd:string .
+
+ex:queryPurpose a owl:DatatypeProperty ;
+    rdfs:label "query purpose" ;
+    rdfs:domain ex:QuerySpecification ;
+    rdfs:range xsd:string .
+
+ex:recommendedMechanism a owl:ObjectProperty ;
+    rdfs:label "recommended mechanism" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range ex:MechanismSpecification .
+
+ex:relatedRequirement a owl:ObjectProperty ;
+    rdfs:label "related requirement" ;
+    rdfs:domain ex:Policy ;
+    rdfs:range ex:Requirement .
+
+ex:relationCode a owl:DatatypeProperty ;
+    rdfs:label "relation code" ;
+    rdfs:domain ex:PolicyRelationType ;
+    rdfs:range xsd:string .
+
+ex:relationSourceCategory a owl:ObjectProperty ;
+    rdfs:label "relation source category" ;
+    rdfs:domain ex:PolicyCategoryRelation ;
+    rdfs:range ex:PolicyCategory .
+
+ex:relationTargetCategory a owl:ObjectProperty ;
+    rdfs:label "relation target category" ;
+    rdfs:domain ex:PolicyCategoryRelation ;
+    rdfs:range ex:PolicyCategory .
+
+ex:requirementIdentifier a owl:DatatypeProperty ;
+    rdfs:label "requirement identifier" ;
+    rdfs:domain ex:Requirement ;
+    rdfs:range xsd:string .
+
+ex:requirementStatement a owl:DatatypeProperty ;
+    rdfs:label "requirement statement" ;
+    rdfs:domain ex:Requirement ;
+    rdfs:range xsd:string .
+
+ex:requirementsArtifactUsed a owl:ObjectProperty ;
+    rdfs:label "requirements artifact used" ;
+    rdfs:domain ex:EvaluationState ;
+    rdfs:range ex:RequirementsArtifact .
 
 ex:requiresConsentRange a owl:ObjectProperty ;
     rdfs:label "requires consent range" ;
     rdfs:comment "Minimum consent-aware processing scope required for an action, policy, model tier or FL session." ;
-    rdfs:domain ex:ConsentRequiredResource ;
+    rdfs:domain <urn:continuum:ontology:3.0.0:node:83> ;
     rdfs:range ex:ConsentRange .
 
+ex:scenarioIdentifier a owl:DatatypeProperty ;
+    rdfs:label "scenario identifier" ;
+    rdfs:domain ex:Scenario ;
+    rdfs:range xsd:string .
+
+ex:scenarioMechanism a owl:ObjectProperty ;
+    rdfs:label "scenario mechanism" ;
+    rdfs:domain ex:Scenario ;
+    rdfs:range ex:MechanismSpecification .
+
+ex:scenarioPolicy a owl:ObjectProperty ;
+    rdfs:label "scenario policy" ;
+    rdfs:domain ex:Scenario ;
+    rdfs:range ex:Policy .
+
+ex:securityBaselineVersion a owl:DatatypeProperty ;
+    rdfs:label "security baseline version" ;
+    rdfs:domain ex:SecurityMechanism ;
+    rdfs:range xsd:string .
+
+ex:strategyCode a owl:DatatypeProperty ;
+    rdfs:label "strategy code" ;
+    rdfs:domain ex:ConflictResolutionStrategy ;
+    rdfs:range xsd:string .
+
+ex:supportsPolicy a owl:ObjectProperty ;
+    rdfs:label "supports policy" ;
+    rdfs:domain ex:MechanismSpecification ;
+    rdfs:range ex:Policy .
+
+ex:tracedToMechanism a owl:ObjectProperty ;
+    rdfs:label "traced to mechanism" ;
+    rdfs:domain ex:Requirement ;
+    rdfs:range ex:MechanismSpecification .
+
+ex:tracedToPolicy a owl:ObjectProperty ;
+    rdfs:label "traced to policy" ;
+    rdfs:domain ex:Requirement ;
+    rdfs:range ex:Policy .
+
+ex:usesAcceptanceProfile a owl:ObjectProperty ;
+    rdfs:label "uses acceptance profile" ;
+    rdfs:domain ex:ValidationCampaign ;
+    rdfs:range ex:AcceptanceProfile .
+
+ex:usesIdentifier a owl:ObjectProperty ;
+    rdfs:label "uses identifier" ;
+    rdfs:domain ex:TransferEvent ;
+    rdfs:range ex:Identifier .
+
+ex:usesResolutionStrategy a owl:ObjectProperty ;
+    rdfs:label "uses resolution strategy" ;
+    rdfs:domain ex:PolicyCategoryRelation ;
+    rdfs:range ex:ConflictResolutionStrategy .
+
+ex:usesStandard a owl:ObjectProperty ;
+    rdfs:label "uses standard" ;
+    rdfs:domain ex:Artifact ;
+    rdfs:range ex:StandardSpecification .
+
+ex:validationUsesOntology a owl:ObjectProperty ;
+    rdfs:label "validation uses ontology" ;
+    rdfs:domain ex:ValidationCampaign ;
+    rdfs:range ex:OntologyArtifact .
+
+ex:validationUsesPolicies a owl:ObjectProperty ;
+    rdfs:label "validation uses policies" ;
+    rdfs:domain ex:ValidationCampaign ;
+    rdfs:range ex:PolicyArtifact .
+
+ex:validationUsesQueries a owl:ObjectProperty ;
+    rdfs:label "validation uses queries" ;
+    rdfs:domain ex:ValidationCampaign ;
+    rdfs:range ex:QueryCatalog .
+
+ex:validationUsesScenarios a owl:ObjectProperty ;
+    rdfs:label "validation uses scenarios" ;
+    rdfs:domain ex:ValidationCampaign ;
+    rdfs:range ex:ScenarioArtifact .
+
 <http://example.org/smartcity/modules/governance> a owl:Ontology ;
-    owl:imports
-        <http://example.org/smartcity/modules/foundation>,
+    rdfs:label "Continuum policy and governance module"@en ;
+    owl:imports <http://example.org/smartcity/modules/foundation>,
         <http://example.org/smartcity/modules/observability>,
         <http://example.org/smartcity/modules/topology> ;
-    owl:versionInfo "2.3.0" .
+    owl:versionInfo "3.0.0" .
 
-ex:ConsentStatus a owl:Class ;
-    rdfs:label "Consent Status" ;
-    rdfs:comment "Determines whether the user allows their data to be used for model training." .
+ex:AuthorizationOutcome a owl:Class ;
+    rdfs:label "Authorization Outcome" .
+
+ex:DataCriticality a owl:Class ;
+    rdfs:label "Data Criticality" .
+
+ex:DataSensitivity a owl:Class ;
+    rdfs:label "Data Sensitivity" .
+
+ex:OntologyArtifact a owl:Class ;
+    rdfs:label "Ontology Artifact" ;
+    rdfs:subClassOf ex:Artifact .
 
 ex:PolicyType a owl:Class ;
     rdfs:label "Policy Type" .
@@ -113,29 +524,170 @@ ex:PolicyType a owl:Class ;
 ex:PrivacyMechanism a owl:Class ;
     rdfs:label "Privacy Mechanism" .
 
-ex:Permission a owl:Class ;
-    rdfs:label "Permission" ;
-    rdfs:subClassOf ex:ConsentRequiredResource,
-        ex:PurposeScopedResource .
+ex:ProcessingPurpose a owl:Class ;
+    rdfs:label "Processing Purpose" ;
+    rdfs:comment "Purpose for which data, model parameters or predictions are processed." .
+
+ex:ProcessingScope a owl:Class ;
+    rdfs:label "Processing Scope" .
+
+ex:QueryType a owl:Class ;
+    rdfs:label "Query Type" .
+
+ex:RequirementsArtifact a owl:Class ;
+    rdfs:label "Requirements Artifact" ;
+    rdfs:subClassOf ex:Artifact .
+
+ex:ScenarioArtifact a owl:Class ;
+    rdfs:label "Scenario Artifact" ;
+    rdfs:subClassOf ex:Artifact .
+
+ex:StandardSpecification a owl:Class ;
+    rdfs:label "Standard Specification" .
+
+ex:ValidationResult a owl:Class ;
+    rdfs:label "Validation Result" .
+
+<urn:continuum:ontology:3.0.0:node:100> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:101> .
+
+<urn:continuum:ontology:3.0.0:node:101> rdf:first ex:User ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:102> .
+
+<urn:continuum:ontology:3.0.0:node:102> rdf:first ex:SemanticContract ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:103> .
+
+<urn:continuum:ontology:3.0.0:node:103> rdf:first ex:Policy ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:104> .
+
+<urn:continuum:ontology:3.0.0:node:104> rdf:first ex:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:105> .
+
+<urn:continuum:ontology:3.0.0:node:105> rdf:first ex:EvaluationState ;
+    rdf:rest () .
+
+<urn:continuum:ontology:3.0.0:node:106> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:107> .
+
+<urn:continuum:ontology:3.0.0:node:107> rdf:first ex:SemanticContract ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:108> .
+
+<urn:continuum:ontology:3.0.0:node:108> rdf:first ex:Policy ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:109> .
+
+<urn:continuum:ontology:3.0.0:node:109> rdf:first ex:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:110> .
+
+<urn:continuum:ontology:3.0.0:node:110> rdf:first ex:EvaluationState ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:111> .
+
+<urn:continuum:ontology:3.0.0:node:111> rdf:first ex:Permission ;
+    rdf:rest () .
+
+<urn:continuum:ontology:3.0.0:node:83> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:84> .
+
+<urn:continuum:ontology:3.0.0:node:84> rdf:first ex:Permission ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:85> .
+
+<urn:continuum:ontology:3.0.0:node:85> rdf:first ex:Policy ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:86> .
+
+<urn:continuum:ontology:3.0.0:node:86> rdf:first ex:Service ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:87> .
+
+<urn:continuum:ontology:3.0.0:node:87> rdf:first ex:ServiceState ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:88> .
+
+<urn:continuum:ontology:3.0.0:node:88> rdf:first ex:AIModel ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:89> .
+
+<urn:continuum:ontology:3.0.0:node:89> rdf:first ex:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:90> .
+
+<urn:continuum:ontology:3.0.0:node:90> rdf:first ex:EvaluationState ;
+    rdf:rest () .
+
+ex:ConflictResolutionStrategy a owl:Class ;
+    rdfs:label "Conflict Resolution Strategy" .
+
+ex:DataCategory a owl:Class ;
+    rdfs:label "Data Category" ;
+    rdfs:comment "Semantic category of information governed by consent, privacy and transmission policies." .
+
+ex:PolicyArtifact a owl:Class ;
+    rdfs:label "Policy Artifact" ;
+    rdfs:subClassOf ex:Artifact .
+
+ex:PolicyRelationType a owl:Class ;
+    rdfs:label "Policy Relation Type" .
+
+ex:QueryCatalog a owl:Class ;
+    rdfs:label "Query Catalog" ;
+    rdfs:subClassOf ex:Artifact .
 
 ex:Role a owl:Class ;
     rdfs:label "Access Role" .
 
-ex:SemanticContract a owl:Class ;
-    rdfs:label "Semantic Contract" ;
-    rdfs:comment "Formal agreement between a user and the system, binding the user, an active consent range, permitted purposes, policies and temporal validity." ;
-    rdfs:subClassOf ex:ConsentScopedResource,
-        ex:GovernedResource,
-        ex:PurposeScopedResource,
-        ex:State .
+ex:Scenario a owl:Class ;
+    rdfs:label "Scenario" .
 
 ex:ConsentRange a owl:Class ;
     rdfs:label "Consent Range" ;
-    rdfs:comment "Consent scope replacing the previous binary-only interpretation. It controls where and how data/model updates may be processed across the continuum." .
+    rdfs:comment "Maximum processing scope declared by consent/contract. Includes LocalOnly, CommunityAgg, GlobalAgg and Denied/Revoked. Effective authorization is computed independently." .
+
+ex:ConsentRecord a owl:Class ;
+    rdfs:label "Consent Record" ;
+    rdfs:comment "User-declared consent decision independent from the semantic contract." ;
+    rdfs:subClassOf ex:TemporalEntity .
+
+ex:Permission a owl:Class ;
+    rdfs:label "Permission" .
+
+ex:PolicyCategory a owl:Class ;
+    rdfs:label "Policy Category" .
+
+ex:PolicyCategoryRelation a owl:Class ;
+    rdfs:label "Policy Category Relation" .
+
+ex:QuerySpecification a owl:Class ;
+    rdfs:label "Query Specification" .
+
+ex:SecurityMechanism a owl:Class ;
+    rdfs:label "Security Mechanism" .
+
+ex:SemanticContract a owl:Class ;
+    rdfs:label "Semantic Contract" ;
+    rdfs:comment "Temporal agreement binding user, processing purpose(s), consent range and governing policies. It is independent from the user-declared ConsentRecord." ;
+    rdfs:subClassOf ex:TemporalEntity .
+
+ex:ValidationCampaign a owl:Class ;
+    rdfs:label "Validation Campaign" ;
+    rdfs:subClassOf ex:Artifact .
+
+ex:AuthorizationDecision a owl:Class ;
+    rdfs:label "Authorization Decision" ;
+    rdfs:comment "Effective authorization obtained from the intersection of consent record, contract, zone and hard restrictions." ;
+    rdfs:subClassOf ex:TemporalEntity .
+
+ex:Identifier a owl:Class ;
+    rdfs:label "Identifier" ;
+    rdfs:comment "Identifier that may be direct, pseudonymous or anonymous." .
+
+ex:MechanismSpecification a owl:Class ;
+    rdfs:label "Mechanism Specification" .
+
+ex:Requirement a owl:Class ;
+    rdfs:label "Requirement" .
+
+ex:AcceptanceProfile a owl:Class ;
+    rdfs:label "Acceptance Profile" ;
+    rdfs:subClassOf ex:Artifact .
+
+ex:Artifact a owl:Class ;
+    rdfs:label "Artifact" ;
+    rdfs:comment "Versionable project artifact." .
 
 ex:Policy a owl:Class ;
     rdfs:label "Policy" ;
-    rdfs:comment "Governance rule that can represent obligations, abstentions or prohibitions over nodes, users, data flows and zones." ;
-    rdfs:subClassOf ex:ConsentRequiredResource,
-        ex:ConsentScopedResource,
-        ex:PurposeScopedResource .
+    rdfs:comment "Normative governance rule from POLICIES-REV-01. Policies are specifications, not execution mechanisms." .

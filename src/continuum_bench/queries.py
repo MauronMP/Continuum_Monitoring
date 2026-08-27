@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
+from decimal import Decimal
 from hashlib import sha256
 from pathlib import Path
 from time import perf_counter_ns
 import tomllib
 from typing import Iterable
 
-from rdflib import Graph
+from rdflib import Graph, Literal
+from rdflib.namespace import XSD
 
 
 @dataclass(frozen=True)
@@ -21,6 +23,11 @@ class QuerySpec:
     expectation: str
     path: Path
     title: str
+    expected_count: int | None = None
+    expected_ask: bool | None = None
+    purpose: str = ""
+    requirements: tuple[str, ...] = ()
+    policies: tuple[str, ...] = ()
     execution_scope: str = "cloud"
     authority: str = "global"
     privacy_class: str = "internal"
@@ -52,7 +59,7 @@ def result_digest(
     result_keys: Iterable[str],
     ask_result: bool | None,
 ) -> str:
-    """Return an order-independent digest that preserves bag cardinality."""
+    """Return an order-independent digest of the canonical result set."""
     if ask_result is not None:
         payload = f"ASK:{str(ask_result).lower()}"
     else:
@@ -68,6 +75,11 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
     if plan_path.is_file():
         with plan_path.open("rb") as handle:
             plan = tomllib.load(handle)
+        if str(plan.get("version", "")) != "3.0.0":
+            raise ValueError(
+                f"{plan_path}: expected execution plan version '3.0.0', "
+                f"got {plan.get('version')!r}"
+            )
     def invert(section: str) -> dict[str, str]:
         output: dict[str, str] = {}
         for value, query_ids in plan.get(section, {}).items():
@@ -83,6 +95,20 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
     privacy = invert("privacy")
     merge = invert("merge")
 
+    def identifiers(value: str | None) -> tuple[str, ...]:
+        return tuple(
+            item.strip() for item in (value or "").split(",")
+            if item.strip()
+        )
+
+    def optional_bool(value: str | None) -> bool | None:
+        normalized = (value or "").strip().lower()
+        if not normalized:
+            return None
+        if normalized not in {"true", "false"}:
+            raise ValueError(f"Invalid catalog boolean: {value!r}")
+        return normalized == "true"
+
     specs = [
         QuerySpec(
             order=int(row["order"]),
@@ -93,6 +119,15 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
             expectation=row["expectation"],
             path=root / row["path"],
             title=row["title"],
+            expected_count=(
+                int(row["expected_count"])
+                if row.get("expected_count", "").strip()
+                else None
+            ),
+            expected_ask=optional_bool(row.get("expected_ask")),
+            purpose=row.get("purpose", "").strip(),
+            requirements=identifiers(row.get("requirements")),
+            policies=identifiers(row.get("policies")),
             execution_scope=row.get("execution_scope")
             or scopes.get(row["id"], "cloud"),
             authority=row.get("authority")
@@ -100,6 +135,9 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
                 "cloud": "global",
                 "fog": "regional",
                 "edges": "data_owner",
+                "edge1": "data_owner:edge1",
+                "edge2": "data_owner:edge2",
+                "edge3": "data_owner:edge3",
                 "cloud_edges": "federated",
             }.get(scopes.get(row["id"], "cloud"), "global"),
             privacy_class=row.get("privacy_class")
@@ -136,7 +174,10 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
             f"unplanned={sorted(unplanned)}, "
             f"unknown_merge={sorted(unknown_merge)}"
         )
-    allowed_scopes = {"cloud", "fog", "edges", "cloud_edges"}
+    allowed_scopes = {
+        "cloud", "fog", "edges", "edge1", "edge2", "edge3",
+        "cloud_edges",
+    }
     allowed_privacy = {"internal", "confidential", "restricted"}
     allowed_merge = {"single", "set_union", "boolean_or"}
     for spec in specs:
@@ -170,7 +211,8 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
 
 def execute_query_detailed(graph: Graph, spec: QuerySpec) -> QueryExecution:
     started = perf_counter_ns()
-    result = graph.query(spec.read())
+    query_text = spec.read()
+    result = graph.query(query_text)
     if result.type == "ASK":
         ask_result = bool(result.askAnswer)
         result_count = int(ask_result)
@@ -181,9 +223,46 @@ def execute_query_detailed(graph: Graph, spec: QuerySpec) -> QueryExecution:
         variables = tuple(str(variable) for variable in result.vars)
         keys = []
         groups = []
+        has_group_concat = "GROUP_CONCAT" in query_text.upper()
+
+        def canonical_value(value: object | None) -> str:
+            if value is None:
+                return ""
+            if has_group_concat and isinstance(value, Literal):
+                lexical = str(value)
+                if ", " in lexical:
+                    normalized = ", ".join(sorted(lexical.split(", ")))
+                    value = Literal(
+                        normalized,
+                        lang=value.language,
+                        datatype=value.datatype,
+                    )
+            if isinstance(value, Literal) and value.datatype in {
+                XSD.decimal,
+                XSD.double,
+                XSD.float,
+                XSD.integer,
+                XSD.int,
+                XSD.long,
+                XSD.short,
+                XSD.nonNegativeInteger,
+                XSD.positiveInteger,
+                XSD.nonPositiveInteger,
+                XSD.negativeInteger,
+            }:
+                python_value = value.toPython()
+                if isinstance(python_value, Decimal):
+                    lexical = format(python_value.normalize(), "f")
+                    if "." not in lexical:
+                        lexical += ".0"
+                else:
+                    lexical = str(python_value)
+                value = Literal(lexical, datatype=value.datatype, normalize=False)
+            return value.n3()  # type: ignore[union-attr]
+
         for row in result:
             values = tuple(
-                value.n3() if value is not None else ""
+                canonical_value(value)
                 for value in row
             )
             canonical = "\u001f".join(
@@ -196,15 +275,16 @@ def execute_query_detailed(graph: Graph, spec: QuerySpec) -> QueryExecution:
                         variables[0]
                         + "\u001e"
                         + (
-                            row[0].n3()
-                            if row[0] is not None
-                            else ""
+                            canonical_value(row[0])
                         )
                     ).encode("utf-8")
                 ).hexdigest()
             )
-        group_keys = tuple(groups)
-        result_keys = tuple(keys)
+        # Distributed execution uses set-union. Canonical set semantics avoids
+        # false disagreement from RDFS producing numerically equivalent lexical
+        # forms (for example 0.25 and 0.250000) or duplicate solution rows.
+        group_keys = tuple(sorted(set(groups)))
+        result_keys = tuple(sorted(set(keys)))
         result_count = len(result_keys)
     duration_ms = (perf_counter_ns() - started) / 1_000_000
     return QueryExecution(
@@ -227,12 +307,30 @@ def execute_query(graph: Graph, spec: QuerySpec) -> QueryMeasurement:
 
 
 def check_expectation(spec: QuerySpec, measurement: QueryMeasurement) -> str | None:
+    if (
+        spec.expected_count is not None
+        and measurement.result_count != spec.expected_count
+    ):
+        return (
+            f"{spec.id}: expected reference cardinality "
+            f"{spec.expected_count}, got {measurement.result_count}"
+        )
+    if (
+        spec.expected_ask is not None
+        and measurement.ask_result is not spec.expected_ask
+    ):
+        return (
+            f"{spec.id}: expected ASK {spec.expected_ask}, "
+            f"got {measurement.ask_result}"
+        )
     if spec.expectation == "zero_rows" and measurement.result_count != 0:
         return f"{spec.id}: expected zero rows, got {measurement.result_count}"
     if spec.expectation == "non_empty" and measurement.result_count == 0:
         return f"{spec.id}: expected a non-empty result"
     if spec.expectation == "true" and measurement.ask_result is not True:
         return f"{spec.id}: expected ASK true, got {measurement.ask_result}"
+    if spec.expectation == "false" and measurement.ask_result is not False:
+        return f"{spec.id}: expected ASK false, got {measurement.ask_result}"
     return None
 
 

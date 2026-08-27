@@ -1,0 +1,31 @@
+# Type: violation
+# Purpose: Detectar acciones adaptativas no autorizadas por EvaluationState o evaluaciones sin política aplicada.
+# Requirements: RF-65, RF-66
+# Policies: P-AUD-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?subject ?reason WHERE {
+  {
+    ?subject a :AdaptationAction .
+    FILTER NOT EXISTS { ?subject :authorizedByEvaluation ?evaluation }
+    BIND("action-without-evaluation" AS ?reason)
+  }
+  UNION
+  {
+    ?subject a :EvaluationState ; :resultedInAction ?action .
+    FILTER NOT EXISTS { ?subject :appliedPolicy ?policy }
+    BIND("evaluation-without-policy" AS ?reason)
+  }
+}
+ORDER BY ?subject

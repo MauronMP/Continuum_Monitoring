@@ -1,0 +1,29 @@
+# Type: report
+# Purpose: Mostrar origen, destino, disparador, recuperación, profundidad, expiración planificada y cierre real.
+# Requirements: RF-62, RF-63, RF-64
+# Policies: P-AUD-01, P-AUD-02, P-AUD-03
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?delegation ?origin ?target ?triggerState ?recovery ?depth ?plannedExpiry ?from ?to WHERE {
+  ?delegation a :DelegationEvent .
+  OPTIONAL { ?delegation :actionOriginNode ?origin }
+  OPTIONAL { ?delegation :actionTargetNode ?target }
+  OPTIONAL { ?delegation :triggeredByState ?triggerState }
+  OPTIONAL { ?delegation :hasRecoveryCondition ?recovery }
+  OPTIONAL { ?delegation :delegationDepth ?depth }
+  OPTIONAL { ?delegation :plannedExpiry ?plannedExpiry }
+  OPTIONAL { ?delegation :validFrom ?from }
+  OPTIONAL { ?delegation :validTo ?to }
+}
+ORDER BY ?delegation

@@ -6,9 +6,9 @@
 
 | Servicio | Puerto host | Categorías |
 |---|---:|---|
-| cloud | 8191 | topology, semantic_schema, decision, consent, contract_compliance, policy |
-| fog | 8192 | migration, delegation, federation, privacy |
-| edge1..edge3 | 8193..8195 | observability, access_control, context y wellbeing, en round-robin |
+| cloud | 8191 | semantic_schema, decision, policy_governance y validation |
+| fog | 8192 | topology, data_lifecycle, trust, adaptation, delegation, federation y audit_temporal |
+| edge1..edge3 | 8193..8195 | observability, identity_consent, security_identity, context_zones y wellbeing, en round-robin |
 
 El comando `docker` usa `sharded` de forma predeterminada. Para cargar una
 réplica completa de la ontología y del ABox en cada nodo use
@@ -67,6 +67,34 @@ resultados quedan en `<output-dir>/<layout>/engines/`.
 No se seleccionan motores ni endpoints. La opción `--topology-only` existe para
 experimentos que quieran excluir deliberadamente la dimensión de producto.
 
+## Actualización tras el fallo EXT-Q68
+
+Si aparece `cross-engine query expectations failed: rdflib:EXT-Q68`, actualice
+los contenedores desde la raíz de esta copia del proyecto. Espere a que termine
+cualquier benchmark en curso antes de reconstruirlos:
+
+```bash
+docker compose up -d --build
+
+.venv/bin/continuum-bench \
+  --config configs/smoke-cumulative.toml \
+  docker cumulative --output-dir outputs/docker-rdfs-fixed-cumulative
+
+.venv/bin/continuum-bench \
+  --config configs/smoke-scalability.toml \
+  docker scalability --output-dir outputs/docker-rdfs-fixed-scalability
+```
+
+Cada comando comprueba y reconstruye automáticamente el stack independiente
+de cuatro motores si su `/health` no publica el contrato de razonamiento
+corregido. Si gestiona los servicios manualmente con el subcomando `engines`,
+reconstrúyalos con `docker compose -f docker-compose.engines.yml up -d --build`.
+
+El fallo procedía de inferencias de literales booleanos incorrectas en el
+servicio RDFLib; no se desactiva la validación de privacidad para evitarlo.
+Los resultados anteriores a la corrección deben regenerarse también para el
+monolito y el continuum físico antes de comparar arquitecturas.
+
 ## Benchmark completo
 
 Primero se generan resultados comparables con la misma configuración:
@@ -108,8 +136,9 @@ Las salidas se escriben por defecto en
   monolito;
 - `metadata.json`: endpoints, razonadores y política de routing.
 
-`queries/execution-plan.toml` define los scopes `cloud`, `fog`, `edges` y
-`cloud_edges`, además de las clases de privacidad. El routing no es
+`queries/execution-plan.toml` define los scopes `cloud`, `fog`, `edges`,
+`edge1`, `edge2`, `edge3` y `cloud_edges`, además de las clases de privacidad.
+El routing no es
 round-robin: respeta la autoridad declarada y fusiona las respuestas. La
 validación contra el monolito está habilitada de forma predeterminada y queda
 fuera del tiempo medido.
@@ -122,7 +151,7 @@ benchmark independiente y al flujo Docker replicado. En las Raspberry de
 
 - `outputs/comparison/cumulative.csv`;
 - `outputs/comparison/scalability.csv`;
-- validación resultado-a-resultado de las 69 consultas;
+- validación resultado-a-resultado de las 115 consultas;
 - figuras PNG 300 dpi, PDF y SVG de speedup.
 
 Se define:
@@ -169,7 +198,7 @@ figuras históricas monolito/Docker.
 
 - El núcleo TBox inmutable se replica para permitir razonamiento local. El
   placement omite wellbeing en fog y shapes en fog/edge.
-- Los resultados nuevos comparan el digest completo del bag de bindings,
+- Los resultados nuevos comparan el digest del conjunto canónico de bindings,
   cardinalidad y ASK. Los CSV históricos sin digest usan un fallback de
   cardinalidad/ASK identificado en `validation_level`.
 - Un digest coincidente no sustituye una demostración formal de la reescritura

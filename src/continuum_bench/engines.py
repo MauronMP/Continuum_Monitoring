@@ -18,9 +18,12 @@ from rdflib import Graph
 
 from .config import BenchmarkConfig
 from .csv_utils import write_dict_rows
+from .engine_protocol import ENGINE_PROTOCOL_VERSION, ENGINE_SERVICE
 from .ontology import graph_digest, load_graph
 from .queries import QuerySpec, by_categories, load_catalog
+from .reasoners import REASONING_CONTRACT
 from .synthetic import add_synthetic_data
+from .specification import release_identity
 
 
 @dataclass(frozen=True)
@@ -60,6 +63,27 @@ def discover(urls: Iterable[str]) -> list[EngineEndpoint]:
         health = _request(url, "/health")
         if health.get("status") != "ok":
             raise RuntimeError(f"Unhealthy semantic engine: {url}")
+        if health.get("service") != ENGINE_SERVICE:
+            raise RuntimeError(
+                f"Incompatible semantic engine at {url}: expected service "
+                f"{ENGINE_SERVICE!r}, got {health.get('service')!r}"
+            )
+        if str(health.get("protocol_version", "")) != ENGINE_PROTOCOL_VERSION:
+            raise RuntimeError(
+                f"Incompatible semantic engine at {url}: expected protocol "
+                f"{ENGINE_PROTOCOL_VERSION!r}, got "
+                f"{health.get('protocol_version')!r}"
+            )
+        if (
+            health.get("engine") == "rdflib"
+            and health.get("reasoning_contract") != REASONING_CONTRACT
+        ):
+            raise RuntimeError(
+                f"Incompatible RDFLib reasoner at {url}: expected "
+                f"reasoning_contract={REASONING_CONTRACT!r}, got "
+                f"{health.get('reasoning_contract')!r}. Rebuild the Python "
+                "engine image to apply the RDFS datatype correction."
+            )
         endpoints.append(
             EngineEndpoint(
                 url=url.rstrip("/"),
@@ -132,6 +156,8 @@ def _expectation_ok(spec: QuerySpec, measurement: dict[str, Any]) -> bool:
         return count > 0
     if spec.expectation == "true":
         return ask is True
+    if spec.expectation == "false":
+        return ask is False
     return True
 
 
@@ -158,6 +184,7 @@ def _metadata(
     warmups: int,
 ) -> dict[str, Any]:
     return {
+        **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "suite": suite,
         "python": platform.python_version(),
@@ -206,9 +233,19 @@ def _record_measurements(
 def _validate_expectations(rows: list[dict[str, Any]]) -> None:
     failed = [row for row in rows if not row["expectation_ok"]]
     if failed:
-        sample = ", ".join(
-            f"{row['engine']}:{row['query_id']}" for row in failed[:8]
-        )
+        descriptions = []
+        for row in failed[:8]:
+            location = (
+                f"stage={row['stage']}" if "stage" in row
+                else f"users={row.get('synthetic_users', '?')}"
+            )
+            descriptions.append(
+                f"{row['engine']}:{row['query_id']} "
+                f"({location}, repetition={row.get('repetition', '?')}, "
+                f"count={row['result_count']}, "
+                f"expected={row['expectation']})"
+            )
+        sample = ", ".join(descriptions)
         raise AssertionError(
             f"{len(failed)} cross-engine query expectations failed: {sample}"
         )

@@ -10,4 +10,4 @@
         <http://example.org/smartcity/modules/core-vocabulary>,
         <http://example.org/smartcity/modules/deployment> ;
     ex:usesEntailmentProfile "owlrl" ;
-    owl:versionInfo "2.3.0" .
+    owl:versionInfo "3.0.0" .

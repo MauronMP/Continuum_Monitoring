@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import asdict
 from typing import Any
 
 from rdflib import OWL, RDF
@@ -11,6 +10,7 @@ from .ontology import contradiction_count, load_graph, validate_shacl
 from .partitioning import build_fragments, privacy_violations
 from .queries import check_expectation, execute_query, load_catalog
 from .reasoners import materialize
+from .specification import acceptance_status, validate_release_contract
 from .synthetic import add_synthetic_data
 
 
@@ -19,12 +19,13 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
     shape_paths = [config.resolve(path) for path in config.shape_files]
     graph = load_graph(ontology_paths)
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
+    release_contract = validate_release_contract(graph, specs)
 
     expectation_errors: list[str] = []
     query_measurements = []
     for spec in specs:
         measurement = execute_query(graph, spec)
-        query_measurements.append(asdict(measurement))
+        query_measurements.append(measurement)
         error = check_expectation(spec, measurement)
         if error:
             expectation_errors.append(error)
@@ -32,12 +33,26 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
     reasoner_results: dict[str, Any] = {}
     for reasoner in config.reasoners:
         measurement = materialize(graph, reasoner)
+        # Checking only asserted data missed the RDFS True == 1 regression.
+        # Reference cardinalities for reports may legitimately grow under
+        # entailment, but a violation query must still return zero rows.
+        inferred_expectation_errors = [
+            error
+            for spec in specs
+            if spec.kind == "violation"
+            and (
+                error := check_expectation(
+                    spec, execute_query(measurement.graph, spec)
+                )
+            )
+        ]
         reasoner_results[reasoner] = {
             "duration_ms": measurement.duration_ms,
             "input_triples": measurement.input_triples,
             "output_triples": measurement.output_triples,
             "inferred_triples": measurement.inferred_triples,
             "owl_nothing_instances": contradiction_count(measurement.graph),
+            "violation_query_errors": inferred_expectation_errors,
         }
 
     conforms, shacl_report = validate_shacl(graph, shape_paths)
@@ -78,15 +93,18 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
             if imported not in known_ontologies
         }
     )
+    acceptance = acceptance_status(specs, query_measurements)
     return {
         "ok": (
             not expectation_errors
+            and release_contract["ok"]
             and conforms
             and distribution_union_matches
             and not any(distribution_privacy_errors.values())
             and not unresolved_profile_imports
             and all(
                 item["owl_nothing_instances"] == 0
+                and not item["violation_query_errors"]
                 for item in reasoner_results.values()
             )
         ),
@@ -94,6 +112,8 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
         "triples": len(graph),
         "query_count": len(specs),
         "query_expectation_errors": expectation_errors,
+        "release_contract": release_contract,
+        "scientific_acceptance": acceptance,
         "shacl_conforms": conforms,
         "shacl_report": shacl_report,
         "distribution": {

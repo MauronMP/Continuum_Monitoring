@@ -1,0 +1,42 @@
+# Type: violation
+# Purpose: Detectar políticas/mecanismos sin metadatos mínimos para gobernanza reproducible.
+# Requirements: RF-39, RF-40, RNF-20
+# Policies: P-GOV-01, P-GOV-04
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?resource ?kind ?missing WHERE {
+  {
+    ?resource a :Policy . BIND("Policy" AS ?kind)
+    VALUES (?prop ?missing) {
+      (:policyIdentifier "policyIdentifier")
+      (:belongsToPolicyCategory "belongsToPolicyCategory")
+      (:hasPolicyType "hasPolicyType")
+      (:policyVersion "policyVersion")
+      (:hasPolicyStatement "hasPolicyStatement")
+      (:recommendedMechanism "recommendedMechanism")
+    }
+    FILTER NOT EXISTS { ?resource ?prop ?v }
+  }
+  UNION
+  {
+    ?resource a :MechanismSpecification . BIND("Mechanism" AS ?kind)
+    VALUES (?prop ?missing) {
+      (:mechanismIdentifier "mechanismIdentifier")
+      (:mechanismDescription "mechanismDescription")
+      (:supportsPolicy "supportsPolicy")
+    }
+    FILTER NOT EXISTS { ?resource ?prop ?v }
+  }
+}
+ORDER BY ?kind ?resource ?missing

@@ -1,0 +1,29 @@
+# Type: report
+# Purpose: Separar evidencia de calidad/predicción de hasModelQualityWeight.
+# Requirements: RF-14, RF-29, RNF-27
+# Policies: P-MODEL-08, P-OPS-05
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?subject ?observedQuality ?predictionConfidence ?estimatedError ?feedback WHERE {
+  VALUES ?type {
+    :EvaluationState :AIModel :StressObservation :SleepObservation
+  }
+  ?subject a ?type .
+  OPTIONAL { ?subject :observedModelQuality ?observedQuality }
+  OPTIONAL { ?subject :predictionConfidence ?predictionConfidence }
+  OPTIONAL { ?subject :estimatedPredictionError ?estimatedError }
+  OPTIONAL { ?subject :userFeedbackScore ?feedback }
+  FILTER(BOUND(?observedQuality) || BOUND(?predictionConfidence) || BOUND(?estimatedError) || BOUND(?feedback))
+}
+ORDER BY ?subject

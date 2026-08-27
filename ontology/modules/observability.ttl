@@ -3,6 +3,45 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+ex:TrafficWindow a owl:Class ;
+    rdfs:label "Traffic Window" ;
+    rdfs:comment "Time interval with high demand (morning: wake-up; night: physiological data upload)." .
+
+ex:contextDeviceState a owl:ObjectProperty ;
+    rdfs:label "context device state" ;
+    rdfs:domain ex:DataContext ;
+    rdfs:range ex:DeviceState .
+
+ex:contextNodeState a owl:ObjectProperty ;
+    rdfs:label "context node state" ;
+    rdfs:domain ex:DataContext ;
+    rdfs:range ex:NodeState .
+
+ex:contextProcessingLevel a owl:ObjectProperty ;
+    rdfs:label "context processing level" ;
+    rdfs:domain ex:DataContext ;
+    rdfs:range ex:ProcessingLevel .
+
+ex:contextPurpose a owl:ObjectProperty ;
+    rdfs:label "context purpose" ;
+    rdfs:domain ex:DataContext ;
+    rdfs:range ex:ProcessingPurpose .
+
+ex:contextZone a owl:ObjectProperty ;
+    rdfs:label "context zone" ;
+    rdfs:domain ex:DataContext ;
+    rdfs:range ex:CityArea .
+
+ex:evidenceContribution a owl:DatatypeProperty ;
+    rdfs:label "evidence contribution" ;
+    rdfs:domain ex:TrustEvidence ;
+    rdfs:range xsd:decimal .
+
+ex:evidenceFactor a owl:DatatypeProperty ;
+    rdfs:label "evidence factor" ;
+    rdfs:domain ex:TrustEvidence ;
+    rdfs:range xsd:string .
+
 ex:hasAvailability a owl:ObjectProperty ;
     rdfs:label "has availability" ;
     rdfs:domain ex:NodeState ;
@@ -18,16 +57,19 @@ ex:hasCommunication a owl:ObjectProperty ;
     rdfs:domain ex:NodeState ;
     rdfs:range ex:CommunicationLevel .
 
+ex:hasComplianceMetric a owl:ObjectProperty ;
+    rdfs:label "has compliance metric" ;
+    rdfs:domain ex:ValidationCampaign ;
+    rdfs:range ex:ComplianceMetric .
+
 ex:hasConnectionStatus a owl:ObjectProperty ;
     rdfs:label "has connection status" ;
     rdfs:domain ex:DeviceState ;
     rdfs:range ex:DeviceConnectionStatus .
 
-ex:hasDeviceState a owl:ObjectProperty ;
-    rdfs:label "has device state" ;
-    rdfs:comment "Links any SAREF device to its temporal state; domain profiles may specialize the device type." ;
-    rdfs:domain <https://saref.etsi.org/core/Device> ;
-    rdfs:range ex:DeviceState .
+ex:hasDataContext a owl:ObjectProperty ;
+    rdfs:label "has data context" ;
+    rdfs:range ex:DataContext .
 
 ex:hasEnergyLevel a owl:ObjectProperty ;
     rdfs:label "has energy level" ;
@@ -59,10 +101,19 @@ ex:hasResidualCapacity a owl:ObjectProperty ;
     rdfs:domain ex:NodeState ;
     rdfs:range ex:ResidualCapacity .
 
+ex:hasTrustAssessment a owl:ObjectProperty ;
+    rdfs:label "has trust assessment" ;
+    rdfs:domain ex:NodeState ;
+    rdfs:range ex:TrustAssessment .
+
+ex:hasTrustEvidence a owl:ObjectProperty ;
+    rdfs:label "has trust evidence" ;
+    rdfs:domain ex:TrustAssessment ;
+    rdfs:range ex:TrustEvidence .
+
 ex:hasTrustScore a owl:DatatypeProperty ;
     rdfs:label "has trust score" ;
-    rdfs:comment "Historical reliability score in the [0,1] range, computed from previous failures, latency instability and availability." ;
-    rdfs:domain ex:NodeState ;
+    rdfs:comment "Normalized historical reliability score [0,1]. A v3-compliant scientific use should also reference TrustAssessment with rule version and historical window." ;
     rdfs:range xsd:decimal .
 
 ex:hasUserState a owl:ObjectProperty ;
@@ -90,15 +141,55 @@ ex:resourceUsagePercent a owl:DatatypeProperty ;
     rdfs:domain ex:NodeState ;
     rdfs:range xsd:decimal .
 
+ex:stateDuration a owl:DatatypeProperty ;
+    rdfs:label "state duration" ;
+    rdfs:comment "Computed as validTo - validFrom." ;
+    rdfs:domain ex:State ;
+    rdfs:range xsd:duration .
+
+ex:trustAssessmentForState a owl:ObjectProperty ;
+    rdfs:label "trust assessment for state" ;
+    rdfs:domain ex:TrustAssessment ;
+    rdfs:range ex:NodeState .
+
+ex:trustRuleVersion a owl:DatatypeProperty ;
+    rdfs:label "trust rule version" ;
+    rdfs:domain ex:TrustAssessment ;
+    rdfs:range xsd:string .
+
+ex:trustWindowEnd a owl:DatatypeProperty ;
+    rdfs:label "trust window end" ;
+    rdfs:domain ex:TrustAssessment ;
+    rdfs:range xsd:dateTime .
+
+ex:trustWindowStart a owl:DatatypeProperty ;
+    rdfs:label "trust window start" ;
+    rdfs:domain ex:TrustAssessment ;
+    rdfs:range xsd:dateTime .
+
 ex:userFeedbackScore a owl:DatatypeProperty ;
     rdfs:label "user feedback score" ;
     rdfs:comment "User rating of the previous day's prediction (local model without consent)." ;
     rdfs:domain ex:UserState ;
     rdfs:range xsd:integer .
 
+ex:validFrom a owl:DatatypeProperty ;
+    rdfs:label "valid from" ;
+    rdfs:comment "Effective start timestamp of a temporal entity." ;
+    rdfs:domain ex:TemporalEntity ;
+    rdfs:range xsd:dateTime .
+
+ex:validTo a owl:DatatypeProperty ;
+    rdfs:label "valid to" ;
+    rdfs:comment "Effective closure timestamp. It must not be used for a planned expiration before actual closure." ;
+    rdfs:domain ex:TemporalEntity ;
+    rdfs:range xsd:dateTime .
+
 <http://example.org/smartcity/modules/observability> a owl:Ontology ;
-    owl:imports <http://example.org/smartcity/modules/foundation> ;
-    owl:versionInfo "2.3.0" .
+    rdfs:label "Continuum observability module"@en ;
+    owl:imports <http://example.org/smartcity/modules/foundation>,
+        <http://example.org/smartcity/modules/topology> ;
+    owl:versionInfo "3.0.0" .
 
 ex:AvailabilityLevel a owl:Class ;
     rdfs:label "Availability Level" .
@@ -108,6 +199,9 @@ ex:BatteryLevel a owl:Class ;
 
 ex:CommunicationLevel a owl:Class ;
     rdfs:label "Communication Level" .
+
+ex:ComplianceMetric a owl:Class ;
+    rdfs:label "Compliance Metric" .
 
 ex:DeviceConnectionStatus a owl:Class ;
     rdfs:label "Device Connection Status" .
@@ -130,6 +224,9 @@ ex:ResidualCapacity a owl:Class ;
 ex:WorkloadLevel a owl:Class ;
     rdfs:label "Workload Level" .
 
+ex:TrustEvidence a owl:Class ;
+    rdfs:label "Trust Evidence" .
+
 ex:UserState a owl:Class ;
     rdfs:label "User State" ;
     rdfs:subClassOf ex:State .
@@ -138,7 +235,25 @@ ex:DeviceState a owl:Class ;
     rdfs:label "Device State" ;
     rdfs:subClassOf ex:State .
 
+ex:State a owl:Class ;
+    rdfs:label "State" ;
+    rdfs:comment "Dynamic state of an entity; temporal and distinguishable from instantaneous observations." ;
+    rdfs:subClassOf ex:TemporalEntity .
+
+ex:TemporalEntity a owl:Class ;
+    rdfs:label "Temporal Entity" ;
+    rdfs:comment "Entity with an explicit validity interval. validTo denotes effective closure, never merely planned expiry." .
+
+ex:DataContext a owl:Class ;
+    rdfs:label "Data Context" ;
+    rdfs:comment "Operational context associated with data or a processing/transfer event." ;
+    rdfs:subClassOf ex:TemporalEntity .
+
+ex:TrustAssessment a owl:Class ;
+    rdfs:label "Trust Assessment" ;
+    rdfs:comment "Versioned assessment explaining a trust score." ;
+    rdfs:subClassOf ex:TemporalEntity .
+
 ex:NodeState a owl:Class ;
     rdfs:label "Node State" ;
-    rdfs:subClassOf ex:State,
-        ex:TrustWeightedEntity .
+    rdfs:subClassOf ex:State .

@@ -1,0 +1,23 @@
+# Type: inventory
+# Purpose: Listar shapes y severidades disponibles para validación estructural.
+# Requirements: RF-71, RV-01
+# Policies: P-VAL-03
+# Current v3.0.0 result: 74 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?shape ?targetClass ?path ?minCount ?maxCount ?severity ?message WHERE {
+  ?shape a sh:NodeShape .
+  OPTIONAL { ?shape sh:targetClass ?targetClass }
+  OPTIONAL { ?shape sh:property ?ps . OPTIONAL { ?ps sh:path ?path } OPTIONAL { ?ps sh:minCount ?minCount } OPTIONAL { ?ps sh:maxCount ?maxCount } OPTIONAL { ?ps sh:severity ?severity } OPTIONAL { ?ps sh:message ?message } }
+}
+ORDER BY ?shape ?path

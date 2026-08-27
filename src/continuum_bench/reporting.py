@@ -25,6 +25,7 @@ import numpy as np
 
 from .compare import compare_all
 from .csv_utils import write_dict_rows
+from .result_contract import require_release_metadata
 
 
 REASONER_LABELS = {
@@ -62,6 +63,8 @@ ARCHITECTURE_LABELS = {
 def _read(path: Path) -> list[dict[str, str]]:
     if not path.is_file():
         raise FileNotFoundError(f"Required benchmark CSV not found: {path}")
+    if path.name == "summary.csv":
+        require_release_metadata(path.parent)
     with path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
     if not rows:

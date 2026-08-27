@@ -19,8 +19,9 @@ rápida en `configs/experiments-smoke.toml`.
 
 ## Preparación común
 
-El contrato de worker es la versión 4. Hay que reconstruir Docker y desplegar
-la misma revisión en los equipos físicos:
+El contrato de worker es la versión 5 y exige ontología 3.0.0 con 115
+consultas. Hay que reconstruir Docker y desplegar la misma revisión en los
+equipos físicos:
 
 ```bash
 docker compose down
@@ -39,7 +40,7 @@ El coordinador se ejecuta siempre en este PC. En el escenario físico usa
 
 Cada nodo activo recibe una réplica completa e idéntica. La preparación y la
 materialización se miden, pero se excluyen expresamente de la métrica primaria.
-Durante la calibración, cada réplica ejecuta las 69 consultas. Esos tiempos se
+Durante la calibración, cada réplica ejecuta las 115 consultas. Esos tiempos se
 excluyen y alimentan un planificador LPT adaptativo: asigna primero las consultas
 costosas al nodo que minimiza la carga predicha. Así no se presupone que el PC y
 las Raspberry tengan la misma capacidad. Después, cada consulta se ejecuta una
@@ -125,8 +126,8 @@ El dataset lógico es idéntico entre arquitecturas:
 - resultados: unión determinista o OR para ASK según
   `queries/execution-plan.toml`.
 
-Cada resultado distribuido se contrasta, fuera del tiempo medido, con el bag de
-resultados del oráculo monolítico. El oráculo se calcula después de las
+Cada resultado distribuido se contrasta, fuera del tiempo medido, con el
+conjunto canónico de resultados del oráculo monolítico. El oráculo se calcula después de las
 repeticiones medidas, para que su CPU y memoria no calienten el cloud local
 antes de medirlo. Se registra el factor real de almacenamiento
 `suma de fragmentos / grafo lógico`, el fragmento máximo, preparación, suma y
@@ -170,7 +171,9 @@ con un periodo térmico estable entre escenarios.
 
 Se guardan PNG a 300 dpi, PDF y SVG en
 `outputs/experiments/figures/`. Las figuras agregan por mediana las
-repeticiones completas y excluyen fallos/timeouts.
+repeticiones completas. Los fallos/timeouts no se convierten en latencias
+ficticias: quedan como censura y deben leerse junto a las tablas de cobertura y
+timeout generadas por el análisis.
 
 ## Verificar automáticamente la hipótesis
 

@@ -1,0 +1,40 @@
+# Type: violation
+# Purpose: Aplicar contenido mínimo de P-AUD-06, incluyendo alternativas y políticas.
+# Requirements: RF-54, RF-66, RNF-28, RNF-29
+# Policies: P-AUD-06
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?evaluation ?missing WHERE {
+  ?evaluation a :EvaluationState .
+  {
+    VALUES (?prop ?missing) {
+      (:hasDetectedSymptom "hasDetectedSymptom")
+      (:appliedPolicy "appliedPolicy")
+      (:auditsContract "auditsContract")
+      (:hasAuthorizationDecision "hasAuthorizationDecision")
+      (:hasDecisionAlternative "hasDecisionAlternative")
+      (:selectedModelTier "selectedModelTier")
+      (:hasSelectionJustification "hasSelectionJustification")
+      (:validFrom "validFrom")
+      (:resultedInAction "resultedInAction")
+    }
+    FILTER NOT EXISTS { ?evaluation ?prop ?v }
+  }
+  UNION
+  {
+    FILTER NOT EXISTS { ?evaluation :hasAuthorizationDecision/:hasEffectiveConsentRange ?r }
+    BIND("effectiveConsentRange" AS ?missing)
+  }
+}
+ORDER BY ?evaluation ?missing

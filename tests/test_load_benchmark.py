@@ -43,7 +43,7 @@ def _spec(query_id: str, expectation: str) -> QuerySpec:
         order=1,
         id=query_id,
         tier="core",
-        category="policy",
+        category="policy_governance",
         kind="ASK" if expectation == "true" else "SELECT",
         expectation=expectation,
         path=Path(f"{query_id}.rq"),

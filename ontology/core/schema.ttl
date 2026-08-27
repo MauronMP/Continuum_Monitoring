@@ -1,16 +1,19 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/smartcity>
-    a owl:Ontology ;
-    rdfs:label "Continuum Monitoring Ontology"@en ;
-    rdfs:comment "Assembly ontology for policy-aware monitoring across the computing continuum."@en ;
-    owl:imports
+<http://example.org/smartcity> a owl:Ontology ;
+    rdfs:label "SmartCity Continuum Stress Ontology v3.0.0" ;
+    dcterms:modified "2026-08-26"^^xsd:date ;
+    dcterms:replaces "2.1.1" ;
+    rdfs:comment "Major semantic revision aligned with RF-01–RF-72, RNF-01–RNF-39, RV-01–RV-05 and POLICIES-REV-01. Queries are intentionally not assigned in this version." ;
+    owl:imports <http://example.org/smartcity/modules/federation>,
         <http://example.org/smartcity/modules/foundation>,
-        <http://example.org/smartcity/modules/topology>,
-        <http://example.org/smartcity/modules/observability>,
         <http://example.org/smartcity/modules/governance>,
+        <http://example.org/smartcity/modules/observability>,
         <http://example.org/smartcity/modules/orchestration>,
-        <http://example.org/smartcity/modules/federation>,
-        <http://example.org/smartcity/modules/deployment> ;
-    owl:versionInfo "2.3.0" .
+        <http://example.org/smartcity/modules/topology>,
+        <http://example.org/smartcity/modules/wellbeing> ;
+    owl:versionIRI <http://example.org/smartcity/3.0.0> ;
+    owl:versionInfo "3.0.0" .

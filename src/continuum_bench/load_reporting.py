@@ -14,6 +14,7 @@ from matplotlib.ticker import FixedLocator, NullFormatter
 import numpy as np
 
 from .csv_utils import write_dict_rows
+from .result_contract import require_release_metadata
 from .reporting import REASONER_LABELS
 
 
@@ -32,6 +33,8 @@ LOAD_ARCHITECTURE_LABELS = {
 
 
 def _read(path: Path) -> list[dict[str, str]]:
+    if path.name == "summary.csv":
+        require_release_metadata(path.parent)
     with path.open(encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
 

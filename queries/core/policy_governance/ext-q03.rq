@@ -1,0 +1,25 @@
+# Type: inventory
+# Purpose: Listar las 79 políticas v3 con categoría, tipo y versión.
+# Requirements: RF-39, RF-40, RF-70
+# Policies: P-GOV-01, P-GOV-04
+# Current v3.0.0 result: 79 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?policy ?id ?category ?type ?version ?statement WHERE {
+  ?policy a :Policy ; :policyIdentifier ?id .
+  OPTIONAL { ?policy :belongsToPolicyCategory ?category }
+  OPTIONAL { ?policy :hasPolicyType ?type }
+  OPTIONAL { ?policy :policyVersion ?version }
+  OPTIONAL { ?policy :hasPolicyStatement ?statement }
+}
+ORDER BY ?id

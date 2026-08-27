@@ -26,6 +26,7 @@ from .load_config import LoadBenchmarkConfig, LoadProfile
 from .node import NodeRuntime
 from .protocol import worker_health_error
 from .queries import QuerySpec, load_catalog
+from .specification import release_identity
 
 
 class PhaseTimeout(TimeoutError):
@@ -905,6 +906,7 @@ def run_load_benchmark(
         empty_message="Load benchmark produced no node rows",
     )
     metadata = {
+        **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "architecture": architecture,
         "python": platform.python_version(),

@@ -1,0 +1,22 @@
+# Type: dashboard
+# Purpose: Agregar usuarios por rango de consentimiento activo.
+# Requirements: RF-32, RF-68
+# Policies: P-CONS-01
+# Current v3.0.0 result: 3 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?range (COUNT(DISTINCT ?user) AS ?users) WHERE {
+  ?user a :User ; :hasActiveConsentRange ?range .
+}
+GROUP BY ?range
+ORDER BY ?range

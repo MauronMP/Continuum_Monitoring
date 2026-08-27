@@ -1,50 +1,18 @@
-version = "1.0"
+version = "3.0.0"
 
-# A source-selection plan is evaluated before load balancing. "cloud" and
-# "fog" are single-authority queries. "edges" is evaluated at the three data
-# owners and merged as a set. "cloud_edges" joins global governance projections
-# with private edge fragments without moving raw observations to cloud/fog.
-
+# Authority-aware source selection generated with the v3 catalogue.
 [scopes]
-cloud = [
-  "BASE-Q04", "BASE-Q06", "BASE-Q29", "BASE-Q31", "BASE-Q32",
-  "EXT-Q01", "EXT-Q02", "EXT-Q09", "EXT-Q10", "EXT-Q11",
-  "EXT-Q13", "EXT-Q03", "EXT-Q04", "EXT-Q05", "EXT-Q06", "EXT-Q07",
-  "EXT-Q08", "EXT-Q22", "EXT-Q24", "EXT-Q25", "EXT-Q26", "EXT-Q27",
-  "EXT-Q33", "EXT-Q34",
-]
-
-fog = [
-  "BASE-Q08", "BASE-Q12", "BASE-Q13", "BASE-Q14",
-  "BASE-Q16", "BASE-Q18", "BASE-Q22", "BASE-Q24",
-  "BASE-Q26", "BASE-Q27", "BASE-Q30", "BASE-Q33", "BASE-Q34", "BASE-Q35",
-  "EXT-Q15", "EXT-Q16", "EXT-Q17", "EXT-Q18",
-  "EXT-Q19", "EXT-Q20", "EXT-Q21", "EXT-Q23", "EXT-Q28",
-  "EXT-Q29", "EXT-Q30", "EXT-Q31", "EXT-Q32",
-]
-
-edges = [
-  "BASE-Q01", "BASE-Q02", "BASE-Q03", "BASE-Q05", "BASE-Q07",
-  "BASE-Q09", "BASE-Q10", "BASE-Q11", "BASE-Q17", "BASE-Q19",
-  "BASE-Q15", "BASE-Q20", "BASE-Q21", "BASE-Q23", "BASE-Q25",
-  "EXT-Q12", "EXT-Q14",
-]
-
-cloud_edges = [
-  "BASE-Q28",
-]
+cloud = ["BASE-Q06", "BASE-Q31", "EXT-Q01", "EXT-Q02", "EXT-Q03", "EXT-Q04", "EXT-Q05", "EXT-Q06", "EXT-Q07", "EXT-Q08", "EXT-Q09", "EXT-Q10", "EXT-Q29", "EXT-Q30", "EXT-Q75", "EXT-Q76", "EXT-Q77", "EXT-Q78", "EXT-Q79", "EXT-Q80"]
+fog = ["BASE-Q07", "BASE-Q08", "BASE-Q19", "BASE-Q26", "BASE-Q29", "BASE-Q32", "BASE-Q34", "EXT-Q40", "EXT-Q41", "EXT-Q42", "EXT-Q43"]
+edges = ["BASE-Q01", "BASE-Q03", "BASE-Q05", "BASE-Q09", "BASE-Q10", "BASE-Q12", "BASE-Q13", "BASE-Q15", "BASE-Q16", "BASE-Q17", "BASE-Q18", "BASE-Q20", "BASE-Q21", "BASE-Q22", "BASE-Q23", "BASE-Q24", "BASE-Q25", "BASE-Q27", "BASE-Q28", "BASE-Q30", "BASE-Q35", "EXT-Q11", "EXT-Q12", "EXT-Q13", "EXT-Q14", "EXT-Q15", "EXT-Q16", "EXT-Q17", "EXT-Q18", "EXT-Q19", "EXT-Q20", "EXT-Q21", "EXT-Q22", "EXT-Q23", "EXT-Q24", "EXT-Q25", "EXT-Q26", "EXT-Q27", "EXT-Q28", "EXT-Q31", "EXT-Q32", "EXT-Q33", "EXT-Q34", "EXT-Q35", "EXT-Q37", "EXT-Q38", "EXT-Q44", "EXT-Q45", "EXT-Q46", "EXT-Q47", "EXT-Q48", "EXT-Q49", "EXT-Q50", "EXT-Q51", "EXT-Q52", "EXT-Q53", "EXT-Q54", "EXT-Q55", "EXT-Q56", "EXT-Q57", "EXT-Q58", "EXT-Q59", "EXT-Q60", "EXT-Q61", "EXT-Q62", "EXT-Q63", "EXT-Q64", "EXT-Q65", "EXT-Q66", "EXT-Q67", "EXT-Q68", "EXT-Q69", "EXT-Q70", "EXT-Q71", "EXT-Q72", "EXT-Q73", "EXT-Q74"]
+edge1 = ["BASE-Q11", "BASE-Q14", "EXT-Q36", "EXT-Q39"]
+edge2 = ["BASE-Q02", "BASE-Q04", "BASE-Q33"]
+edge3 = []
 
 [merge]
-single = [
-  "BASE-Q33",
-]
+set_union = ["BASE-Q01", "BASE-Q03", "BASE-Q05", "BASE-Q09", "BASE-Q10", "BASE-Q12", "BASE-Q13", "BASE-Q15", "BASE-Q16", "BASE-Q17", "BASE-Q18", "BASE-Q20", "BASE-Q21", "BASE-Q22", "BASE-Q23", "BASE-Q24", "BASE-Q25", "BASE-Q35", "EXT-Q11", "EXT-Q12", "EXT-Q13", "EXT-Q14", "EXT-Q15", "EXT-Q16", "EXT-Q17", "EXT-Q18", "EXT-Q19", "EXT-Q20", "EXT-Q21", "EXT-Q22", "EXT-Q23", "EXT-Q24", "EXT-Q25", "EXT-Q26", "EXT-Q27", "EXT-Q28", "EXT-Q31", "EXT-Q32", "EXT-Q33", "EXT-Q34", "EXT-Q35", "EXT-Q37", "EXT-Q38", "EXT-Q44", "EXT-Q45", "EXT-Q46", "EXT-Q47", "EXT-Q48", "EXT-Q49", "EXT-Q50", "EXT-Q51", "EXT-Q52", "EXT-Q53", "EXT-Q54", "EXT-Q55", "EXT-Q56", "EXT-Q57", "EXT-Q58", "EXT-Q59", "EXT-Q60", "EXT-Q61", "EXT-Q62", "EXT-Q63", "EXT-Q64", "EXT-Q65", "EXT-Q66", "EXT-Q67", "EXT-Q68", "EXT-Q69", "EXT-Q70", "EXT-Q71", "EXT-Q72", "EXT-Q73", "EXT-Q74"]
+boolean_or = ["BASE-Q27", "BASE-Q28", "BASE-Q30"]
 
 [privacy]
-restricted = [
-  "BASE-Q03", "BASE-Q05", "BASE-Q09", "BASE-Q10", "BASE-Q11",
-  "BASE-Q17", "BASE-Q20", "BASE-Q23", "BASE-Q25", "BASE-Q28",
-]
-confidential = [
-  "BASE-Q01", "BASE-Q15", "EXT-Q03", "EXT-Q04", "EXT-Q05",
-  "EXT-Q06", "EXT-Q07", "EXT-Q08", "EXT-Q22", "EXT-Q24",
-]
+restricted = ["BASE-Q03", "BASE-Q05", "BASE-Q09", "BASE-Q10", "BASE-Q17", "BASE-Q20", "BASE-Q28", "EXT-Q22", "EXT-Q25", "EXT-Q37", "EXT-Q38", "EXT-Q54"]
+confidential = ["BASE-Q01", "BASE-Q02", "BASE-Q04", "BASE-Q11", "BASE-Q12", "BASE-Q13", "BASE-Q14", "BASE-Q15", "BASE-Q16", "BASE-Q18", "BASE-Q21", "BASE-Q22", "BASE-Q23", "BASE-Q24", "BASE-Q25", "BASE-Q27", "BASE-Q30", "BASE-Q33", "BASE-Q35", "EXT-Q11", "EXT-Q12", "EXT-Q13", "EXT-Q14", "EXT-Q15", "EXT-Q16", "EXT-Q17", "EXT-Q18", "EXT-Q19", "EXT-Q20", "EXT-Q21", "EXT-Q23", "EXT-Q24", "EXT-Q26", "EXT-Q27", "EXT-Q28", "EXT-Q31", "EXT-Q32", "EXT-Q33", "EXT-Q34", "EXT-Q35", "EXT-Q36", "EXT-Q39", "EXT-Q44", "EXT-Q45", "EXT-Q46", "EXT-Q47", "EXT-Q48", "EXT-Q49", "EXT-Q50", "EXT-Q51", "EXT-Q52", "EXT-Q53", "EXT-Q55", "EXT-Q56", "EXT-Q57", "EXT-Q58", "EXT-Q59", "EXT-Q60", "EXT-Q61", "EXT-Q62", "EXT-Q63", "EXT-Q64", "EXT-Q65", "EXT-Q66", "EXT-Q67", "EXT-Q68", "EXT-Q69", "EXT-Q70", "EXT-Q71", "EXT-Q72", "EXT-Q73", "EXT-Q74"]

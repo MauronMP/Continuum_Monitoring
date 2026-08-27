@@ -1,0 +1,25 @@
+# Type: report
+# Purpose: Aplicar primero filtros duros y después exponer score de confianza para ordenación externa.
+# Requirements: RF-47, RF-48
+# Policies: P-NODE-02, P-NODE-05, P-MODEL-03
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?node ?state ?trust WHERE {
+  VALUES ?workload { :LowWorkload :MediumWorkload }
+  VALUES ?residual { :MediumResidual :HighResidual }
+  ?node :hasNodeState ?state .
+  ?state :hasAvailability :Available ; :hasCommunication :StableComm ; :hasWorkload ?workload ; :hasResidualCapacity ?residual ; :hasOperationalStatus :Operational .
+  ?state :hasTrustAssessment/:hasTrustScore ?trust .
+}
+ORDER BY DESC(?trust) ?node

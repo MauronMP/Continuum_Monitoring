@@ -4,39 +4,49 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:FederatedLearningSessionShape a sh:NodeShape ;
-    sh:property [ sh:datatype xsd:decimal ;
-            sh:minCount 1 ;
-            sh:maxCount 1 ;
-            sh:minInclusive 0 ;
-            sh:message "Federated learning sessions should declare at most one privacy budget epsilon." ;
-            sh:path ex:hasPrivacyBudget ],
-        [ sh:datatype xsd:decimal ;
-            sh:minCount 1 ;
-            sh:maxCount 1 ;
-            sh:minInclusive 0 ;
-            sh:message "Federated learning sessions should declare at most one noise level." ;
-            sh:path ex:noiseLevel ] ;
-    sh:sparql [ a sh:SPARQLConstraint ;
-            sh:message "Model gradients leaving a mobile device must have ex:hasNoiseApplied true and ex:hasAnonymizationApplied true before transfer." ;
-            sh:select """
-            PREFIX ex: <http://example.org/smartcity#>
-            SELECT $this
-            WHERE {
-                $this ex:dataType "model_gradients" .
-                $this ex:transfersData ?gradient .
-                ?gradient ex:originatesFromDevice ?device .
-                ?device a ex:MobileDevice .
-                FILTER (
-                    NOT EXISTS { $this ex:hasNoiseApplied true }
-                    || NOT EXISTS { $this ex:hasAnonymizationApplied true }
-                )
-            }
-        """ ] ;
+ex:FederatedLearningSessionShape_v3 a sh:NodeShape ;
+    rdfs:label "Federated learning session structure" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:50>,
+        <urn:continuum:ontology:3.0.0:node:51>,
+        <urn:continuum:ontology:3.0.0:node:52> ;
     sh:targetClass ex:FederatedLearningSession .
 
+ex:ModelGradientUpdateShape_v3 a sh:NodeShape ;
+    rdfs:label "Gradient privacy structure" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:60>,
+        <urn:continuum:ontology:3.0.0:node:61>,
+        <urn:continuum:ontology:3.0.0:node:62> ;
+    sh:targetClass ex:ModelGradientUpdate .
+
 <http://example.org/smartcity/shapes/federated-learning> a owl:Ontology ;
-    rdfs:label "Federated Learning Compliance Shapes"@en ;
-    rdfs:comment "SHACL constraints retained from the v2.1 ontology."@en ;
-    owl:imports <http://example.org/smartcity> ;
-    owl:versionInfo "2.3.0" .
+    rdfs:label "Continuum v3 federated-learning compliance shapes"@en ;
+    owl:imports <http://example.org/smartcity/modules/federation> ;
+    owl:versionInfo "3.0.0" .
+
+<urn:continuum:ontology:3.0.0:node:50> sh:class ex:ComputationalNode ;
+    sh:minCount 1 ;
+    sh:path ex:involvedNode .
+
+<urn:continuum:ontology:3.0.0:node:51> sh:datatype xsd:dateTime ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:sessionTime .
+
+<urn:continuum:ontology:3.0.0:node:52> sh:class ex:PayloadType ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasPayloadType .
+
+<urn:continuum:ontology:3.0.0:node:60> sh:datatype xsd:boolean ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasNoiseApplied .
+
+<urn:continuum:ontology:3.0.0:node:61> sh:datatype xsd:boolean ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasAnonymizationApplied .
+
+<urn:continuum:ontology:3.0.0:node:62> sh:class ex:PrivacyMechanism ;
+    sh:minCount 1 ;
+    sh:path ex:hasPrivacyMechanism .

@@ -5,231 +5,512 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/smartcity/shapes/core-compliance>
-    a owl:Ontology ;
-    rdfs:label "Continuum Monitoring Core Compliance Shapes"@en ;
-    rdfs:comment "Closed-world validation rules for temporal, governance, trust, AHP and delegation policies."@en ;
-    owl:versionInfo "2.3.0" .
+ex:AIModelShape_v3 a sh:NodeShape ;
+    rdfs:label "AI model versioning" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:1>,
+        <urn:continuum:ontology:3.0.0:node:2>,
+        <urn:continuum:ontology:3.0.0:node:3> ;
+    sh:targetClass ex:AIModel .
 
-ex:TemporalStateShape
-    a sh:NodeShape ;
-    sh:targetClass ex:State ;
-    sh:property [
-        sh:path ex:validFrom ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:dateTime ;
-        sh:message "Every State must have exactly one xsd:dateTime validFrom."@en
-    ] ;
-    sh:sparql [
-        a sh:SPARQLConstraint ;
-        sh:message "validTo must be later than or equal to validFrom."@en ;
-        sh:select """
-            PREFIX ex: <http://example.org/smartcity#>
-            SELECT $this
-            WHERE {
-              $this ex:validFrom ?from ; ex:validTo ?to .
-              FILTER (?to < ?from)
-            }
-        """
-    ] .
+ex:AcceptanceProfileShape_v3 a sh:NodeShape ;
+    rdfs:label "Acceptance profile completeness" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:10>,
+        <urn:continuum:ontology:3.0.0:node:11>,
+        <urn:continuum:ontology:3.0.0:node:12>,
+        <urn:continuum:ontology:3.0.0:node:13>,
+        <urn:continuum:ontology:3.0.0:node:4>,
+        <urn:continuum:ontology:3.0.0:node:5>,
+        <urn:continuum:ontology:3.0.0:node:6>,
+        <urn:continuum:ontology:3.0.0:node:7>,
+        <urn:continuum:ontology:3.0.0:node:8>,
+        <urn:continuum:ontology:3.0.0:node:9> ;
+    sh:targetClass ex:AcceptanceProfile .
 
-ex:NodeStateTrustShape
-    a sh:NodeShape ;
-    sh:targetClass ex:NodeState ;
-    sh:property [
-        sh:path ex:hasTrustScore ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:decimal ;
-        sh:minInclusive 0 ;
-        sh:maxInclusive 1 ;
-        sh:message "NodeState requires one trust score in [0,1]."@en
-    ] ;
-    sh:property [
-        sh:path ex:hasTrustWeight ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:decimal ;
-        sh:minInclusive 0 ;
-        sh:maxInclusive 1 ;
-        sh:message "NodeState requires one trust weight in [0,1]."@en
-    ] .
+ex:AuthorizationDecisionShape_v3 a sh:NodeShape ;
+    rdfs:label "Effective authorization completeness" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:14>,
+        <urn:continuum:ontology:3.0.0:node:15>,
+        <urn:continuum:ontology:3.0.0:node:16>,
+        <urn:continuum:ontology:3.0.0:node:17>,
+        <urn:continuum:ontology:3.0.0:node:18> ;
+    sh:targetClass ex:AuthorizationDecision .
 
-ex:SemanticContractShape
-    a sh:NodeShape ;
-    sh:targetClass ex:SemanticContract ;
-    sh:property [
-        sh:path ex:contractSubject ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:User
-    ] ;
-    sh:property [
-        sh:path ex:hasConsentRange ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:ConsentRange
-    ] ;
-    sh:property [
-        sh:path ex:hasProcessingPurpose ;
-        sh:minCount 1 ;
-        sh:class ex:ProcessingPurpose
-    ] ;
-    sh:property [
-        sh:path ex:governedBy ;
-        sh:minCount 1 ;
-        sh:class ex:Policy
-    ] .
+ex:ConsentRecordShape_v3 a sh:NodeShape ;
+    rdfs:label "Consent record completeness" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:19>,
+        <urn:continuum:ontology:3.0.0:node:20>,
+        <urn:continuum:ontology:3.0.0:node:21>,
+        <urn:continuum:ontology:3.0.0:node:22> ;
+    sh:targetClass ex:ConsentRecord .
 
-ex:PolicyShape
-    a sh:NodeShape ;
-    sh:targetClass ex:Policy ;
-    sh:property [
-        sh:path ex:hasPolicyType ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:PolicyType
-    ] ;
-    sh:property [
-        sh:path ex:hasPolicyAction ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path ex:hasPolicyStatement ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:string
-    ] .
+ex:DataContextShape_v3 a sh:NodeShape ;
+    rdfs:label "Data context minimum fields" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:23>,
+        <urn:continuum:ontology:3.0.0:node:24>,
+        <urn:continuum:ontology:3.0.0:node:25>,
+        <urn:continuum:ontology:3.0.0:node:26>,
+        <urn:continuum:ontology:3.0.0:node:27> ;
+    sh:targetClass ex:DataContext .
 
-ex:EvaluationAuditShape
-    a sh:NodeShape ;
-    sh:targetClass ex:EvaluationState ;
-    sh:property [
-        sh:path ex:hasAHPScore ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:decimal ;
-        sh:minInclusive 0 ;
-        sh:maxInclusive 1
-    ] ;
-    sh:property [
-        sh:path ex:hasEvaluationTicketID ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:string
-    ] ;
-    sh:property [
-        sh:path ex:hasDetectedSymptom ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:MAPESymptom
-    ] ;
-    sh:property [
-        sh:path ex:appliesPolicy ;
-        sh:minCount 1 ;
-        sh:class ex:Policy
-    ] ;
-    sh:property [
-        sh:path ex:auditsContract ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:SemanticContract
-    ] ;
-    sh:property [
-        sh:path ex:hasConsentRange ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:ConsentRange
-    ] ;
-    sh:property [
-        sh:path ex:selectedModelTier ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:ModelTier
-    ] ;
-    sh:property [
-        sh:path ex:hasSelectionJustification ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:string
-    ] ;
-    sh:sparql [
-        a sh:SPARQLConstraint ;
-        sh:message "AHP latency, privacy, model-quality and trust weights must all exist, be in [0,1], and sum to 1."@en ;
-        sh:select """
-            PREFIX ex: <http://example.org/smartcity#>
-            SELECT $this
-            WHERE {
-              OPTIONAL { $this ex:hasLatencyWeight ?latency . }
-              OPTIONAL { $this ex:hasPrivacyWeight ?privacy . }
-              OPTIONAL { $this ex:hasModelQualityWeight ?quality . }
-              OPTIONAL { $this ex:hasTrustWeight ?trust . }
-              FILTER (
-                !BOUND(?latency) || !BOUND(?privacy) || !BOUND(?quality) || !BOUND(?trust)
-                || ?latency < 0 || ?latency > 1
-                || ?privacy < 0 || ?privacy > 1
-                || ?quality < 0 || ?quality > 1
-                || ?trust < 0 || ?trust > 1
-                || ABS((?latency + ?privacy + ?quality + ?trust) - 1.0) > 0.01
-              )
-            }
-        """
-    ] .
+ex:DecisionAlternativeShape_v3 a sh:NodeShape ;
+    rdfs:label "Decision alternative structure" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:28>,
+        <urn:continuum:ontology:3.0.0:node:29> ;
+    sh:targetClass ex:DecisionAlternative .
 
-ex:DelegationEventShape
-    a sh:NodeShape ;
-    sh:targetClass ex:DelegationEvent ;
-    sh:property [
-        sh:path ex:delegatedBy ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:ComputationalNode
-    ] ;
-    sh:property [
-        sh:path ex:delegatesTo ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:ComputationalNode
-    ] ;
-    sh:property [
-        sh:path ex:triggeredByState ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:State
-    ] ;
-    sh:property [
-        sh:path ex:expiresOnRecoveryOf ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:class ex:ComputationalNode
-    ] ;
-    sh:property [
-        sh:path ex:hasRecoveryCondition ;
-        sh:minCount 1 ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:string
-    ] .
+ex:DelegationEventShape_v3 a sh:NodeShape ;
+    rdfs:label "Delegation lifecycle" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:30>,
+        <urn:continuum:ontology:3.0.0:node:31>,
+        <urn:continuum:ontology:3.0.0:node:32>,
+        <urn:continuum:ontology:3.0.0:node:33>,
+        <urn:continuum:ontology:3.0.0:node:34> ;
+    sh:targetClass ex:DelegationEvent .
 
-ex:GradientUpdatePrivacyShape
-    a sh:NodeShape ;
-    sh:targetClass ex:ModelGradientUpdate ;
-    sh:property [
-        sh:path ex:hasNoiseApplied ;
-        sh:hasValue true ;
-        sh:maxCount 1
-    ] ;
-    sh:property [
-        sh:path ex:hasAnonymizationApplied ;
-        sh:hasValue true ;
-        sh:maxCount 1
-    ] ;
-    sh:property [
-        sh:path ex:hasPrivacyMechanism ;
-        sh:qualifiedMinCount 1 ;
-        sh:qualifiedValueShape [
-            sh:class ex:DifferentialPrivacyMechanism
-        ]
-    ] .
+ex:EvaluationStateShape_v3 a sh:NodeShape ;
+    rdfs:label "Evaluation audit ticket completeness" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:35>,
+        <urn:continuum:ontology:3.0.0:node:36>,
+        <urn:continuum:ontology:3.0.0:node:37>,
+        <urn:continuum:ontology:3.0.0:node:38>,
+        <urn:continuum:ontology:3.0.0:node:39>,
+        <urn:continuum:ontology:3.0.0:node:40>,
+        <urn:continuum:ontology:3.0.0:node:41>,
+        <urn:continuum:ontology:3.0.0:node:42>,
+        <urn:continuum:ontology:3.0.0:node:43>,
+        <urn:continuum:ontology:3.0.0:node:44>,
+        <urn:continuum:ontology:3.0.0:node:45>,
+        <urn:continuum:ontology:3.0.0:node:46>,
+        <urn:continuum:ontology:3.0.0:node:47>,
+        <urn:continuum:ontology:3.0.0:node:48>,
+        <urn:continuum:ontology:3.0.0:node:49> ;
+    sh:targetClass ex:EvaluationState .
+
+ex:MechanismShape_v3 a sh:NodeShape ;
+    rdfs:label "Mechanism specification completeness" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:53>,
+        <urn:continuum:ontology:3.0.0:node:54>,
+        <urn:continuum:ontology:3.0.0:node:59> ;
+    sh:targetClass ex:MechanismSpecification .
+
+ex:PolicyShape_v3 a sh:NodeShape ;
+    rdfs:label "Policy specification completeness" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:63>,
+        <urn:continuum:ontology:3.0.0:node:64>,
+        <urn:continuum:ontology:3.0.0:node:65>,
+        <urn:continuum:ontology:3.0.0:node:66>,
+        <urn:continuum:ontology:3.0.0:node:67> ;
+    sh:targetClass ex:Policy .
+
+ex:SemanticContractShape_v3 a sh:NodeShape ;
+    rdfs:label "Semantic contract completeness" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:72>,
+        <urn:continuum:ontology:3.0.0:node:73>,
+        <urn:continuum:ontology:3.0.0:node:74>,
+        <urn:continuum:ontology:3.0.0:node:75>,
+        <urn:continuum:ontology:3.0.0:node:76> ;
+    sh:targetClass ex:SemanticContract .
+
+ex:StateShape_v3 a sh:NodeShape ;
+    rdfs:label "State temporal completeness" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:77> ;
+    sh:targetClass ex:State .
+
+ex:TrustAssessmentShape_v3 a sh:NodeShape ;
+    rdfs:label "Trust reproducibility" ;
+    sh:property <urn:continuum:ontology:3.0.0:node:78>,
+        <urn:continuum:ontology:3.0.0:node:79>,
+        <urn:continuum:ontology:3.0.0:node:80>,
+        <urn:continuum:ontology:3.0.0:node:81>,
+        <urn:continuum:ontology:3.0.0:node:82> ;
+    sh:targetClass ex:TrustAssessment .
+
+<http://example.org/smartcity/shapes/core-compliance> a owl:Ontology ;
+    rdfs:label "Continuum v3 core compliance shapes"@en ;
+    owl:imports <http://example.org/smartcity> ;
+    owl:versionInfo "3.0.0" .
+
+<urn:continuum:ontology:3.0.0:node:1> sh:datatype xsd:dateTime ;
+    sh:maxCount 1 ;
+    sh:message "Every deployable model version should have lastUpdated for reproducibility." ;
+    sh:minCount 1 ;
+    sh:path ex:lastUpdated ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:10> sh:datatype xsd:integer ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:D_delegation_max ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:11> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:T_decision_max ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:12> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:E_device_max ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:13> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:AHP_consistency_threshold ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:14> sh:class ex:CityArea ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:basedOnZone .
+
+<urn:continuum:ontology:3.0.0:node:15> sh:class ex:ConsentRange ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasEffectiveConsentRange .
+
+<urn:continuum:ontology:3.0.0:node:16> sh:class ex:AuthorizationOutcome ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasAuthorizationOutcome .
+
+<urn:continuum:ontology:3.0.0:node:17> sh:class ex:ConsentRecord ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:basedOnConsentRecord .
+
+<urn:continuum:ontology:3.0.0:node:18> sh:class ex:SemanticContract ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:basedOnContract .
+
+<urn:continuum:ontology:3.0.0:node:19> sh:class ex:ConsentRange ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasConsentRange .
+
+<urn:continuum:ontology:3.0.0:node:2> sh:class ex:ModelTier ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasModelTier .
+
+<urn:continuum:ontology:3.0.0:node:20> sh:class ex:ProcessingPurpose ;
+    sh:minCount 1 ;
+    sh:path ex:hasProcessingPurpose .
+
+<urn:continuum:ontology:3.0.0:node:21> sh:class ex:User ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:consentSubject .
+
+<urn:continuum:ontology:3.0.0:node:22> sh:datatype xsd:dateTime ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:validFrom .
+
+<urn:continuum:ontology:3.0.0:node:23> sh:class ex:DeviceState ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:contextDeviceState .
+
+<urn:continuum:ontology:3.0.0:node:24> sh:class ex:NodeState ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:contextNodeState .
+
+<urn:continuum:ontology:3.0.0:node:25> sh:class ex:ProcessingLevel ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:contextProcessingLevel .
+
+<urn:continuum:ontology:3.0.0:node:26> sh:class ex:CityArea ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:contextZone .
+
+<urn:continuum:ontology:3.0.0:node:27> sh:class ex:ProcessingPurpose ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:contextPurpose .
+
+<urn:continuum:ontology:3.0.0:node:28> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:message "A v3 decision alternative should contain a score; migrated legacy alternatives are pending recalculation." ;
+    sh:minCount 1 ;
+    sh:path ex:hasAHPScore ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:29> sh:class ex:ModelTier ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:alternativeModelTier .
+
+<urn:continuum:ontology:3.0.0:node:3> sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:message "Every deployable model version should have a modelVersion." ;
+    sh:minCount 1 ;
+    sh:path ex:modelVersion ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:30> sh:datatype xsd:integer ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:delegationDepth .
+
+<urn:continuum:ontology:3.0.0:node:31> sh:class ex:ComputationalNode ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:delegatesTo .
+
+<urn:continuum:ontology:3.0.0:node:32> sh:datatype xsd:dateTime ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:validFrom .
+
+<urn:continuum:ontology:3.0.0:node:33> sh:class ex:RecoveryCondition ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasRecoveryCondition .
+
+<urn:continuum:ontology:3.0.0:node:34> sh:class ex:ComputationalNode ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:delegatedBy .
+
+<urn:continuum:ontology:3.0.0:node:35> sh:class ex:ModelTier ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:selectedModelTier .
+
+<urn:continuum:ontology:3.0.0:node:36> sh:class ex:DecisionAlternative ;
+    sh:minCount 1 ;
+    sh:path ex:hasDecisionAlternative .
+
+<urn:continuum:ontology:3.0.0:node:37> sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasEvaluationTicketID .
+
+<urn:continuum:ontology:3.0.0:node:38> sh:class ex:Policy ;
+    sh:minCount 1 ;
+    sh:path ex:appliedPolicy .
+
+<urn:continuum:ontology:3.0.0:node:39> sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasSelectionJustification .
+
+<urn:continuum:ontology:3.0.0:node:4> sh:datatype xsd:integer ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:N_agents ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:40> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasModelQualityWeight .
+
+<urn:continuum:ontology:3.0.0:node:41> sh:class ex:DecisionMethod ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasDecisionMethod .
+
+<urn:continuum:ontology:3.0.0:node:42> sh:class ex:SemanticContract ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:auditsContract .
+
+<urn:continuum:ontology:3.0.0:node:43> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasLatencyWeight .
+
+<urn:continuum:ontology:3.0.0:node:44> sh:class ex:CityArea ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:evaluationZone .
+
+<urn:continuum:ontology:3.0.0:node:45> sh:class ex:DecisionAlternative ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:selectedAlternative .
+
+<urn:continuum:ontology:3.0.0:node:46> sh:class ex:AuthorizationDecision ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasAuthorizationDecision .
+
+<urn:continuum:ontology:3.0.0:node:47> sh:class ex:User ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:evaluationUser .
+
+<urn:continuum:ontology:3.0.0:node:48> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasPrivacyWeight .
+
+<urn:continuum:ontology:3.0.0:node:49> sh:class ex:ProcessingPurpose ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:evaluationPurpose .
+
+<urn:continuum:ontology:3.0.0:node:5> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:T_inference_local ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:53> sh:class ex:Policy ;
+    sh:minCount 1 ;
+    sh:path ex:supportsPolicy .
+
+<urn:continuum:ontology:3.0.0:node:54> sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:or <urn:continuum:ontology:3.0.0:node:57> ;
+    sh:path ex:mechanismDescription .
+
+<urn:continuum:ontology:3.0.0:node:55> sh:datatype xsd:string .
+
+<urn:continuum:ontology:3.0.0:node:56> sh:datatype rdf:langString .
+
+<urn:continuum:ontology:3.0.0:node:57> rdf:first <urn:continuum:ontology:3.0.0:node:55> ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:58> .
+
+<urn:continuum:ontology:3.0.0:node:58> rdf:first <urn:continuum:ontology:3.0.0:node:56> ;
+    rdf:rest () .
+
+<urn:continuum:ontology:3.0.0:node:59> sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:mechanismIdentifier .
+
+<urn:continuum:ontology:3.0.0:node:6> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:T_reselection_max ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:63> sh:class ex:PolicyCategory ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:belongsToPolicyCategory .
+
+<urn:continuum:ontology:3.0.0:node:64> sh:class ex:PolicyType ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasPolicyType .
+
+<urn:continuum:ontology:3.0.0:node:65> sh:class ex:PolicyArtifact ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:definedInArtifact .
+
+<urn:continuum:ontology:3.0.0:node:66> sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:policyIdentifier .
+
+<urn:continuum:ontology:3.0.0:node:67> sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:or <urn:continuum:ontology:3.0.0:node:70> ;
+    sh:path ex:hasPolicyStatement .
+
+<urn:continuum:ontology:3.0.0:node:68> sh:datatype xsd:string .
+
+<urn:continuum:ontology:3.0.0:node:69> sh:datatype rdf:langString .
+
+<urn:continuum:ontology:3.0.0:node:7> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:T_node_join ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:70> rdf:first <urn:continuum:ontology:3.0.0:node:68> ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:71> .
+
+<urn:continuum:ontology:3.0.0:node:71> rdf:first <urn:continuum:ontology:3.0.0:node:69> ;
+    rdf:rest () .
+
+<urn:continuum:ontology:3.0.0:node:72> sh:class ex:User ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:contractSubject .
+
+<urn:continuum:ontology:3.0.0:node:73> sh:class ex:ProcessingPurpose ;
+    sh:minCount 1 ;
+    sh:path ex:hasProcessingPurpose .
+
+<urn:continuum:ontology:3.0.0:node:74> sh:class ex:ConsentRange ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasConsentRange .
+
+<urn:continuum:ontology:3.0.0:node:75> sh:datatype xsd:dateTime ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:validFrom .
+
+<urn:continuum:ontology:3.0.0:node:76> sh:class ex:Policy ;
+    sh:minCount 1 ;
+    sh:path ex:governedBy .
+
+<urn:continuum:ontology:3.0.0:node:77> sh:datatype xsd:dateTime ;
+    sh:maxCount 1 ;
+    sh:message "Every State must have exactly one validFrom." ;
+    sh:minCount 1 ;
+    sh:path ex:validFrom .
+
+<urn:continuum:ontology:3.0.0:node:78> sh:class ex:NodeState ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:trustAssessmentForState .
+
+<urn:continuum:ontology:3.0.0:node:79> sh:datatype xsd:dateTime ;
+    sh:maxCount 1 ;
+    sh:message "Historical trust window start is required for reproducible v3 trust." ;
+    sh:minCount 1 ;
+    sh:path ex:trustWindowStart ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:8> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:T_sparql_monitor ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:80> sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:trustRuleVersion .
+
+<urn:continuum:ontology:3.0.0:node:81> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path ex:hasTrustScore .
+
+<urn:continuum:ontology:3.0.0:node:82> sh:datatype xsd:dateTime ;
+    sh:maxCount 1 ;
+    sh:message "Historical trust window end is required for reproducible v3 trust." ;
+    sh:minCount 1 ;
+    sh:path ex:trustWindowEnd ;
+    sh:severity sh:Warning .
+
+<urn:continuum:ontology:3.0.0:node:9> sh:datatype xsd:decimal ;
+    sh:maxCount 1 ;
+    sh:message "Acceptance threshold must be configured before a validation campaign." ;
+    sh:minCount 1 ;
+    sh:path ex:T_migration_max ;
+    sh:severity sh:Warning .

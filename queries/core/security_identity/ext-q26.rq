@@ -1,0 +1,27 @@
+# Type: inventory
+# Purpose: Listar identificadores por tipo y scope.
+# Requirements: RF-61, RNF-19
+# Policies: P-DATA-02
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?identifier ?identifierType ?scope ?value WHERE {
+  ?user a :User ; :hasIdentifier ?identifier .
+  VALUES ?identifierType {
+    :PseudonymousIdentifier :AnonymousIdentifier :DirectIdentifier
+  }
+  ?identifier a ?identifierType .
+  OPTIONAL { ?identifier :identifierScope ?scope }
+  OPTIONAL { ?identifier :identifierValue ?value }
+}
+ORDER BY ?user ?identifier

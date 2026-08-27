@@ -27,7 +27,8 @@ from .ontology import load_graph
 from .partitioning import build_role_graph, privacy_violations
 from .protocol import WORKER_PROTOCOL_VERSION, WORKER_SERVICE
 from .queries import execute_query, execute_query_detailed, load_catalog
-from .reasoners import materialize
+from .reasoners import REASONING_CONTRACT, materialize
+from .specification import ONTOLOGY_VERSION
 from .synthetic import (
     add_synthetic_data,
     add_synthetic_rules,
@@ -406,6 +407,9 @@ class Handler(BaseHTTPRequestHandler):
                 "status": "ok",
                 "service": WORKER_SERVICE,
                 "protocol_version": WORKER_PROTOCOL_VERSION,
+                "ontology_version": ONTOLOGY_VERSION,
+                "query_count": len(runtime.catalog),
+                "reasoning_contract": REASONING_CONTRACT,
                 "role": runtime.role,
                 "pid": os.getpid(),
                 "python_version": platform.python_version(),

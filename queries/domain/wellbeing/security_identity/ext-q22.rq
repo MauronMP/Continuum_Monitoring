@@ -1,0 +1,31 @@
+# Type: violation
+# Purpose: Detectar observaciones crudas enviadas a Edge/Fog/Cloud mediante sentToNode o TransferEvent.
+# Requirements: RF-10, RF-60, RNF-17
+# Policies: P-DATA-01, P-ZONE-01
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?raw ?destination ?via WHERE {
+  VALUES ?rawType { :PhysiologicalObservation :SleepObservation }
+  ?raw a ?rawType .
+  {
+    ?raw :sentToNode ?destination . BIND("sentToNode" AS ?via)
+  }
+  UNION
+  {
+    ?transfer a :TransferEvent ; :carriesData ?raw ; :transferDestination ?destination . BIND("TransferEvent" AS ?via)
+  }
+  VALUES ?destType { :EdgeNode :FogNode :CloudNode }
+  ?destination a ?destType .
+}
+ORDER BY ?raw

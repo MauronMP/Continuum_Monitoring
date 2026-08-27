@@ -1,41 +1,30 @@
-# ================================================================================================
-
-PREFIX ex:   <http://example.org/smartcity#>
+# Type: report
+# Purpose: Obtener carga, disponibilidad, comunicación, capacidad residual, recursos y trust actual asociado al estado.
+# Requirements: RF-05, RF-29, RF-45, RF-70
+# Policies: P-NODE-01, P-NODE-03, P-OPS-05
+# Current v3.0.0 result: 7 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX saref:<https://saref.etsi.org/core/>
-PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl:  <http://www.w3.org/2002/07/owl#>
-PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
-PREFIX sh:   <http://www.w3.org/ns/shacl#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-# Q07 · Get all node states and their workload
-# Level   : Simple
-# Scenario: 1,2,3,4,6,7,8
-# ----------------------------------------------------------------
-SELECT ?node ?workloadLabel ?resourcePct ?queued
-WHERE {
-  ?node ex:hasNodeState ?ns .
-  ?ns ex:hasWorkload ?wl .
-  ?wl rdfs:label ?workloadLabel .
-  OPTIONAL { ?ns ex:resourceUsagePercent ?resourcePct }
-  OPTIONAL { ?ns ex:queuedRequests ?queued }
+SELECT ?node ?state ?workload ?availability ?communication ?residual ?resourceUsage ?queued ?operational ?trust WHERE {
+  ?node :hasNodeState ?state .
+  ?state a :NodeState .
+  OPTIONAL { ?state :hasWorkload ?workload }
+  OPTIONAL { ?state :hasAvailability ?availability }
+  OPTIONAL { ?state :hasCommunication ?communication }
+  OPTIONAL { ?state :hasResidualCapacity ?residual }
+  OPTIONAL { ?state :resourceUsagePercent ?resourceUsage }
+  OPTIONAL { ?state :queuedRequests ?queued }
+  OPTIONAL { ?state :hasOperationalStatus ?operational }
+  OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
 }
-ORDER BY DESC(?resourcePct)
-
-# EXPECTED (sorted by resource usage desc):
-# | node        | workloadLabel | resourcePct | queued |
-# |-------------|---------------|-------------|--------|
-# | EdgeNode2   | Saturated     | 99.0        | 25     |
-# | EdgeNode1   | Saturated     | 92.0        | 15     |  (S2)
-# | FogNode1    | Medium        | 55.0        | 4      |
-# | MobileC     | Low           | 40.0        | 0      |
-# | EdgeNode1   | Low           | 30.0        | 1      |  (S1)
-# | CloudNode1  | Low           | 25.0        | 0      |
-# | InternalEdge| Low           | 20.0        | 2      |
-
-
-# ----------------------------------------------------------------
-
-# ------------------------------------------------------------------------------------------------
+ORDER BY ?node ?state

@@ -1,0 +1,22 @@
+# Type: report
+# Purpose: Identificar usuarios cuya autorización efectiva permite RangeGlobalAgg para propósito federado global.
+# Requirements: RF-21, RF-32, RF-36
+# Policies: P-CONS-04, P-FL-02
+# Current v3.0.0 result: 1 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?user ?authorization ?effectiveRange ?contract WHERE {
+  ?authorization a :AuthorizationDecision ; :hasEffectiveConsentRange :RangeGlobalAgg ; :basedOnContract ?contract .
+  ?evaluation a :EvaluationState ; :hasAuthorizationDecision ?authorization ; :evaluationUser ?user ; :evaluationPurpose :PurposeGlobalFederatedLearning .
+}
+ORDER BY ?user

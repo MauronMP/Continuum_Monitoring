@@ -1,0 +1,34 @@
+# Type: violation
+# Purpose: Detectar tier Edge/Fog/Cloud seleccionado o TransferEvent externo asociado a evaluación/usuario en RestrictedZone.
+# Requirements: RF-42, RF-43, RF-60
+# Policies: P-ZONE-01, P-GOV-03
+# Current v3.0.0 result: 0 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?subject ?violationType ?destinationOrTier WHERE {
+  {
+    ?evaluation a :EvaluationState ; :evaluationZone ?zone ; :selectedModelTier ?tier .
+    ?zone a :RestrictedZone .
+    FILTER(?tier IN (:EdgeModelTier,:FogModelTier,:CloudModelTier))
+    BIND(?evaluation AS ?subject) BIND("external-tier" AS ?violationType) BIND(?tier AS ?destinationOrTier)
+  }
+  UNION
+  {
+    ?user a :User ; :locatedInZone ?zone . ?zone a :RestrictedZone .
+    ?user (:hasWearable|:hasMobileDevice) ?device .
+    ?transfer a :TransferEvent ; :transferSource ?device ; :transferDestination ?dest .
+    ?dest a ?destType . FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
+    BIND(?transfer AS ?subject) BIND("external-transfer" AS ?violationType) BIND(?dest AS ?destinationOrTier)
+  }
+}
+ORDER BY ?subject

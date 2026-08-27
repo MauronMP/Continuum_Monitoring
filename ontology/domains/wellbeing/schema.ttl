@@ -89,10 +89,10 @@ ex:hasWearable a owl:ObjectProperty ;
     rdfs:range ex:Wearable .
 
 <http://example.org/smartcity/modules/wellbeing> a owl:Ontology ;
-    rdfs:label "Continuum Monitoring Wellbeing Profile"@en ;
-    rdfs:comment "Optional wearable, physiological, stress and sleep extension."@en ;
-    owl:imports <http://example.org/smartcity> ;
-    owl:versionInfo "2.3.0" .
+    rdfs:label "Optional wellbeing monitoring profile"@en ;
+    owl:imports <http://example.org/smartcity/modules/foundation>,
+        <http://example.org/smartcity/modules/observability> ;
+    owl:versionInfo "3.0.0" .
 
 ex:PersonStatus a owl:Class ;
     rdfs:label "Person Status" .

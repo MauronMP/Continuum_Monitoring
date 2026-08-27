@@ -10,6 +10,7 @@ from statistics import median
 from typing import Any, Iterable
 
 from .csv_utils import write_dict_rows
+from .result_contract import require_release_metadata
 
 
 ARCHITECTURES = ("monolith", "docker", "physical")
@@ -19,6 +20,8 @@ DISTRIBUTED_ARCHITECTURES = ("docker", "physical")
 def _read_csv(path: Path) -> list[dict[str, str]]:
     if not path.is_file():
         return []
+    if path.name == "summary.csv":
+        require_release_metadata(path.parent)
     with path.open(encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
 

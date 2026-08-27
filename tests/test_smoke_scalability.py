@@ -29,7 +29,7 @@ def test_scalability_smoke_grows_the_graph_and_runs_the_full_battery(
 
     assert [int(row["synthetic_users"]) for row in rows] == [2, 4]
     assert int(rows[1]["input_triples"]) > int(rows[0]["input_triples"])
-    assert all(int(row["query_count"]) == 69 for row in rows)
+    assert all(int(row["query_count"]) == 115 for row in rows)
 
     detail = _rows(output / "query-runs.csv")
     for users in (2, 4):
@@ -38,7 +38,7 @@ def test_scalability_smoke_grows_the_graph_and_runs_the_full_battery(
             for row in detail
             if int(row["synthetic_users"]) == users
         }
-        assert len(query_ids) == 69
+        assert len(query_ids) == 115
     assert all(len(row["result_digest"]) == 64 for row in detail)
 
     terminal = capsys.readouterr().out

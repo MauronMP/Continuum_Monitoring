@@ -1,0 +1,28 @@
+# Type: inventory
+# Purpose: Inventariar usuarios y su rango de consentimiento activo sin recurrir al consentimiento binario heredado.
+# Requirements: RF-01, RF-32, RF-61, RF-70
+# Policies: P-CONS-01, P-DATA-02
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?user ?name ?activeRange ?identifier ?identifierType WHERE {
+  ?user a :User .
+  OPTIONAL { ?user foaf:name ?name }
+  OPTIONAL { ?user :hasActiveConsentRange ?activeRange }
+  OPTIONAL {
+    ?user :hasIdentifier ?identifier .
+    ?identifier a ?identifierType .
+    FILTER(?identifierType IN (:PseudonymousIdentifier, :AnonymousIdentifier, :DirectIdentifier))
+  }
+}
+ORDER BY ?user

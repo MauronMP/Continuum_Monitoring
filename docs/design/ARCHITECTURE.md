@@ -3,7 +3,7 @@
 ## Separación semántica
 
 La ontología anterior mezclaba TBox, vocabularios, shapes, individuos de ejemplo
-y conceptos del dominio de bienestar en un único fichero. La versión 2.2 usa:
+y conceptos del dominio de bienestar en un único fichero. La versión 3.0.0 usa:
 
 ```text
 core/schema + core/vocabulary
@@ -33,6 +33,8 @@ imports durante un experimento.
 - categoría acumulativa;
 - tipo: inspección, ASK, reporte, advertencia o incumplimiento;
 - expectativa verificable;
+- cardinalidad o resultado ASK del ABox de referencia;
+- finalidad y trazabilidad hacia RF/RNF/RV y políticas;
 - ruta al fichero `.rq`.
 
 El cargador rechaza IDs duplicados, ficheros ausentes o categorías no declaradas.
@@ -82,8 +84,10 @@ de producto semántico con la dimensión de topología de despliegue.
 En el modo particionado, el ABox sensible pertenece a los edges y cloud/fog
 reciben proyecciones o resúmenes. Las consultas `edges` y `cloud_edges` se
 ejecutan en varias fuentes y se fusionan mediante `set_union` o `boolean_or`.
-Las agregaciones no se fusionan de forma aproximada: `BASE-Q33` se dirige a su
-fuente fog autoritativa con estrategia `single`.
+Las agregaciones no se fusionan de forma aproximada: `BASE-Q33` se dirige a
+`edge2`, propietario de la proyección Mist completa, con estrategia `single`.
+Los alcances `edge1`, `edge2` y `edge3` expresan autoridad concreta; `edges`
+conserva la unión federada de los tres propietarios.
 
 `configs/ontology-placement.toml` replica el núcleo inmutable necesario para
 razonar localmente, omite el dominio wellbeing en fog y coloca los shapes solo
@@ -100,9 +104,13 @@ monolítico.
 
 ## Límites de equivalencia
 
-Los resultados nuevos incluyen un digest independiente del orden que conserva
-la multiplicidad del bag SPARQL; la comparación exige digest, cardinalidad y ASK
+Los resultados nuevos incluyen un digest independiente del orden sobre el
+conjunto canónico SPARQL; la comparación exige digest, cardinalidad y ASK
 cuando ambos lados lo ofrecen. Para CSV históricos sin digest aplica el fallback
 `cardinality_ask` y lo marca en `validation_level`. Ninguno de los dos niveles
 constituye por sí solo una certificación formal de federación RDF o de la
 reescritura algebraica de agregados.
+
+La fuente v3 se skolemiza de forma estable al generar módulos. Así, estructuras
+OWL/SHACL originalmente anónimas mantienen el mismo IRI en cloud, fog y edge;
+la unión de cinco fragmentos no multiplica listas RDF ni cierres anónimos.

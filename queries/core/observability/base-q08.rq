@@ -1,27 +1,32 @@
-# ================================================================================================
-
-PREFIX ex:   <http://example.org/smartcity#>
+# Type: report
+# Purpose: Detectar estados no elegibles o críticos para selección/migración.
+# Requirements: RF-17, RF-47, RNF-12
+# Policies: P-NODE-01, P-NODE-02
+# Current v3.0.0 result: 2 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX saref:<https://saref.etsi.org/core/>
-PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl:  <http://www.w3.org/2002/07/owl#>
-PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
-PREFIX sh:   <http://www.w3.org/ns/shacl#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-# Q08 · Find nodes in Saturated or Not Available state
-# Level   : Intermediate
-# Scenario: 2, 4 (saturation / failure detection)
-# ----------------------------------------------------------------
-SELECT ?node ?workloadLabel ?availLabel ?opStatusLabel
-WHERE {
-  ?node ex:hasNodeState ?ns .
-  ?ns ex:hasWorkload ?wl .
-  ?wl rdfs:label ?workloadLabel .
-  ?ns ex:hasAvailability ?av .
-  ?av rdfs:label ?availLabel .
-  ?ns ex:hasOperationalStatus ?op .
-  ?op rdfs:label ?opStatusLabel .
-  FILTER (?wl = ex:SaturatedWorkload || ?av = ex:NotAvailable)
+SELECT ?node ?state ?workload ?availability ?communication ?operational WHERE {
+  ?node :hasNodeState ?state .
+  ?state a :NodeState .
+  OPTIONAL { ?state :hasWorkload ?workload }
+  OPTIONAL { ?state :hasAvailability ?availability }
+  OPTIONAL { ?state :hasCommunication ?communication }
+  OPTIONAL { ?state :hasOperationalStatus ?operational }
+  FILTER(
+    ?workload = :SaturatedWorkload ||
+    ?availability = :NotAvailable ||
+    ?communication = :NoConnectionComm ||
+    ?operational = :Inoperative
+  )
 }
+ORDER BY ?node

@@ -22,6 +22,7 @@ from .distributed import (
     discover,
 )
 from .queries import QuerySpec, by_categories, load_catalog
+from .specification import release_identity
 
 
 def inventory_endpoints(path: Path) -> list[str]:
@@ -198,6 +199,7 @@ def _metadata(
     inventory: Path,
 ) -> dict[str, Any]:
     return {
+        **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),
         "platform": platform.platform(),

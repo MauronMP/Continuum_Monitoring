@@ -16,8 +16,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+from .result_contract import require_release_metadata
+
 
 def _read(path: Path) -> list[dict[str, str]]:
+    if path.name == "summary.csv":
+        require_release_metadata(path.parent)
     with path.open(encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
 
@@ -46,7 +50,9 @@ def _line_plot(
     ylabel: str,
     tick_labels: dict[float, str] | None = None,
 ) -> None:
-    fig, axis = plt.subplots(figsize=(9, 5.5))
+    # A wide canvas and wrapped category labels keep the 16-stage v3 taxonomy
+    # readable in both notebook previews and exported figures.
+    fig, axis = plt.subplots(figsize=(11, 6.2))
     for reasoner, points in sorted(groups.items()):
         axis.plot(
             [point[0] for point in points],
@@ -60,13 +66,17 @@ def _line_plot(
     axis.set_ylabel(ylabel)
     if tick_labels:
         positions = sorted(tick_labels)
-        axis.set_xticks(positions, [tick_labels[position] for position in positions])
-        axis.tick_params(axis="x", labelrotation=25)
+        labels = [
+            tick_labels[position].replace("_", "\n")
+            for position in positions
+        ]
+        axis.set_xticks(positions, labels)
+        axis.tick_params(axis="x", labelrotation=25, labelsize=8)
     axis.grid(True, alpha=0.25)
     axis.legend(title="Reasoner")
     fig.tight_layout()
     output.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output, dpi=160)
+    fig.savefig(output, dpi=180)
     plt.close(fig)
 
 
@@ -180,7 +190,7 @@ def plot_publication(output_root: Path) -> list[Path]:
 
     fig, axis = plt.subplots(figsize=(7.2, 4.2))
     category_labels = {
-        float(row["stage"]): row["added_category"]
+        float(row["stage"]): row["added_category"].replace("_", "\n")
         for row in cumulative_rows
     }
     for reasoner, points in sorted(
@@ -201,7 +211,7 @@ def plot_publication(output_root: Path) -> list[Path]:
         )
     ticks = sorted(category_labels)
     axis.set_xticks(ticks, [category_labels[tick] for tick in ticks])
-    axis.tick_params(axis="x", rotation=35)
+    axis.tick_params(axis="x", rotation=25, labelsize=7)
     axis.set_xlabel("Cumulative query category")
     axis.set_ylabel("Wall-clock time (ms)")
     axis.grid(True, axis="y", alpha=0.25)

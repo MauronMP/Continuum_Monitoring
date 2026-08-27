@@ -24,21 +24,23 @@ output_dir = "outputs/smoke-scalability"
 
 [benchmark]
 reasoners = ["rdfs", "owlrl", "rdfs_owlrl"]
-# Obligatorio por el esquema común; la escalabilidad ejecuta las 69 consultas.
+# Obligatorio por el esquema común; la escalabilidad ejecuta las 115 consultas.
 category_order = [
   "topology",
   "semantic_schema",
   "observability",
+  "identity_consent",
+  "data_lifecycle",
+  "security_identity",
+  "context_zones",
+  "trust",
   "decision",
-  "consent",
-  "contract_compliance",
-  "access_control",
-  "policy",
-  "migration",
+  "policy_governance",
+  "adaptation",
   "delegation",
   "federation",
-  "privacy",
-  "context",
+  "audit_temporal",
+  "validation",
   "wellbeing",
 ]
 scale_users = [5, 25]

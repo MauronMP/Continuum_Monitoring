@@ -7,13 +7,16 @@ un estándar ni una certificación formal de la ontología. Cumple patrones
 metodológicos reconocibles: datos sintéticos deterministas y escalables,
 workload SPARQL explícito, varias métricas, resultados por repetición,
 metadatos, validación SHACL y comprobación de equivalencia entre despliegues.
+La puerta de calidad distingue `structural validity` de `scientific
+acceptance`: la primera puede pasar aunque el perfil/campaña documentados por
+`EXT-Q76` y `EXT-Q77` sigan incompletos.
 
 La validación combina aspectos distintos:
 
 1. sintaxis y carga RDF/Turtle;
 2. inferencia RDFS/OWL RL y detección de `owl:Nothing`;
 3. restricciones cerradas SHACL y consultas de incumplimiento;
-4. competencia funcional mediante 69 consultas;
+4. competencia funcional mediante 115 consultas trazadas a requisitos y políticas;
 5. rendimiento acumulativo y por volumen;
 6. equivalencia de resultados monolito/Docker;
 7. validación cruzada con Apache Jena, Eclipse RDF4J y RDFLib/OWL-RL bajo
@@ -50,6 +53,9 @@ Esto está alineado conceptualmente con:
   fondo, protocolo de caché y datos/semillas.
 - El namespace `example.org` debe sustituirse por una URI persistente antes de
   publicar la ontología como artefacto estable.
+- El ABox v3 actual conserva 57 advertencias SHACL y no satisface todavía las
+  precondiciones de aceptación de `EXT-Q76`/`EXT-Q77`. No debe afirmarse
+  certificación de cumplimiento hasta completar esos artefactos.
 - Docker y físico ofrecen un baseline replicado y un layout híbrido: ABox por
   autoridad, núcleo TBox local y perfiles que omiten wellbeing en fog y shapes
   en fog/edge. No es un endpoint SPARQL 1.1 Federation genérico.
@@ -57,7 +63,17 @@ Esto está alineado conceptualmente con:
   triples axiomáticos o de datatype. Por eso la decisión funcional
   cero/no-cero o `ASK` sigue siendo el criterio de conformidad multimotor. La
   equivalencia entre arquitecturas RDFLib usa además un digest exacto,
-  independiente del orden y sensible a multiplicidad.
+  independiente del orden sobre el conjunto canónico de bindings.
+- La trazabilidad directa no cubre todo el inventario normativo: 102/116
+  requisitos y 69/79 políticas aparecen en al menos una consulta. Los IDs no
+  cubiertos se publican en la salida de `validate`; hasta ampliar la batería no
+  debe afirmarse una cobertura SPARQL del 100 %.
+- El smoke de una repetición es una prueba de integración. No es una muestra
+  suficiente para concluir superioridad, equivalencia temporal o eficiencia
+  energética entre arquitecturas.
+- Los timeouts son observaciones censuradas. Las figuras que solo agregan
+  corridas completas deben acompañarse de la tabla/tasa de timeouts; eliminarlos
+  silenciosamente sesga el resultado a favor de la arquitectura que más falla.
 
 ## Interpretación de las figuras
 
@@ -65,6 +81,11 @@ Las figuras de publicación usan mediana y rango mínimo-máximo de las
 repeticiones disponibles. El rango es descriptivo y no debe denominarse
 intervalo de confianza. Para un artículo se recomienda aumentar repeticiones y
 predefinir el análisis estadístico antes de recoger la corrida definitiva.
+
+La unidad experimental debe ser una repetición completa del mismo release,
+dataset lógico, razonador y conjunto de consultas. No son comparables entre sí
+los CSV v2/v3, un control sin inferencia y un razonador RDFS, ni una réplica
+completa y un fragmento de autoridad sin declarar ese factor.
 
 ## Referencias primarias
 

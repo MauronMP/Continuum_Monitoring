@@ -1,60 +1,25 @@
-# ================================================================================================
-
-PREFIX ex:   <http://example.org/smartcity#>
+# Type: report
+# Purpose: Listar nodos con disponibilidad, comunicación, carga, capacidad y trust compatibles con selección.
+# Requirements: RF-18, RF-47, RF-48
+# Policies: P-NODE-02, P-NODE-05
+# Current v3.0.0 result: 4 filas
+PREFIX : <http://example.org/smartcity#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX saref:<https://saref.etsi.org/core/>
-PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl:  <http://www.w3.org/2002/07/owl#>
-PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
-PREFIX sh:   <http://www.w3.org/ns/shacl#>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-# Q19 · Find all nodes eligible for migration (available + low/medium workload)
-# Level   : eAdvanced
-# Scenario: 2, 3 (migration decision support)
-# ----------------------------------------------------------------
-SELECT ?node ?nodeType ?workloadLabel ?availLabel ?commLabel ?residualLabel ?trustScore ?resourcePct
-WHERE {
-  ?node a ?nodeType .
-  ?nodeType rdfs:subClassOf+ ex:ComputationalNode .
-  ?node ex:hasNodeState ?ns .
-  OPTIONAL {
-    ?ns ex:hasAvailability ?av .
-    ?av rdfs:label ?availLabel .
-  }
-  OPTIONAL {
-    ?ns ex:hasWorkload ?wl .
-    ?wl rdfs:label ?workloadLabel .
-  }
-  OPTIONAL {
-    ?ns ex:hasCommunication ?comm .
-    ?comm rdfs:label ?commLabel .
-  }
-  ?ns ex:hasResidualCapacity ?rc ;
-      ex:hasTrustScore ?trustScore .
-  ?rc rdfs:label ?residualLabel .
-  OPTIONAL {
-    ?ns ex:resourceUsagePercent ?resourcePct .
-  }
-  FILTER (?av IN (ex:Available, ex:Partial))
-  FILTER (?wl IN (ex:NoWorkload, ex:LowWorkload, ex:MediumWorkload))
-  FILTER (?comm IN (ex:StableComm, ex:VariableComm, ex:IntermittentComm))
-  FILTER (?rc IN (ex:MediumResidual, ex:HighResidual))
-  FILTER (?trustScore >= 0.75)
+SELECT ?node ?state ?workload ?availability ?communication ?residual ?trust WHERE {
+  ?node :hasNodeState ?state .
+  ?state :hasAvailability :Available ; :hasCommunication :StableComm ; :hasWorkload ?workload ; :hasResidualCapacity ?residual .
+  FILTER(?workload IN (:LowWorkload, :MediumWorkload))
+  FILTER(?residual IN (:MediumResidual, :HighResidual))
+  OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
 }
-ORDER BY ?resourcePct
-
-# EXPECTED (candidates, sorted by lowest resource usage first):
-# | node                 | nodeType   | workload | availability | comm     | residual | trust | resourcePct |
-# |----------------------|------------|----------|--------------|----------|----------|-------|-------------|
-# | InternalEdgeFacility | EdgeNode   | Low      | Available    | Stable   | High     | 0.91  | 20.0        |
-# | CloudNode1           | CloudNode  | Low      | Available    | Stable   | High     | 0.96  | 25.0        |
-# | EdgeNode1            | EdgeNode   | Low      | Available    | Stable   | High     | 0.93  | 30.0        |  (S1)
-# | MobileC              | MobileDevice | Low    | Partial      | Intermittent | Medium | 0.78 | 40.0     |
-# | FogNode1             | FogNode    | Medium   | Available    | Stable   | Medium   | 0.88 | 55.0        |
-
-
-# ----------------------------------------------------------------
-
-# ------------------------------------------------------------------------------------------------
+ORDER BY DESC(?trust) ?node

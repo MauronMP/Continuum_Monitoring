@@ -31,7 +31,6 @@ ex:StressMedium a ex:StressLevel,
     rdfs:label "Medium" .
 
 <http://example.org/smartcity/modules/wellbeing-vocabulary> a owl:Ontology ;
-    rdfs:label "Continuum Monitoring Wellbeing Vocabulary"@en ;
-    rdfs:comment "Controlled values for the optional wellbeing profile."@en ;
+    rdfs:label "Wellbeing controlled vocabulary"@en ;
     owl:imports <http://example.org/smartcity/modules/wellbeing> ;
-    owl:versionInfo "2.3.0" .
+    owl:versionInfo "3.0.0" .

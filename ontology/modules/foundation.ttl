@@ -1,90 +1,38 @@
 @prefix ex: <http://example.org/smartcity#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix geo: <http://www.opengis.net/ont/geosparql#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix saref: <https://saref.etsi.org/core/> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:ComputationalNode a owl:Class ;
-    rdfs:label "Computational Node" ;
-    rdfs:comment "Continuum architecture node capable of hosting models and processing data." ;
-    rdfs:subClassOf ex:DelegableEntity,
-        ex:GovernedResource,
-        saref:Device .
-
-ex:ConsentRequiredResource a owl:Class ;
-    rdfs:label "Consent Required Resource" .
+ex:MAPESymptom a owl:Class ;
+    rdfs:label "MAPE-K Symptom" ;
+    rdfs:comment "Symptom detected in the MAPE-K Monitor/Analyse phases and recorded for auditability." .
 
 ex:NonUser a owl:Class ;
     rdfs:label "Non-User" ;
     rdfs:comment "Person in the environment without a wearable or active participation." ;
     rdfs:subClassOf foaf:Person .
 
-ex:ParametrizedData a owl:Class ;
-    rdfs:label "Parametrized Data" ;
-    rdfs:comment "Pre-computed and aggregated data. Raw physiological data never leaves the device." ;
-    rdfs:subClassOf ex:PrivacyProtectedResource .
+ex:ProcessingLevel a owl:Class ;
+    rdfs:label "Processing Level" .
 
-ex:ProcessingPurpose a owl:Class ;
-    rdfs:label "Processing Purpose" ;
-    rdfs:comment "Purpose for which data, model parameters or predictions are processed." .
-
-ex:PurposeScopedResource a owl:Class ;
-    rdfs:label "Purpose Scoped Resource" .
-
-ex:StateTriggeredDecision a owl:Class ;
-    rdfs:label "State Triggered Decision" .
-
-ex:State a owl:Class ;
-    rdfs:label "State" ;
-    rdfs:comment "Dynamic state of any entity. Temporally bounded and automatically derived." .
-
-ex:TrafficWindow a owl:Class ;
-    rdfs:label "Traffic Window" ;
-    rdfs:comment "Time interval with high demand (morning: wake-up; night: physiological data upload)." .
-
-ex:TrustWeightedEntity a owl:Class ;
-    rdfs:label "Trust Weighted Entity" .
-
-ex:derivedFrom a owl:ObjectProperty ;
-    rdfs:label "derived from" ;
-    rdfs:comment "SOSA observation that originated this state and provides its timestamp." ;
-    rdfs:domain ex:State ;
-    rdfs:range sosa:Observation .
+ex:hasDeviceState a owl:ObjectProperty ;
+    rdfs:label "has device state" ;
+    rdfs:domain ex:Wearable ;
+    rdfs:range ex:DeviceState .
 
 ex:hasMobileDevice a owl:ObjectProperty ;
     rdfs:label "has mobile device" ;
     rdfs:domain ex:User ;
     rdfs:range ex:MobileDevice .
 
-ex:stateDuration a owl:DatatypeProperty ;
-    rdfs:label "state duration" ;
-    rdfs:comment "Computed as validTo - validFrom." ;
-    rdfs:domain ex:State ;
-    rdfs:range xsd:duration .
-
-ex:validFrom a owl:DatatypeProperty ;
-    rdfs:label "valid from" ;
-    rdfs:comment "State start. Automatically derived from the originating observation." ;
-    rdfs:domain ex:State ;
-    rdfs:range xsd:dateTime .
-
-ex:validTo a owl:DatatypeProperty ;
-    rdfs:label "valid to" ;
-    rdfs:comment "State end. Closed when a new observation produces a different state." ;
-    rdfs:domain ex:State ;
-    rdfs:range xsd:dateTime .
-
 <http://example.org/smartcity/modules/foundation> a owl:Ontology ;
-    owl:versionInfo "2.3.0" .
+    rdfs:label "Continuum foundation module"@en ;
+    owl:versionInfo "3.0.0" .
 
-geo:Feature a owl:Class .
-
-geo:Geometry a owl:Class .
-
-geo:hasGeometry a owl:ObjectProperty .
+sosa:Observation a owl:Class .
 
 sosa:Platform a owl:Class .
 
@@ -102,29 +50,83 @@ sosa:observedProperty a owl:ObjectProperty .
 
 sosa:resultTime a owl:DatatypeProperty .
 
-foaf:name a owl:AnnotationProperty .
+saref:Device a owl:Class .
 
-ex:ConsentScopedResource a owl:Class ;
-    rdfs:label "Consent Scoped Resource" .
+<urn:continuum:ontology:3.0.0:node:126> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:127> .
 
-ex:DelegableEntity a owl:Class ;
-    rdfs:label "Delegable Entity" .
+<urn:continuum:ontology:3.0.0:node:129> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:130> .
 
-ex:PrivacyProtectedResource a owl:Class ;
-    rdfs:label "Privacy Protected Resource" .
+<urn:continuum:ontology:3.0.0:node:132> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:133> .
+
+<urn:continuum:ontology:3.0.0:node:140> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:141> .
+
+<urn:continuum:ontology:3.0.0:node:143> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:3.0.0:node:144> .
+
+<urn:continuum:ontology:3.0.0:node:127> rdf:first ex:NodeState ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:128> .
+
+<urn:continuum:ontology:3.0.0:node:128> rdf:first ex:EvaluationState ;
+    rdf:rest () .
+
+<urn:continuum:ontology:3.0.0:node:130> rdf:first ex:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:131> .
+
+<urn:continuum:ontology:3.0.0:node:131> rdf:first ex:ParametrizedData ;
+    rdf:rest () .
+
+<urn:continuum:ontology:3.0.0:node:133> rdf:first ex:Permission ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:134> .
+
+<urn:continuum:ontology:3.0.0:node:134> rdf:first ex:Policy ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:135> .
+
+<urn:continuum:ontology:3.0.0:node:135> rdf:first ex:Service ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:136> .
+
+<urn:continuum:ontology:3.0.0:node:136> rdf:first ex:ServiceState ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:137> .
+
+<urn:continuum:ontology:3.0.0:node:137> rdf:first ex:AIModel ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:138> .
+
+<urn:continuum:ontology:3.0.0:node:138> rdf:first ex:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:139> .
+
+<urn:continuum:ontology:3.0.0:node:139> rdf:first ex:EvaluationState ;
+    rdf:rest () .
+
+<urn:continuum:ontology:3.0.0:node:141> rdf:first ex:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:142> .
+
+<urn:continuum:ontology:3.0.0:node:142> rdf:first ex:ParametrizedData ;
+    rdf:rest () .
+
+<urn:continuum:ontology:3.0.0:node:144> rdf:first ex:User ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:145> .
+
+<urn:continuum:ontology:3.0.0:node:145> rdf:first ex:ComputationalNode ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:146> .
+
+<urn:continuum:ontology:3.0.0:node:146> rdf:first ex:CityArea ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:147> .
+
+<urn:continuum:ontology:3.0.0:node:147> rdf:first ex:Service ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:148> .
+
+<urn:continuum:ontology:3.0.0:node:148> rdf:first ex:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:3.0.0:node:149> .
+
+<urn:continuum:ontology:3.0.0:node:149> rdf:first ex:SemanticContract ;
+    rdf:rest () .
 
 ex:User a owl:Class ;
     rdfs:label "User" ;
     rdfs:comment "System participant with a wearable device." ;
-    rdfs:subClassOf ex:ConsentScopedResource,
-        ex:GovernedResource,
-        foaf:Person .
-
-sosa:Observation a owl:Class .
-
-saref:Device a owl:Class .
-
-ex:GovernedResource a owl:Class ;
-    rdfs:label "Governed Resource" .
+    rdfs:subClassOf foaf:Person .
 
 foaf:Person a owl:Class .
