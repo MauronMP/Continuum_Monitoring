@@ -130,6 +130,7 @@ def test_distributed_summary_accepts_sharded_storage_metrics(tmp_path):
         "aggregate_fragment_triples",
         "max_fragment_triples",
         "storage_replication_factor",
+        "node_count",
     ]
     for suite in ("cumulative", "scalability"):
         directory = tmp_path / suite
@@ -158,12 +159,13 @@ def test_distributed_summary_accepts_sharded_storage_metrics(tmp_path):
                         "aggregate_fragment_triples": 350,
                         "max_fragment_triples": 90,
                         "storage_replication_factor": 3.5,
+                        "node_count": 7,
                     }
                 )
 
     rows = _docker_summary_rows(
         tmp_path,
-        architecture="docker-sharded-five-node",
+        architecture="docker-sharded-elastic",
     )
 
     assert len(rows) == 6
@@ -171,6 +173,7 @@ def test_distributed_summary_accepts_sharded_storage_metrics(tmp_path):
     assert {row["logical_input_triples"] for row in rows} == {100.0}
     assert {row["aggregate_fragment_triples"] for row in rows} == {350.0}
     assert {row["input_triples_per_replica"] for row in rows} == {""}
+    assert {row["replicas"] for row in rows} == {7}
 
 
 def test_sharded_node_detail_file_is_preferred(tmp_path):

@@ -1,0 +1,35 @@
+[layer]
+tier = "edge"
+
+[[nodes]]
+id = "edge1"
+endpoint = "http://127.0.0.1:8193"
+host = "127.0.0.1"
+port = 8193
+container_port = 8080
+local = true
+authority = true
+cpus = 1.0
+memory = "1g"
+
+[[nodes]]
+id = "edge2"
+endpoint = "http://127.0.0.1:8194"
+host = "127.0.0.1"
+port = 8194
+container_port = 8080
+local = true
+authority = true
+cpus = 1.0
+memory = "1g"
+
+[[nodes]]
+id = "edge3"
+endpoint = "http://127.0.0.1:8195"
+host = "127.0.0.1"
+port = 8195
+container_port = 8080
+local = true
+authority = true
+cpus = 1.0
+memory = "1g"

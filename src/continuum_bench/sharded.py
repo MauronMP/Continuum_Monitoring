@@ -33,33 +33,56 @@ from .queries import (
 from .reasoners import materialize
 from .specification import release_identity
 from .synthetic import add_synthetic_data
+from .topology import TIER_ORDER, authority_index
 
 
 def _sources(
     spec: QuerySpec,
     endpoints: list[Endpoint],
 ) -> list[Endpoint]:
-    cloud = [item for item in endpoints if item.role == "cloud"]
-    fog = [item for item in endpoints if item.role == "fog"]
-    edges = sorted(
-        (item for item in endpoints if item.role.startswith("edge")),
-        key=lambda item: item.role,
+    ordered = sorted(
+        endpoints,
+        key=lambda item: (TIER_ORDER[item.tier], item.role),
     )
-    if spec.execution_scope == "cloud":
-        return cloud
-    if spec.execution_scope == "fog":
-        return fog
-    if spec.execution_scope == "edges":
-        return edges
-    if spec.execution_scope in {"edge1", "edge2", "edge3"}:
-        return [
-            item for item in edges if item.role == spec.execution_scope
+    authorities = [item for item in ordered if item.authority]
+    scope = spec.execution_scope
+    if scope in {"cloud", "fog", "mist", "edge", "iot"}:
+        candidates = [item for item in ordered if item.tier == scope]
+        if spec.merge_strategy == "single" and candidates:
+            # A tier scope denotes a replica set. Deterministic query hashing
+            # balances its catalogue across any number of same-tier nodes.
+            sources = [
+                candidates[authority_index(spec.id, len(candidates))]
+            ]
+        else:
+            sources = candidates
+    elif scope == "authorities":
+        sources = authorities
+    elif scope.startswith("authority_key:"):
+        key = scope.split(":", 1)[1]
+        if not authorities:
+            sources = []
+        else:
+            sources = [
+                authorities[authority_index(key, len(authorities))]
+            ]
+    elif scope == "cloud_authorities":
+        sources = [
+            item for item in ordered
+            if item.tier == "cloud" or item.authority
         ]
-    if spec.execution_scope == "cloud_edges":
-        return cloud + edges
-    raise ValueError(
-        f"{spec.id}: unsupported execution scope {spec.execution_scope!r}"
-    )
+    elif scope == "all":
+        sources = ordered
+    elif scope.startswith("node:"):
+        node_id = scope.split(":", 1)[1]
+        sources = [item for item in ordered if item.role == node_id]
+    else:
+        raise ValueError(f"{spec.id}: unsupported execution scope {scope!r}")
+    if not sources:
+        raise ValueError(
+            f"{spec.id}: scope {scope!r} has no active source in this topology"
+        )
+    return sources
 
 
 def _assignment(
@@ -300,6 +323,7 @@ def _summary(
     ]
     return {
         **common,
+        "node_count": len(prepared),
         "query_count": query_count,
         "source_query_executions": sum(
             int(item.get("query_count", 0)) for item in responses.values()
@@ -410,9 +434,17 @@ def _metadata(
         "python": platform.python_version(),
         "platform": platform.platform(),
         "suite": suite,
-        "mode": f"{target}-five-node-authority-sharded",
+        "mode": f"{target}-elastic-authority-sharded",
+        "node_count": len(endpoints),
         "endpoints": [
-            {"url": item.url, "role": item.role} for item in endpoints
+            {
+                "url": item.url,
+                "node_id": item.role,
+                "role": item.role,
+                "tier": item.tier,
+                "authority": item.authority,
+            }
+            for item in endpoints
         ],
         "reasoners": list(config.reasoners),
         "repetitions": config.repetitions,
@@ -460,8 +492,13 @@ def run_sharded_cumulative(
     *,
     target: str,
     validate_results: bool = True,
+    topology=None,
 ) -> Path:
-    endpoints = discover(endpoint_urls)
+    endpoints = discover(
+        endpoint_urls,
+        topology.active_nodes if topology is not None else None,
+        topology.fingerprint if topology is not None else None,
+    )
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     details: list[dict[str, Any]] = []
     node_details: list[dict[str, Any]] = []
@@ -485,7 +522,7 @@ def run_sharded_cumulative(
             print(
                 f"[{target}-sharded-cumulative] reasoner={reasoner} "
                 f"repetition={repetition}/{config.repetitions} "
-                "nodes=5 phase=partitioned-prepare status=running",
+                f"nodes={len(endpoints)} phase=partitioned-prepare status=running",
                 flush=True,
             )
             prepare_wall_ms, prepared = _prepare(
@@ -576,8 +613,13 @@ def run_sharded_scalability(
     *,
     target: str,
     validate_results: bool = True,
+    topology=None,
 ) -> Path:
-    endpoints = discover(endpoint_urls)
+    endpoints = discover(
+        endpoint_urls,
+        topology.active_nodes if topology is not None else None,
+        topology.fingerprint if topology is not None else None,
+    )
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     details: list[dict[str, Any]] = []
     node_details: list[dict[str, Any]] = []
@@ -602,7 +644,7 @@ def run_sharded_scalability(
                     f"block={block}/{len(config.scale_users)} users={users} "
                     f"reasoner={reasoner} "
                     f"repetition={repetition}/{config.repetitions} "
-                    "nodes=5 phase=partitioned-prepare status=running",
+                    f"nodes={len(endpoints)} phase=partitioned-prepare status=running",
                     flush=True,
                 )
                 prepare_wall_ms, prepared = _prepare(
@@ -674,16 +716,19 @@ def export_fragments(
     config: BenchmarkConfig,
     users: int,
     output_dir: Path,
+    *,
+    topology=None,
 ) -> list[Path]:
     from .partitioning import build_fragments, write_fragments
 
     started = perf_counter_ns()
-    fragments = build_fragments(config, users)
+    fragments = build_fragments(config, users, topology=topology)
     paths = write_fragments(fragments, output_dir)
     manifest = {
         **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "synthetic_users": users,
+        "node_count": len(fragments.graphs),
         "logical_triples": len(fragments.union()),
         "logical_substrate_triples": fragments.substrate_triples,
         "sensitive_resources": len(fragments.sensitive_resources),

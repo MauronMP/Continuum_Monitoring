@@ -1,109 +1,165 @@
-# Tests y comandos de ejecución
+# Test suites and command reference
 
-El proyecto distingue tres niveles: validación semántica, smoke automatizado y
-benchmark experimental. Esta separación evita usar una corrida científica larga
-como test de desarrollo.
+This manual groups commands by purpose, architecture and experimental family.
+Run commands from the repository root. Complete
+[installation](INSTALLATION.md) and `continuum-bench topology validate` before
+starting measured tests.
 
-Para un clon nuevo use `python3 tools/bootstrap.py`. Antes de los smokes Docker
-use `python3 tools/doctor.py --docker` o prepare sus imágenes mediante
-`python3 tools/bootstrap.py --with-docker`. Las instrucciones de Ubuntu Server,
-WSL2, dependencias fijadas y workers están en [INSTALLATION.md](INSTALLATION.md).
+## 1. Test levels
 
-## 1. Validación semántica
+| Level | Purpose | Publication evidence |
+|---|---|---|
+| Static/semantic validation | Reject invalid artefacts and expectations | Necessary, not sufficient |
+| Pytest smoke | Fast developer workflow contract | No |
+| Measurable smoke | End-to-end execution with tiny profiles | No |
+| Full benchmark | Repeated configured measurements | Yes, with metadata and controls |
+| Cross-architecture analysis | Matched speedup, costs and equivalence | Yes, if comparison gates pass |
+
+Never report smoke timings as performance results. They use small data,
+minimal repetitions and may share caches or host activity with development.
+
+## 2. Installation and read-only diagnostics
 
 ```bash
-.venv/bin/python -m continuum_bench validate
+# Standard-library pre-install check
+python3 tools/doctor.py
+
+# Coordinator environment
+python3 tools/bootstrap.py
+
+# Docker daemon, Compose and Buildx
+python3 tools/doctor.py --docker
+
+# SSH, rsync and local physical prerequisites
+python3 tools/doctor.py --physical
+
+# Machine-readable diagnostics
+.venv/bin/continuum-bench doctor --docker --physical --json
 ```
 
-Comprueba:
-
-- carga de los 13 artefactos generados desde la fuente v3 más el módulo de
-  despliegue del benchmark (14 Turtle de ejecución; los dos shapes están
-  incluidos en ese conjunto);
-- catálogo sin IDs duplicados y presencia de los 115 `.rq`;
-- ejecución de las 115 consultas sobre el grafo de referencia;
-- contrato v3 de RF/RNF/RV, políticas, mecanismos y escenarios;
-- IDs desconocidos y cobertura observable: 102/116 requisitos y 69/79
-  políticas aparecen en la trazabilidad consulta-a-especificación;
-- expectativas `true`, `non_empty` y `zero_rows`;
-- conformidad de todas las shapes SHACL (las advertencias de migración se
-  reportan, pero no se convierten en falsas violaciones);
-- materialización RDFS, OWL RL y RDFS+OWL RL;
-- ausencia de individuos tipados como `owl:Nothing` y cero incumplimientos en
-  las 32 consultas `violation` tras cada materialización;
-- equivalencia de las 115 consultas entre monolito y fragmentación por
-  autoridad;
-- compatibilidad de protocolo, versión v3, catálogo y `reasoning_contract` en
-  workers Docker/físicos (al descubrirlos en los tests de integración).
-
-Un fallo devuelve código de salida distinto de cero.
-
-## 2. Smoke pytest acumulativo
+`bootstrap.py --with-docker` additionally prepares the Docker images used by
+the smoke entry points:
 
 ```bash
+python3 tools/bootstrap.py --with-docker
+```
+
+## 3. Topology validation
+
+```bash
+.venv/bin/continuum-bench topology validate
+.venv/bin/continuum-bench topology show --name monolith
+.venv/bin/continuum-bench topology show --name docker
+.venv/bin/continuum-bench topology show --name physical
+```
+
+This checks composed architecture/tier files, identifiers, endpoints, ports,
+privacy authorities, remote paths and topology fingerprints. It does not start
+services.
+
+Render Docker Compose without starting it:
+
+```bash
+.venv/bin/continuum-bench topology render --name docker \
+  --output outputs/runtime/docker-compose-docker.yml
+
+docker compose \
+  -f outputs/runtime/docker-compose-docker.yml \
+  config --quiet
+```
+
+## 4. Semantic release validation
+
+```bash
+.venv/bin/continuum-bench validate
+```
+
+The gate verifies:
+
+- parsing of canonical and modular Turtle artefacts;
+- v3 identity and expected counts: 72 RF, 39 RNF, 5 RV, 79 policies,
+  55 mechanisms, 17 scenarios and 115 queries;
+- unique query IDs, file presence and catalog/category agreement;
+- all 115 reference query expectations;
+- SHACL conformance;
+- RDFS, OWL RL and RDFS+OWL RL materialization;
+- datatype range safety, including language strings versus `xsd:string`;
+- absence of resources inferred as `owl:Nothing`;
+- zero post-entailment violation-query failures;
+- authority-aware fragment reconstruction and privacy isolation;
+- release and traceability coverage reporting.
+
+A non-zero exit code means the release is not ready for benchmarking.
+
+Validate local documentation links and generated v3 reference manuals:
+
+```bash
+.venv/bin/python tools/check_documentation.py
+```
+
+Run `.venv/bin/python tools/generate_reference_docs.py` first after changing
+the canonical ontology or query catalog.
+
+### Optional OWL 2 DL and HermiT gate
+
+```bash
+python3 tools/check_owl_consistency.py \
+  --require-dl-profile \
+  --timeout 180 \
+  --output outputs/validation/ontology-hermit.json
+
+.venv/bin/python -m pytest -m owl_consistency
+```
+
+This requires Java 11+ and Protégé/HermiT. The pytest is skipped when that
+external runtime is absent; the direct checker fails rather than claiming a
+successful consistency check.
+
+## 5. Pytest suites
+
+```bash
+# Entire unit, semantic and workflow suite
+.venv/bin/python -m pytest
+
+# Fast cumulative workflow contract
 .venv/bin/python -m pytest -m smoke_cumulative
-```
 
-Prueba `tests/test_smoke_cumulative.py`. Para mantenerla rápida usa una sola
-materialización RDFS y resultados temporales. Verifica que:
-
-- las categorías se añaden en el orden configurado;
-- el número de consultas crece de forma monótona;
-- se ejecutan las dieciséis etapas;
-- la etapa final contiene exactamente los 115 IDs.
-
-## 3. Smoke pytest de escalabilidad
-
-```bash
+# Fast scalability workflow contract
 .venv/bin/python -m pytest -m smoke_scalability
+
+# Everything except the two marked smoke contracts
+.venv/bin/python -m pytest \
+  -m "not smoke_cumulative and not smoke_scalability"
 ```
 
-Prueba `tests/test_smoke_scalability.py`. Usa bloques mínimos de 2 y 4 usuarios
-y una materialización RDFS. Verifica que:
+The cumulative pytest uses a temporary one-repetition RDFS configuration and
+requires all 16 stages to grow monotonically to 115 query IDs. The scalability
+pytest uses tiny independent user volumes and verifies growth, complete query
+coverage and detailed CSV output.
 
-- el número de triples aumenta con el volumen;
-- se conservan ambos bloques de datos;
-- cada bloque ejecuta exactamente las 115 consultas;
-- el CSV detallado contiene los 115 IDs para cada volumen.
+The wider suite covers ontology integrity, query expectations, deterministic
+generation, result digests, topology composition, Compose rendering, physical
+lifecycle commands, privacy, partition reconstruction and reports.
 
-## 4. Smoke medible acumulativo
+## 6. Monolithic smoke suites
+
+### 6.1 Cumulative smoke
+
+Automatic Python profiles plus RDFLib/Jena/RDF4J/Oxigraph:
 
 ```bash
 .venv/bin/continuum-smoke-cumulative
 ```
 
-Equivalente explícito:
+Equivalent explicit command:
 
 ```bash
-.venv/bin/python -m continuum_bench \
+.venv/bin/continuum-bench \
   --config configs/smoke-cumulative.toml \
   benchmark cumulative
 ```
 
-Ejecuta una repetición con RDFS, OWL RL y RDFS+OWL RL. Mantiene fijo el grafo de
-referencia y añade:
-
-1. topology;
-2. semantic_schema;
-3. observability;
-4. identity_consent;
-5. data_lifecycle;
-6. security_identity;
-7. context_zones;
-8. trust;
-9. decision;
-10. policy_governance;
-11. adaptation;
-12. delegation;
-13. federation;
-14. audit_temporal;
-15. validation;
-16. wellbeing.
-
-Después ejecuta automáticamente el mismo acumulativo con Jena, RDF4J,
-RDFLib/OWL-RL y Oxigraph. El usuario no selecciona motores ni arranca su Compose.
-
-Si Docker no está disponible, la comprobación funcional local equivalente es:
+Python-only fallback when Docker is intentionally unavailable:
 
 ```bash
 .venv/bin/continuum-bench \
@@ -111,347 +167,471 @@ Si Docker no está disponible, la comprobación funcional local equivalente es:
   benchmark cumulative --python-only
 ```
 
-Esta variante valida los tres perfiles RDFLib/OWL-RL, pero no sustituye la
-comparación entre productos del ejecutable `continuum-smoke-cumulative`.
+The suite performs one repetition with `rdfs`, `owlrl` and `rdfs_owlrl`. It
+adds these categories cumulatively:
 
-La terminal informa antes y después de cada etapa:
+1. `topology`
+2. `semantic_schema`
+3. `observability`
+4. `identity_consent`
+5. `data_lifecycle`
+6. `security_identity`
+7. `context_zones`
+8. `trust`
+9. `decision`
+10. `policy_governance`
+11. `adaptation`
+12. `delegation`
+13. `federation`
+14. `audit_temporal`
+15. `validation`
+16. `wellbeing`
 
-```text
-[cumulative] reasoner=owlrl repetition=1/1 stage=11/16
-category=adaptation cumulative_queries=84 status=running
-```
+The terminal reports reasoner, repetition, stage, added category and cumulative
+query count. Outputs are written below
+`outputs/smoke-cumulative/cumulative/`.
 
-Salida:
-
-```text
-outputs/smoke-cumulative/cumulative/
-  query-runs.csv
-  summary.csv
-  metadata.json
-  cumulative-total-time.png
-  cumulative-p95-query-time.png
-```
-
-## 5. Smoke medible de escalabilidad
+### 6.2 Scalability smoke
 
 ```bash
 .venv/bin/continuum-smoke-scalability
 ```
 
-Equivalente explícito:
+Explicit and Python-only forms:
 
 ```bash
-.venv/bin/python -m continuum_bench \
+.venv/bin/continuum-bench \
   --config configs/smoke-scalability.toml \
   benchmark scalability
-```
 
-Genera bloques deterministas de 5 y 25 usuarios. Para cada volumen y cada uno de
-los tres perfiles locales ejecuta las 115 consultas. A continuación repite
-automáticamente los bloques en Jena, RDF4J, RDFLib/OWL-RL y Oxigraph.
-
-Cada volumen se reconstruye desde el mismo grafo base; `25` significa 25
-usuarios totales, no 5 anteriores más otros 25. Así cada punto es independiente,
-reproducible y no hereda cachés ni inferencias del bloque previo.
-
-Sin daemon Docker puede verificarse solo el pipeline Python con:
-
-```bash
 .venv/bin/continuum-bench \
   --config configs/smoke-scalability.toml \
   benchmark scalability --python-only
 ```
 
-La terminal identifica el bloque y el razonador activo:
+The smoke rebuilds independent deterministic graphs for 5 and 25 users. Each
+point executes all 115 queries with all three Python reasoning profiles. The
+second point is 25 total users, not 5 plus 25. Outputs are written below
+`outputs/smoke-scalability/scalability/`.
+
+## 7. Complete monolithic benchmarks
+
+```bash
+.venv/bin/continuum-bench benchmark cumulative
+.venv/bin/continuum-bench benchmark scalability
+.venv/bin/continuum-bench benchmark all
+```
+
+Use `--python-only` only when the independent product dimension is outside the
+study. Product warm-ups can be configured explicitly:
+
+```bash
+.venv/bin/continuum-bench benchmark all \
+  --engine-warmups 2
+```
+
+Primary outputs:
 
 ```text
-[scalability] block=2/2 users=25 reasoner=rdfs_owlrl
-repetition=1/1 queries=115 phase=reasoning status=running
+outputs/cumulative/{summary.csv,query-runs.csv,metadata.json}
+outputs/scalability/{summary.csv,query-runs.csv,metadata.json}
+outputs/engines/...
 ```
 
-Salida:
+## 8. Independent semantic-product benchmarks
 
-```text
-outputs/smoke-scalability/scalability/
-  query-runs.csv
-  summary.csv
-  metadata.json
-  scalability-total-time.png
-  scalability-query-throughput.png
-```
-
-## 6. Resto de pruebas
+Normal `benchmark` and `docker` commands start and stop the independent product
+stack automatically. To operate it manually:
 
 ```bash
-# Suite completa
-.venv/bin/python -m pytest
+docker compose -f docker-compose.engines.yml up -d --build
 
-# Pruebas semánticas y unitarias, excluyendo los dos contratos smoke
-.venv/bin/python -m pytest \
-  -m "not smoke_cumulative and not smoke_scalability"
+.venv/bin/continuum-bench engines cumulative
+.venv/bin/continuum-bench engines scalability
+.venv/bin/continuum-bench engines all
+
+docker compose -f docker-compose.engines.yml down
 ```
 
-La suite adicional valida catálogo, consultas, preservación del monolito legado,
-SHACL, los tres razonadores, determinismo del generador sintético, reconstrucción
-isomorfa de fragmentos, privacidad sintética y compatibilidad de los informes
-con resultados replicados o particionados.
+The default endpoints are RDFLib `8291`, Jena `8292`, RDF4J `8293` and
+Oxigraph `8294`. Jena, RDF4J and RDFLib use the common RDFS contract. Oxigraph
+is a no-entailment SPARQL control and must not be described as an OWL reasoner.
 
-La regresión RDFS verifica que los booleanos no se sustituyen por enteros ni
-se mezclan idiomas, conservando equivalencias numéricas válidas. El camino
-N-Triples del servicio externo ejecuta las 115 consultas con 0, 5 y 25 usuarios
-en RDFLib y Oxigraph. EXT-Q68 se prueba también con datos deliberadamente
-inválidos para asegurar que sigue detectando incumplimientos reales:
+Regenerate product figures:
 
 ```bash
-.venv/bin/python -m pytest tests/test_reasoners.py tests/test_external_engines.py
+.venv/bin/continuum-bench plot engines \
+  --engine-dir outputs/engines \
+  --engine-suite all
 ```
 
-Pruebas focalizadas de distribución e informes:
+## 9. Docker architecture
+
+### 9.1 Lifecycle
 
 ```bash
-.venv/bin/python -m pytest \
-  tests/test_partitioning.py \
-  tests/test_distributed.py \
-  tests/test_physical.py \
-  tests/test_compare.py \
-  tests/test_reporting.py
+.venv/bin/continuum-bench topology up --name docker
+.venv/bin/continuum-bench topology status --name docker
+.venv/bin/continuum-bench topology logs --name docker
 ```
 
-## 7. Benchmark completo
+### 9.2 Separate Docker smokes
 
-```bash
-.venv/bin/python -m continuum_bench benchmark cumulative
-.venv/bin/python -m continuum_bench benchmark scalability
-.venv/bin/python -m continuum_bench benchmark all
-```
-
-Usa `configs/benchmark.toml`: tres repeticiones y bloques de 10, 100, 500,
-1.000, 2.500 y 5.000 usuarios. Es el nivel destinado a obtener resultados
-comparables; los smoke solo comprueban rápidamente que ambos pipelines
-funcionan.
-
-## 8. Benchmark de carga multidimensional
-
-El flujo nuevo conserva comandos independientes y un smoke común:
-
-```bash
-.venv/bin/continuum-bench load monolith \
-  --load-config configs/load-smoke.toml \
-  --output-dir outputs/load-smoke
-.venv/bin/continuum-bench load docker \
-  --load-config configs/load-smoke.toml \
-  --output-dir outputs/load-smoke
-.venv/bin/continuum-bench load physical \
-  --load-config configs/load-smoke.toml \
-  --output-dir outputs/load-smoke
-```
-
-Sin `--load-config`, recorre eventos/s, usuarios, triples, reglas y nodos a
-volúmenes de experimento, con tres repeticiones y los tres razonadores:
-
-```bash
-.venv/bin/continuum-bench load monolith
-.venv/bin/continuum-bench load docker
-.venv/bin/continuum-bench load physical
-.venv/bin/continuum-bench load plot --show
-```
-
-La terminal muestra arquitectura, perfil, dimensión, razonador, repetición,
-tasa, usuarios, triples, reglas, nodos, fase y estado. La definición completa
-de las métricas y los timeouts está en `docs/design/LOAD_BENCHMARKS.md`.
-
-## 9. Regenerar y mostrar gráficas
-
-Benchmark completo:
-
-```bash
-.venv/bin/continuum-bench plot cumulative --show
-.venv/bin/continuum-bench plot scalability --show
-.venv/bin/continuum-bench plot all --show
-```
-
-Smoke acumulativo:
+Authority-partitioned cumulative:
 
 ```bash
 .venv/bin/continuum-bench \
   --config configs/smoke-cumulative.toml \
-  plot cumulative --show
+  docker cumulative \
+  --layout sharded \
+  --topology-only \
+  --output-dir outputs/docker-smoke-cumulative
 ```
 
-Smoke de escalabilidad:
+Authority-partitioned scalability:
 
 ```bash
 .venv/bin/continuum-bench \
   --config configs/smoke-scalability.toml \
-  plot scalability --show
+  docker scalability \
+  --layout sharded \
+  --topology-only \
+  --output-dir outputs/docker-smoke-scalability
 ```
 
-`plot` lee el `summary.csv` ya generado y vuelve a crear los PNG. La opción
-`--show` abre cada imagen con el visor configurado en el sistema. Para regenerar
-sin abrir ventanas se omite esa opción.
-
-En macOS también pueden abrirse directamente los resultados:
+Replicated variants:
 
 ```bash
-open outputs/cumulative/*.png
-open outputs/scalability/*.png
-open outputs/smoke-cumulative/cumulative/*.png
-open outputs/smoke-scalability/scalability/*.png
-```
-
-## 10. Cinco nodos Docker: réplica y particionado
-
-```bash
-docker compose up -d --build
-
-# Smokes distribuidos, separados
 .venv/bin/continuum-bench \
   --config configs/smoke-cumulative.toml \
-  docker cumulative --output-dir outputs/docker-smoke-cumulative
+  docker cumulative \
+  --layout replicated \
+  --topology-only \
+  --output-dir outputs/docker-smoke-cumulative-replicated
 
 .venv/bin/continuum-bench \
   --config configs/smoke-scalability.toml \
-  docker scalability --output-dir outputs/docker-smoke-scalability
+  docker scalability \
+  --layout replicated \
+  --topology-only \
+  --output-dir outputs/docker-smoke-scalability-replicated
+```
 
-# Experimentos completos
-.venv/bin/continuum-bench docker cumulative
-.venv/bin/continuum-bench docker scalability
+Remove `--topology-only` when the same command must also run the independent
+four-product benchmark.
 
-# Comparación completa y figuras de speedup
-.venv/bin/continuum-bench compare all
+### 9.3 Complete Docker suites
 
-# Los mismos tests con ABox particionado por autoridad
+```bash
+.venv/bin/continuum-bench docker cumulative --layout sharded
+.venv/bin/continuum-bench docker scalability --layout sharded
+.venv/bin/continuum-bench docker all --layout sharded
+
+.venv/bin/continuum-bench docker cumulative --layout replicated
+.venv/bin/continuum-bench docker scalability --layout replicated
+.venv/bin/continuum-bench docker all --layout replicated
+```
+
+Legacy-compatible sharded aliases:
+
+```bash
 .venv/bin/continuum-bench sharded docker cumulative
 .venv/bin/continuum-bench sharded docker scalability
 .venv/bin/continuum-bench sharded docker all
 ```
 
-El comparador no se limita al tiempo: coteja para cada consulta digest de
-bindings, número de resultados y valor ASK cuando los CSV contienen digest.
-Falla si Docker y el monolito difieren. Los detalles están en
-`docs/design/DOCKER_BENCHMARKS.md`.
-
-Los dos layouts no son intercambiables:
-
-| Comando | Layout | Asignación | Salida |
-|---|---|---|---|
-| `docker --layout replicated` | cinco réplicas completas | afinidad de categoría | `outputs/docker/replicated` |
-| `docker` | ABox por autoridad + perfil | scopes del plan | `outputs/docker/sharded` |
-
-Para comprobar los fragmentos antes de ejecutar:
+Stop the topology after the campaign:
 
 ```bash
-.venv/bin/continuum-bench fragments \
-  --users 100 \
-  --output-dir outputs/fragments
+.venv/bin/continuum-bench topology down --name docker
 ```
 
-El modo particionado genera una fila fusionada por consulta en
-`query-runs.csv` y respuestas por nodo en `node-query-runs.csv`. La validación
-monolítica se ejecuta por defecto, fuera de los tiempos.
+## 10. Physical architecture
 
-## 11. Motores independientes automáticos
+### 10.1 Provision and lifecycle
 
 ```bash
-# Smoke acumulativo
-.venv/bin/continuum-smoke-cumulative
-
-# Smoke de escalabilidad
-.venv/bin/continuum-smoke-scalability
-
-# Corridas completas por separado
-.venv/bin/continuum-bench benchmark cumulative
-.venv/bin/continuum-bench benchmark scalability
-
-# Figuras generadas por los smoke
-.venv/bin/continuum-bench plot engines \
-  --engine-suite cumulative \
-  --engine-dir outputs/smoke-cumulative/engines --show
-
-.venv/bin/continuum-bench plot engines \
-  --engine-suite scalability \
-  --engine-dir outputs/smoke-scalability/engines --show
+.venv/bin/continuum-bench physical authorize --ssh-user pi
+.venv/bin/continuum-bench physical deploy --ssh-user pi
+.venv/bin/continuum-bench physical start --ssh-user pi
+.venv/bin/continuum-bench physical status --ssh-user pi
 ```
 
-En el acumulativo cada motor prepara una vez el grafo de referencia y ejecuta
-los conjuntos crecientes de 4 a 115 consultas en las 16 categorías. En
-escalabilidad cada motor vuelve a preparar el grafo de cada bloque sintético y
-ejecuta las 115 consultas.
+`authorize` may request each Raspberry Pi password once through
+`ssh-copy-id`. Later commands require key authentication and never read a
+password from TOML.
 
-El comando falla si una expectativa funcional no se cumple o si los tres
-razonadores discrepan en el resultado observable. La cardinalidad exacta se
-registra separadamente porque el entailment de datatypes varía entre productos.
-La especificación completa está en `docs/design/ENGINE_BENCHMARKS.md`.
-
-La automatización de Jena, RDF4J, RDFLib/OWL-RL y Oxigraph aplica a
-`benchmark`, `continuum-smoke-*` y `docker`. Los comandos `physical` y
-`sharded` recorren los tres perfiles Python de `benchmark.reasoners`; no
-levantan el Compose de productos. En Raspberry Pi OS de 32 bits el banco Java
-25/PyOxigraph no es portable: Jena/RDF4J se mantienen como validación de
-productos en cloud y Oxigraph como control SPARQL sin inferencia, no como
-razonador físico distribuido.
-
-## 12. Informe comparativo de arquitecturas
+### 10.2 Separate physical smokes
 
 ```bash
-.venv/bin/python tools/generate_comparative_figures.py
+.venv/bin/continuum-bench \
+  --config configs/smoke-cumulative.toml \
+  physical cumulative \
+  --layout sharded \
+  --ssh-user pi \
+  --output-dir outputs/physical-smoke-cumulative
+
+.venv/bin/continuum-bench \
+  --config configs/smoke-scalability.toml \
+  physical scalability \
+  --layout sharded \
+  --ssh-user pi \
+  --output-dir outputs/physical-smoke-scalability
 ```
 
-El script exige resultados completos en `outputs/cumulative`,
-`outputs/scalability`, `outputs/docker/replicated/cumulative` y
-`outputs/docker/replicated/scalability`. Antes de graficar vuelve a comprobar la
-equivalencia de resultados. Genera las figuras y tablas científicas bajo
-`outputs/analysis/`.
-
-Con resultados físicos y particionados:
+Replicated smokes:
 
 ```bash
-.venv/bin/python -m continuum_bench.reporting \
+.venv/bin/continuum-bench \
+  --config configs/smoke-cumulative.toml \
+  physical cumulative \
+  --layout replicated \
+  --ssh-user pi \
+  --output-dir outputs/physical-smoke-cumulative-replicated
+
+.venv/bin/continuum-bench \
+  --config configs/smoke-scalability.toml \
+  physical scalability \
+  --layout replicated \
+  --ssh-user pi \
+  --output-dir outputs/physical-smoke-scalability-replicated
+```
+
+### 10.3 Complete physical suites
+
+```bash
+.venv/bin/continuum-bench physical all \
+  --layout sharded --ssh-user pi
+
+.venv/bin/continuum-bench physical all \
+  --layout replicated --ssh-user pi
+```
+
+Stop workers without deleting deployments or outputs:
+
+```bash
+.venv/bin/continuum-bench physical stop --ssh-user pi
+```
+
+## 11. Multidimensional load tests
+
+### 11.1 Architectures
+
+```bash
+.venv/bin/continuum-bench load monolith
+.venv/bin/continuum-bench load docker
+.venv/bin/continuum-bench load physical
+.venv/bin/continuum-bench load all
+```
+
+Docker and physical services must already be healthy. `load all` does not
+provision them.
+
+### 11.2 Independent-variable blocks
+
+```bash
+.venv/bin/continuum-bench load all --dimension events_per_second
+.venv/bin/continuum-bench load all --dimension users
+.venv/bin/continuum-bench load all --dimension target_triples
+.venv/bin/continuum-bench load all --dimension rule_count
+.venv/bin/continuum-bench load all --dimension node_count
+```
+
+`--dimension` is repeatable. Run an individual named profile with:
+
+```bash
+.venv/bin/continuum-bench load all --profile eps-2500
+```
+
+Profile names are declared in `configs/load-benchmark.toml`.
+
+### 11.3 Load figures
+
+```bash
+.venv/bin/continuum-bench load plot
+.venv/bin/continuum-bench load plot --show
+```
+
+Measured variables include p50/p95/p99 latency, processed/lost events,
+throughput, inference, alert precision/accuracy, CPU, current/peak RSS, disk,
+HTTP body bytes and recovery time.
+
+## 12. Three separated architecture experiments
+
+### 12.1 Query scale-out with replicas
+
+```bash
+.venv/bin/continuum-bench experiment scale-out monolith
+.venv/bin/continuum-bench experiment scale-out docker
+.venv/bin/continuum-bench experiment scale-out physical
+.venv/bin/continuum-bench experiment scale-out all
+```
+
+Smoke profile example:
+
+```bash
+.venv/bin/continuum-bench experiment scale-out all \
+  --experiment-config configs/experiments-smoke.toml \
+  --output-dir outputs/experiments-smoke
+```
+
+### 12.2 Reasoning scalability by hardware
+
+```bash
+.venv/bin/continuum-bench experiment reasoning-hardware monolith
+.venv/bin/continuum-bench experiment reasoning-hardware docker
+.venv/bin/continuum-bench experiment reasoning-hardware physical
+.venv/bin/continuum-bench experiment reasoning-hardware all
+```
+
+Select one reasoner or hardware profile:
+
+```bash
+.venv/bin/continuum-bench experiment reasoning-hardware physical \
+  --reasoner rdfs \
+  --profile triples-25000
+```
+
+Use an exact profile name from `configs/experiments.toml`.
+
+### 12.3 Truly distributed ontology
+
+```bash
+.venv/bin/continuum-bench experiment distributed-ontology monolith
+.venv/bin/continuum-bench experiment distributed-ontology docker
+.venv/bin/continuum-bench experiment distributed-ontology physical
+.venv/bin/continuum-bench experiment distributed-ontology all
+```
+
+### 12.4 Run all three families
+
+```bash
+.venv/bin/continuum-bench experiment all monolith
+.venv/bin/continuum-bench experiment all docker
+.venv/bin/continuum-bench experiment all physical
+.venv/bin/continuum-bench experiment all all
+```
+
+### 12.5 Figures and hypothesis analysis
+
+```bash
+.venv/bin/continuum-bench experiment plot scale-out
+.venv/bin/continuum-bench experiment plot reasoning-hardware
+.venv/bin/continuum-bench experiment plot distributed-ontology
+.venv/bin/continuum-bench experiment plot all --show
+.venv/bin/continuum-bench experiment analyze --show
+```
+
+The analysis reports matched throughput/latency speedups, CPU/RSS cost ratios,
+scale-out efficiency, timeouts, equivalence, break-even points and an explicit
+claim verdict. It never assumes that a distributed architecture must be
+faster.
+
+## 13. Comparisons and publication figures
+
+Compare monolithic and Docker cumulative/scalability results:
+
+```bash
+.venv/bin/continuum-bench compare cumulative
+.venv/bin/continuum-bench compare scalability
+.venv/bin/continuum-bench compare all
+```
+
+Regenerate figures from existing CSV files:
+
+```bash
+.venv/bin/continuum-bench plot cumulative
+.venv/bin/continuum-bench plot scalability
+.venv/bin/continuum-bench plot all
+.venv/bin/continuum-bench plot publication
+```
+
+Generate the full architecture/product report:
+
+```bash
+.venv/bin/continuum-report \
   --monolith-dir outputs \
   --docker-dir outputs/docker/replicated \
   --physical-dir outputs/physical/replicated \
   --docker-sharded-dir outputs/docker/sharded \
   --physical-sharded-dir outputs/physical/sharded \
-  --output-dir outputs/analysis \
-  --show
+  --output-dir outputs/report
 ```
 
-Las raíces opcionales solo se incluyen si contienen `cumulative/summary.csv` y
-`scalability/summary.csv`. Para cada una se valida el resultado contra el
-monolito, se calculan costes por nodo y se generan tablas
-`multi-architecture-*.csv`.
+Use `--show` only on commands that expose it. On headless servers omit it and
+copy the generated PNG/PDF/SVG files elsewhere.
 
-## 13. Matriz completa de ejecución
+## 14. Complete campaigns
 
-| Arquitectura | Acumulativo | Escalabilidad | Ambos |
-|---|---|---|---|
-| Monolito | `benchmark cumulative` | `benchmark scalability` | `benchmark all` |
-| Docker replicado | `docker cumulative --layout replicated` | `docker scalability --layout replicated` | `docker all --layout replicated` |
-| Docker particionado | `docker cumulative` | `docker scalability` | `docker all` |
-| Físico replicado | `physical cumulative --layout replicated` | `physical scalability --layout replicated` | `physical all --layout replicated` |
-| Físico particionado | `physical cumulative` | `physical scalability` | `physical all` |
+### 14.1 Local-only complete run
 
-En todos los casos puede anteponerse
-`--config configs/smoke-cumulative.toml` o
-`--config configs/smoke-scalability.toml` para reducir el experimento. El
-Compose o los workers físicos deben estar sanos antes de ejecutar cualquier
-flujo distribuido.
+```bash
+.venv/bin/continuum-bench topology validate
+.venv/bin/continuum-bench validate
+.venv/bin/python tools/check_documentation.py
+.venv/bin/python -m pytest
+.venv/bin/continuum-bench benchmark all
+.venv/bin/continuum-bench load monolith
+.venv/bin/continuum-bench experiment all monolith
+.venv/bin/continuum-bench plot publication
+```
 
-## Límites de los tests distribuidos
+### 14.2 Docker complete run
 
-- `sharded` fragmenta el ABox y aplica placement de perfiles; replica el núcleo
-  inmutable, mantiene wellbeing fuera de fog y shapes fuera de fog/edge.
-- Los CSV nuevos prueban digest del bag de bindings, cardinalidad y ASK. Los
-  históricos sin digest usan `validation_level=cardinality_ask`.
-- La coincidencia del digest no equivale a una demostración formal de la
-  reescritura de agregaciones distribuidas.
-- Las duraciones por nodo son proxies de trabajo, no medidas de energía, dinero
-  o utilización real de CPU.
-- Los tests pytest de distribución son locales y no sustituyen un smoke
-  end-to-end con los cinco servicios.
-- Que el test termine correctamente prueba equivalencia funcional y produce
-  mediciones; no prueba por sí solo que cinco nodos sean más rápidos. El
-  speedup debe calcularse sobre el mismo release, dataset, razonador, consultas,
-  repeticiones y política de calentamiento.
-- El timeout es un resultado censurado, no una latencia ordinaria: debe
-  informarse junto con la tasa de timeouts y nunca descartarse del agregado.
+```bash
+.venv/bin/continuum-bench topology up --name docker
+.venv/bin/continuum-bench topology status --name docker
+.venv/bin/continuum-bench docker all --layout sharded
+.venv/bin/continuum-bench docker all --layout replicated
+.venv/bin/continuum-bench load docker
+.venv/bin/continuum-bench experiment all docker
+.venv/bin/continuum-bench topology down --name docker
+```
+
+### 14.3 Physical complete run
+
+```bash
+.venv/bin/continuum-bench physical status --ssh-user pi
+.venv/bin/continuum-bench physical all --layout sharded --ssh-user pi
+.venv/bin/continuum-bench physical all --layout replicated --ssh-user pi
+.venv/bin/continuum-bench load physical
+.venv/bin/continuum-bench experiment all physical
+.venv/bin/continuum-bench physical stop --ssh-user pi
+```
+
+### 14.4 Three-architecture comparison run
+
+With Docker and physical workers already healthy:
+
+```bash
+.venv/bin/continuum-bench benchmark all
+.venv/bin/continuum-bench docker all --layout sharded
+.venv/bin/continuum-bench physical all --layout sharded --ssh-user pi
+.venv/bin/continuum-bench load all
+.venv/bin/continuum-bench experiment all all
+.venv/bin/continuum-bench compare all
+.venv/bin/continuum-bench load plot
+.venv/bin/continuum-bench experiment analyze
+.venv/bin/continuum-report
+```
+
+## 15. Output interpretation and limits
+
+- `total_ms` is local phase time; distributed suites use wall-time fields.
+- Do not add per-node durations and describe the sum as distributed latency.
+- Replicated mode evaluates query distribution, not distributed reasoning.
+- Hardware reasoning evaluates endpoints independently, not a cluster speedup.
+- Distributed ontology mode includes partitioning/federation semantics and must
+  pass the monolithic result oracle.
+- A timeout is a censored observation, not a missing row.
+- Event loss and failed profiles must remain in summaries and figures.
+- Result count alone is weaker than the canonical result digest; use the digest
+  when both result sets provide it.
+- `EXT-Q76` and `EXT-Q77` are acceptance-readiness reviews. Pending rows are
+  expected until campaign-specific thresholds and metadata are configured.
+- More nodes can be slower for small datasets because preparation,
+  serialization, network and federation overhead dominate.
+
+Read [BENCHMARKS.md](BENCHMARKS.md),
+[THREE_EXPERIMENTS.md](THREE_EXPERIMENTS.md) and
+[SCIENTIFIC_VALIDITY.md](SCIENTIFIC_VALIDITY.md) before drawing claims.

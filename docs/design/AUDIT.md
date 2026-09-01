@@ -1,66 +1,86 @@
-# Auditoría de ontología, consultas y políticas v3.0.0
+# Ontology, query and policy audit for v3.0.0
 
-## Resultado
+## Audit outcome
 
-La migración modular contiene 7.938 triples lógicos, 115 consultas (103 core y
-12 de dominio), 16 categorías, 72 RF, 39 RNF, 5 RV, 79 políticas, 55 mecanismos
-y 17 escenarios. El catálogo enlaza cada consulta con finalidad, requisitos,
-políticas, resultado de referencia, autoridad, privacidad y estrategia de
-fusión.
+The executable release contains:
 
-La puerta estructural valida Turtle, inventarios, SPARQL, SHACL, ausencia de
-`owl:Nothing`, privacidad y reconstrucción distribuida. Jena, RDF4J y
-RDFLib/OWL-RL cubren RDFS; Oxigraph es control SPARQL sin inferencia.
+- 72 functional requirements;
+- 39 non-functional requirements;
+- 5 validation requirements;
+- 79 policies in 12 categories;
+- 55 enforcement mechanisms;
+- 17 scenarios;
+- 115 SPARQL queries (`35 BASE + 80 EXT`).
 
-## Cambios aplicados
+The canonical ontology is English and no longer combines language-tagged
+requirement statements with an `xsd:string` range. The complete file for
+Protégé is `ontology/legacy/smartcity_continuum-v3.0.0.ttl`.
 
-| Hallazgo | Cambio v3 |
-|---|---|
-| Fuente monolítica difícil de desplegar | 13 artefactos derivados, módulo de despliegue del benchmark y perfiles de placement |
-| 115 consultas en una batería única | Un `.rq` por consulta y catálogo generado |
-| Trazabilidad documental no ejecutable | RF/RNF/RV y políticas se validan contra IDs RDF |
-| Routing únicamente por categoría | Alcance por consulta: cloud, fog, edges o edge concreto |
-| Bnodes OWL/SHACL se duplicaban entre nodos | Skolemización determinista al modularizar |
-| Datos personales podían ascender por enlaces | Propiedad por autoridad y proyecciones allowlist |
-| Agregados federados no componibles | Autoridad única para agregados; unión solo para resultados componibles |
-| Variantes numéricas RDFS producían falsos desacuerdos | Conjunto canónico de bindings y normalización numérica |
-| Shapes `xsd:string` rechazaban textos `@es` | `sh:or` para string/rdf:langString y rango `rdfs:Literal` |
-| Generador aún emitía consentimiento binario v2 | ABox sintético v3 con ConsentRecord, pseudónimo, contrato, autorización y DataContext |
-| `EXT-Q25` combinaba OPTIONAL, OR correlacionado y tipos abiertos | Reescritura estándar con VALUES, UNION y anti-joins acotados |
-| Workers antiguos podían mezclarse con v3 | Protocolo v5 con versión 3.0.0 y 115 consultas en `/health` |
+## Executable controls
 
-## Estado de aceptación
+```bash
+.venv/bin/continuum-bench topology validate
+.venv/bin/continuum-bench validate
+.venv/bin/python -m pytest
+```
 
-SHACL no presenta violaciones; conserva 57 advertencias de migración relativas a
-parámetros de aceptación, puntuaciones AHP, ventanas de confianza y fechas. Las
-consultas `EXT-Q76` y `EXT-Q77` confirman que el perfil y la campaña aún no están
-completos. Por ello la validación estructural puede ser correcta, pero
-`scientific_acceptance.ready` y `compliance_claim_permitted` permanecen falsos.
+These gates cover parsing, release counts, query expectations, SHACL,
+RDFS/OWL-RL profiles, datatype ranges, contradictions, distributed fragment
+reconstruction and privacy placement.
 
-Este comportamiento es intencionado: una consulta `violation` vacía no se usa
-como certificado sin superar primero `EXT-Q01`, `EXT-Q02`, `EXT-Q05`, `EXT-Q76`
-y `EXT-Q77`.
+For release-grade OWL 2 DL profile and consistency verification:
 
-## Cobertura de trazabilidad pendiente
+```bash
+python3 tools/check_owl_consistency.py --require-dl-profile \
+  --output outputs/validation/ontology-hermit.json
+```
 
-La batería suministrada referencia 102 de los 116 requisitos (87,93 %) y 69 de
-las 79 políticas (87,34 %). Los 14 requisitos y 10 políticas restantes están
-declarados y son válidos, pero no tienen una consulta asociada en los metadatos
-v3 recibidos. `validate` publica las listas exactas como
-`unreferenced_requirements` y `unreferenced_policies`; no las convierte en un
-fallo estructural ni permite afirmar cobertura SPARQL del 100 %.
+That check requires Java and Protégé/HermiT and is intentionally outside timed
+benchmarks.
 
-## Decisiones y límites
+## Corrections represented in the release
 
-- OWL/RDFS representa conocimiento abierto; SHACL y consultas `violation`
-  comprueban restricciones cerradas.
-- El namespace `example.org` debe migrarse a una URI persistente antes de
-  publicar la ontología como estándar externo.
-- La fragmentación implementada es authority-aware con TBox local, no un
-  endpoint SPARQL Federation genérico.
-- Las métricas de coste son proxies de tiempo/recursos; no sustituyen energía o
-  coste monetario medido.
-- Los resultados v2.x son históricos y no deben combinarse estadísticamente con
-  corridas v3.0.0.
-- La eliminación de artefactos v2 del árbol de trabajo no corrige esta deuda:
-  para cerrarla hay que diseñar y versionar nuevas consultas en la fuente v3.
+- Requirements, policies, mechanisms and ontology labels are English.
+- `requirementStatement` accepts the literal representation actually used.
+- RDFS literal value-space handling no longer conflates Boolean and integer
+  lexical forms, preventing the previous EXT-Q68 false positive.
+- Runtime modules preserve the canonical graph through stable skolemization.
+- Consent, semantic contract and effective authorization are independent.
+- Policy precedence applies the most restrictive hard constraint before AHP,
+  trust or QoS optimization.
+- Migration, delegation, degradation, synchronization, rollback and federated
+  learning are separate auditable actions.
+- Query expectations distinguish inventory/report/review from violation.
+- Distributed queries use elastic authority scopes instead of fixed edge IDs.
+- Result comparison uses canonical digests when available.
+
+## Acceptance status
+
+The ontology and benchmark can be validated reproducibly, but scientific
+acceptance remains campaign-specific. `EXT-Q76` checks whether quantitative
+acceptance parameters are configured. `EXT-Q77` checks campaign artefact and
+version readiness. Rows from these review queries describe pending evidence;
+they are not ontology inconsistency.
+
+## Traceability coverage
+
+The catalog currently links queries directly to 102 of 116 requirements and 69
+of 79 policies. Unlinked structural or operational requirements remain visible
+in validation and the generated references; they are not presented as direct
+query coverage.
+
+Run the reference generator after canonical changes:
+
+```bash
+.venv/bin/python tools/generate_reference_docs.py
+```
+
+## Audit limits
+
+- OWL open-world consistency does not establish closed-world compliance.
+- SHACL conformance does not establish query-result equivalence.
+- Zero-row violation queries have meaning only after release/campaign
+  preconditions pass.
+- A successful smoke is a workflow check, not performance evidence.
+- Physical performance depends on network, power, cooling and OS conditions
+  that the ontology cannot encode automatically.

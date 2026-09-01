@@ -6,6 +6,7 @@ from continuum_bench.distributed import Endpoint, _assignment
 from continuum_bench.protocol import worker_health_error
 from continuum_bench.queries import load_catalog
 from continuum_bench.reasoners import REASONING_CONTRACT
+from continuum_bench.specification import ONTOLOGY_REVISION
 
 
 def test_docker_role_assignment_routes_every_query_once(config):
@@ -88,10 +89,12 @@ def test_worker_health_rejects_an_old_ontology_release():
     health = {
         "status": "ok",
         "service": "continuum-benchmark-node",
-        "protocol_version": "5",
+        "protocol_version": "6",
         "ontology_version": "2.3.0",
         "query_count": 69,
         "role": "fog",
+        "node_id": "fog",
+        "tier": "fog",
     }
 
     assert "ontology_version" in worker_health_error(health)
@@ -99,4 +102,29 @@ def test_worker_health_rejects_an_old_ontology_release():
     health.update(ontology_version="3.0.0", query_count=115)
     assert "reasoning_contract" in worker_health_error(health)
     health["reasoning_contract"] = REASONING_CONTRACT
+    assert "ontology_revision" in worker_health_error(health)
+    health["ontology_revision"] = "3.0.0-before-english"
+    assert "ontology_revision" in worker_health_error(health)
+    health["ontology_revision"] = ONTOLOGY_REVISION
     assert worker_health_error(health, expected_role="fog") is None
+
+    health.update(
+        authority=False,
+        categories=["topology", "trust"],
+        topology_fingerprint="expected-topology",
+    )
+    assert (
+        worker_health_error(
+            health,
+            expected_node_id="fog",
+            expected_tier="fog",
+            expected_authority=False,
+            expected_categories=("topology", "trust"),
+            expected_topology_fingerprint="expected-topology",
+        )
+        is None
+    )
+    assert "topology_fingerprint" in worker_health_error(
+        health,
+        expected_topology_fingerprint="stale-topology",
+    )

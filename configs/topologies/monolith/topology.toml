@@ -1,0 +1,14 @@
+[manifest]
+version = 2
+
+[topology]
+name = "monolith"
+kind = "monolith"
+description = "Single-process local baseline"
+node_files = [
+  "nodes/cloud.toml",
+  "nodes/fog.toml",
+  "nodes/mist.toml",
+  "nodes/edge.toml",
+  "nodes/iot.toml",
+]

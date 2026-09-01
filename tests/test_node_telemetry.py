@@ -83,7 +83,11 @@ def test_partitioned_prepare_reports_placement_profile(monkeypatch):
         "build_role_graph",
         lambda config, role, users, seed: (source, fragments),
     )
-    monkeypatch.setattr(node, "privacy_violations", lambda *args: [])
+    monkeypatch.setattr(
+        node,
+        "privacy_violations",
+        lambda *args, **kwargs: [],
+    )
     monkeypatch.setattr(
         node,
         "materialize",

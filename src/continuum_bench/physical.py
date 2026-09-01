@@ -1,4 +1,4 @@
-"""Balanced benchmarks for one cloud host and four physical Raspberry Pi nodes."""
+"""Balanced benchmarks for a configuration-driven physical continuum."""
 
 from __future__ import annotations
 
@@ -6,7 +6,6 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 import platform
-import tomllib
 from typing import Any
 
 from .config import BenchmarkConfig
@@ -23,33 +22,16 @@ from .distributed import (
 )
 from .queries import QuerySpec, by_categories, load_catalog
 from .specification import release_identity
+from .physical_cluster import load_physical_inventory
 
 
-def inventory_endpoints(path: Path) -> list[str]:
-    """Load and validate the five HTTP endpoints from a physical inventory."""
-    with path.open("rb") as handle:
-        document = tomllib.load(handle)
-    nodes = document.get("nodes")
-    if not isinstance(nodes, list):
-        raise ValueError(f"Inventory must contain [[nodes]] entries: {path}")
-    roles: set[str] = set()
-    endpoints: list[str] = []
-    for node in nodes:
-        role = str(node.get("role", "")).strip()
-        endpoint = str(node.get("endpoint", "")).strip().rstrip("/")
-        if not role or not endpoint:
-            raise ValueError("Every physical node requires role and endpoint")
-        if role in roles:
-            raise ValueError(f"Duplicate physical role: {role}")
-        roles.add(role)
-        endpoints.append(endpoint)
-    expected = {"cloud", "fog", "edge1", "edge2", "edge3"}
-    if roles != expected:
-        raise ValueError(
-            f"Physical inventory roles must be {sorted(expected)}, "
-            f"got {sorted(roles)}"
-        )
-    return endpoints
+def inventory_endpoints(
+    path: Path,
+    topology_name: str = "physical",
+) -> list[str]:
+    """Load active HTTP endpoints from an elastic physical topology."""
+    inventory = load_physical_inventory(path, topology_name=topology_name)
+    return [node.endpoint for node in inventory.nodes]
 
 
 def _calibrate(
@@ -136,6 +118,7 @@ def _assignment_rows(
                     **common,
                     "endpoint": url,
                     "role": endpoint_by_url[url].role,
+                    "tier_name": endpoint_by_url[url].tier,
                     "query_id": spec.id,
                     "category": spec.category,
                     "tier": spec.tier,
@@ -166,6 +149,7 @@ def _node_rows(
                 **common,
                 "endpoint": endpoint.url,
                 "role": endpoint.role,
+                "tier_name": endpoint.tier,
                 "reasoning_ms": prepared[endpoint.url]["reasoning_ms"],
                 "generation_ms": prepared[endpoint.url]["generation_ms"],
                 "prepare_transport_attempts": prepared[endpoint.url].get(
@@ -204,16 +188,22 @@ def _metadata(
         "python": platform.python_version(),
         "platform": platform.platform(),
         "suite": suite,
-        "mode": "physical-five-node-adaptive-lpt",
+        "mode": "physical-elastic-adaptive-lpt",
         "inventory": str(inventory.resolve()),
         "endpoints": [
-            {"url": endpoint.url, "role": endpoint.role}
+            {
+                "url": endpoint.url,
+                "node_id": endpoint.role,
+                "tier": endpoint.tier,
+                "authority": endpoint.authority,
+            }
             for endpoint in endpoints
         ],
         "reasoners": list(config.reasoners),
         "repetitions": config.repetitions,
         "seed": config.seed,
         "replica_count": len(endpoints),
+        "node_count": len(endpoints),
         "balancing": (
             "one unmeasured per-query calibration per reasoner and dataset "
             "on every node, reused across repetitions, followed by "
@@ -248,6 +238,7 @@ def _summary(
     return {
         **common,
         "query_count": query_count,
+        "node_count": len(prepared),
         "prepare_wall_ms": prepare_wall_ms,
         "calibration_wall_ms_excluded": calibration_wall_ms,
         "calibration_reused": calibration_reused,
@@ -287,8 +278,19 @@ def run_physical_cumulative(
     config: BenchmarkConfig,
     inventory: Path,
     output_root: Path,
+    topology_name: str = "physical",
 ) -> Path:
-    endpoints = discover(inventory_endpoints(inventory))
+    declared = load_physical_inventory(
+        inventory,
+        topology_name=topology_name,
+    )
+    endpoint_urls = [node.endpoint for node in declared.nodes]
+    endpoints = discover(
+        endpoint_urls,
+        declared.nodes,
+        declared.topology.fingerprint if declared.topology is not None else None,
+    )
+    node_count = len(endpoints)
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     details: list[dict[str, Any]] = []
@@ -299,13 +301,14 @@ def run_physical_cumulative(
     for reasoner in config.reasoners:
         print(
             f"[physical-cumulative] reasoner={reasoner} "
-            "phase=calibration-prepare nodes=5 status=running",
+            f"phase=calibration-prepare nodes={node_count} status=running",
             flush=True,
         )
         _prepare(endpoints, reasoner, 0, config.seed)
         print(
             f"[physical-cumulative] reasoner={reasoner} "
-            f"phase=calibration nodes=5 queries={len(specs)} status=running",
+            f"phase=calibration nodes={node_count} "
+            f"queries={len(specs)} status=running",
             flush=True,
         )
         (
@@ -317,7 +320,7 @@ def run_physical_cumulative(
             print(
                 f"[physical-cumulative] reasoner={reasoner} "
                 f"repetition={repetition}/{config.repetitions} "
-                "nodes=5 phase=prepare status=running",
+                f"nodes={node_count} phase=prepare status=running",
                 flush=True,
             )
             prepare_wall_ms, prepared = _prepare(
@@ -416,8 +419,19 @@ def run_physical_scalability(
     config: BenchmarkConfig,
     inventory: Path,
     output_root: Path,
+    topology_name: str = "physical",
 ) -> Path:
-    endpoints = discover(inventory_endpoints(inventory))
+    declared = load_physical_inventory(
+        inventory,
+        topology_name=topology_name,
+    )
+    endpoint_urls = [node.endpoint for node in declared.nodes]
+    endpoints = discover(
+        endpoint_urls,
+        declared.nodes,
+        declared.topology.fingerprint if declared.topology is not None else None,
+    )
+    node_count = len(endpoints)
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     details: list[dict[str, Any]] = []
@@ -431,7 +445,7 @@ def run_physical_scalability(
                 f"[physical-scalability] block={block}/"
                 f"{len(config.scale_users)} users={users} "
                 f"reasoner={reasoner} phase=calibration-prepare "
-                "nodes=5 status=running",
+                f"nodes={node_count} status=running",
                 flush=True,
             )
             _prepare(endpoints, reasoner, users, config.seed)
@@ -439,7 +453,7 @@ def run_physical_scalability(
                 f"[physical-scalability] block={block}/"
                 f"{len(config.scale_users)} users={users} "
                 f"reasoner={reasoner} phase=calibration "
-                f"nodes=5 queries={len(specs)} status=running",
+                f"nodes={node_count} queries={len(specs)} status=running",
                 flush=True,
             )
             (
@@ -453,7 +467,7 @@ def run_physical_scalability(
                     f"{len(config.scale_users)} users={users} "
                     f"reasoner={reasoner} "
                     f"repetition={repetition}/{config.repetitions} "
-                    "nodes=5 phase=prepare status=running",
+                    f"nodes={node_count} phase=prepare status=running",
                     flush=True,
                 )
                 prepare_wall_ms, prepared = _prepare(

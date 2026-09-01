@@ -1,49 +1,64 @@
-# Taxonomía v3 de consultas
+# Query taxonomy for v3.0.0
 
-La batería se clasifica con dos ejes independientes:
+## Two independent classifications
 
-- `tier=core`: capacidad reutilizable para monitorizar cualquier sistema del
-  continuum;
-- `tier=domain`: consulta dependiente del perfil temático instalado, actualmente
-  bienestar;
-- `category`: responsabilidad funcional dentro del ciclo de monitorización,
-  gobierno, decisión y validación.
+Every query has:
 
-Los IDs `BASE-Qxx` y `EXT-Qxx` se conservan por trazabilidad documental. No
-determinan el `tier`.
+1. a semantic tier: `core` or `domain`;
+2. an operational category used by cumulative activation and deployment.
 
-## Categorías y tamaño
+`core` queries are needed to validate a generic policy-aware continuum.
+`domain` queries depend on an application extension; v3 currently uses the
+wellbeing domain. BASE/EXT prefixes preserve historical identity and do not
+determine core/domain membership.
 
-| Orden | Categoría | Total | Core | Domain | Responsabilidad |
-|---:|---|---:|---:|---:|---|
-| 1 | topology | 4 | 4 | 0 | nodos, tiers y relaciones del continuum |
-| 2 | semantic_schema | 4 | 4 | 0 | versión, artefactos, requisitos y esquema |
-| 3 | observability | 5 | 4 | 1 | estado, carga, disponibilidad y métricas |
-| 4 | identity_consent | 18 | 16 | 2 | identidades, consentimiento, contratos y autorización |
-| 5 | data_lifecycle | 8 | 7 | 1 | transferencia, buffer, retención e idempotencia |
-| 6 | security_identity | 6 | 5 | 1 | cifrado, pseudonimización y exposición de datos |
-| 7 | context_zones | 6 | 3 | 3 | contexto, movilidad, zona y georrestricción |
-| 8 | trust | 6 | 6 | 0 | confianza dinámica, ventana y reproducibilidad |
-| 9 | decision | 17 | 16 | 1 | alternativas, AHP, selección y consistencia |
-| 10 | policy_governance | 8 | 8 | 0 | políticas, mecanismos, precedencia y conflictos |
-| 11 | adaptation | 8 | 8 | 0 | migración, offloading, degradación y rollback |
-| 12 | delegation | 5 | 5 | 0 | delegación temporal, profundidad y cierre |
-| 13 | federation | 7 | 7 | 0 | sesiones FL, participantes, gradientes y privacidad |
-| 14 | audit_temporal | 5 | 5 | 0 | causalidad, temporalidad y auditoría MAPE-K |
-| 15 | validation | 4 | 4 | 0 | perfiles de aceptación y campañas científicas |
-| 16 | wellbeing | 4 | 1 | 3 | wearables, fisiología, sueño y estrés |
+## Operational categories
 
-Total: 115 consultas, 103 `core` y 12 `domain`. La distribución por tipo es 51
-`report`, 32 `violation`, 14 `inventory`, 8 `review`, 5 `ask` y 5 `dashboard`.
+| Order | Category | Scope |
+|---:|---|---|
+| 1 | `topology` | Nodes, tiers, zones and connections |
+| 2 | `semantic_schema` | Release artefacts, scenarios and schema coverage |
+| 3 | `observability` | Device, user and node state |
+| 4 | `identity_consent` | Identity, consent, contracts and authorization |
+| 5 | `data_lifecycle` | Context, buffering, replication and transmission |
+| 6 | `security_identity` | Identifiers, encryption and protected flows |
+| 7 | `context_zones` | Rural, urban and restricted-zone decisions |
+| 8 | `trust` | Trust evidence, reproducibility and eligibility |
+| 9 | `decision` | Model tiers, AHP, alternatives and rollback |
+| 10 | `policy_governance` | Policy inventory, types, conflicts and traceability |
+| 11 | `adaptation` | Migration, degradation and adaptive actions |
+| 12 | `delegation` | Temporary delegation, depth and recovery |
+| 13 | `federation` | Federated learning, payload and differential privacy |
+| 14 | `audit_temporal` | Audit chains and temporal validity |
+| 15 | `validation` | SHACL, acceptance and campaign readiness |
+| 16 | `wellbeing` | Wearables, sensors, stress and sleep |
 
-## Criterio de separación
+The authoritative counts and ordering are in `queries/catalog.csv` and
+`configs/benchmark.toml`. Validation fails if the catalog and configuration
+category sets differ.
 
-La división v3 sigue fronteras de autoridad y de cambio, no busca igualar el
-número de consultas. Por ejemplo, `identity_consent` es deliberadamente amplio
-porque representa una sola cadena de autorización efectiva; dividirla impediría
-observar su coste acumulado completo. `validation` permanece independiente para
-no mezclar preparación científica con cumplimiento operativo.
+## Adding a generic continuum feature
 
-Para estudiar complejidad SPARQL debe añadirse otro eje experimental —forma del
-grafo de consulta, selectividad, OPTIONAL/UNION, agregación y cardinalidad— sin
-reclasificar artificialmente las responsabilidades funcionales.
+Place its query below `queries/core/CATEGORY/`, add one catalog row, add an
+execution-plan entry when federation is needed and ensure the category is
+covered by at least one node in distributed topologies.
+
+## Adding another application domain
+
+Create `ontology/domains/DOMAIN`, place queries below
+`queries/domain/DOMAIN/CATEGORY`, mark catalog tier `domain`, and declare
+placement explicitly. Do not move generic topology, consent, policy or audit
+concepts into the domain module.
+
+## Query-kind semantics
+
+- `inventory`: declared resource coverage;
+- `report`: explanatory evidence, not automatic failure;
+- `review`: pending configuration or human review;
+- `violation`: zero rows only after validation preconditions;
+- `ASK`: Boolean assertion interpreted by its expectation;
+- `dashboard`: aggregated coverage/status.
+
+`EXT-Q76` and `EXT-Q77` are review gates. Their rows identify missing
+campaign-specific parameters and must not be misreported as ontology
+inconsistency.

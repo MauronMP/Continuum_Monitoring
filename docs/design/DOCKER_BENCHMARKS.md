@@ -1,224 +1,200 @@
-# Benchmark Docker: réplica y particionado en cinco nodos
+# Elastic Docker benchmarks
 
-## Modelo experimental
+## Configuration model
 
-`docker-compose.yml` crea cinco servicios:
+`configs/topologies/docker/topology.toml` defines image, network, resource and
+Compose settings. It composes nodes from:
 
-| Servicio | Puerto host | Categorías |
-|---|---:|---|
-| cloud | 8191 | semantic_schema, decision, policy_governance y validation |
-| fog | 8192 | topology, data_lifecycle, trust, adaptation, delegation, federation y audit_temporal |
-| edge1..edge3 | 8193..8195 | observability, identity_consent, security_identity, context_zones y wellbeing, en round-robin |
+```text
+configs/topologies/docker/nodes/
+├── cloud.toml
+├── fog.toml
+├── mist.toml
+├── edge.toml
+└── iot.toml
+```
 
-El comando `docker` usa `sharded` de forma predeterminada. Para cargar una
-réplica completa de la ontología y del ABox en cada nodo use
-`docker ... --layout replicated`.
-El coordinador prepara los cinco nodos en paralelo y reparte cada consulta
-exactamente una vez. La réplica completa permite comparar los resultados con el
-monolito sin introducir semántica de particionado.
+The initial topology contains one cloud, one fog and three edge services on
+host ports 8191-8195. Node count and tier distribution are not hard-coded.
 
-El tiempo distribuido es tiempo de pared:
+## Prerequisites
 
-`prepare_wall_ms + query_wall_ms`.
+```bash
+python3 tools/doctor.py --docker
+python3 tools/bootstrap.py --with-docker
+.venv/bin/continuum-bench topology validate
+```
 
-También se guardan la suma de trabajo de los nodos y el máximo de razonamiento
-por nodo. No se suma el trabajo de cinco nodos como si fuera latencia.
+`docker info`, `docker compose version` and `docker buildx version` must work
+for the current user without running the benchmark under `sudo`.
 
-En modo `sharded`, cada servicio construye su fragmento ABox según su rol y
-carga el perfil declarado en `configs/ontology-placement.toml`: núcleo común,
-wellbeing en cloud/edge y shapes solo en cloud.
+## Start and verify
 
-| Flujo | Datos | Reparto de consultas | Motores |
+```bash
+.venv/bin/continuum-bench topology up --name docker
+.venv/bin/continuum-bench topology status --name docker
+```
+
+For the default topology:
+
+```bash
+curl --fail http://127.0.0.1:8191/health
+curl --fail http://127.0.0.1:8192/health
+curl --fail http://127.0.0.1:8193/health
+curl --fail http://127.0.0.1:8194/health
+curl --fail http://127.0.0.1:8195/health
+```
+
+Health responses must identify the expected node, tier, ontology/query
+contract and topology fingerprint. A generic `status=ok` response is rejected.
+
+## Two data layouts
+
+| Layout | Data | Scheduling | Use |
 |---|---|---|---|
-| `docker --layout replicated` | grafo completo por nodo | una consulta en un nodo por afinidad | 3 perfiles Python y stack de productos automático |
-| `docker` | ABox por autoridad + perfil | una o varias autoridades según el plan | 3 perfiles Python y stack de productos automático separado |
+| `replicated` | Complete graph on every node | Each logical query assigned once | Query scale-out baseline |
+| `sharded` | Tier profile plus authority-owned ABox | One or more sources per execution plan | Distributed ontology |
 
-## Arranque y salud
+The default is `sharded`.
 
-En un clon nuevo prepare primero Python e imágenes con
-`python3 tools/bootstrap.py --with-docker`. Para problemas de Ubuntu Server,
-permisos, Compose o descargas consulte [Instalación y diagnóstico](INSTALLATION.md).
-Solo cloud construye la imagen que comparten los cinco nodos; las imágenes
-del proyecto no se intentan descargar de Docker Hub.
+Replicated mode prepares active nodes in parallel, then balances queries. It
+does not implement distributed reasoning: each selected node materializes a
+complete copy.
 
-```bash
-docker compose up -d --build
-docker compose ps
+Sharded mode loads the tier profile declared in
+`configs/ontology-placement.toml`, distributes sensitive resources among
+privacy authorities and merges partial query results according to
+`queries/execution-plan.toml`.
 
-curl http://127.0.0.1:8191/health
-curl http://127.0.0.1:8192/health
-curl http://127.0.0.1:8193/health
-curl http://127.0.0.1:8194/health
-curl http://127.0.0.1:8195/health
-```
-
-## Smokes separados
+## Separate smoke tests
 
 ```bash
 .venv/bin/continuum-bench \
   --config configs/smoke-cumulative.toml \
-  docker cumulative --output-dir outputs/docker-smoke-cumulative
+  docker cumulative \
+  --layout sharded \
+  --topology-only \
+  --output-dir outputs/docker-smoke-cumulative
 
 .venv/bin/continuum-bench \
   --config configs/smoke-scalability.toml \
-  docker scalability --output-dir outputs/docker-smoke-scalability
+  docker scalability \
+  --layout sharded \
+  --topology-only \
+  --output-dir outputs/docker-smoke-scalability
 ```
 
-La terminal muestra nodo lógico, razonador, repetición, etapa/categoría o bloque
-de usuarios. Los resultados se escriben bajo el `--output-dir` indicado. Después
-de la topología de cinco nodos, el mismo comando levanta automáticamente Jena,
-RDF4J, RDFLib/OWL-RL y Oxigraph, ejecuta la misma suite y los detiene. Sus
-resultados quedan en `<output-dir>/<layout>/engines/`.
-
-No se seleccionan motores ni endpoints. La opción `--topology-only` existe para
-experimentos que quieran excluir deliberadamente la dimensión de producto.
-
-## Actualización tras el fallo EXT-Q68
-
-Si aparece `cross-engine query expectations failed: rdflib:EXT-Q68`, actualice
-los contenedores desde la raíz de esta copia del proyecto. Espere a que termine
-cualquier benchmark en curso antes de reconstruirlos:
+Replicated equivalents:
 
 ```bash
-docker compose up -d --build
-
 .venv/bin/continuum-bench \
   --config configs/smoke-cumulative.toml \
-  docker cumulative --output-dir outputs/docker-rdfs-fixed-cumulative
+  docker cumulative \
+  --layout replicated \
+  --topology-only \
+  --output-dir outputs/docker-smoke-cumulative-replicated
 
 .venv/bin/continuum-bench \
   --config configs/smoke-scalability.toml \
-  docker scalability --output-dir outputs/docker-rdfs-fixed-scalability
+  docker scalability \
+  --layout replicated \
+  --topology-only \
+  --output-dir outputs/docker-smoke-scalability-replicated
 ```
 
-Cada comando comprueba y reconstruye automáticamente el stack independiente
-de cuatro motores si su `/health` no publica el contrato de razonamiento
-corregido. Si gestiona los servicios manualmente con el subcomando `engines`,
-reconstrúyalos con `docker compose -f docker-compose.engines.yml up -d --build`.
+`--topology-only` excludes the independent RDFLib/Jena/RDF4J/Oxigraph
+comparison. Remove it when product and architecture dimensions are both
+required.
 
-El fallo procedía de inferencias de literales booleanos incorrectas en el
-servicio RDFLib; no se desactiva la validación de privacidad para evitarlo.
-Los resultados anteriores a la corrección deben regenerarse también para el
-monolito y el continuum físico antes de comparar arquitecturas.
-
-## Benchmark completo
-
-Primero se generan resultados comparables con la misma configuración:
+## Full tests
 
 ```bash
-.venv/bin/continuum-bench benchmark all
-.venv/bin/continuum-bench docker all
+.venv/bin/continuum-bench docker cumulative --layout sharded
+.venv/bin/continuum-bench docker scalability --layout sharded
+.venv/bin/continuum-bench docker all --layout sharded
+
+.venv/bin/continuum-bench docker cumulative --layout replicated
+.venv/bin/continuum-bench docker scalability --layout replicated
 .venv/bin/continuum-bench docker all --layout replicated
-.venv/bin/continuum-bench compare all
 ```
 
-Los dos primeros comandos incluyen automáticamente la comparación de todos los
-motores semánticos. `compare all` mantiene como objetivo específico la
-comparación temporal entre el monolito Python y la topología cloud/fog/edge.
+The terminal identifies architecture, layout, node, reasoner, repetition,
+category/stage or user block and phase. Do not time the shell command as a
+substitute for CSV wall-time fields.
 
-## Benchmark particionado por autoridad
-
-Con los mismos cinco contenedores activos:
+## Authority-sharded aliases and fragments
 
 ```bash
-# Inspección opcional de los cinco fragmentos
-.venv/bin/continuum-bench fragments \
-  --users 100 \
-  --output-dir outputs/fragments
-
-# Tests separados o ambos
 .venv/bin/continuum-bench sharded docker cumulative
 .venv/bin/continuum-bench sharded docker scalability
 .venv/bin/continuum-bench sharded docker all
 ```
 
-Las salidas se escriben por defecto en
-`outputs/sharded-docker/{cumulative,scalability}`:
-
-- `summary.csv`: tiempo de pared y métricas de almacenamiento distribuido;
-- `query-runs.csv`: resultado fusionado por consulta;
-- `node-query-runs.csv`: coste y resultado parcial por nodo;
-- `result-validation.csv`: digest de bindings, cardinalidad y ASK frente al
-  monolito;
-- `metadata.json`: endpoints, razonadores y política de routing.
-
-`queries/execution-plan.toml` define los scopes `cloud`, `fog`, `edges`,
-`edge1`, `edge2`, `edge3` y `cloud_edges`, además de las clases de privacidad.
-El routing no es
-round-robin: respeta la autoridad declarada y fusiona las respuestas. La
-validación contra el monolito está habilitada de forma predeterminada y queda
-fuera del tiempo medido.
-
-Este flujo no arranca Jena, RDF4J u Oxigraph. Esos productos pertenecen al
-benchmark independiente y al flujo Docker replicado. En las Raspberry de
-32 bits tampoco se presupone disponibilidad de Java o PyOxigraph.
-
-`compare all` produce:
-
-- `outputs/comparison/cumulative.csv`;
-- `outputs/comparison/scalability.csv`;
-- validación resultado-a-resultado de las 115 consultas;
-- figuras PNG 300 dpi, PDF y SVG de speedup.
-
-Se define:
-
-- `speedup = tiempo_monolito / tiempo_docker`;
-- `eficiencia_paralela = speedup / 5`;
-- `speedup > 1`: Docker fue más rápido;
-- `speedup < 1`: serialización, HTTP, réplicas o contención dominaron.
-
-Para comparar smokes, cada raíz debe contener el mismo experimento:
+Export fragments for inspection without starting a benchmark:
 
 ```bash
-.venv/bin/continuum-bench \
-  --config configs/smoke-cumulative.toml \
-  compare cumulative \
-  --monolith-dir outputs/smoke-cumulative \
-  --docker-dir outputs/docker-smoke-cumulative/sharded \
-  --output-dir outputs/comparison-smoke-cumulative
+.venv/bin/continuum-bench fragments \
+  --topology-name docker \
+  --users 10 \
+  --output-dir outputs/fragments/docker
 ```
 
-El comparador acepta también una raíz particionada:
+The union of exported fragments must reconstruct the logical source graph.
+Non-authority fragments must not contain protected resources.
+
+## EXT-Q68 and stale images
+
+If an old container reports a cross-engine EXT-Q68 failure, rebuild all project
+images from the current checkout. The current RDFS contract preserves literal
+value spaces and prevents Boolean/integer conflation.
 
 ```bash
-.venv/bin/continuum-bench compare all \
-  --docker-dir outputs/sharded-docker \
-  --output-dir outputs/comparison-sharded-docker
+.venv/bin/continuum-bench topology down --name docker
+.venv/bin/continuum-bench topology up --name docker
+.venv/bin/continuum-bench topology status --name docker
 ```
 
-Para un informe que conserve por separado réplica y particionado:
+The worker health contract also rejects images with an old ontology revision,
+query count or reasoning contract.
+
+## Output and comparison
+
+Default architecture results are separated by layout:
+
+```text
+outputs/docker/sharded/{cumulative,scalability}/
+outputs/docker/replicated/{cumulative,scalability}/
+```
+
+Each suite includes summary, detailed query rows, node rows where applicable,
+result validation and metadata. Generate comparisons with:
 
 ```bash
-.venv/bin/python -m continuum_bench.reporting \
-  --monolith-dir outputs \
-  --docker-dir outputs/docker/replicated \
-  --docker-sharded-dir outputs/docker/sharded \
-  --output-dir outputs/analysis
+.venv/bin/continuum-bench compare all
+.venv/bin/continuum-report
 ```
 
-El informe usa `node-query-runs.csv` para los costes del modo particionado y
-genera `architecture-all-*` y `multi-architecture-*.csv`, sin sustituir las
-figuras históricas monolito/Docker.
+## Scientific limits
 
-## Límites científicos
+- Container nodes share one kernel, host CPU, memory hierarchy and storage.
+- CPU and memory caps are limits, not dedicated hardware reservations.
+- Bridge networking is not equivalent to a physical continuum network.
+- A five-container run is not five independent computers.
+- Replicated storage cost grows approximately with active node count.
+- Sharded queries may fan out to several authorities; source execution count
+  can exceed logical query count.
+- Small workloads may be slower than the monolith because HTTP,
+  serialization, scheduling and merge overhead dominate.
+- Docker results are valid as a local distributed architecture experiment, not
+  as evidence of WAN or Raspberry Pi performance.
 
-- El núcleo TBox inmutable se replica para permitir razonamiento local. El
-  placement omite wellbeing en fog y shapes en fog/edge.
-- Los resultados nuevos comparan el digest del conjunto canónico de bindings,
-  cardinalidad y ASK. Los CSV históricos sin digest usan un fallback de
-  cardinalidad/ASK identificado en `validation_level`.
-- Un digest coincidente no sustituye una demostración formal de la reescritura
-  de agregados distribuidos.
-- `query_cpu_ms` es una suma de duraciones y solo un proxy de trabajo; no es
-  consumo de CPU, energía ni coste monetario.
-- `docker-compose.yml` no simula latencia WAN ni heterogeneidad física. Sus
-  resultados deben interpretarse como paralelismo local con sobrecarga HTTP.
-
-## Cierre
+## Stop and diagnose
 
 ```bash
-docker compose down
+.venv/bin/continuum-bench topology logs --name docker
+.venv/bin/continuum-bench topology down --name docker
 ```
 
-Los contenedores no usan volúmenes persistentes; `down` elimina contenedores y
-red, pero conserva la imagen construida y todos los CSV del host.
+If startup fails, inspect `outputs/runtime/setup/` and run
+`python3 tools/doctor.py --docker --json`. Do not delete unrelated containers,
+images or volumes as an automatic recovery action.

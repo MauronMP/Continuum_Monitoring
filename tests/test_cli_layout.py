@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 from continuum_bench import cli, distributed, physical, physical_cluster, sharded
 
 
@@ -78,19 +80,20 @@ def test_docker_cli_routes_sharded_layout_to_layout_directory(
     )
 
     assert status == 0
-    assert calls == [
-        (
-            [
-                "http://127.0.0.1:8191",
-                "http://127.0.0.1:8192",
-                "http://127.0.0.1:8193",
-                "http://127.0.0.1:8194",
-                "http://127.0.0.1:8195",
-            ],
-            tmp_path / "sharded",
-            {"target": "docker", "validate_results": True},
-        )
+    assert len(calls) == 1
+    endpoints, output_root, options = calls[0]
+    assert endpoints == [
+        "http://127.0.0.1:8191",
+        "http://127.0.0.1:8192",
+        "http://127.0.0.1:8193",
+        "http://127.0.0.1:8194",
+        "http://127.0.0.1:8195",
     ]
+    assert output_root == tmp_path / "sharded"
+    assert options["target"] == "docker"
+    assert options["validate_results"] is True
+    assert options["topology"].name == "docker"
+    assert len(options["topology"].active_nodes) == 5
 
 
 def test_physical_cli_routes_sharded_layout_to_layout_directory(
@@ -114,9 +117,14 @@ def test_physical_cli_routes_sharded_layout_to_layout_directory(
     monkeypatch.setattr(
         physical_cluster,
         "load_physical_inventory",
-        lambda path, ssh_user=None: object(),
+        lambda path, ssh_user=None: SimpleNamespace(
+            nodes=tuple(
+                SimpleNamespace(endpoint=endpoint)
+                for endpoint in endpoints
+            ),
+            topology=None,
+        ),
     )
-    monkeypatch.setattr(physical, "inventory_endpoints", lambda path: endpoints)
     monkeypatch.setattr(sharded, "run_sharded_scalability", fake_sharded)
     monkeypatch.setattr(
         physical,
@@ -143,5 +151,54 @@ def test_physical_cli_routes_sharded_layout_to_layout_directory(
             endpoints,
             tmp_path / "sharded",
             {"target": "physical", "validate_results": True},
+        )
+    ]
+
+
+def test_physical_sharded_cli_passes_elastic_topology(
+    config,
+    tmp_path,
+    monkeypatch,
+):
+    calls = []
+    topology = SimpleNamespace(name="physical")
+    inventory = SimpleNamespace(
+        nodes=(SimpleNamespace(endpoint="http://physical-node"),),
+        topology=topology,
+    )
+
+    monkeypatch.setattr(
+        physical_cluster,
+        "load_physical_inventory",
+        lambda path, ssh_user=None: inventory,
+    )
+    monkeypatch.setattr(
+        sharded,
+        "run_sharded_cumulative",
+        lambda config, endpoints, output_root, **options: (
+            calls.append((endpoints, options)) or output_root / "cumulative"
+        ),
+    )
+
+    status = cli.main(
+        [
+            "--config",
+            str(config.root / "configs" / "smoke-cumulative.toml"),
+            "physical",
+            "cumulative",
+            "--output-dir",
+            str(tmp_path),
+        ]
+    )
+
+    assert status == 0
+    assert calls == [
+        (
+            ["http://physical-node"],
+            {
+                "target": "physical",
+                "validate_results": True,
+                "topology": topology,
+            },
         )
     ]

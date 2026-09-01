@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9"]
+diagrams = ["reportlab>=4.4,<5"]
 
 [project.scripts]
 continuum-bench = "continuum_bench.cli:main"
@@ -34,4 +35,5 @@ testpaths = ["tests"]
 markers = [
     "smoke_cumulative: verifies the cumulative benchmark workflow",
     "smoke_scalability: verifies the scalability benchmark workflow",
+    "owl_consistency: optional OWLAPI/HermiT integration using an installed Protege and Java",
 ]

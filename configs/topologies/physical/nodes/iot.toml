@@ -1,0 +1,4 @@
+[layer]
+tier = "iot"
+
+# Add one or more [[nodes]] tables when Raspberry Pi nodes use the IoT tier.

@@ -1,3 +1,5 @@
+# Legacy compatibility inventory. New deployments should edit the layer files
+# in configs/topologies/physical/nodes/.
 [cluster]
 description = "One local cloud coordinator and four Raspberry Pi 500 workers"
 ssh_user = "pi"

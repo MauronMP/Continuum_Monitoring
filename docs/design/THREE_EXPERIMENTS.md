@@ -1,31 +1,40 @@
-# Tres experimentos de arquitectura sin factores confundidos
+# Three controlled architecture experiments
 
-## Propósito
+## Why the experiments are separated
 
-Estos experimentos separan tres preguntas que no deben responderse con una
-única corrida:
+One benchmark cannot fairly answer all questions about a continuum ontology.
+This project therefore separates three potentially confounded effects:
 
-1. ¿cuánto mejora el servicio de consultas al añadir réplicas?;
-2. ¿cuánto tarda cada equipo en materializar exactamente el mismo grafo?;
-3. ¿qué ocurre al distribuir realmente la ontología y el ABox por autoridad?
+1. query service scale-out with complete replicas;
+2. reasoning scalability across different hardware;
+3. a genuinely distributed ontology and ABox.
 
-Los tres se ejecutan con los perfiles RDFS, OWL RL y RDFS+OWL RL definidos en
-`configs/benchmark.toml`. Jena, RDF4J y Oxigraph siguen perteneciendo al
-benchmark independiente de productos: no se etiquetan como razonadores
-distribuidos porque no están instalados en las Raspberry Pi de 32 bits.
+All three use the RDFS, OWL RL, and RDFS+OWL RL profiles configured in
+`configs/benchmark.toml`. Jena, RDF4J, RDFLib/OWL-RL, and Oxigraph belong to the
+independent product-engine benchmark. They are not labelled as physical
+continuum reasoners unless those products are actually installed and executed
+on the physical nodes.
 
-La configuración completa está en `configs/experiments.toml` y la configuración
-rápida en `configs/experiments-smoke.toml`.
+The complete design is in `configs/experiments.toml`; the fast integration
+design is in `configs/experiments-smoke.toml`.
 
-## Preparación común
+## Common preparation
 
-El contrato de worker es la versión 5 y exige ontología 3.0.0 con 115
-consultas. Hay que reconstruir Docker y desplegar la misma revisión en los
-equipos físicos:
+Validate the repository and inspect the resolved elastic topologies:
 
 ```bash
-docker compose down
-docker compose up -d --build
+.venv/bin/continuum-bench validate
+.venv/bin/continuum-bench topology validate
+.venv/bin/continuum-bench topology show --name monolith
+.venv/bin/continuum-bench topology show --name docker
+.venv/bin/continuum-bench topology show --name physical
+```
+
+Rebuild Docker and deploy the identical repository revision to physical nodes:
+
+```bash
+.venv/bin/continuum-bench topology down --name docker
+.venv/bin/continuum-bench topology up --name docker
 
 .venv/bin/continuum-bench physical stop --ssh-user pi
 .venv/bin/continuum-bench physical deploy --ssh-user pi
@@ -33,29 +42,46 @@ docker compose up -d --build
 .venv/bin/continuum-bench physical status --ssh-user pi
 ```
 
-El coordinador se ejecuta siempre en este PC. En el escenario físico usa
-`configs/physical-nodes.toml`: cloud local, fog y tres Raspberry Pi.
+The coordinator runs on the initiating computer. `configs/topology.toml`
+indexes the monolith, Docker, and physical architecture manifests. Each
+architecture can contain any supported number of enabled cloud, fog, mist,
+edge, and IoT nodes; experiment levels must not request more nodes than the
+resolved topology provides.
 
-## Experimento 1: scale-out de consultas con réplicas
+## Experiment 1: query scale-out with replicas
 
-Cada nodo activo recibe una réplica completa e idéntica. La preparación y la
-materialización se miden, pero se excluyen expresamente de la métrica primaria.
-Durante la calibración, cada réplica ejecuta las 115 consultas. Esos tiempos se
-excluyen y alimentan un planificador LPT adaptativo: asigna primero las consultas
-costosas al nodo que minimiza la carga predicha. Así no se presupone que el PC y
-las Raspberry tengan la misma capacidad. Después, cada consulta se ejecuta una
-vez por ronda medida.
+### Question
 
-Variables:
+How does query throughput and latency change when identical query-serving
+replicas are added?
 
-- independiente: 1, 3 y 5 nodos activos;
-- controladas: dataset, reglas, razonador, consultas y semilla;
-- medidas: consultas/s, pared de la ronda, p50/p95/p99 del motor, CPU de
-  consulta, RSS, consistencia exacta de todas las réplicas, asignación por nodo
-  y factor de replicación.
+### Method
 
-El monolito solo tiene el punto de un nodo. Docker y físico tienen 1, 3 y 5.
-Este experimento mide servicio de consultas, no inferencia distribuida.
+Every selected node receives a complete, byte-equivalent logical graph. Graph
+preparation and materialization are measured but excluded from the primary
+query-service metric. A calibration round executes all 115 queries on each
+replica. Calibration time is excluded from measured rounds and feeds an
+adaptive longest-processing-time scheduler: expensive queries are assigned
+first to the endpoint with the smallest predicted load. This avoids assuming
+that the PC, containers, and Raspberry Pi devices have equal capacity.
+
+Each query then executes exactly once per measured round. Result equivalence is
+checked across replicas.
+
+### Variables and metrics
+
+- Independent variable: active node count from `scale_out.node_counts`.
+- Controlled variables: logical dataset, rule count, reasoner, query catalog,
+  seed, and measured query rounds.
+- Primary metrics: queries/s, round wall time, and p50/p95/p99 engine latency.
+- Secondary metrics: query CPU, RSS, assignment per node, replication factor,
+  and exact result agreement.
+
+The monolith has only a one-node point. Docker and physical architectures run
+every configured level supported by their elastic topology. This experiment
+does not measure distributed inference.
+
+### Commands
 
 ```bash
 .venv/bin/continuum-bench experiment scale-out monolith
@@ -63,7 +89,7 @@ Este experimento mide servicio de consultas, no inferencia distribuida.
 .venv/bin/continuum-bench experiment scale-out physical
 ```
 
-Smoke:
+Fast integration example:
 
 ```bash
 .venv/bin/continuum-bench experiment scale-out monolith \
@@ -71,30 +97,41 @@ Smoke:
   --output-dir outputs/experiments-smoke
 ```
 
-Resultados: `outputs/experiments/ARQUITECTURA/scale-out/`.
+Results are written below
+`outputs/experiments/<architecture>/scale-out/` by default.
 
-## Experimento 2: escalabilidad del razonamiento por hardware
+## Experiment 2: reasoning scalability by hardware
 
-Cada endpoint se evalúa de manera aislada y secuencial. Nunca se espera a los
-cinco como una barrera ni se suman sus recursos. Por tanto, puede compararse:
+### Question
 
-- proceso monolítico del PC;
-- cada contenedor Docker;
-- cloud físico;
-- fog y cada edge Raspberry Pi.
+How long does each individual hardware endpoint take to materialize the same
+graph under increasing triples, rules, or users?
 
-Los perfiles varían por separado triples, reglas o usuarios. El relleno para la
-serie de triples usa `padding_mode = "neutral"`: no crea instancias de
-`continuum:User`. Se conservan entrada y salida porque RDFS todavía puede
-derivar axiomas genéricos de cualquier triple RDF.
+### Method
 
-Se registran tiempo de generación, razonamiento y pared, triples afirmados,
-inferidos y materializados, factor de expansión de clausura, CPU, RSS, disco y
-timeout. Un timeout es censura por la derecha, no un tiempo cero.
-Los metadatos guardan por endpoint versión de Python, plataforma, arquitectura,
-número de CPU, ancho del proceso (32/64 bits) y memoria total disponible en
-Linux; esto permite comprobar que los resultados físicos pertenecen realmente
-a las Raspberry configuradas.
+Endpoints are evaluated independently and sequentially. The experiment never
+sums the resources of N devices or waits for them as a parallel inference
+barrier. It can therefore compare:
+
+- the monolithic process on the coordinator;
+- each Docker container;
+- the physical cloud endpoint;
+- every physical fog, mist, edge, or IoT endpoint.
+
+Profiles vary triples, rules, or users separately. The triple series uses
+`padding_mode = "neutral"`, so padding does not create additional
+`continuum:User` instances. RDFS may still infer generic axiomatic consequences;
+both asserted and materialized triple counts are preserved.
+
+### Metrics
+
+The output includes generation, reasoning, and wall time; asserted, inferred,
+and materialized triples; closure-expansion factor; CPU; RSS; disk I/O; and
+timeout status. A timeout is right-censored, never converted into a zero.
+Endpoint metadata records Python version, platform, processor architecture,
+logical CPU count, process width, and Linux memory availability where exposed.
+
+### Commands
 
 ```bash
 .venv/bin/continuum-bench experiment reasoning-hardware monolith
@@ -102,7 +139,7 @@ a las Raspberry configuradas.
 .venv/bin/continuum-bench experiment reasoning-hardware physical
 ```
 
-Ejecutar solo algunos puntos:
+Select named points and one reasoner:
 
 ```bash
 .venv/bin/continuum-bench experiment reasoning-hardware physical \
@@ -111,27 +148,46 @@ Ejecutar solo algunos puntos:
   --reasoner rdfs
 ```
 
-Resultados: `outputs/experiments/ARQUITECTURA/reasoning-hardware/`.
+Results are written below
+`outputs/experiments/<architecture>/reasoning-hardware/`.
 
-## Experimento 3: ontología realmente distribuida
+## Experiment 3: genuinely distributed ontology
 
-El dataset lógico es idéntico entre arquitecturas:
+### Question
 
-- monolito: grafo completo y una clausura;
-- Docker/físico: TBox colocada mediante
-  `configs/ontology-placement.toml`, ABox fragmentado por autoridad,
-  materialización local y consultas federadas;
-- datos sensibles: permanecen en su edge propietario;
-- cloud/fog: reciben solamente las proyecciones permitidas por las políticas;
-- resultados: unión determinista o OR para ASK según
-  `queries/execution-plan.toml`.
+Can authority-aware ontology and ABox placement reduce critical-path work while
+preserving the results of the canonical monolithic graph?
 
-Cada resultado distribuido se contrasta, fuera del tiempo medido, con el
-conjunto canónico de resultados del oráculo monolítico. El oráculo se calcula después de las
-repeticiones medidas, para que su CPU y memoria no calienten el cloud local
-antes de medirlo. Se registra el factor real de almacenamiento
-`suma de fragmentos / grafo lógico`, el fragmento máximo, preparación, suma y
-máximo de inferencia por nodo, consultas federadas, CPU, memoria y tráfico JSON.
+### Method
+
+The logical dataset is identical across architectures:
+
+- monolith: one complete graph and one closure;
+- Docker and physical: TBox placement from
+  `configs/ontology-placement.toml`, authority-based ABox fragments, local
+  materialization, and federated query execution;
+- sensitive data remain at their owning edge when policy requires it;
+- cloud and fog receive only permitted projections;
+- partial results are combined deterministically using binding-bag union or
+  logical OR for `ASK`, as declared by `queries/execution-plan.toml`.
+
+After the timed repetitions, every distributed result is checked against the
+canonical monolithic oracle. The oracle runs after measurement so that it does
+not warm the local cloud endpoint before that endpoint is measured.
+
+### Metrics
+
+- actual storage factor: sum of fragment triples divided by logical graph
+  triples;
+- largest fragment and per-layer placement;
+- preparation time;
+- inference sum and critical-path maximum across nodes;
+- federated query latency and throughput;
+- CPU, memory, and JSON body traffic;
+- timeout/censoring status;
+- exact result-validation rate against the monolithic oracle.
+
+### Commands
 
 ```bash
 .venv/bin/continuum-bench experiment distributed-ontology monolith
@@ -139,11 +195,12 @@ máximo de inferencia por nodo, consultas federadas, CPU, memoria y tráfico JSO
 .venv/bin/continuum-bench experiment distributed-ontology physical
 ```
 
-Resultados: `outputs/experiments/ARQUITECTURA/distributed-ontology/`.
+Results are written below
+`outputs/experiments/<architecture>/distributed-ontology/`.
 
-## Ejecución conjunta
+## Run all experiments
 
-Los tres experimentos para una arquitectura:
+Run all three experiments for one architecture:
 
 ```bash
 .venv/bin/continuum-bench experiment all monolith
@@ -151,73 +208,74 @@ Los tres experimentos para una arquitectura:
 .venv/bin/continuum-bench experiment all physical
 ```
 
-Todas las combinaciones, si Docker y el cluster físico ya están activos:
+Run every available architecture when Docker and physical nodes are already
+healthy:
 
 ```bash
 .venv/bin/continuum-bench experiment all all
 ```
 
-El orden recomendado para evitar carga simultánea es monolito, Docker y físico,
-con un periodo térmico estable entre escenarios.
+For controlled measurements, run monolith, Docker, and physical sequentially
+and use a documented thermal stabilization period between architectures.
 
-## Gráficas
+## Figures and hypothesis analysis
+
+Generate figures individually or together:
 
 ```bash
 .venv/bin/continuum-bench experiment plot scale-out
 .venv/bin/continuum-bench experiment plot reasoning-hardware
 .venv/bin/continuum-bench experiment plot distributed-ontology
+.venv/bin/continuum-bench experiment plot all
 .venv/bin/continuum-bench experiment plot all --show
 ```
 
-Se guardan PNG a 300 dpi, PDF y SVG en
-`outputs/experiments/figures/`. Las figuras agregan por mediana las
-repeticiones completas. Los fallos/timeouts no se convierten en latencias
-ficticias: quedan como censura y deben leerse junto a las tablas de cobertura y
-timeout generadas por el análisis.
+Figures are exported as 300 dpi PNG, PDF, and SVG below
+`outputs/experiments/figures/`. Complete repetitions are aggregated by median.
+Failures and timeouts remain censored and must be read with coverage and timeout
+tables.
 
-## Verificar automáticamente la hipótesis
-
-Después de ejecutar las tres arquitecturas:
+After all architectures complete, calculate matched comparisons and the formal
+claim verdict:
 
 ```bash
+.venv/bin/continuum-bench experiment analyze
 .venv/bin/continuum-bench experiment analyze --show
 ```
 
-Este comando no presupone que el continuum gane. Genera:
+The analysis produces:
 
-- `analysis/scale-out-comparison.csv`: speedup frente a un nodo, eficiencia,
-  costes y equivalencia exacta de las réplicas;
-- `analysis/hardware-comparison.csv`: slowdown, CPU, RSS y equivalencia del
-  grafo afirmado/materializado para cada equipo;
-- `analysis/distributed-comparison.csv`: speedup de preparación, consultas y
-  tiempo total, coste CPU/RSS, almacenamiento, censura y validación;
-- `analysis/claim-verdict.csv`: resultado por arquitectura y razonador;
-- `analysis/REPORT.md`: dictamen legible y reglas de interpretación;
-- gráficas de speedup con una línea de equilibrio en 1×.
+- `analysis/scale-out-comparison.csv`: speedup, efficiency, cost, and replica
+  equivalence;
+- `analysis/hardware-comparison.csv`: endpoint slowdown, CPU, RSS, and graph
+  equivalence;
+- `analysis/distributed-comparison.csv`: preparation, query, and total speedup;
+  CPU/RSS cost; storage factor; censoring; and semantic validation;
+- `analysis/claim-verdict.csv`: verdict by architecture and reasoner;
+- `analysis/REPORT.md`: a readable explanation of the decision rules.
 
-El dictamen `supported` exige simultáneamente:
+The analyzer does not assume the continuum wins. A `supported` verdict requires
+all of the following at the largest configured level:
 
-1. todas las repeticiones del mayor nivel configurado;
-2. resultados semánticos idénticos al oráculo;
-3. throughput mínimo de cinco nodos superior al máximo observado con un nodo;
-4. tiempo distribuido total máximo inferior al mínimo monolítico en el mayor
-   nivel, o un
-   límite inferior de speedup superior a 1× cuando el monolito agota timeout.
+1. every required repetition completed;
+2. every result matched the oracle;
+3. maximum-node throughput exceeded the best observed one-node throughput;
+4. maximum-node distributed total time was below the minimum monolithic time,
+   or the lower speedup bound exceeded 1x when the monolith timed out.
 
-CPU y RSS se informan como criterios secundarios independientes: terminar antes
-no implica necesariamente consumir menos recursos agregados.
+CPU and RSS remain separate secondary criteria. A shorter wall time does not
+imply lower aggregate resource use.
 
-## Interpretación correcta
+## Correct interpretation
 
-- Scale-out: compare throughput y latencia; no use su preparación para afirmar
-  inferencia distribuida.
-- Hardware: compare un endpoint con otro; no presente la suma de cinco equipos
-  como potencia disponible para una sola clausura.
-- Distribuido: compare el mismo dataset lógico, factor de almacenamiento,
-  camino crítico y exactitud; no compare triples por nodo como si fueran el
-  total del sistema.
-- Antes de publicar, compruebe `status`, las repeticiones completas y
-  `result_validation_rate = 1`.
-- Si el informe devuelve `not_supported`, no debe modificarse el benchmark para
-  forzar una mejora: hay que informar que el overhead o el hardware no compensa
-  el particionado bajo esas condiciones.
+- For scale-out, compare throughput and latency; do not use preparation time to
+  claim distributed reasoning.
+- For hardware, compare one endpoint with another; do not present the sum of
+  device resources as the capacity available to one closure.
+- For distributed ontology, compare the same logical dataset, storage factor,
+  critical path, and exact result validity.
+- Do not compare triples per node as if they were total system triples.
+- Confirm `status`, completed repetition coverage, and
+  `result_validation_rate = 1` before publishing.
+- If the verdict is `not_supported`, report that partitioning overhead or
+  hardware limits outweighed the benefit under the measured conditions.

@@ -1,89 +1,91 @@
-# Migración y contrato de release v3.0.0
+# v3.0.0 migration and release contract
 
-## Fuentes canónicas
+## Canonical inputs
 
-La release se deriva de estos artefactos versionados:
-
-| Artefacto | Ruta |
+| Content | Canonical source |
 |---|---|
-| Ontología monolítica v3 | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |
-| Batería SPARQL v3 | `queries/legacy/sparql_battery-v3.0.0.sparql` |
-| Requisitos | `docs/reference/RN_RNF.md` |
-| Políticas y mecanismos | `docs/reference/Políticas.md` |
-| Documentación ontológica | `docs/reference/Documentacion_Ontologia.md` |
-| Documentación de consultas | `docs/reference/Consultas_Sparql.md` |
+| Complete ontology | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |
+| Complete SPARQL battery | `queries/legacy/sparql_battery-v3.0.0.sparql` |
+| Requirements | RDF individuals in the canonical ontology |
+| Policies/mechanisms | RDF individuals in the canonical ontology |
+| Runtime query metadata | `queries/catalog.csv` |
 
-`tools/migrate_assets.py` es el transformador reproducible. Genera módulos,
-perfiles, shapes, 115 ficheros `.rq`, catálogo y plan de ejecución. No edite un
-artefacto generado sin trasladar el cambio a la fuente o al transformador.
+The `legacy` directory name describes compatibility with the received
+single-file artefacts; the v3 Turtle file remains the complete source to open
+in Protégé.
+
+## Regeneration workflow
+
+After editing canonical ontology or battery sources:
 
 ```bash
 .venv/bin/python tools/migrate_assets.py
-.venv/bin/python -m continuum_bench validate
+.venv/bin/python tools/generate_reference_docs.py
+.venv/bin/continuum-bench validate
 .venv/bin/python -m pytest
 ```
 
-## Contrato verificable
+Do not patch only a derived module or one `.rq` file when the canonical source
+must remain authoritative.
 
-- `owl:versionInfo = 3.0.0`;
-- consultas `BASE-Q01–BASE-Q35` y `EXT-Q01–EXT-Q80`;
-- 72 requisitos funcionales, 39 no funcionales y 5 de validación;
-- 79 políticas, 55 mecanismos, 17 escenarios y 12 categorías de política;
-- metadatos de finalidad, RF/RNF/RV y políticas para las 115 consultas;
-- plan `queries/execution-plan.toml` v3.0.0 completo y sin IDs duplicados;
-- reconstrucción isomorfa del monolito y equivalencia de las 115 consultas bajo
-  la fragmentación por autoridad.
+## Executable release contract
 
-La trazabilidad no debe confundirse con cobertura total: las consultas recibidas
-referencian 102/116 requisitos y 69/79 políticas. La validación informa de los
-14 y 10 IDs no cubiertos, respectivamente, sin inventar asociaciones que no
-aparecen en los documentos fuente.
+`continuum_bench.specification` verifies versioned artefacts, counts and IDs.
+Worker protocol metadata additionally fixes:
 
-## Correcciones locales sobre la fuente recibida
+- ontology version `3.0.0`;
+- English datatype-safe ontology revision;
+- query count 115;
+- RDFS literal-value-space reasoning contract;
+- topology fingerprint for distributed deployments.
 
-Las formas de `mechanismDescription` y `hasPolicyStatement` exigían
-`xsd:string`, aunque sus 134 valores eran `rdf:langString` con `@es`. Se
-actualizó la fuente a una disyunción SHACL válida y los rangos a `rdfs:Literal`.
-Esto elimina 134 violaciones sin borrar el idioma.
+Workers built from older releases are rejected before measurement.
 
-Los módulos generados skolemizan estructuras anónimas con IRIs estables de la
-forma `urn:continuum:ontology:3.0.0:node:*`. Es una transformación de identidad
-RDF necesaria para que cinco fragmentos no creen cinco copias distintas de cada
-lista/shape anónima.
+## Main semantic changes from v2
 
-El generador sintético dejó de emitir `hasConsent`, `ConsentGiven` y políticas
-v2 inexistentes. Cada usuario sintético incorpora ahora identificador
-pseudónimo, `ConsentRecord`, `SemanticContract`, `AuthorizationDecision`,
-`DataContext` y dato parametrizado; los nodos incluyen `TrustAssessment`
-versionado. El conjunto generado pasa SHACL y las 32 consultas `violation`.
+- binary consent replaced by `ConsentRecord`, consent ranges and effective
+  authorization;
+- semantic contract, consent and zone remain independent restrictions;
+- local processing means device/mobile and authorized mist, not edge;
+- policy model expanded to 79 typed/versioned policies and 55 mechanisms;
+- reproducible `TrustAssessment` separated from AHP weights;
+- explicit decision alternatives and AHP consistency data;
+- migration, delegation, degradation, retention, synchronization, rollback and
+  federated learning represented as different actions;
+- differential-privacy payload/accounting model;
+- generalized temporal entities and planned expiry;
+- 17 reproducible scenarios and an acceptance profile;
+- 115 external SPARQL queries and expanded SHACL validation.
 
-`EXT-Q25` se reescribió sin cambiar su resultado de referencia: usa tipos
-acotados con `VALUES` y dos ramas `UNION` con `FILTER NOT EXISTS`, en vez de un
-`OPTIONAL` seguido de un OR correlacionado. Esto evita el producto intermedio
-que dominaba los tiempos RDFS/OWL-RL al crecer el ABox.
+## English/datatype correction
 
-## Compatibilidad de resultados
+The complete ontology uses English labels/statements. Requirement literals no
+longer conflict with an `xsd:string` range through language tags. The RDFS
+profile also guards Boolean/numeric literal value spaces, preventing the former
+EXT-Q68 cross-engine false positive.
 
-Los directorios `outputs` producidos con v2.x no son comparables con v3.0.0:
-cambiaron ontología, ABox, número de consultas, categorías y contrato del worker.
-Archive o use otro directorio de salida antes de una campaña v3. El worker
-publica protocolo v5, versión ontológica y número de consultas; coordinadores
-Docker/físicos rechazan una imagen o despliegue anterior.
+## Result compatibility
 
-También se exige `reasoning_contract=rdfs-literal-value-space-v1` en los
-metadatos de resultados y la salud de los workers. La primera implementación
-v3 heredaba una sustitución incorrecta de booleanos por enteros del cierre
-RDFS de OWL-RL, visible en EXT-Q68. El adaptador compartido la corrige sin
-modificar la ontología ni la consulta. Las corridas v3 previas deben repetirse;
-no basta con renombrarlas o añadir el campo a sus metadatos. Reconstruya Docker
-y redespliegue/reinicie los workers físicos antes de repetir las mediciones.
-Véanse el [detalle semántico](ENGINE_BENCHMARKS.md#corrección-rdfs-de-literales-y-ext-q68)
-y los [comandos Docker](DOCKER_BENCHMARKS.md#actualización-tras-el-fallo-ext-q68).
+Results created before the current ontology revision, reasoning contract or
+worker protocol are not directly comparable. Rebuild Docker images and redeploy
+physical workers:
 
-## Deuda explícita de aceptación
+```bash
+.venv/bin/continuum-bench topology down --name docker
+.venv/bin/continuum-bench topology up --name docker
 
-La integridad estructural no equivale a una certificación científica. El ABox
-v3 mantiene 57 advertencias SHACL y resultados de revisión en `EXT-Q76` y
-`EXT-Q77`: faltan parámetros del perfil de aceptación y una campaña completa.
-Hasta resolverlos, `scientific_acceptance.ready=false` y
-`compliance_claim_permitted=false`, aunque `validate` indique `ok=true`.
+.venv/bin/continuum-bench physical stop --ssh-user pi
+.venv/bin/continuum-bench physical deploy --ssh-user pi
+.venv/bin/continuum-bench physical start --ssh-user pi
+```
+
+Historical CSV files without `result_digest` use a documented weaker
+cardinality/ASK comparison. New publication campaigns should regenerate all
+architectures with the current contract.
+
+## Explicit acceptance debt
+
+`EXT-Q76` reports missing quantitative acceptance-profile parameters.
+`EXT-Q77` reports missing validation-campaign or artefact readiness. They are
+review queries and intentionally remain visible rather than inventing
+thresholds or claiming readiness from absent evidence.

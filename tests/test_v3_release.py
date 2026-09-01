@@ -1,3 +1,6 @@
+from collections import defaultdict
+import tomllib
+
 from rdflib import OWL, URIRef
 
 from continuum_bench.ontology import load_graph
@@ -7,6 +10,7 @@ from continuum_bench.specification import (
     acceptance_status,
     validate_release_contract,
 )
+from tools import migrate_assets
 
 
 def test_v3_release_inventory_and_traceability(config):
@@ -79,3 +83,36 @@ def test_acceptance_debt_is_reported_without_hiding_structural_validity(config):
     assert not status["ready"]
     assert status["nonzero_violation_queries"] == {}
     assert not status["compliance_claim_permitted"]
+
+
+def test_v3_migration_regenerates_the_elastic_execution_plan(config):
+    source = migrate_assets.QUERY_SOURCE.read_text(encoding="utf-8")
+    generated: dict[str, list[str]] = defaultdict(list)
+    for match in migrate_assets.QUERY_RE.finditer(source):
+        query_id = match.group(1)
+        query = match.group(3).strip() + "\n"
+        tier = (
+            "domain" if migrate_assets.is_domain_query(query) else "core"
+        )
+        generated[
+            migrate_assets.query_scope(
+                query_id,
+                tier,
+                migrate_assets.category_for(query_id),
+            )
+        ].append(query_id)
+
+    with (config.root / "queries/execution-plan.toml").open("rb") as handle:
+        current = tomllib.load(handle)["scopes"]
+
+    assert {
+        scope: set(query_ids) for scope, query_ids in generated.items()
+    } == {
+        scope: set(query_ids) for scope, query_ids in current.items()
+    }
+    assert not {
+        "edges",
+        "edge1",
+        "edge2",
+        "edge3",
+    }.intersection(generated)

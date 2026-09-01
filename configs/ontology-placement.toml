@@ -36,8 +36,40 @@ files = [
   "ontology/core/vocabulary.ttl",
 ]
 
+[roles.mist]
+profile = "ontology/profiles/mist.ttl"
+files = [
+  "ontology/core/schema.ttl",
+  "ontology/modules/foundation.ttl",
+  "ontology/modules/topology.ttl",
+  "ontology/modules/observability.ttl",
+  "ontology/modules/governance.ttl",
+  "ontology/modules/orchestration.ttl",
+  "ontology/modules/federation.ttl",
+  "ontology/modules/deployment.ttl",
+  "ontology/core/vocabulary.ttl",
+  "ontology/domains/wellbeing/schema.ttl",
+  "ontology/domains/wellbeing/vocabulary.ttl",
+]
+
 [roles.edge]
 profile = "ontology/profiles/edge.ttl"
+files = [
+  "ontology/core/schema.ttl",
+  "ontology/modules/foundation.ttl",
+  "ontology/modules/topology.ttl",
+  "ontology/modules/observability.ttl",
+  "ontology/modules/governance.ttl",
+  "ontology/modules/orchestration.ttl",
+  "ontology/modules/federation.ttl",
+  "ontology/modules/deployment.ttl",
+  "ontology/core/vocabulary.ttl",
+  "ontology/domains/wellbeing/schema.ttl",
+  "ontology/domains/wellbeing/vocabulary.ttl",
+]
+
+[roles.iot]
+profile = "ontology/profiles/iot.ttl"
 files = [
   "ontology/core/schema.ttl",
   "ontology/modules/foundation.ttl",

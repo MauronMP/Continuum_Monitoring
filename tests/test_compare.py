@@ -42,6 +42,7 @@ def test_compare_scalability_checks_results_and_computes_speedup(tmp_path):
                 "total_wall_ms": 10,
                 "node_reasoning_ms_sum": 30,
                 "node_query_ms_sum": 5,
+                "node_count": 7,
             }
         ],
     )
@@ -69,7 +70,8 @@ def test_compare_scalability_checks_results_and_computes_speedup(tmp_path):
     with comparison.open(encoding="utf-8", newline="") as handle:
         row = next(csv.DictReader(handle))
     assert float(row["speedup"]) == pytest.approx(2.0)
-    assert float(row["parallel_efficiency"]) == pytest.approx(0.4)
+    assert int(row["node_count"]) == 7
+    assert float(row["parallel_efficiency"]) == pytest.approx(2.0 / 7.0)
     with validation.open(encoding="utf-8", newline="") as handle:
         validation_row = next(csv.DictReader(handle))
     assert validation_row["matches"] == "True"

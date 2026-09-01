@@ -15,9 +15,9 @@ def test_catalog_contains_every_query_once(config):
     assert {spec.execution_scope for spec in specs} == {
         "cloud",
         "fog",
-        "edges",
-        "edge1",
-        "edge2",
+        "authorities",
+        "authority_key:http://example.org/smartcity#UserA",
+        "authority_key:http://example.org/smartcity#UserB",
     }
     assert all(spec.purpose for spec in specs)
     assert all(spec.requirements for spec in specs)

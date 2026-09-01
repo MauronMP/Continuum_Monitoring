@@ -1,0 +1,19 @@
+[manifest]
+version = 2
+
+[topology]
+name = "docker"
+kind = "docker"
+description = "Local elastic Docker Compose continuum"
+compose_project = "continuum-benchmark"
+image = "continuum-benchmark-node:latest"
+dockerfile = "docker/Dockerfile"
+network = "continuum"
+bind_host = "127.0.0.1"
+node_files = [
+  "nodes/cloud.toml",
+  "nodes/fog.toml",
+  "nodes/mist.toml",
+  "nodes/edge.toml",
+  "nodes/iot.toml",
+]

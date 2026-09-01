@@ -1,4 +1,4 @@
-"""Coordinator for replicated five-node Docker benchmarks."""
+"""Coordinator for replicated elastic continuum benchmarks."""
 
 from __future__ import annotations
 
@@ -19,12 +19,37 @@ from .csv_utils import write_dict_rows
 from .protocol import worker_health_error
 from .queries import QuerySpec, by_categories, load_catalog
 from .specification import release_identity
+from .topology import (
+    TIER_ORDER,
+    TopologyNode,
+    default_categories,
+    infer_tier,
+)
 
 
 @dataclass(frozen=True)
 class Endpoint:
     url: str
     role: str
+    tier: str = ""
+    authority: bool = False
+    categories: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.tier:
+            object.__setattr__(self, "tier", infer_tier(self.role))
+        if not self.categories:
+            object.__setattr__(
+                self,
+                "categories",
+                default_categories(self.tier),
+            )
+        if not self.authority and self.tier in {"edge", "iot"}:
+            object.__setattr__(self, "authority", True)
+
+    @property
+    def node_id(self) -> str:
+        return self.role
 
 
 CLOUD_CATEGORIES = {
@@ -105,11 +130,29 @@ def _request(
     raise AssertionError("unreachable")
 
 
-def discover(urls: Iterable[str]) -> list[Endpoint]:
+def discover(
+    urls: Iterable[str],
+    expected_nodes: Iterable[TopologyNode] | None = None,
+    expected_topology_fingerprint: str | None = None,
+) -> list[Endpoint]:
+    expected_by_url = {
+        node.endpoint.rstrip("/"): node for node in (expected_nodes or ())
+    }
     endpoints = []
     for url in urls:
+        normalized_url = url.rstrip("/")
+        expected = expected_by_url.get(normalized_url)
         health = _request(url, "/health", timeout=5.0, retries=1)
-        contract_error = worker_health_error(health)
+        contract_error = worker_health_error(
+            health,
+            expected_node_id=expected.node_id if expected else None,
+            expected_tier=expected.tier if expected else None,
+            expected_authority=expected.authority if expected else None,
+            expected_categories=expected.categories if expected else None,
+            expected_topology_fingerprint=(
+                expected_topology_fingerprint if expected else None
+            ),
+        )
         if contract_error is not None:
             raise RuntimeError(
                 f"Incompatible continuum worker at {url}: {contract_error}. "
@@ -117,13 +160,37 @@ def discover(urls: Iterable[str]) -> list[Endpoint]:
                 "physical-node port and redeploy."
             )
         endpoints.append(
-            Endpoint(url=url.rstrip("/"), role=str(health["role"]))
+            Endpoint(
+                url=normalized_url,
+                role=str(health.get("node_id", health["role"])),
+                tier=str(health["tier"]),
+                authority=(
+                    expected.authority
+                    if expected
+                    else bool(health.get("authority", False))
+                ),
+                categories=(
+                    expected.categories
+                    if expected
+                    else tuple(map(str, health.get("categories", ())))
+                ),
+            )
         )
     roles = [endpoint.role for endpoint in endpoints]
-    if roles.count("cloud") != 1 or roles.count("fog") != 1:
-        raise ValueError(f"Expected one cloud and one fog, got roles={roles}")
-    if sum(role.startswith("edge") for role in roles) != 3:
-        raise ValueError(f"Expected three edges, got roles={roles}")
+    endpoint_urls = [endpoint.url for endpoint in endpoints]
+    if not endpoints:
+        raise ValueError("At least one continuum endpoint is required")
+    if len(roles) != len(set(roles)):
+        raise ValueError(f"Duplicate continuum node ids: {roles}")
+    if len(endpoint_urls) != len(set(endpoint_urls)):
+        raise ValueError(f"Duplicate continuum endpoints: {endpoint_urls}")
+    if expected_by_url and set(endpoint_urls) != set(expected_by_url):
+        missing = sorted(set(expected_by_url) - set(endpoint_urls))
+        extra = sorted(set(endpoint_urls) - set(expected_by_url))
+        raise ValueError(
+            f"Endpoint list does not match configured topology; "
+            f"missing={missing}, extra={extra}"
+        )
     return endpoints
 
 
@@ -191,24 +258,28 @@ def _assignment(
     specs: list[QuerySpec],
     endpoints: list[Endpoint],
 ) -> dict[str, list[QuerySpec]]:
-    cloud = next(endpoint for endpoint in endpoints if endpoint.role == "cloud")
-    fog = next(endpoint for endpoint in endpoints if endpoint.role == "fog")
-    edges = sorted(
-        (endpoint for endpoint in endpoints if endpoint.role.startswith("edge")),
-        key=lambda endpoint: endpoint.role,
-    )
     assigned = {endpoint.url: [] for endpoint in endpoints}
-    edge_index = 0
+    category_indexes: dict[str, int] = {}
     for spec in specs:
-        if spec.category in CLOUD_CATEGORIES:
-            endpoint = cloud
-        elif spec.category in FOG_CATEGORIES:
-            endpoint = fog
-        elif spec.category in EDGE_CATEGORIES:
-            endpoint = edges[edge_index % len(edges)]
-            edge_index += 1
-        else:
-            raise ValueError(f"No Docker role assignment for {spec.category}")
+        candidates = sorted(
+            (
+                endpoint
+                for endpoint in endpoints
+                if spec.category in endpoint.categories
+            ),
+            key=lambda endpoint: (
+                TIER_ORDER[endpoint.tier],
+                endpoint.role,
+            ),
+        )
+        if not candidates:
+            raise ValueError(
+                f"No active node declares category {spec.category!r}; "
+                "add it to a node in the selected architecture layer file"
+            )
+        index = category_indexes.get(spec.category, 0)
+        endpoint = candidates[index % len(candidates)]
+        category_indexes[spec.category] = index + 1
         assigned[endpoint.url].append(spec)
     return assigned
 
@@ -234,13 +305,20 @@ def _metadata(
         "suite": suite,
         "mode": "docker-replicated-query-routing",
         "endpoints": [
-            {"url": endpoint.url, "role": endpoint.role}
+            {
+                "url": endpoint.url,
+                "node_id": endpoint.role,
+                "role": endpoint.role,
+                "tier": endpoint.tier,
+                "authority": endpoint.authority,
+            }
             for endpoint in endpoints
         ],
         "reasoners": list(config.reasoners),
         "repetitions": config.repetitions,
         "seed": config.seed,
         "replica_count": len(endpoints),
+        "node_count": len(endpoints),
     }
 
 
@@ -287,6 +365,7 @@ def _detail_rows(
                     **common,
                     "endpoint": url,
                     "role": endpoint.role,
+                    "tier_name": endpoint.tier,
                     **measurement,
                 }
             )
@@ -297,8 +376,15 @@ def run_docker_cumulative(
     config: BenchmarkConfig,
     endpoint_urls: list[str],
     output_root: Path,
+    *,
+    topology=None,
 ) -> Path:
-    endpoints = discover(endpoint_urls)
+    endpoints = discover(
+        endpoint_urls,
+        topology.active_nodes if topology is not None else None,
+        topology.fingerprint if topology is not None else None,
+    )
+    node_count = len(endpoints)
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     details: list[dict[str, Any]] = []
@@ -309,7 +395,7 @@ def run_docker_cumulative(
             print(
                 f"[docker-cumulative] reasoner={reasoner} "
                 f"repetition={repetition}/{config.repetitions} "
-                "nodes=5 phase=prepare status=running",
+                f"nodes={node_count} phase=prepare status=running",
                 flush=True,
             )
             prepare_wall_ms, prepared = _prepare(
@@ -344,6 +430,7 @@ def run_docker_cumulative(
                 )
                 summary = {
                     **common,
+                    "node_count": node_count,
                     "query_count": len(active_specs),
                     "prepare_wall_ms": prepare_wall_ms,
                     "node_reasoning_ms_sum": sum(
@@ -389,8 +476,15 @@ def run_docker_scalability(
     config: BenchmarkConfig,
     endpoint_urls: list[str],
     output_root: Path,
+    *,
+    topology=None,
 ) -> Path:
-    endpoints = discover(endpoint_urls)
+    endpoints = discover(
+        endpoint_urls,
+        topology.active_nodes if topology is not None else None,
+        topology.fingerprint if topology is not None else None,
+    )
+    node_count = len(endpoints)
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     assignment = _assignment(specs, endpoints)
@@ -404,7 +498,7 @@ def run_docker_scalability(
                     f"[docker-scalability] block={block}/{len(config.scale_users)} "
                     f"users={users} reasoner={reasoner} "
                     f"repetition={repetition}/{config.repetitions} "
-                    "nodes=5 phase=prepare status=running",
+                    f"nodes={node_count} phase=prepare status=running",
                     flush=True,
                 )
                 prepare_wall_ms, prepared = _prepare(
@@ -424,6 +518,7 @@ def run_docker_scalability(
                 )
                 summary = {
                     **common,
+                    "node_count": node_count,
                     "query_count": len(specs),
                     "prepare_wall_ms": prepare_wall_ms,
                     "node_generation_ms_sum": sum(

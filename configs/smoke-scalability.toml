@@ -20,6 +20,7 @@ shape_files = [
   "ontology/shapes/federated-learning.ttl",
 ]
 query_catalog = "queries/catalog.csv"
+topology_file = "configs/topology.toml"
 output_dir = "outputs/smoke-scalability"
 
 [benchmark]

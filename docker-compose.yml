@@ -1,3 +1,5 @@
+# Compatibility snapshot of configs/topologies/docker. Regenerate arbitrary
+# node counts with: continuum-bench topology render --name docker --output FILE
 name: continuum-benchmark
 
 x-node: &node
@@ -14,13 +16,16 @@ x-node: &node
 services:
   cloud:
     <<: *node
-    # Build once for all five services; avoid concurrent exports to one tag.
+    # Build once for all services; avoid concurrent exports to one tag.
     build:
       context: .
       dockerfile: docker/Dockerfile
     hostname: cloud
     environment:
-      CONTINUUM_ROLE: cloud
+      CONTINUUM_NODE_ID: cloud
+      CONTINUUM_TIER: cloud
+      CONTINUUM_TOPOLOGY_NAME: docker
+      CONTINUUM_TOPOLOGY_FILE: /app/configs/topology.toml
     ports:
       - "127.0.0.1:8191:8080"
 
@@ -28,7 +33,10 @@ services:
     <<: *node
     hostname: fog
     environment:
-      CONTINUUM_ROLE: fog
+      CONTINUUM_NODE_ID: fog
+      CONTINUUM_TIER: fog
+      CONTINUUM_TOPOLOGY_NAME: docker
+      CONTINUUM_TOPOLOGY_FILE: /app/configs/topology.toml
     ports:
       - "127.0.0.1:8192:8080"
 
@@ -36,7 +44,10 @@ services:
     <<: *node
     hostname: edge1
     environment:
-      CONTINUUM_ROLE: edge1
+      CONTINUUM_NODE_ID: edge1
+      CONTINUUM_TIER: edge
+      CONTINUUM_TOPOLOGY_NAME: docker
+      CONTINUUM_TOPOLOGY_FILE: /app/configs/topology.toml
     ports:
       - "127.0.0.1:8193:8080"
 
@@ -44,7 +55,10 @@ services:
     <<: *node
     hostname: edge2
     environment:
-      CONTINUUM_ROLE: edge2
+      CONTINUUM_NODE_ID: edge2
+      CONTINUUM_TIER: edge
+      CONTINUUM_TOPOLOGY_NAME: docker
+      CONTINUUM_TOPOLOGY_FILE: /app/configs/topology.toml
     ports:
       - "127.0.0.1:8194:8080"
 
@@ -52,7 +66,10 @@ services:
     <<: *node
     hostname: edge3
     environment:
-      CONTINUUM_ROLE: edge3
+      CONTINUUM_NODE_ID: edge3
+      CONTINUUM_TIER: edge
+      CONTINUUM_TOPOLOGY_NAME: docker
+      CONTINUUM_TOPOLOGY_FILE: /app/configs/topology.toml
     ports:
       - "127.0.0.1:8195:8080"
 

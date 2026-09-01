@@ -15,13 +15,18 @@ from rdflib.namespace import FOAF
 from .config import BenchmarkConfig
 from .ontology import load_graph
 from .synthetic import SYN, iter_synthetic_triples
+from .topology import (
+    Topology,
+    TIERS,
+    authority_index,
+    infer_tier,
+    load_topology,
+    ordered_nodes,
+)
 
 
 EX = Namespace("http://example.org/smartcity#")
 SYNTHETIC_PREFIX = "urn:continuum:synthetic:"
-ROLES = ("cloud", "fog", "edge1", "edge2", "edge3")
-EDGE_ROLES = ("edge1", "edge2", "edge3")
-
 _SENSITIVE_CLASS_NAMES = {
     "User",
     "Wearable",
@@ -177,9 +182,9 @@ def _placement(config: BenchmarkConfig) -> dict[str, dict[str, object]]:
     with path.open("rb") as handle:
         document = tomllib.load(handle)
     declared = document.get("roles", {})
-    if set(declared) != {"cloud", "fog", "edge"}:
+    if set(declared) != set(TIERS):
         raise ValueError(
-            "Ontology placement must define cloud, fog and edge profiles"
+            "Ontology placement must define cloud, fog, mist, edge and iot profiles"
         )
     allowed = {
         item.as_posix()
@@ -207,6 +212,9 @@ def _placement(config: BenchmarkConfig) -> dict[str, dict[str, object]]:
 def load_substrate(
     config: BenchmarkConfig,
     role: str | None = None,
+    *,
+    topology: Topology | None = None,
+    tier: str | None = None,
 ) -> Graph:
     """Load the immutable semantic substrate for a deployment role.
 
@@ -221,10 +229,13 @@ def load_substrate(
             if "ontology/examples/" not in path.as_posix()
         ]
     else:
-        placement_role = "edge" if role in EDGE_ROLES else role
-        if placement_role not in {"cloud", "fog", "edge"}:
-            raise ValueError(f"Unknown substrate role {role!r}")
-        placement = _placement(config)[placement_role]
+        if topology is not None:
+            node_tier = topology.node(role).tier
+        else:
+            node_tier = tier or infer_tier(role)
+        if node_tier not in TIERS:
+            raise ValueError(f"Unknown substrate tier {node_tier!r}")
+        placement = _placement(config)[node_tier]
         paths = [config.root / str(path) for path in placement["files"]]
     return load_graph(paths)
 
@@ -250,13 +261,16 @@ def _local_name(value: URIRef) -> str:
     return text.rsplit("#", 1)[-1].rsplit("/", 1)[-1]
 
 
-def _edge_for(value: object) -> str:
-    digits = re.findall(r"\d+", str(value))
-    index = int(digits[-1]) if digits else sum(str(value).encode("utf-8"))
-    return EDGE_ROLES[index % len(EDGE_ROLES)]
+def _authority_for(value: object, authority_nodes: tuple[str, ...]) -> str:
+    if not authority_nodes:
+        raise ValueError("Partitioned topology requires an authority node")
+    return authority_nodes[authority_index(value, len(authority_nodes))]
 
 
-def _reference_owners(reference: Graph) -> dict[object, str]:
+def _reference_owners(
+    reference: Graph,
+    authority_nodes: tuple[str, ...],
+) -> dict[object, str]:
     sensitive_subjects = {
         subject
         for subject, class_ in reference.subject_objects(RDF.type)
@@ -268,7 +282,7 @@ def _reference_owners(reference: Graph) -> dict[object, str]:
     }
     owners: dict[object, str] = {}
     for user in sorted(users, key=str):
-        role = _edge_for(user)
+        role = _authority_for(user, authority_nodes)
         pending = [user]
         while pending:
             subject = pending.pop()
@@ -289,13 +303,14 @@ def _reference_owners(reference: Graph) -> dict[object, str]:
                 ):
                     pending.append(source)
     for subject in sensitive_subjects:
-        owners.setdefault(subject, _edge_for(subject))
+        owners.setdefault(subject, _authority_for(subject, authority_nodes))
     return owners
 
 
 def _reference_targets(
     triple: tuple[object, object, object],
     owners: dict[object, str],
+    all_nodes: tuple[str, ...],
 ) -> set[str]:
     subject, predicate, object_ = triple
     owner = owners.get(subject)
@@ -304,9 +319,9 @@ def _reference_targets(
     if object_ in owners:
         targets = {owners[object_]}
         if predicate in _CROSS_AUTHORITY_PROJECTION_PREDICATES:
-            targets.update(ROLES)
+            targets.update(all_nodes)
         return targets
-    return set(ROLES)
+    return set(all_nodes)
 
 
 def _add_reference_governance_projection(
@@ -336,42 +351,53 @@ def _add_reference_governance_projection(
 
 def _reference_fragments(
     reference: Graph,
+    all_nodes: tuple[str, ...],
+    authority_nodes: tuple[str, ...],
+    cloud_nodes: tuple[str, ...],
 ) -> tuple[dict[str, Graph], frozenset[object]]:
-    fragments = {role: Graph() for role in ROLES}
+    fragments = {role: Graph() for role in all_nodes}
     for graph in fragments.values():
         _copy_namespaces(graph, reference)
-    owners = _reference_owners(reference)
+    owners = _reference_owners(reference, authority_nodes)
     for triple in reference:
-        for role in _reference_targets(triple, owners):
+        for role in _reference_targets(triple, owners, all_nodes):
             fragments[role].add(triple)
 
     # Cloud receives only pseudonymous governance projections for local users.
-    _add_reference_governance_projection(
-        fragments["cloud"],
-        reference,
-        owners,
-    )
+    for cloud_node in cloud_nodes:
+        _add_reference_governance_projection(
+            fragments[cloud_node],
+            reference,
+            owners,
+        )
     return fragments, frozenset(owners)
 
 
 def _reference_fragment(
     reference: Graph,
     role: str,
+    all_nodes: tuple[str, ...],
+    authority_nodes: tuple[str, ...],
+    cloud_nodes: tuple[str, ...],
 ) -> tuple[Graph, frozenset[object]]:
     """Build only one role's reference ABox."""
 
     graph = Graph()
     _copy_namespaces(graph, reference)
-    owners = _reference_owners(reference)
+    owners = _reference_owners(reference, authority_nodes)
     for triple in reference:
-        if role in _reference_targets(triple, owners):
+        if role in _reference_targets(triple, owners, all_nodes):
             graph.add(triple)
-    if role == "cloud":
+    if role in cloud_nodes:
         _add_reference_governance_projection(graph, reference, owners)
     return graph, frozenset(owners)
 
 
-def _synthetic_owner(subject: object) -> str | None:
+def _synthetic_owner(
+    subject: object,
+    authority_nodes: tuple[str, ...],
+    cloud_nodes: tuple[str, ...],
+) -> str | None:
     text = str(subject)
     if not text.startswith(SYNTHETIC_PREFIX):
         return None
@@ -379,7 +405,9 @@ def _synthetic_owner(subject: object) -> str | None:
     if local.startswith(("edge-", "node-state-", "trust-assessment-")):
         return "node-summary"
     match = re.search(r"-(\d+)$", local)
-    return EDGE_ROLES[int(match.group(1)) % 3] if match else "cloud"
+    if match:
+        return _authority_for(int(match.group(1)), authority_nodes)
+    return cloud_nodes[0]
 
 
 def _synthetic_local_name(subject: object) -> str:
@@ -393,33 +421,39 @@ def _synthetic_local_name(subject: object) -> str:
 
 def _synthetic_targets(
     triple: tuple[object, object, object],
+    all_nodes: tuple[str, ...],
+    authority_nodes: tuple[str, ...],
+    cloud_nodes: tuple[str, ...],
 ) -> set[str]:
     subject, predicate, _ = triple
-    owner = _synthetic_owner(subject)
+    owner = _synthetic_owner(subject, authority_nodes, cloud_nodes)
     if owner == "node-summary":
-        return set(ROLES)
-    if owner in EDGE_ROLES:
+        return set(all_nodes)
+    if owner in authority_nodes:
         targets = {owner}
         local_name = _synthetic_local_name(subject)
         if (
             re.fullmatch(r"user-\d+", local_name)
             and predicate in _GOVERNANCE_USER_PREDICATES
         ):
-            targets.add("cloud")
+            targets.update(cloud_nodes)
         if (
             re.fullmatch(r"contract-\d+", local_name)
             and predicate in _GOVERNANCE_CONTRACT_PREDICATES
         ):
-            targets.add("cloud")
+            targets.update(cloud_nodes)
         return targets
-    return {"cloud"}
+    return set(cloud_nodes)
 
 
 def _synthetic_fragments(
     users: int,
     seed: int,
+    all_nodes: tuple[str, ...],
+    authority_nodes: tuple[str, ...],
+    cloud_nodes: tuple[str, ...],
 ) -> tuple[dict[str, Graph], int, frozenset[object]]:
-    fragments = {role: Graph() for role in ROLES}
+    fragments = {role: Graph() for role in all_nodes}
     for graph in fragments.values():
         graph.bind("syn", SYN)
     synthetic_count = 0
@@ -427,9 +461,14 @@ def _synthetic_fragments(
     for triple in iter_synthetic_triples(users, seed):
         synthetic_count += 1
         subject = triple[0]
-        if _synthetic_owner(subject) in EDGE_ROLES:
+        if _synthetic_owner(subject, authority_nodes, cloud_nodes) in authority_nodes:
             sensitive_resources.add(subject)
-        for role in _synthetic_targets(triple):
+        for role in _synthetic_targets(
+            triple,
+            all_nodes,
+            authority_nodes,
+            cloud_nodes,
+        ):
             fragments[role].add(triple)
     return fragments, synthetic_count, frozenset(sensitive_resources)
 
@@ -438,6 +477,9 @@ def _synthetic_fragment(
     role: str,
     users: int,
     seed: int,
+    all_nodes: tuple[str, ...],
+    authority_nodes: tuple[str, ...],
+    cloud_nodes: tuple[str, ...],
 ) -> tuple[Graph, int]:
     """Build one role's ABox while streaming over the logical dataset."""
 
@@ -446,31 +488,76 @@ def _synthetic_fragment(
     synthetic_count = 0
     for triple in iter_synthetic_triples(users, seed):
         synthetic_count += 1
-        if role in _synthetic_targets(triple):
+        if role in _synthetic_targets(
+            triple,
+            all_nodes,
+            authority_nodes,
+            cloud_nodes,
+        ):
             graph.add(triple)
     return graph, synthetic_count
+
+
+def _resolve_topology(
+    config: BenchmarkConfig,
+    topology: Topology | None,
+) -> Topology:
+    return topology or load_topology(
+        config.resolve(config.topology_file),
+        "docker",
+    )
+
+
+def _partition_nodes(
+    topology: Topology,
+) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
+    nodes = ordered_nodes(topology.active_nodes)
+    all_nodes = tuple(node.node_id for node in nodes)
+    authority_nodes = tuple(
+        node.node_id for node in nodes if node.authority
+    )
+    cloud_nodes = tuple(
+        node.node_id for node in nodes if node.tier == "cloud"
+    )
+    if not authority_nodes or not cloud_nodes:
+        raise ValueError(
+            f"Topology {topology.name!r} requires cloud and authority nodes"
+        )
+    return all_nodes, authority_nodes, cloud_nodes
 
 
 def build_fragments(
     config: BenchmarkConfig,
     users: int,
     seed: int | None = None,
+    *,
+    topology: Topology | None = None,
 ) -> FragmentSet:
-    """Build five deterministic fragments whose set union is the full graph."""
+    """Build one deterministic fragment per configured active node."""
+    topology = _resolve_topology(config, topology)
+    all_nodes, authority_nodes, cloud_nodes = _partition_nodes(topology)
     logical_substrate = load_substrate(config)
     substrates = {
-        role: load_substrate(config, role)
-        for role in ROLES
+        role: load_substrate(config, role, topology=topology)
+        for role in all_nodes
     }
     placement = _placement(config)
     reference = load_reference_abox(config)
-    references, reference_sensitive = _reference_fragments(reference)
+    references, reference_sensitive = _reference_fragments(
+        reference,
+        all_nodes,
+        authority_nodes,
+        cloud_nodes,
+    )
     synthetic, synthetic_count, synthetic_sensitive = _synthetic_fragments(
         users,
         config.seed if seed is None else seed,
+        all_nodes,
+        authority_nodes,
+        cloud_nodes,
     )
-    graphs = {role: _clone(substrates[role]) for role in ROLES}
-    for role in ROLES:
+    graphs = {role: _clone(substrates[role]) for role in all_nodes}
+    for role in all_nodes:
         _merge(graphs[role], references[role])
         _merge(graphs[role], synthetic[role])
     return FragmentSet(
@@ -480,10 +567,8 @@ def build_fragments(
             role: len(graph) for role, graph in substrates.items()
         },
         placement_profiles={
-            role: str(
-                placement["edge" if role in EDGE_ROLES else role]["profile"]
-            )
-            for role in ROLES
+            role: str(placement[topology.node(role).tier]["profile"])
+            for role in all_nodes
         },
         reference_triples=len(reference),
         synthetic_triples=synthetic_count,
@@ -496,22 +581,37 @@ def build_role_graph(
     role: str,
     users: int,
     seed: int | None = None,
+    *,
+    topology: Topology | None = None,
 ) -> tuple[Graph, FragmentSet]:
-    if role not in ROLES:
-        raise ValueError(f"Unknown partition role {role!r}")
-    local_substrate = load_substrate(config, role)
+    topology = _resolve_topology(config, topology)
+    all_nodes, authority_nodes, cloud_nodes = _partition_nodes(topology)
+    if role not in all_nodes:
+        raise ValueError(
+            f"Unknown partition node {role!r} in topology {topology.name!r}"
+        )
+    local_substrate = load_substrate(config, role, topology=topology)
     reference = load_reference_abox(config)
-    local_reference, reference_sensitive = _reference_fragment(reference, role)
+    local_reference, reference_sensitive = _reference_fragment(
+        reference,
+        role,
+        all_nodes,
+        authority_nodes,
+        cloud_nodes,
+    )
     local_synthetic, synthetic_count = _synthetic_fragment(
         role,
         users,
         config.seed if seed is None else seed,
+        all_nodes,
+        authority_nodes,
+        cloud_nodes,
     )
     graph = _clone(local_substrate)
     _merge(graph, local_reference)
     _merge(graph, local_synthetic)
     placement = _placement(config)
-    placement_role = "edge" if role in EDGE_ROLES else role
+    placement_role = topology.node(role).tier
     fragments = FragmentSet(
         graphs={role: graph},
         substrate_triples=_logical_substrate_triple_count(config),
@@ -530,9 +630,16 @@ def privacy_violations(
     graph: Graph,
     role: str,
     sensitive_resources: Iterable[object] = (),
+    *,
+    authority: bool | None = None,
 ) -> list[str]:
-    """Return private facts or links that must not exist above edge."""
-    if role.startswith("edge"):
+    """Return private facts or links that must not leave authority nodes."""
+    if authority is None:
+        try:
+            authority = infer_tier(role) in {"edge", "iot"}
+        except ValueError:
+            authority = False
+    if authority:
         return []
     errors: list[str] = []
     forbidden_predicates = {
@@ -563,8 +670,6 @@ def privacy_violations(
         touches_sensitive = (
             subject in sensitive
             or object_ in sensitive
-            or _synthetic_owner(subject) in EDGE_ROLES
-            or _synthetic_owner(object_) in EDGE_ROLES
         )
         if predicate in forbidden_predicates and touches_sensitive:
             errors.append(f"{subject.n3()} uses forbidden {predicate.n3()}")
@@ -587,7 +692,7 @@ def write_fragments(
     fragments: FragmentSet,
     output_dir: Path,
 ) -> list[Path]:
-    """Persist the five deterministic fragments as Turtle files."""
+    """Persist every configured deterministic fragment as Turtle."""
     output_dir.mkdir(parents=True, exist_ok=True)
     paths = []
     for role, graph in fragments.graphs.items():

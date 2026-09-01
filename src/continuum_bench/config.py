@@ -11,6 +11,7 @@ class BenchmarkConfig:
     ontology_files: tuple[Path, ...]
     shape_files: tuple[Path, ...]
     query_catalog: Path
+    topology_file: Path
     output_dir: Path
     reasoners: tuple[str, ...]
     category_order: tuple[str, ...]
@@ -34,6 +35,7 @@ def load_config(path: str | Path) -> BenchmarkConfig:
         ontology_files=tuple(Path(value) for value in paths["ontology_files"]),
         shape_files=tuple(Path(value) for value in paths["shape_files"]),
         query_catalog=Path(paths["query_catalog"]),
+        topology_file=Path(paths.get("topology_file", "configs/topology.toml")),
         output_dir=Path(paths["output_dir"]),
         reasoners=tuple(benchmark["reasoners"]),
         category_order=tuple(benchmark["category_order"]),
@@ -41,4 +43,3 @@ def load_config(path: str | Path) -> BenchmarkConfig:
         repetitions=int(benchmark["repetitions"]),
         seed=int(benchmark["seed"]),
     )
-

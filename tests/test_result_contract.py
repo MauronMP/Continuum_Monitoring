@@ -32,3 +32,12 @@ def test_result_contract_rejects_v3_results_before_datatype_correction(tmp_path)
 
     with pytest.raises(ValueError, match="RDFS datatype correction"):
         require_release_metadata(tmp_path)
+
+
+@pytest.mark.parametrize("revision", [None, "3.0.0-before-english"])
+def test_result_contract_rejects_ontology_before_english_correction(tmp_path, revision):
+    metadata = release_identity()
+    metadata["ontology_revision"] = revision
+    (tmp_path / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    with pytest.raises(ValueError, match="ontology_revision"):
+        require_release_metadata(tmp_path)

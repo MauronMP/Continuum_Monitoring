@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-from .specification import ONTOLOGY_VERSION
+from .specification import ONTOLOGY_REVISION, ONTOLOGY_VERSION
 from .reasoners import REASONING_CONTRACT
+from .topology import NODE_ID_PATTERN, TIERS
 
 
 WORKER_SERVICE = "continuum-benchmark-node"
-WORKER_PROTOCOL_VERSION = "5"
-WORKER_ROLES = frozenset({"cloud", "fog", "edge1", "edge2", "edge3"})
+WORKER_PROTOCOL_VERSION = "6"
 EXPECTED_QUERY_COUNT = 115
 
 
@@ -18,6 +18,11 @@ def worker_health_error(
     health: Mapping[str, Any],
     *,
     expected_role: str | None = None,
+    expected_node_id: str | None = None,
+    expected_tier: str | None = None,
+    expected_authority: bool | None = None,
+    expected_categories: tuple[str, ...] | None = None,
+    expected_topology_fingerprint: str | None = None,
 ) -> str | None:
     """Return an actionable error for an incompatible worker response."""
     if health.get("status") != "ok":
@@ -52,9 +57,47 @@ def worker_health_error(
             f"got {health.get('reasoning_contract')!r}; rebuild/redeploy "
             "the worker to apply the RDFS datatype correction"
         )
-    role = str(health.get("role", "")).strip()
-    if role not in WORKER_ROLES:
-        return f"role must be one of {sorted(WORKER_ROLES)}, got {role!r}"
-    if expected_role is not None and role != expected_role:
-        return f"role must be {expected_role!r}, got {role!r}"
+    if health.get("ontology_revision") != ONTOLOGY_REVISION:
+        return (
+            f"ontology_revision must be {ONTOLOGY_REVISION!r}, "
+            f"got {health.get('ontology_revision')!r}; rebuild/redeploy "
+            "the worker with the English, datatype-corrected ontology"
+        )
+    node_id = str(health.get("node_id", health.get("role", ""))).strip()
+    if not NODE_ID_PATTERN.fullmatch(node_id):
+        return f"node_id is invalid, got {node_id!r}"
+    tier = str(health.get("tier", "")).strip().lower()
+    if tier not in TIERS:
+        return f"tier must be one of {list(TIERS)}, got {tier!r}"
+    expected_id = expected_node_id or expected_role
+    if expected_id is not None and node_id != expected_id:
+        return f"node_id must be {expected_id!r}, got {node_id!r}"
+    if expected_tier is not None and tier != expected_tier:
+        return f"tier must be {expected_tier!r}, got {tier!r}"
+    if (
+        expected_authority is not None
+        and bool(health.get("authority")) != expected_authority
+    ):
+        return (
+            f"authority must be {expected_authority!r}, "
+            f"got {health.get('authority')!r}"
+        )
+    if expected_categories is not None:
+        actual_categories = health.get("categories")
+        if not isinstance(actual_categories, list) or set(
+            map(str, actual_categories)
+        ) != set(expected_categories):
+            return (
+                f"categories must be {sorted(expected_categories)!r}, "
+                f"got {actual_categories!r}"
+            )
+    if (
+        expected_topology_fingerprint is not None
+        and health.get("topology_fingerprint")
+        != expected_topology_fingerprint
+    ):
+        return (
+            "topology_fingerprint does not match the coordinator manifest; "
+            "redeploy or recreate this worker"
+        )
     return None

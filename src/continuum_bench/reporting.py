@@ -38,7 +38,6 @@ REASONER_MARKERS = {
     "owlrl": "s",
     "rdfs_owlrl": "^",
 }
-ROLES = ("cloud", "fog", "edge1", "edge2", "edge3")
 ENGINE_LABELS = {
     "jena": "Apache Jena (RDFS)",
     "rdf4j": "Eclipse RDF4J (RDFS)",
@@ -53,10 +52,10 @@ ENGINE_MARKERS = {
 }
 ARCHITECTURE_LABELS = {
     "monolith": "Monolito",
-    "docker": "Docker (5 nodos)",
-    "physical": "Continuum físico (5 nodos)",
-    "docker_sharded": "Docker particionado (5 nodos)",
-    "physical_sharded": "Continuum físico particionado (5 nodos)",
+    "docker": "Docker",
+    "physical": "Continuum físico",
+    "docker_sharded": "Docker particionado",
+    "physical_sharded": "Continuum físico particionado",
 }
 
 
@@ -586,6 +585,7 @@ def _node_medians(
     reasoner: str,
     run_value: float,
     field: str,
+    roles: list[str],
 ) -> list[float]:
     values: dict[str, list[float]] = defaultdict(list)
     for row in rows:
@@ -596,7 +596,7 @@ def _node_medians(
             values[str(row["role"])].append(float(row[field]))
     return [
         statistics.median(values[role]) if values[role] else 0.0
-        for role in ROLES
+        for role in roles
     ]
 
 
@@ -608,16 +608,25 @@ def _grouped_node_bars(
     ylabel: str,
     node_label: str = "Node",
 ) -> None:
-    x = np.arange(len(ROLES))
+    tier_rank = {"cloud": 0, "fog": 1, "mist": 2, "edge": 3, "iot": 4}
+    tier_by_role = {
+        str(row["role"]): str(row.get("tier_name", ""))
+        for row in rows
+    }
+    roles = sorted(
+        {str(row["role"]) for row in rows},
+        key=lambda role: (tier_rank.get(tier_by_role.get(role, ""), 99), role),
+    )
+    x = np.arange(len(roles))
     width = 0.24
     for index, reasoner in enumerate(REASONER_LABELS):
         axis.bar(
             x + (index - 1) * width,
-            _node_medians(rows, reasoner, run_value, field),
+            _node_medians(rows, reasoner, run_value, field, roles),
             width,
             label=REASONER_LABELS[reasoner],
         )
-    axis.set_xticks(x, ROLES)
+    axis.set_xticks(x, roles)
     _style(axis, node_label, ylabel)
     axis.legend(frameon=False)
 
@@ -808,7 +817,7 @@ def _deployment_bars(
         x + width / 2,
         [medians[key][1] for key in medians],
         width,
-        label="Docker (5 nodes)",
+        label="Docker",
     )
     axis.set_xticks(
         x,
@@ -855,7 +864,7 @@ def plot_deployment_comparison(
             axes[1, 0],
             _samples(rows, x_field, "parallel_efficiency"),
         )
-        _style(axes[1, 0], x_label, "Parallel efficiency (speedup / 5)")
+        _style(axes[1, 0], x_label, "Parallel efficiency (speedup / N)")
 
         _error_line(
             axes[1, 1],
@@ -1429,7 +1438,7 @@ def _monolith_summary_rows(
 def _docker_summary_rows(
     docker_root: Path,
     *,
-    architecture: str = "docker-five-node",
+    architecture: str = "docker-elastic",
 ) -> list[dict[str, Any]]:
     output = []
     for suite, x_field in (
@@ -1469,11 +1478,19 @@ def _docker_summary_rows(
             storage_factor = _optional_median(
                 selected, "storage_replication_factor"
             )
+            node_count = int(
+                round(
+                    float(
+                        _optional_median(selected, "node_count")
+                        or 5
+                    )
+                )
+            )
             if not is_sharded and input_per_replica != "":
                 logical_input = input_per_replica
-                aggregate_fragments = float(input_per_replica) * 5
+                aggregate_fragments = float(input_per_replica) * node_count
                 max_fragment = input_per_replica
-                storage_factor = 5.0
+                storage_factor = float(node_count)
             output.append(
                 {
                     "architecture": architecture,
@@ -1512,7 +1529,7 @@ def _docker_summary_rows(
                     "aggregate_fragment_triples": aggregate_fragments,
                     "max_fragment_triples": max_fragment,
                     "storage_replication_factor": storage_factor,
-                    "replicas": 5,
+                    "replicas": node_count,
                 }
             )
     return output
@@ -1561,7 +1578,7 @@ def _deployment_summary_rows(
                         for row in selected
                     ),
                     "faster_architecture": (
-                        "docker-five-node"
+                        "docker-elastic"
                         if speedup > 1
                         else "monolith"
                     ),
@@ -1683,7 +1700,7 @@ def generate_report(
                 data_root / "physical-reasoner-summary.csv",
                 _docker_summary_rows(
                     physical_root,
-                    architecture="physical-five-node",
+                    architecture="physical-elastic",
                 ),
             )
         )
@@ -1756,7 +1773,7 @@ def generate_report(
                 data_root / f"{stem_prefix}-reasoner-summary.csv",
                 _docker_summary_rows(
                     sharded_root,
-                    architecture=f"{stem_prefix}-five-node",
+                    architecture=f"{stem_prefix}-elastic",
                 ),
             )
         )
@@ -1800,7 +1817,16 @@ def generate_report(
                 ),
                 "sharded_included": sharded_included,
                 "architectures": list(architecture_roots),
-                "node_count": 5,
+                "node_counts": {
+                    architecture: sorted(
+                        {
+                            int(float(row.get("node_count") or 1))
+                            for suite in ("cumulative", "scalability")
+                            for row in _read(root / suite / "summary.csv")
+                        }
+                    )
+                    for architecture, root in architecture_roots.items()
+                },
                 "reasoners": list(REASONER_LABELS),
                 "product_engines": list(ENGINE_LABELS),
                 "statistics": "median with min-max repetition range",
@@ -1823,9 +1849,9 @@ def generate_report(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Generate monolith, five-node Docker and deployment comparison "
+            "Generate monolith, elastic Docker and deployment comparison "
             "figures from benchmark CSV files, optionally including a "
-            "five-host physical continuum and authority-sharded layouts."
+            "physical continuum and authority-sharded layouts."
         )
     )
     parser.add_argument("--monolith-dir", default="outputs")

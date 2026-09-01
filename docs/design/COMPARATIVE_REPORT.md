@@ -1,23 +1,52 @@
-# Informe comparativo de arquitecturas
+# Cross-architecture comparative report
 
-## Comando
+## Purpose
 
-Después de ejecutar el monolito y ambos layouts Docker:
+The comparative report turns compatible monolith, Docker, and physical result
+tables into publication-oriented figures and machine-readable summaries. It
+does not execute benchmarks and it does not infer that one architecture is
+better when required data are missing or semantically incompatible.
+
+## Prerequisites
+
+Before generating the report:
+
+1. run matching cumulative and scalability suites in each architecture;
+2. keep the same ontology revision, query catalog, reasoner profiles, synthetic
+   seed, levels, and repetition count;
+3. confirm that result-validation checks pass;
+4. retain all CSV and metadata files at their default or explicitly supplied
+   roots.
+
+The default input roots are:
+
+```text
+outputs/
+outputs/docker/replicated/
+outputs/docker/sharded/
+outputs/physical/replicated/
+outputs/physical/sharded/
+```
+
+## Commands
+
+Generate the report with default locations:
 
 ```bash
 .venv/bin/python tools/generate_comparative_figures.py
 ```
 
-Alternativa equivalente:
+Equivalent module and installed-entry-point commands are:
 
 ```bash
 .venv/bin/python -m continuum_bench.reporting
+.venv/bin/continuum-report
 ```
 
-Para regenerar en otra ruta y abrir los PNG:
+Select every input and display generated PNG files:
 
 ```bash
-.venv/bin/python -m continuum_bench.reporting \
+.venv/bin/continuum-report \
   --monolith-dir outputs \
   --docker-dir outputs/docker/replicated \
   --physical-dir outputs/physical/replicated \
@@ -27,95 +56,102 @@ Para regenerar en otra ruta y abrir los PNG:
   --show
 ```
 
-Tras reinstalar el proyecto también está disponible:
+Missing optional physical or sharded inputs are reported and omitted; they are
+not fabricated from another architecture.
 
-```bash
-.venv/bin/continuum-report --show
-```
+## Figure families
 
-## Familias de figuras
+The base report exports each figure as 300 dpi PNG, PDF, and SVG:
 
-El informe base genera diez figuras, cada una en PNG a 300 dpi, PDF y SVG:
+1. `monolith-cumulative`: total time, reasoning/SPARQL decomposition, p95, and
+   materialization expansion.
+2. `monolith-scalability`: total time, throughput, maximum-volume phase
+   decomposition, and inferred triples.
+3. `docker-cumulative`: wall time, preparation/query time, per-layer query work,
+   and aggregate work per wall second.
+4. `docker-scalability`: the corresponding metrics by synthetic volume.
+5. `deployment-cumulative`: monolith/Docker times, speedup, parallel efficiency,
+   and percentage change.
+6. `deployment-scalability`: matched architecture comparisons across configured
+   user volumes.
+7. `monolith-products-cumulative`: Jena, RDF4J, RDFLib/OWL-RL, and Oxigraph.
+8. `monolith-products-scalability`: the four products by volume.
+9. `docker-products-cumulative`: product-engine results from the Docker flow.
+10. `docker-products-scalability`: the corresponding product volume series.
 
-1. `monolith-cumulative`: tiempo total, descomposición
-   razonamiento/SPARQL, p95 y expansión de materialización.
-2. `monolith-scalability`: tiempo total, throughput, descomposición en el
-   volumen máximo y triples inferidos.
-3. `docker-cumulative`: tiempo de pared, preparación/consulta, coste SPARQL de
-   cloud/fog/edge1/edge2/edge3 y trabajo agregado por tiempo de pared.
-4. `docker-scalability`: las mismas métricas por volumen sintético.
-5. `deployment-cumulative`: speedup, tiempos monolito/Docker, eficiencia
-   paralela y cambio porcentual.
-6. `deployment-scalability`: comparación para 10, 100, 500, 1.000, 2.500 y
-   5.000 usuarios.
-7. `monolith-products-cumulative`: Jena, RDF4J, RDFLib/OWL-RL y Oxigraph en el
-   test acumulativo monolítico.
-8. `monolith-products-scalability`: los cuatro productos por volumen.
-9. `docker-products-cumulative`: productos ejecutados por el flujo Docker.
-10. `docker-products-scalability`: productos ejecutados por el flujo Docker.
+Oxigraph is labelled as the no-inference SPARQL control. Product figures remain
+separate from RDFS, OWL RL, and combined reasoning-profile figures.
 
-Oxigraph se representa de forma explícita como control SPARQL sin inferencia.
-Sus tiempos no se interpretan como un cuarto razonador RDFS. Las figuras de
-producto permanecen separadas de los perfiles RDFS, OWL RL y RDFS+OWL RL.
+When compatible physical and sharded data exist, the report also creates:
 
-Si existen resultados físicos y particionados, también genera:
+- `physical-cumulative` and `physical-scalability`, including per-node cost;
+- `architecture-cumulative` and `architecture-scalability` for all three
+  architectures;
+- `article-cumulative-summary` and `article-scalability-summary` with medians,
+  minimum-maximum ranges, speedup, preparation percentage, and effective SPARQL
+  throughput;
+- `architecture-all-cumulative` and `architecture-all-scalability` covering all
+  available placement variants;
+- `multi-architecture-*.csv` source tables for independent analysis.
 
-- `physical-cumulative` y `physical-scalability`, incluidos costes por nodo;
-- `architecture-cumulative` y `architecture-scalability`, con monolito,
-  Docker y continuum físico.
-- `article-cumulative-summary` y `article-scalability-summary`, con mediana y
-  rango mínimo-máximo, speedup frente al monolito, porcentaje dedicado a
-  preparación y throughput SPARQL efectivo;
-- `architecture-all-cumulative` y `architecture-all-scalability`, con todas
-  las variantes disponibles, más `multi-architecture-*.csv`.
+Ranges are descriptive minimum-maximum ranges, not confidence intervals.
 
-Las líneas muestran mediana y rango mínimo-máximo entre repeticiones. El rango
-es descriptivo y no es un intervalo de confianza.
+## Cost definitions
 
-## Definición de coste
+`docker-node-costs.csv` and `physical-node-costs.csv` aggregate:
 
-`docker-node-costs.csv` agrega por nodo:
+- assigned query count;
+- sum of SPARQL durations;
+- mean latency;
+- p95 latency;
+- process CPU where available;
+- maximum process RSS;
+- HTTP JSON body bytes.
 
-- número de consultas asignadas;
-- suma de duraciones SPARQL;
-- latencia media;
-- p95.
+The sum of SPARQL duration is a workload proxy that helps reveal imbalance. It
+is not monetary cost or energy consumption. RSS is a process high-water mark,
+and network bytes exclude HTTP headers and TCP/IP/link overhead.
 
-La suma de duraciones es un proxy de trabajo de consulta, útil para
-detectar desequilibrio entre cloud, fog y edges. No representa coste monetario,
-energía ni coste monetario. Las corridas nuevas añaden CPU de proceso, RSS
-máxima del proceso y bytes del cuerpo HTTP; RSS es un máximo de vida del proceso
-y los bytes no incluyen cabeceras ni tráfico TCP.
-
-También se informa del trabajo agregado:
+The report also computes aggregate work intensity:
 
 ```text
-(suma de razonamiento de los nodos + suma de consulta de los nodos)
-------------------------------------------------------------------
-                         tiempo de pared
+(sum of node reasoning time + sum of node query time) / wall time
 ```
 
-Esta relación ayuda a interpretar cuánto trabajo concurrente sostiene cada
-segundo observado, pero no debe denominarse eficiencia energética.
+This value indicates how much concurrent measured work was sustained per wall
+second. It must not be labelled energy efficiency.
 
-## Tablas generadas
+## Generated tables
 
-`outputs/analysis/data/` contiene:
+`outputs/analysis/data/` can contain:
 
 - `monolith-reasoner-summary.csv`;
 - `docker-reasoner-summary.csv`;
-- `docker-node-costs.csv`;
+- `physical-reasoner-summary.csv`;
+- `docker-node-costs.csv` and `physical-node-costs.csv`;
 - `deployment-summary.csv`;
 - `product-engine-summary.csv`;
-- comparaciones acumulativa y de escalabilidad;
-- validación consulta a consulta entre arquitecturas.
+- cumulative and scalability matched comparisons;
+- query-by-query architecture validation;
+- `three-way-cumulative.csv` and `three-way-scalability.csv`;
+- `article-cumulative-summary.csv` and `article-scalability-summary.csv`.
 
-Con la arquitectura física se añaden `physical-node-costs.csv`,
-`physical-reasoner-summary.csv`, `three-way-cumulative.csv`,
-`three-way-scalability.csv`, `article-cumulative-summary.csv`,
-`article-scalability-summary.csv` y la validación monolito/físico.
+`deployment-summary.csv` identifies the fastest architecture at the largest
+matched load point. New validation compares binding-bag digest, cardinality,
+and `ASK`. Historical files without a digest are explicitly marked
+`validation_level=cardinality_ask` and should not be mixed with exact-digest
+claims.
 
-`deployment-summary.csv` identifica qué arquitectura fue más rápida en el punto
-de carga máximo de cada experimento. La validación nueva exige digest del bag
-de bindings, cardinalidad y `ASK`; los CSV históricos sin digest quedan
-marcados explícitamente con `validation_level=cardinality_ask`.
+## Publication checklist
+
+- Verify that every plotted series has the intended repetition coverage.
+- Keep timeout rate and failure tables with latency figures.
+- Confirm result equivalence before discussing speedup.
+- Report replicated and authority-sharded layouts as different treatments.
+- State that Docker nodes share one host and therefore do not provide the same
+  failure or network isolation as physical nodes.
+- Publish the CSV source table and metadata for every final figure.
+- Use vector PDF or SVG for manuscript figures and retain PNG only as a preview.
+
+For causal claims about scale-out and partitioning, use the stricter analyzer
+in [Three controlled architecture experiments](THREE_EXPERIMENTS.md).

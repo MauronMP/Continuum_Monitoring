@@ -4,12 +4,13 @@ from rdflib.namespace import XSD
 
 from continuum_bench.ontology import load_graph
 from continuum_bench.partitioning import (
-    ROLES,
     build_fragments,
     build_role_graph,
     privacy_violations,
 )
 from continuum_bench.queries import execute_query_detailed, load_catalog
+from continuum_bench.distributed import Endpoint
+from continuum_bench.sharded import _sources
 from continuum_bench.synthetic import add_synthetic_data
 
 
@@ -25,7 +26,9 @@ def test_fragments_reconstruct_monolithic_graph(config):
     add_synthetic_data(expected, 5, config.seed)
     fragments = build_fragments(config, 5)
 
-    assert set(fragments.graphs) == set(ROLES)
+    assert set(fragments.graphs) == {
+        "cloud", "fog", "edge1", "edge2", "edge3"
+    }
     assert isomorphic(fragments.union(), expected)
 
 
@@ -166,11 +169,11 @@ def test_v3_execution_plan_preserves_all_monolithic_results(config):
 
     for spec in specs:
         expected = execute_query_detailed(monolith, spec)
-        roles = (
-            ("edge1", "edge2", "edge3")
-            if spec.execution_scope == "edges"
-            else (spec.execution_scope,)
-        )
+        endpoints = [
+            Endpoint(f"http://{role}", role)
+            for role in fragments.graphs
+        ]
+        roles = tuple(source.role for source in _sources(spec, endpoints))
         parts = [
             execute_query_detailed(fragments.graphs[role], spec)
             for role in roles
@@ -249,7 +252,7 @@ def test_role_placement_keeps_shapes_at_cloud_and_domain_at_edges(config):
 def test_role_only_build_is_equivalent_to_full_fragment(config):
     full = build_fragments(config, 5)
 
-    for role in ROLES:
+    for role in full.graphs:
         graph, descriptor = build_role_graph(config, role, 5)
 
         assert isomorphic(graph, full.graphs[role])
@@ -259,7 +262,7 @@ def test_role_only_build_is_equivalent_to_full_fragment(config):
         assert descriptor.synthetic_triples == full.synthetic_triples
 
 
-def test_role_only_build_does_not_call_five_fragment_builders(
+def test_role_only_build_does_not_call_all_fragment_builders(
     config,
     monkeypatch,
 ):

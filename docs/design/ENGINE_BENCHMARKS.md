@@ -1,33 +1,51 @@
-# Benchmark con motores semánticos independientes
+# Independent semantic-engine benchmark
 
-## Objetivo
+## Purpose
 
-Este experimento ejecuta exactamente el mismo grafo N-Triples v3.0.0 y las 115
-consultas del mismo catálogo SPARQL en implementaciones independientes. Complementa los perfiles
-RDFS, OWL RL y RDFS+OWL RL del benchmark Python: esos perfiles sirven para
-comparar semánticas, mientras que este experimento permite comparar productos.
+This benchmark sends the same canonical v3.0.0 N-Triples graph and the same 115
+SPARQL queries to independent implementations. It complements the Python
+reasoning profiles:
 
-| Servicio | Versión fijada o registrada | Régimen | Función |
-|---|---:|---|---|
-| Apache Jena | 6.0.0 | RDFS | Razonador independiente |
-| Eclipse RDF4J | 6.0.0 | RDFS | Razonador independiente |
-| RDFLib + OWL-RL | registrada en `metadata.json` | RDFS | Referencia Python |
-| Oxigraph | registrada en `metadata.json` | sin inferencia | Control del coste SPARQL |
+- RDFS, OWL RL, and RDFS+OWL RL compare entailment regimes in the project;
+- Jena, RDF4J, RDFLib/OWL-RL, and Oxigraph compare independently implemented
+  products under an explicit semantic contract.
 
-Oxigraph no se presenta como razonador. Es el control que permite observar el
-coste de carga y consulta cuando no se materializan consecuencias RDFS.
+| Service | Version policy | Regime | Role |
+| --- | --- | --- | --- |
+| Apache Jena | Container version pinned and recorded | RDFS | Independent reasoner |
+| Eclipse RDF4J | Container version pinned and recorded | RDFS | Independent reasoner |
+| RDFLib + OWL-RL | Runtime version recorded in metadata | RDFS | Python reference |
+| Oxigraph | Runtime version recorded in metadata | No inference | SPARQL execution control |
 
-Jena usa `ReasonerRegistry.getRDFSReasoner()`. RDF4J usa
-`SchemaCachingRDFSInferencer` sobre `MemoryStore`. RDFLib usa el cierre
-`RDFS_Semantics` de OWL-RL con el adaptador de igualdad de literales descrito
-abajo. Jena 6 requiere Java 21 o posterior y RDF4J 6
-requiere Java 25; por eso la imagen común de compilación y ejecución queda
-fijada a Java 25, el requisito más restrictivo.
+Oxigraph is intentionally not described as a reasoner. It estimates the load
+and query cost when no RDFS closure is materialized.
 
-## Ejecución automática
+Jena uses `ReasonerRegistry.getRDFSReasoner()`. RDF4J uses
+`SchemaCachingRDFSInferencer` over `MemoryStore`. RDFLib uses OWL-RL
+`RDFS_Semantics` with the datatype-sensitive literal adapter described below.
+The semantic-engine container image uses the Java version required by the most
+restrictive pinned product. Consult the current Dockerfile and `/health`
+metadata rather than assuming the host Java runtime is used.
 
-Los comandos normales incluyen todos los motores, levantan el Compose semántico,
-esperan a que responda `/health` y lo retiran al finalizar:
+## Installation and health checks
+
+On a fresh clone, prepare Docker support and inspect the daemon:
+
+```bash
+python3 tools/bootstrap.py --with-docker
+.venv/bin/continuum-bench doctor --docker
+docker compose version
+docker info
+```
+
+The automatic suites build and manage the semantic-engine services. If startup
+fails, inspect the logs under `outputs/runtime/setup/` and follow the Docker
+diagnostics in [Installation guide](INSTALLATION.md).
+
+## Automatic execution
+
+Normal cumulative and scalability commands include every configured product
+engine automatically:
 
 ```bash
 .venv/bin/continuum-smoke-cumulative
@@ -37,99 +55,87 @@ esperan a que responda `/health` y lo retiran al finalizar:
 .venv/bin/continuum-bench benchmark all
 ```
 
-No se indican motores ni endpoints. `--python-only` omite deliberadamente los
-productos externos. `--keep-engine-services` deja los servicios arrancados para
-diagnóstico. El subcomando `engines` se conserva como interfaz avanzada para
-endpoints personalizados.
+No engine list or endpoint is required. Use `--python-only` only when the
+external-product comparison must be deliberately skipped. Use
+`--keep-engine-services` for diagnosis when the services should remain running
+after the suite.
 
-Antes de ejecutar la parte Python, los comandos automáticos validan Docker,
-Compose y acceso al daemon. Prepare un clon nuevo con
-`python3 tools/bootstrap.py --with-docker`; para diagnosticar Ubuntu Server use
-`python3 tools/doctor.py --docker`. Los logs de build/arranque/cierre están en
-`outputs/runtime/setup/`, con el error original y sin cambiar permisos del host.
-Véase [instalación y diagnóstico](INSTALLATION.md).
+The products execute sequentially so that they do not compete for the same CPU
+and memory during a measurement. Compose gives them identical declared CPU and
+memory limits by default; values are configurable through the documented
+environment file. Java heap bounds are explicit in the container configuration
+and are not silently adapted to the host.
 
-Los motores se ejecutan secuencialmente para evitar que compitan entre sí por
-CPU y memoria durante una medición. Todos tienen por defecto el mismo límite
-de 2 CPU y 3 GiB, configurable explícitamente mediante `.env.example`. El heap
-Java por defecto es `-Xms128m -Xmx2g`; no se cambian los límites automáticamente.
-Antes de medir se ejecuta por defecto un warm-up por motor y dataset,
-excluido de los CSV. Puede cambiarse con `--warmups N`; para una prueba puramente
-funcional y más rápida se admite `--warmups 0`. La terminal informa de warm-up,
-motor, régimen de inferencia, repetición, etapa/categoría o bloque/usuarios.
-No se lanzan healthchecks periódicos durante la medición: el coordinador
-comprueba `/health` de forma síncrona antes del experimento.
+Each engine and dataset receives one excluded warm-up by default. Override it
+on automatic benchmark runs with `--engine-warmups N`;
+`--engine-warmups 0` is useful only for a quick functional check. The advanced
+standalone `engines` subcommand exposes the equivalent `--warmups N` option.
+Terminal progress identifies warm-up, engine, inference regime, repetition,
+category or scalability block, and user volume.
 
-## Contrato común de medición
+## Common service contract
 
-Cada servicio implementa:
+Every service implements:
 
-- `GET /health`: servicio, protocolo v2, nombre, versión y régimen de inferencia;
-- `POST /prepare`: carga del N-Triples y preparación/materialización;
-- `POST /queries`: ejecución secuencial del lote SPARQL.
+- `GET /health`: service identity, protocol version, product name, product
+  version, and inference regime;
+- `POST /prepare`: load canonical N-Triples and prepare or materialize it;
+- `POST /queries`: execute a sequential SPARQL batch.
 
-El coordinador genera una serialización canónica para todos los servicios y
-recoge:
+The coordinator records:
 
-- triples de entrada, salida e inferidos;
-- tiempo de carga, razonamiento y preparación;
-- tiempo de cada consulta y tiempo de pared del lote;
-- número de filas o valor `ASK`;
-- expectativa funcional de la consulta.
+- input, output, and inferred triple counts;
+- load, reasoning, preparation, and query-batch wall time;
+- per-query duration;
+- row count or `ASK` value;
+- the catalog expectation and observed compliance.
 
-`metadata.json` registra el número de warm-ups, las versiones comunicadas por
-cada servicio, `ontology_version=3.0.0`, `query_count=115` y el hash del grafo.
-Incluye también `reasoning_contract=rdfs-literal-value-space-v1`. Los comandos
-de figuras rechazan resultados v2, v3 anteriores a esta corrección o metadatos
-incompletos, para no mezclar cierres semánticos diferentes.
+`metadata.json` records the warm-up count, reported engine versions,
+`ontology_version=3.0.0`, `query_count=115`, the graph hash, and the reasoning
+contract. Figure generation rejects incompatible or incomplete metadata so
+that results produced under different closure semantics are not mixed.
 
-En RDF4J la inferencia ocurre durante la inserción. Por ello `load_ms` se deja a
-cero y el intervalo conjunto carga+inferencia se registra como `reasoning_ms`;
-la métrica comparable entre los cuatro productos es `prepare_ms`.
+RDF4J performs inference while statements are inserted. Its separate `load_ms`
+is therefore zero and the combined load-plus-inference interval is reported as
+`reasoning_ms`. `prepare_ms` is the comparable preparation metric across all
+products.
 
-## Corrección RDFS de literales y EXT-Q68
+## Datatype-sensitive RDFS contract and EXT-Q68
 
-La implementación OWL-RL instalada (7.6.2) sustituía literales al comparar sus
-valores Python: `True == 1` y `False == 0`. Esto añadía enteros a las propiedades
-booleanas `hasNoiseApplied` y `hasAnonymizationApplied` del gradiente de
-referencia. EXT-Q68 detectaba tres bindings de incumplimiento artificiales,
-aunque el dato afirmado era válido. El acumulativo notificaba cuatro fallos
-(etapas 13–16) y el smoke de escalabilidad dos (bloques de 5 y 25 usuarios).
+OWL-RL 7.6.2 compared some literal values through Python values, where
+`True == 1` and `False == 0`. This could substitute integer literals into the
+boolean properties `hasNoiseApplied` and `hasAnonymizationApplied`, creating
+false EXT-Q68 privacy violations even though the asserted data were valid.
 
-`DatatypeAwareRDFSSemantics` corrige exclusivamente esa sustitución mediante
-igualdad de valor RDF sensible al datatype e idioma. Conserva equivalencias
-numéricas válidas y no cambia ni relaja EXT-Q68. Se usa en el monolito, el
-servicio RDFLib y los workers Docker/físicos. Los perfiles OWL RL y combinado
-mantienen sus implementaciones originales.
+`DatatypeAwareRDFSSemantics` limits equivalence to RDF values with compatible
+datatypes and language tags. It preserves valid numeric equivalence and does
+not weaken EXT-Q68. The adapter is used by the monolith, RDFLib engine service,
+and Docker/physical workers. OWL RL and combined profiles retain their intended
+implementations.
 
-El identificador de contrato se publica en `/health` de los workers y del
-servicio RDFLib. Los coordinadores rechazan imágenes antiguas; deben
-reconstruirse y volver a ejecutarse los benchmarks de las arquitecturas que
-se quieran comparar. Los CSV antiguos se conservan, pero no se convierten
-en resultados corregidos modificando sus metadatos.
+The reasoning-contract identifier is exposed by `/health`. Coordinators reject
+outdated worker images, so rebuild Docker and redeploy physical nodes after any
+contract change. Never make an old result compatible by editing its metadata.
 
-La regresión cubre las 115 consultas por el camino real N-Triples/preparación/
-consulta para RDFLib y Oxigraph, con 0, 5 y 25 usuarios, y casos inválidos
-explícitos de privacidad. `validate` comprueba además las 32 consultas de
-incumplimiento **después** de cada materialización.
+Regression tests cover all 115 queries through the real
+N-Triples/prepare/query path for RDFLib and Oxigraph at 0, 5, and 25 users, plus
+explicit invalid privacy cases. Repository validation also evaluates all 32
+violation queries after materialization.
 
-Referencia de la regla original:
-[código RDFSClosure de OWL-RL](https://owl-rl.readthedocs.io/en/latest/_modules/owlrl/RDFSClosure.html).
+## Cross-engine validation
 
-## Validación cruzada
+Conformance has two levels:
 
-La conformidad tiene dos niveles:
+1. Mandatory observable outcome: identical `ASK`, or the same zero/non-zero
+   result class, and compliance with the catalog expectation. A mismatch stops
+   the suite with a non-zero exit status.
+2. Diagnostic exact cardinality: exact row counts are compared and preserved,
+   but differing datatype entailment or duplicate-binding behavior does not
+   automatically fail the suite when the observable decision is unchanged.
 
-1. **Resultado observable obligatorio**: mismo valor `ASK` o misma clase de
-   cardinalidad (cero/no-cero) y cumplimiento de la expectativa del catálogo.
-   Una discrepancia detiene el comando con código no cero.
-2. **Cardinalidad exacta diagnóstica**: compara el número exacto de filas. Se
-   conserva, pero no es una condición de fallo porque los motores aplican
-   variantes de entailment de datatypes y pueden producir bindings duplicados
-   distintos sin cambiar la decisión.
+Exact Jena/RDF4J agreement is also reported separately.
 
-También se informa por separado del acuerdo exacto Jena/RDF4J. Los artefactos
-son:
+## Output layout
 
 ```text
 outputs/engines/<suite>/
@@ -143,46 +149,48 @@ outputs/engines/figures/
   engines-scalability.{png,pdf,svg}
 ```
 
-Para los perfiles smoke, el subdirectorio `engines` queda dentro del
-`output_dir` de su configuración.
+Smoke runs place their `engines` directory inside the configured smoke output
+directory.
 
-## Regenerar o mostrar figuras
+## Regenerate and display figures
 
 ```bash
-# Regenerar
+# Default complete engine result directory
 .venv/bin/continuum-bench plot engines
-
-# Regenerar y abrir
 .venv/bin/continuum-bench plot engines --show
 
-# Resultados smoke en otro directorio
+# Scalability smoke results in a custom directory
 .venv/bin/continuum-bench \
   --config configs/smoke-scalability.toml \
   plot engines \
   --engine-dir outputs/smoke-scalability/engines --show
 
-# Si solo se ejecutó una suite
+# One available suite only
 .venv/bin/continuum-bench plot engines \
   --engine-suite cumulative \
   --engine-dir outputs/smoke-cumulative/engines --show
 ```
 
-Las figuras usan mediana y rango mínimo-máximo por repetición, marcadores
-distintos, etiquetas explícitas del régimen y exportación vectorial. En una
-corrida smoke con una repetición el rango es necesariamente cero; no debe usarse
-como resultado estadístico de un artículo.
+Figures use the median and minimum-maximum range, separate markers, explicit
+inference-regime labels, and vector exports. A one-repetition smoke has a zero
+range by construction and must not be used as an article's statistical result.
 
-## Referencias de implementación
+## Correct interpretation
 
-- Apache Jena, inferencia:
-  https://jena.apache.org/documentation/inference/index.html
-- Apache Jena, descarga y requisito Java 21+:
-  https://jena.apache.org/download/
-- Eclipse RDF4J 6, descarga y requisito Java 25+:
-  https://rdf4j.org/download/
-- Eclipse RDF4J, Repository y Sail:
-  https://rdf4j.org/documentation/programming/repository/
-- Eclipse RDF4J, Server y requisito de Java:
-  https://rdf4j.org/documentation/tools/server-workbench/
-- Oxigraph:
-  https://github.com/oxigraph/oxigraph
+- Compare preparation and query metrics under the same graph hash and contract.
+- Do not compare Oxigraph's no-inference time as though it were RDFS reasoning.
+- Report failed expectations and equivalence diagnostics with performance.
+- Record container image digests, `/health` versions, resource limits, warm-up
+  count, and repetition count in a publication artifact.
+- The product benchmark does not prove full OWL 2 DL consistency; use the HermiT
+  check described in [Protégé and OWL consistency](ONTOLOGY_PROTEGE.md).
+
+## Primary implementation references
+
+- [Apache Jena inference documentation](https://jena.apache.org/documentation/inference/index.html)
+- [Apache Jena downloads and runtime requirements](https://jena.apache.org/download/)
+- [Eclipse RDF4J downloads](https://rdf4j.org/download/)
+- [RDF4J Repository programming guide](https://rdf4j.org/documentation/programming/repository/)
+- [RDF4J Server and Workbench](https://rdf4j.org/documentation/tools/server-workbench/)
+- [Oxigraph repository](https://github.com/oxigraph/oxigraph)
+- [OWL-RL RDFS closure implementation](https://owl-rl.readthedocs.io/en/latest/_modules/owlrl/RDFSClosure.html)

@@ -83,8 +83,8 @@ def load_load_config(path: str | Path) -> LoadBenchmarkConfig:
             raise ValueError(
                 f"{profile.name}: target_triples must be >= 0"
             )
-        if not 1 <= profile.node_count <= 5:
-            raise ValueError(f"{profile.name}: node_count must be in [1, 5]")
+        if profile.node_count < 1:
+            raise ValueError(f"{profile.name}: node_count must be >= 1")
     config = LoadBenchmarkConfig(
         path=config_path,
         profiles=profiles,

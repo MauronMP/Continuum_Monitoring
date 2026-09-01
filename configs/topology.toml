@@ -1,0 +1,8 @@
+[manifest]
+version = 2
+description = "Topology catalogue; architecture and layer details live in dedicated files"
+topology_files = [
+  "topologies/monolith/topology.toml",
+  "topologies/docker/topology.toml",
+  "topologies/physical/topology.toml",
+]

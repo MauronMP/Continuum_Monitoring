@@ -101,8 +101,16 @@ def _validate(config: ExperimentConfig) -> None:
         )
     if not config.scale_out_node_counts:
         raise ValueError("scale_out.node_counts cannot be empty")
-    if any(value not in {1, 3, 5} for value in config.scale_out_node_counts):
-        raise ValueError("scale_out.node_counts supports 1, 3 and 5")
+    if any(value < 1 for value in config.scale_out_node_counts):
+        raise ValueError("scale_out.node_counts values must be >= 1")
+    if len(config.scale_out_node_counts) != len(
+        set(config.scale_out_node_counts)
+    ):
+        raise ValueError("scale_out.node_counts values must be unique")
+    if config.scale_out_node_counts != tuple(
+        sorted(config.scale_out_node_counts)
+    ):
+        raise ValueError("scale_out.node_counts must be strictly increasing")
     if not config.reasoning_profiles:
         raise ValueError("reasoning_hardware.profiles cannot be empty")
     allowed_dimensions = {"target_triples", "rule_count", "users"}

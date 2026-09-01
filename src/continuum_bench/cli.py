@@ -21,12 +21,35 @@ def _parser() -> argparse.ArgumentParser:
         default="configs/benchmark.toml",
         help="TOML configuration file (default: configs/benchmark.toml)",
     )
+    parser.add_argument(
+        "--topology-file",
+        help=(
+            "Elastic topology manifest (default: topology_file from the "
+            "benchmark config)"
+        ),
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
     doctor = subparsers.add_parser("doctor", help="Read-only installation, Docker and SSH diagnostics")
     doctor.add_argument("--docker", action="store_true")
     doctor.add_argument("--physical", action="store_true")
     doctor.add_argument("--json", action="store_true")
     subparsers.add_parser("validate", help="Run syntax, policy and reasoner checks")
+    topology = subparsers.add_parser(
+        "topology",
+        help="Validate, inspect or manage a manifest-defined topology",
+    )
+    topology.add_argument(
+        "action",
+        choices=("validate", "show", "render", "up", "status", "logs", "down"),
+    )
+    topology.add_argument("--name", default="docker")
+    topology.add_argument(
+        "--output",
+        help=(
+            "Generated Compose path (default: "
+            "outputs/runtime/docker-compose-NAME.yml)"
+        ),
+    )
     benchmark = subparsers.add_parser("benchmark", help="Run benchmark suites")
     benchmark.add_argument(
         "suite",
@@ -103,7 +126,7 @@ def _parser() -> argparse.ArgumentParser:
     engines.add_argument("--output-dir", default="outputs/engines")
     docker = subparsers.add_parser(
         "docker",
-        help="Run a benchmark against the five Docker worker nodes",
+        help="Run a benchmark against an elastic Docker topology",
     )
     docker.add_argument(
         "suite",
@@ -111,13 +134,9 @@ def _parser() -> argparse.ArgumentParser:
     )
     docker.add_argument(
         "--endpoints",
-        default=(
-            "http://127.0.0.1:8191,http://127.0.0.1:8192,"
-            "http://127.0.0.1:8193,http://127.0.0.1:8194,"
-            "http://127.0.0.1:8195"
-        ),
-        help="Comma-separated Docker node URLs",
+        help="Optional comma-separated node URLs overriding the manifest",
     )
+    docker.add_argument("--topology-name", default="docker")
     docker.add_argument(
         "--output-dir",
         default="outputs/docker",
@@ -161,17 +180,15 @@ def _parser() -> argparse.ArgumentParser:
     )
     sharded.add_argument(
         "--endpoints",
-        default=(
-            "http://127.0.0.1:8191,http://127.0.0.1:8192,"
-            "http://127.0.0.1:8193,http://127.0.0.1:8194,"
-            "http://127.0.0.1:8195"
-        ),
-        help="Docker endpoints; ignored for physical target",
+        help="Optional Docker endpoint override; ignored for physical target",
     )
     sharded.add_argument(
         "--inventory",
-        default="configs/physical-nodes.toml",
-        help="Physical inventory; ignored for Docker target",
+        help="Legacy physical inventory override; ignored for Docker target",
+    )
+    sharded.add_argument(
+        "--topology-name",
+        help="Topology name (default: docker or physical, matching target)",
     )
     sharded.add_argument(
         "--output-dir",
@@ -187,16 +204,17 @@ def _parser() -> argparse.ArgumentParser:
     )
     fragments = subparsers.add_parser(
         "fragments",
-        help="Export the five authority/privacy-aware RDF fragments",
+        help="Export one authority/privacy-aware RDF fragment per node",
     )
     fragments.add_argument("--users", type=int, default=0)
     fragments.add_argument(
         "--output-dir",
         default="outputs/fragments",
     )
+    fragments.add_argument("--topology-name", default="docker")
     physical = subparsers.add_parser(
         "physical",
-        help="Deploy, manage or benchmark the five physical continuum nodes",
+        help="Deploy, manage or benchmark an elastic physical continuum",
     )
     physical.add_argument(
         "action",
@@ -213,9 +231,9 @@ def _parser() -> argparse.ArgumentParser:
     )
     physical.add_argument(
         "--inventory",
-        default="configs/physical-nodes.toml",
-        help="Physical node inventory (default: configs/physical-nodes.toml)",
+        help="Legacy physical inventory override",
     )
+    physical.add_argument("--topology-name", default="physical")
     physical.add_argument(
         "--ssh-user",
         help="Override cluster.ssh_user for Raspberry Pi management",
@@ -247,16 +265,14 @@ def _parser() -> argparse.ArgumentParser:
     )
     load.add_argument(
         "--docker-endpoints",
-        default=(
-            "http://127.0.0.1:8191,http://127.0.0.1:8192,"
-            "http://127.0.0.1:8193,http://127.0.0.1:8194,"
-            "http://127.0.0.1:8195"
-        ),
+        help="Optional Docker endpoint override",
     )
     load.add_argument(
         "--inventory",
-        default="configs/physical-nodes.toml",
+        help="Legacy physical inventory override",
     )
+    load.add_argument("--docker-topology", default="docker")
+    load.add_argument("--physical-topology", default="physical")
     load.add_argument(
         "--dimension",
         action="append",
@@ -303,16 +319,14 @@ def _parser() -> argparse.ArgumentParser:
         )
         command_parser.add_argument(
             "--docker-endpoints",
-            default=(
-                "http://127.0.0.1:8191,http://127.0.0.1:8192,"
-                "http://127.0.0.1:8193,http://127.0.0.1:8194,"
-                "http://127.0.0.1:8195"
-            ),
+            help="Optional Docker endpoint override",
         )
         command_parser.add_argument(
             "--inventory",
-            default="configs/physical-nodes.toml",
+            help="Legacy physical inventory override",
         )
+        command_parser.add_argument("--docker-topology", default="docker")
+        command_parser.add_argument("--physical-topology", default="physical")
         command_parser.add_argument(
             "--output-dir",
             default="outputs/experiments",
@@ -440,6 +454,34 @@ def _run_default_product_engines(
     return [str(path) for path in paths]
 
 
+def _manifest_path(config, override: str | None) -> Path:
+    path = Path(override) if override else config.topology_file
+    return path if path.is_absolute() else config.root / path
+
+
+def _endpoint_override(value: str | None) -> list[str] | None:
+    if not value:
+        return None
+    endpoints = [item.strip() for item in value.split(",") if item.strip()]
+    if not endpoints:
+        raise ValueError("Endpoint override cannot be empty")
+    return endpoints
+
+
+def _configured_endpoints(
+    config,
+    manifest_override: str | None,
+    topology_name: str,
+    endpoint_override: str | None = None,
+) -> tuple[object, list[str]]:
+    from .topology import load_topology
+
+    manifest_path = _manifest_path(config, manifest_override)
+    topology = load_topology(manifest_path, topology_name)
+    endpoints = _endpoint_override(endpoint_override) or topology.endpoints()
+    return topology, endpoints
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "doctor":
@@ -448,6 +490,48 @@ def main(argv: list[str] | None = None) -> int:
         options += [f"--{name}" for name in ("docker", "physical", "json") if getattr(args, name)]
         return doctor_main(options)
     config = load_config(args.config)
+
+    if args.command == "topology":
+        from .topology import (
+            load_topology,
+            load_topology_manifest,
+            render_docker_compose,
+            run_docker_topology,
+        )
+
+        manifest_path = _manifest_path(config, args.topology_file)
+        manifest = load_topology_manifest(manifest_path)
+        if args.action == "validate":
+            print(json.dumps(manifest.public(), indent=2, ensure_ascii=False))
+            return 0
+        selected = load_topology(manifest_path, args.name)
+        if args.action == "show":
+            print(json.dumps(selected.public(), indent=2, ensure_ascii=False))
+            return 0
+        compose_path = (
+            Path(args.output)
+            if args.output
+            else config.root
+            / "outputs"
+            / "runtime"
+            / f"docker-compose-{selected.name}.yml"
+        )
+        if not compose_path.is_absolute():
+            compose_path = config.root / compose_path
+        if args.action == "render":
+            result = render_docker_compose(
+                selected,
+                compose_path,
+                root=config.root,
+            )
+            print(json.dumps({"compose_file": str(result)}, indent=2))
+            return 0
+        return run_docker_topology(
+            selected,
+            compose_path,
+            args.action,
+            root=config.root,
+        )
 
     if (
         args.command == "benchmark" and not args.python_only
@@ -527,11 +611,12 @@ def main(argv: list[str] | None = None) -> int:
             run_sharded_scalability,
         )
 
-        endpoints = [
-            value.strip()
-            for value in args.endpoints.split(",")
-            if value.strip()
-        ]
+        topology, endpoints = _configured_endpoints(
+            config,
+            args.topology_file,
+            args.topology_name,
+            args.endpoints,
+        )
         output_root = config.root / args.output_dir / args.layout
         outputs: dict[str, str] = {}
         cumulative_runner = (
@@ -545,9 +630,13 @@ def main(argv: list[str] | None = None) -> int:
             else run_docker_scalability
         )
         layout_options = (
-            {"target": "docker", "validate_results": True}
+            {
+                "target": "docker",
+                "validate_results": True,
+                "topology": topology,
+            }
             if args.layout == "sharded"
-            else {}
+            else {"topology": topology}
         )
         if args.suite in {"cumulative", "all"}:
             outputs["cumulative"] = str(
@@ -580,13 +669,17 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "fragments":
         from .sharded import export_fragments
+        from .topology import load_topology
 
         if args.users < 0:
             raise ValueError("--users must be zero or greater")
+        manifest_path = _manifest_path(config, args.topology_file)
+        topology = load_topology(manifest_path, args.topology_name)
         paths = export_fragments(
             config,
             args.users,
             config.root / args.output_dir,
+            topology=topology,
         )
         print(
             json.dumps(
@@ -598,23 +691,35 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "sharded":
+        topology = None
         from .sharded import (
             run_sharded_cumulative,
             run_sharded_scalability,
         )
 
         if args.target == "physical":
-            from .physical import inventory_endpoints
+            from .physical_cluster import load_physical_inventory
 
-            endpoint_urls = inventory_endpoints(
+            topology_name = args.topology_name or "physical"
+            inventory_path = (
                 config.root / args.inventory
+                if args.inventory
+                else _manifest_path(config, args.topology_file)
             )
+            inventory = load_physical_inventory(
+                inventory_path,
+                topology_name=topology_name,
+            )
+            endpoint_urls = [node.endpoint for node in inventory.nodes]
+            topology = inventory.topology
         else:
-            endpoint_urls = [
-                value.strip()
-                for value in args.endpoints.split(",")
-                if value.strip()
-            ]
+            topology_name = args.topology_name or "docker"
+            topology, endpoint_urls = _configured_endpoints(
+                config,
+                args.topology_file,
+                topology_name,
+                args.endpoints,
+            )
         output_root = config.root / (
             args.output_dir or f"outputs/sharded-{args.target}"
         )
@@ -623,6 +728,10 @@ def main(argv: list[str] | None = None) -> int:
             "target": args.target,
             "validate_results": not args.skip_result_validation,
         }
+        if args.target == "docker":
+            run_options["topology"] = topology
+        elif topology is not None:
+            run_options["topology"] = topology
         if args.suite in {"cumulative", "all"}:
             sharded_outputs["cumulative"] = str(
                 run_sharded_cumulative(
@@ -658,10 +767,17 @@ def main(argv: list[str] | None = None) -> int:
             stop_cluster,
         )
 
-        inventory_path = config.root / args.inventory
+        inventory_path = (
+            config.root / args.inventory
+            if args.inventory
+            else _manifest_path(config, args.topology_file)
+        )
+        inventory_options = {"ssh_user": args.ssh_user}
+        if args.topology_name != "physical":
+            inventory_options["topology_name"] = args.topology_name
         inventory = load_physical_inventory(
             inventory_path,
-            ssh_user=args.ssh_user,
+            **inventory_options,
         )
         if args.action == "authorize":
             authorize_cluster(inventory)
@@ -682,13 +798,12 @@ def main(argv: list[str] | None = None) -> int:
         output_root = config.root / args.output_dir / args.layout
         physical_outputs: dict[str, str] = {}
         if args.layout == "sharded":
-            from .physical import inventory_endpoints
             from .sharded import (
                 run_sharded_cumulative,
                 run_sharded_scalability,
             )
 
-            endpoint_urls = inventory_endpoints(inventory_path)
+            endpoint_urls = [node.endpoint for node in inventory.nodes]
             cumulative_runner = run_sharded_cumulative
             scalability_runner = run_sharded_scalability
             layout_args = (config, endpoint_urls, output_root)
@@ -696,11 +811,17 @@ def main(argv: list[str] | None = None) -> int:
                 "target": "physical",
                 "validate_results": True,
             }
+            if inventory.topology is not None:
+                layout_options["topology"] = inventory.topology
         else:
             cumulative_runner = run_physical_cumulative
             scalability_runner = run_physical_scalability
             layout_args = (config, inventory_path, output_root)
-            layout_options = {}
+            layout_options = (
+                {}
+                if args.topology_name == "physical"
+                else {"topology_name": args.topology_name}
+            )
         if args.action in {"cumulative", "all"}:
             physical_outputs["cumulative"] = str(
                 cumulative_runner(
@@ -745,11 +866,17 @@ def main(argv: list[str] | None = None) -> int:
             dimensions=args.dimension,
             names=args.profile,
         )
-        docker_endpoints = [
-            value.strip()
-            for value in args.docker_endpoints.split(",")
-            if value.strip()
-        ]
+        _, docker_endpoints = _configured_endpoints(
+            config,
+            args.topology_file,
+            args.docker_topology,
+            args.docker_endpoints,
+        )
+        physical_inventory = (
+            config.root / args.inventory
+            if args.inventory
+            else _manifest_path(config, args.topology_file)
+        )
         targets = (
             ("monolith", "docker", "physical")
             if args.target == "all"
@@ -764,7 +891,8 @@ def main(argv: list[str] | None = None) -> int:
                     docker_endpoints
                     if target == "docker"
                     else inventory_endpoints(
-                        config.root / args.inventory
+                        physical_inventory,
+                        args.physical_topology,
                     )
                 )
             )
@@ -847,18 +975,26 @@ def main(argv: list[str] | None = None) -> int:
         )
         if args.reasoner:
             config = replace(config, reasoners=tuple(args.reasoner))
-        docker_endpoints = [
-            value.strip()
-            for value in args.docker_endpoints.split(",")
-            if value.strip()
-        ]
+        _, docker_endpoints = _configured_endpoints(
+            config,
+            args.topology_file,
+            args.docker_topology,
+            args.docker_endpoints,
+        )
         targets = (
             ("monolith", "docker", "physical")
             if args.target == "all"
             else (args.target,)
         )
         physical_endpoints = (
-            inventory_endpoints(config.root / args.inventory)
+            inventory_endpoints(
+                (
+                    config.root / args.inventory
+                    if args.inventory
+                    else _manifest_path(config, args.topology_file)
+                ),
+                args.physical_topology,
+            )
             if "physical" in targets
             else []
         )

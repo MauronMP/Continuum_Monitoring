@@ -1,49 +1,52 @@
-# Trazabilidad de artefactos v3.0.0
+# v3.0.0 artefact traceability
 
-| Necesidad | Artefacto verificable |
+| Need | Verifiable artefact |
 |---|---|
-| Fuente ontológica v3 | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |
-| Fuente SPARQL v3 | `queries/legacy/sparql_battery-v3.0.0.sparql` |
-| Contrato de release ejecutable | `continuum_bench.specification` |
-| Núcleo estándar del continuum | `ontology/core` y `ontology/modules` |
-| Extensión temática de bienestar | `ontology/domains/wellbeing` |
-| Restricciones cerradas | `ontology/shapes` y consultas `violation` |
-| ABox y escenarios S1–S17 | `ontology/examples/reference-system.ttl` |
-| 115 consultas núcleo/tema | `queries/catalog.csv` y ficheros `.rq` |
-| Routing, privacidad y merge | `queries/execution-plan.toml` |
-| Placement cloud/fog/edge | `configs/ontology-placement.toml` y `ontology/profiles` |
-| 72 RF, 39 RNF y 5 RV | `docs/reference/RN_RNF.md` |
-| 79 políticas y 55 mecanismos | `docs/reference/Políticas.md` |
-| Generación reproducible | `tools/migrate_assets.py` |
-| Datos sintéticos por volumen | `continuum_bench.synthetic` |
-| Acumulativo y escalabilidad | `continuum_bench.benchmark` |
-| Carga multidimensional | `continuum_bench.load_benchmark` |
-| Scale-out/hardware/distribuida | `continuum_bench.experiments` |
-| Jena/RDF4J/RDFLib/Oxigraph | `continuum_bench.engines` y `engine-service` |
-| Docker de cinco nodos | `docker-compose.yml`, `distributed.py`, `sharded.py` |
-| Continuum físico | `physical_cluster.py`, `physical.py`, `sharded.py` |
-| Equivalencia | conjunto/digest canónico y `result-validation.csv` |
-| Gráficas de publicación | `plotting.py`, `reporting.py` y `experiment_analysis.py` |
+| Complete ontology | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |
+| Modular continuum core | `ontology/core`, `ontology/modules` |
+| Wellbeing extension | `ontology/domains/wellbeing` |
+| Closed-world constraints | `ontology/shapes` and violation queries |
+| Reference scenarios | `ontology/examples/reference-system.ttl` |
+| Complete query source | `queries/legacy/sparql_battery-v3.0.0.sparql` |
+| Executable query catalog | `queries/catalog.csv` and `.rq` files |
+| Routing and merge | `queries/execution-plan.toml` |
+| Tier placement | `configs/ontology-placement.toml`, `ontology/profiles` |
+| Requirements | `docs/reference/REQUIREMENTS.md` |
+| Policies/mechanisms | `docs/reference/POLICIES.md` |
+| Ontology term catalog | `docs/reference/ONTOLOGY_REFERENCE.md` |
+| Query reference | `docs/reference/SPARQL_QUERIES.md` |
+| Release contract | `continuum_bench.specification` |
+| Synthetic data | `continuum_bench.synthetic` |
+| Cumulative/scalability | `continuum_bench.benchmark` |
+| Multidimensional load | `continuum_bench.load_benchmark` |
+| Three architecture experiments | `continuum_bench.experiments` |
+| Product comparison | `continuum_bench.engines`, `engine-service` |
+| Elastic topologies | `configs/topology.toml`, `configs/topologies` |
+| Physical lifecycle | `continuum_bench.physical_cluster` |
+| Result equivalence | canonical digest and `result-validation.csv` |
+| Publication figures | plotting/reporting/experiment analysis modules |
 
-Cada fila del catálogo contiene `purpose`, `requirements` y `policies`. La
-validación comprueba que todos esos IDs existen en el grafo v3; por tanto esta
-tabla de alto nivel no sustituye la trazabilidad consulta-a-requisito ejecutable.
+The generated references are derived from executable RDF and CSV rather than
+maintained as independent prose copies:
 
-La cobertura directa del catálogo recibido es 102/116 requisitos (87,93 %) y
-69/79 políticas (87,34 %). No hay referencias a IDs inexistentes. Permanecen
-sin consulta explícita:
+```bash
+.venv/bin/python tools/generate_reference_docs.py
+```
 
-- requisitos: `RF-07`, `RF-41`, `RF-44`, `RF-52`, `RF-69`, `RNF-03`,
-  `RNF-10`, `RNF-11`, `RNF-23`, `RNF-24`, `RNF-26`, `RNF-31`, `RNF-37` y
-  `RNF-38`;
-- políticas: `P-ADAPT-08`, `P-CONS-06`, `P-GOV-02`, `P-MODEL-09`,
-  `P-NODE-06`, `P-OPS-04`, `P-OPS-06`, `P-VAL-02`, `P-VAL-05` y
-  `P-ZONE-04`.
+## Direct query coverage
 
-Estas listas se calculan también en `validate`; son una limitación de cobertura
-de la batería, no una violación de sintaxis o integridad de la ontología.
+The catalog currently references 102 of 116 requirements and 69 of 79
+policies. Validation reports the exact uncovered IDs. An uncovered structural
+requirement is not automatically violated; it means the query catalog lacks a
+direct metadata link and the evidence must be supplied through ontology,
+SHACL, system tests or a future query.
 
+## Evidence levels
 
-La preparación de Ubuntu, Docker y Python está centralizada en
-[Instalación y diagnóstico](INSTALLATION.md); no forma parte de la trazabilidad
-de requisitos ontológicos.
+1. RDF trace: requirement-policy-mechanism links asserted in the ontology.
+2. Catalog trace: query metadata lists requirement and policy IDs.
+3. Runtime evidence: query/SHACL/reasoner output from a versioned graph.
+4. Experimental evidence: matched workload, topology and hardware metadata.
+
+Do not represent a thematic inference as a direct RDF/catalog trace. Do not
+represent a smoke pass as acceptance or performance evidence.

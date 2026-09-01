@@ -1,0 +1,192 @@
+{
+  "status": "complete",
+  "ontology_version": "3.0.0",
+  "ontology_revision": "3.0.0-en-datatypes-v1",
+  "scope": "Asserted conceptual schema (TBox), not an ABox instance graph",
+  "counts": {
+    "named_classes": 146,
+    "anonymous_expressions": 11,
+    "object_properties": 165,
+    "datatype_properties": 98,
+    "annotation_properties": 14,
+    "subclass_axioms": 70,
+    "source_triples": 7966
+  },
+  "sources": [
+    {
+      "path": "ontology/core/schema.ttl",
+      "sha256": "c0f95d1992d25c386bf2d846b4efbe0edad40fad4955a53dc553b0c3dacf7757"
+    },
+    {
+      "path": "ontology/modules/foundation.ttl",
+      "sha256": "dbb535b2e1f3b6a13a4c7e985a6193c5f7beb356e15f5fe3c6cf16272f3fcb48"
+    },
+    {
+      "path": "ontology/modules/topology.ttl",
+      "sha256": "a83db2c195864846a9bc029ddc0b75d2e37ad860354e6d8ec25fdaf60953d9cd"
+    },
+    {
+      "path": "ontology/modules/observability.ttl",
+      "sha256": "307d301bb86a7186000b5b6dd3073a21ddd9834a17cec31218d8b9fc7c61584e"
+    },
+    {
+      "path": "ontology/modules/governance.ttl",
+      "sha256": "e89c189627bd6deb433bc8de6d351fc4514f8ee1510a90cab94cf75e826f4a06"
+    },
+    {
+      "path": "ontology/modules/orchestration.ttl",
+      "sha256": "9381540d925396f7efb47b207e1fc88cdd657669f505483116ba31c3087d6b29"
+    },
+    {
+      "path": "ontology/modules/federation.ttl",
+      "sha256": "0bd7b9288b77b054208d7e1d287f365a8aedca9f77f0a46a6cc905cb49ca5630"
+    },
+    {
+      "path": "ontology/modules/deployment.ttl",
+      "sha256": "3d35c0e51a1d2dd4da5eb83716b1f7bbbf0768a4bf256265d4dadabcaf53a1c0"
+    },
+    {
+      "path": "ontology/core/vocabulary.ttl",
+      "sha256": "2b6412b5ebaf7f5d3efa4de9ad42e4bcfd26d4c6714fd4a3f7666cdcf9ff9d40"
+    },
+    {
+      "path": "ontology/domains/wellbeing/schema.ttl",
+      "sha256": "26a7bcb85c5b1653f040a1be82d43576ca41d84c6b3008766ec3d68d0453540c"
+    },
+    {
+      "path": "ontology/domains/wellbeing/vocabulary.ttl",
+      "sha256": "ba855f89ab49b42ed2dd13a21782c616b10b7f5db3481c0376f31e58c9e92590"
+    },
+    {
+      "path": "ontology/examples/reference-system.ttl",
+      "sha256": "46241ed1fc2583c8627c5949ff681b61fd1e02e91a77ff476b88c240c6af50aa"
+    },
+    {
+      "path": "ontology/shapes/core-compliance.ttl",
+      "sha256": "e3fa7e3a58199022e62756e7b145659acc0bf2f8be0f03b63625726298e3ad41"
+    },
+    {
+      "path": "ontology/shapes/federated-learning.ttl",
+      "sha256": "d5d705a937bb7fa9a58391c48dd6253fe98078af7af8df96f27169a9b0cb6652"
+    }
+  ],
+  "schema_sha256": "496db800101780433272068b9a957db07b5a07e85b85419eb234f6f6cc88ee26",
+  "graphviz": "dot - graphviz version 14.1.5 (20260411.2331)",
+  "rendered": true,
+  "simplified": {
+    "classes": 15,
+    "properties": 15,
+    "property_iris": [
+      "http://example.org/smartcity#hasConsentRecord",
+      "http://example.org/smartcity#hasSemanticContract",
+      "http://example.org/smartcity#auditsContract",
+      "http://example.org/smartcity#appliedPolicy",
+      "http://example.org/smartcity#tracedToPolicy",
+      "http://example.org/smartcity#evaluatesNode",
+      "http://example.org/smartcity#hasNodeState",
+      "http://example.org/smartcity#hasDecisionAlternative",
+      "http://example.org/smartcity#resultedInAction",
+      "http://example.org/smartcity#affectsModel",
+      "http://example.org/smartcity#updatesModel",
+      "http://example.org/smartcity#transfersData",
+      "http://example.org/smartcity#generatedBy",
+      "http://example.org/smartcity#hasWearable",
+      "http://example.org/smartcity#hostedAt"
+    ]
+  },
+  "complete": {
+    "all_named_classes": true,
+    "all_declared_properties": true,
+    "verified_classes": 146,
+    "verified_properties": 277,
+    "checked": "DOT and rendered SVG",
+    "abox_instances_expanded": false
+  },
+  "figures": {
+    "ontology-simplified": {
+      "width_pt": 476.0,
+      "height_pt": 776.0,
+      "minimum_font_pt": 10.0,
+      "minimum_font_at_180mm_pt": 10.719248329252961,
+      "minimum_font_fit_180x230mm_pt": 8.40165597856969
+    },
+    "ontology-complete": {
+      "width_pt": 10645.0,
+      "height_pt": 2236.0,
+      "minimum_font_pt": 8.0,
+      "minimum_font_at_180mm_pt": 0.383456060477175,
+      "minimum_font_fit_180x230mm_pt": 0.383456060477175
+    },
+    "modules/foundation": {
+      "width_pt": 1978.0,
+      "height_pt": 458.0,
+      "minimum_font_pt": 9.0,
+      "minimum_font_at_180mm_pt": 2.3216005987118145,
+      "minimum_font_fit_180x230mm_pt": 2.3216005987118145
+    },
+    "modules/topology": {
+      "width_pt": 1497.0,
+      "height_pt": 604.0,
+      "minimum_font_pt": 8.0,
+      "minimum_font_at_180mm_pt": 2.726713269057801,
+      "minimum_font_fit_180x230mm_pt": 2.726713269057801
+    },
+    "modules/observability": {
+      "width_pt": 1795.0,
+      "height_pt": 724.0,
+      "minimum_font_pt": 9.0,
+      "minimum_font_at_180mm_pt": 2.558287456407782,
+      "minimum_font_fit_180x230mm_pt": 2.5582874564077827
+    },
+    "modules/governance": {
+      "width_pt": 4440.0,
+      "height_pt": 1344.0,
+      "minimum_font_pt": 9.0,
+      "minimum_font_at_180mm_pt": 1.034262609065759,
+      "minimum_font_fit_180x230mm_pt": 1.0342626090657587
+    },
+    "modules/orchestration": {
+      "width_pt": 3892.0,
+      "height_pt": 1262.0,
+      "minimum_font_pt": 9.0,
+      "minimum_font_at_180mm_pt": 1.1798884851623765,
+      "minimum_font_fit_180x230mm_pt": 1.1798884851623765
+    },
+    "modules/federation": {
+      "width_pt": 1001.0,
+      "height_pt": 762.0,
+      "minimum_font_pt": 9.0,
+      "minimum_font_at_180mm_pt": 4.587538445806163,
+      "minimum_font_fit_180x230mm_pt": 4.587538445806163
+    },
+    "modules/deployment": {
+      "width_pt": 514.0,
+      "height_pt": 278.0,
+      "minimum_font_pt": 9.0,
+      "minimum_font_at_180mm_pt": 8.934097245626399,
+      "minimum_font_fit_180x230mm_pt": 8.934097245626399
+    },
+    "modules/wellbeing": {
+      "width_pt": 2220.0,
+      "height_pt": 450.0,
+      "minimum_font_pt": 9.0,
+      "minimum_font_at_180mm_pt": 2.068525218131518,
+      "minimum_font_fit_180x230mm_pt": 2.0685252181315175
+    },
+    "modules/standards": {
+      "width_pt": 1564.0,
+      "height_pt": 453.0,
+      "minimum_font_pt": 9.0,
+      "minimum_font_at_180mm_pt": 2.936141933664942,
+      "minimum_font_fit_180x230mm_pt": 2.936141933664942
+    },
+    "ontology-simplified-monochrome": {
+      "width_pt": 573.0,
+      "height_pt": 811.0,
+      "minimum_font_pt": 10.0,
+      "minimum_font_at_180mm_pt": 8.904646081543472,
+      "minimum_font_fit_180x230mm_pt": 8.039069099099974
+    }
+  },
+  "atlas_pages": 17
+}

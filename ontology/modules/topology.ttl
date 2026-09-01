@@ -25,17 +25,23 @@ ex:MobileDevice a owl:Class ;
     rdfs:comment "User smartphone acting as a personal Mist node. It belongs to the local processing scope when associated with the user." ;
     rdfs:subClassOf ex:MistNode .
 
-ex:RestrictedZone a owl:Class ;
+ex:RestrictedZone a ex:ZoneType,
+        owl:Class,
+        owl:NamedIndividual ;
     rdfs:label "Restricted Zone" ;
     rdfs:comment "Geographic zone with hard restrictions on external processing/transfer. Raw physiological observations remain on wearable/mobile or authorised personal Mist; Edge, Fog and Cloud are external to local scope." ;
     rdfs:subClassOf ex:CityArea .
 
-ex:RuralZone a owl:Class ;
+ex:RuralZone a ex:ZoneType,
+        owl:Class,
+        owl:NamedIndividual ;
     rdfs:label "Rural Zone" ;
     rdfs:comment "Few nodes. Predominance of local retention and controlled transmission." ;
     rdfs:subClassOf ex:CityArea .
 
-ex:UrbanZone a owl:Class ;
+ex:UrbanZone a ex:ZoneType,
+        owl:Class,
+        owl:NamedIndividual ;
     rdfs:label "Urban Zone" ;
     rdfs:comment "High node and user density. More communication options." ;
     rdfs:subClassOf ex:CityArea .
@@ -139,6 +145,10 @@ ex:UrbanEnvironment a owl:Class ;
 geo:Geometry a owl:Class .
 
 geo:hasGeometry a owl:ObjectProperty .
+
+ex:ZoneType a owl:Class ;
+    rdfs:label "Zone type" ;
+    rdfs:comment "A zone classification referenced by policies. UrbanZone, RuralZone and RestrictedZone are both OWL classes and named ZoneType individuals; OWL 2 DL treats their class and individual interpretations separately." .
 
 ex:NodeUserRelation a owl:Class ;
     rdfs:label "Node-User Relation" ;

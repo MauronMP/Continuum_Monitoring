@@ -34,6 +34,7 @@ from .sharded import (
     _summary as sharded_summary,
     _validation_rows,
 )
+from .topology import load_topology
 
 
 EXPERIMENTS = (
@@ -61,6 +62,7 @@ def _metadata(
                 {
                     "url": endpoint.url,
                     "role": endpoint.role,
+                    "tier": endpoint.tier,
                     "python_version": platform.python_version(),
                     "platform": platform.platform(),
                     "machine": platform.machine(),
@@ -90,7 +92,10 @@ def _metadata(
             {
                 key: health.get(key, "")
                 for key in (
+                    "node_id",
                     "role",
+                    "tier",
+                    "authority",
                     "python_version",
                     "platform",
                     "machine",
@@ -112,8 +117,14 @@ def _metadata(
         "repetitions": workload.repetitions,
         "request_timeout_seconds": workload.request_timeout_seconds,
         "seed": workload.seed,
+        "node_count": len(endpoints),
         "endpoints": [
-            {"url": endpoint.url, "role": endpoint.role}
+            {
+                "url": endpoint.url,
+                "node_id": endpoint.role,
+                "tier": endpoint.tier,
+                "authority": endpoint.authority,
+            }
             for endpoint in endpoints
         ],
         "endpoint_hardware": endpoint_hardware,
@@ -134,8 +145,24 @@ def _target_runtime(
     endpoint_urls: list[str] | None,
 ) -> tuple[NodeRuntime | None, list[Endpoint]]:
     if target == "monolith":
-        return NodeRuntime(config.root, "cloud"), [
-            Endpoint("local://cloud", "cloud")
+        topology = load_topology(
+            config.resolve(config.topology_file), "monolith"
+        )
+        node = topology.active_nodes[0]
+        return NodeRuntime(
+            config.root,
+            node.node_id,
+            tier=node.tier,
+            topology_name=topology.name,
+            topology_file=topology.source_path or config.topology_file,
+        ), [
+            Endpoint(
+                f"local://{node.node_id}",
+                node.node_id,
+                node.tier,
+                node.authority,
+                node.categories,
+            )
         ]
     if target not in {"docker", "physical"}:
         raise ValueError(f"Unknown experiment target {target!r}")
@@ -384,6 +411,12 @@ def run_scale_out(
     )
     timeout = workload.request_timeout_seconds
     for node_count in node_counts:
+        if node_count > len(all_endpoints):
+            raise ValueError(
+                f"{target} topology exposes {len(all_endpoints)} nodes, but "
+                f"scale-out requests {node_count}; update node_counts or add "
+                "nodes to the selected architecture layer files"
+            )
         endpoints = all_endpoints[:node_count]
         for reasoner in config.reasoners:
             for repetition in range(1, workload.repetitions + 1):
@@ -837,7 +870,7 @@ def run_distributed_ontology(
     output_root: Path,
     endpoint_urls: list[str] | None = None,
 ) -> Path:
-    """Compare one logical graph with authority-partitioned five-node graphs."""
+    """Compare one logical graph with an elastic authority partition."""
 
     runtime, endpoints = _target_runtime(config, target, endpoint_urls)
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
@@ -880,7 +913,7 @@ def run_distributed_ontology(
                             {
                                 **common,
                                 "endpoint": endpoints[0].url,
-                                "role": "cloud",
+                                "role": endpoints[0].role,
                                 "execution_scope": "monolith",
                                 **measurement,
                             }

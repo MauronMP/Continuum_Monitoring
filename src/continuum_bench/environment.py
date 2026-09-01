@@ -174,6 +174,7 @@ def project_checks(root: Path) -> list[Check]:
     required = (
         "pyproject.toml",
         "configs/benchmark.toml",
+        "configs/topology.toml",
         "queries/catalog.csv",
         "queries/execution-plan.toml",
         "ontology/core/schema.ttl",
@@ -183,7 +184,7 @@ def project_checks(root: Path) -> list[Check]:
         "requirements-node.txt",
     )
     missing = [name for name in required if not (root / name).is_file()]
-    return [
+    checks = [
         Check(
             "repositorio",
             "error" if missing else "ok",
@@ -191,6 +192,26 @@ def project_checks(root: Path) -> list[Check]:
             "Ejecute desde un clon completo de esta revisión; no copie solo src/ ni el entorno .venv de otro equipo.",
         )
     ]
+    if not missing:
+        try:
+            from .topology import load_topology_manifest
+
+            manifest = load_topology_manifest(root / "configs/topology.toml")
+            detail = ", ".join(
+                f"{name}={len(topology.active_nodes)}"
+                for name, topology in manifest.topologies.items()
+            )
+            checks.append(Check("topologia", "ok", detail))
+        except (OSError, ValueError) as error:
+            checks.append(
+                Check(
+                    "topologia",
+                    "error",
+                    str(error),
+                    "Corrija configs/topology.toml y ejecute 'continuum-bench topology validate'.",
+                )
+            )
+    return checks
 
 
 def _probe(
@@ -296,7 +317,7 @@ def docker_checks(
                         "memoria-docker",
                         "warning",
                         f"{memory / 1024**3:.1f} GiB disponibles para el daemon",
-                        "Hay cuatro motores y hasta cinco nodos. Los smokes pueden funcionar, pero una campaña grande puede agotar la memoria.",
+                        "Hay cuatro motores y un número configurable de nodos. Los smokes pueden funcionar, pero una campaña grande puede agotar la memoria.",
                     )
                 )
         checks.append(Check(name, "ok", detail or compose_file))

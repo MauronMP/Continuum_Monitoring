@@ -5,7 +5,9 @@
 
 <http://example.org/smartcity> a owl:Ontology ;
     rdfs:label "SmartCity Continuum Stress Ontology v3.0.0" ;
-    dcterms:modified "2026-08-26"^^xsd:date ;
+    dcterms:identifier "3.0.0-en-datatypes-v1" ;
+    dcterms:language "en" ;
+    dcterms:modified "2026-08-28"^^xsd:date ;
     dcterms:replaces "2.1.1" ;
     rdfs:comment "Major semantic revision aligned with RF-01–RF-72, RNF-01–RNF-39, RV-01–RV-05 and POLICIES-REV-01. Queries are intentionally not assigned in this version." ;
     owl:imports <http://example.org/smartcity/modules/federation>,

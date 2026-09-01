@@ -1,0 +1,4 @@
+[layer]
+tier = "mist"
+
+# Add one or more [[nodes]] tables when Raspberry Pi nodes use the mist tier.

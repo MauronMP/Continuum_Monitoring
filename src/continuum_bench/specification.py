@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Iterable
 
 from rdflib import Graph, Namespace, RDF, URIRef
-from rdflib.namespace import OWL
+from rdflib.namespace import DCTERMS, OWL
 
 from .queries import QueryMeasurement, QuerySpec
 from .reasoners import REASONING_CONTRACT
@@ -15,6 +15,7 @@ from .environment import installed_versions
 EX = Namespace("http://example.org/smartcity#")
 ONTOLOGY_IRI = URIRef("http://example.org/smartcity")
 ONTOLOGY_VERSION = "3.0.0"
+ONTOLOGY_REVISION = "3.0.0-en-datatypes-v1"
 EXPECTED_QUERY_IDS = frozenset(
     {
         *{f"BASE-Q{i:02d}" for i in range(1, 36)},
@@ -44,6 +45,7 @@ def release_identity() -> dict[str, Any]:
 
     return {
         "ontology_version": ONTOLOGY_VERSION,
+        "ontology_revision": ONTOLOGY_REVISION,
         "query_contract": "BASE-Q01..BASE-Q35;EXT-Q01..EXT-Q80",
         "query_count": len(EXPECTED_QUERY_IDS),
         "policy_artifact": "POLICIES-REV-01",
@@ -71,6 +73,12 @@ def validate_release_contract(
         errors.append(
             f"ontology version {ONTOLOGY_VERSION!r} not found: {versions}"
         )
+
+    revisions = sorted(str(value) for value in graph.objects(
+        ONTOLOGY_IRI, DCTERMS.identifier
+    ))
+    if revisions != [ONTOLOGY_REVISION]:
+        errors.append(f"ontology revision must be {ONTOLOGY_REVISION!r}: {revisions}")
 
     query_ids = {spec.id for spec in specs}
     if query_ids != EXPECTED_QUERY_IDS:
@@ -119,6 +127,8 @@ def validate_release_contract(
         "ontology_iri": str(ONTOLOGY_IRI),
         "expected_version": ONTOLOGY_VERSION,
         "observed_versions": versions,
+        "expected_revision": ONTOLOGY_REVISION,
+        "observed_revisions": revisions,
         "query_count": len(query_ids),
         "entity_counts": counts,
         "referenced_requirement_count": len(referenced_requirements),

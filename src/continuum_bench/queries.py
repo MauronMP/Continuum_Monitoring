@@ -134,12 +134,20 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
             or {
                 "cloud": "global",
                 "fog": "regional",
-                "edges": "data_owner",
-                "edge1": "data_owner:edge1",
-                "edge2": "data_owner:edge2",
-                "edge3": "data_owner:edge3",
-                "cloud_edges": "federated",
-            }.get(scopes.get(row["id"], "cloud"), "global"),
+                "mist": "near_edge",
+                "edge": "data_owner_tier",
+                "iot": "data_owner_tier",
+                "authorities": "data_owner",
+                "cloud_authorities": "federated",
+                "all": "federated_all",
+            }.get(
+                scopes.get(row["id"], "cloud"),
+                (
+                    "data_owner"
+                    if scopes.get(row["id"], "").startswith("authority_key:")
+                    else "global"
+                ),
+            ),
             privacy_class=row.get("privacy_class")
             or privacy.get(row["id"], "internal"),
             merge_strategy=row.get("merge_strategy")
@@ -150,7 +158,7 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
                 else (
                     "set_union"
                     if scopes.get(row["id"], "cloud")
-                    in {"edges", "cloud_edges"}
+                    in {"authorities", "cloud_authorities", "all"}
                     else "single"
                 )
             ),
@@ -175,13 +183,17 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
             f"unknown_merge={sorted(unknown_merge)}"
         )
     allowed_scopes = {
-        "cloud", "fog", "edges", "edge1", "edge2", "edge3",
-        "cloud_edges",
+        "cloud", "fog", "mist", "edge", "iot", "authorities",
+        "cloud_authorities", "all",
     }
     allowed_privacy = {"internal", "confidential", "restricted"}
     allowed_merge = {"single", "set_union", "boolean_or"}
     for spec in specs:
-        if spec.execution_scope not in allowed_scopes:
+        if (
+            spec.execution_scope not in allowed_scopes
+            and not spec.execution_scope.startswith("node:")
+            and not spec.execution_scope.startswith("authority_key:")
+        ):
             raise ValueError(
                 f"{spec.id}: invalid execution scope "
                 f"{spec.execution_scope!r}"
@@ -196,8 +208,9 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
                 f"{spec.merge_strategy!r}"
             )
         if spec.merge_strategy == "single" and spec.execution_scope in {
-            "edges",
-            "cloud_edges",
+            "authorities",
+            "cloud_authorities",
+            "all",
         }:
             raise ValueError(
                 f"{spec.id}: multi-source scope requires a merge strategy"

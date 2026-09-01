@@ -1,0 +1,26 @@
+[layer]
+tier = "edge"
+
+[[nodes]]
+id = "edge1"
+host = "192.168.1.138"
+endpoint = "http://192.168.1.138:8391"
+local = false
+port = 8391
+authority = true
+
+[[nodes]]
+id = "edge2"
+host = "192.168.1.139"
+endpoint = "http://192.168.1.139:8391"
+local = false
+port = 8391
+authority = true
+
+[[nodes]]
+id = "edge3"
+host = "192.168.1.140"
+endpoint = "http://192.168.1.140:8391"
+local = false
+port = 8391
+authority = true

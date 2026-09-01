@@ -1,0 +1,28 @@
+[layer]
+tier = "cloud"
+
+[[nodes]]
+id = "cloud"
+endpoint = "http://127.0.0.1:8090"
+host = "127.0.0.1"
+port = 8090
+local = true
+authority = false
+categories = [
+  "topology",
+  "semantic_schema",
+  "observability",
+  "identity_consent",
+  "data_lifecycle",
+  "security_identity",
+  "context_zones",
+  "trust",
+  "decision",
+  "policy_governance",
+  "adaptation",
+  "delegation",
+  "federation",
+  "audit_temporal",
+  "validation",
+  "wellbeing",
+]

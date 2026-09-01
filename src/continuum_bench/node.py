@@ -1,4 +1,4 @@
-"""HTTP worker used by the five-node Docker benchmark."""
+"""HTTP worker used by configurable Docker and physical topologies."""
 
 from __future__ import annotations
 
@@ -28,12 +28,13 @@ from .partitioning import build_role_graph, privacy_violations
 from .protocol import WORKER_PROTOCOL_VERSION, WORKER_SERVICE
 from .queries import execute_query, execute_query_detailed, load_catalog
 from .reasoners import REASONING_CONTRACT, materialize
-from .specification import ONTOLOGY_VERSION
+from .specification import ONTOLOGY_REVISION, ONTOLOGY_VERSION
 from .synthetic import (
     add_synthetic_data,
     add_synthetic_rules,
     pad_to_target_triples,
 )
+from .topology import Topology, default_categories, infer_tier, load_topology
 
 
 def _peak_rss_kib() -> int:
@@ -133,9 +134,38 @@ def _with_transport_metrics(
 
 
 class NodeRuntime:
-    def __init__(self, root: Path, role: str) -> None:
+    def __init__(
+        self,
+        root: Path,
+        role: str,
+        *,
+        tier: str | None = None,
+        topology_name: str | None = None,
+        topology_file: str | Path = "configs/topology.toml",
+    ) -> None:
         self.root = root
         self.role = role
+        self.node_id = role
+        self.topology_name = topology_name or ""
+        self.topology: Topology | None = None
+        if topology_name:
+            topology_path = Path(topology_file)
+            if not topology_path.is_absolute():
+                topology_path = root / topology_path
+            self.topology = load_topology(topology_path, topology_name)
+            configured_node = self.topology.node(role)
+            if tier is not None and tier != configured_node.tier:
+                raise ValueError(
+                    f"Node {role!r} configured as tier {configured_node.tier!r}, "
+                    f"not {tier!r}"
+                )
+            self.tier = configured_node.tier
+            self.authority = configured_node.authority
+            self.categories = configured_node.categories
+        else:
+            self.tier = tier or infer_tier(role)
+            self.authority = self.tier in {"edge", "iot"}
+            self.categories = default_categories(self.tier)
         self.config = load_config(root / "configs/benchmark.toml")
         # The full monolithic graph is loaded lazily. Sharded workers otherwise
         # paid the memory cost of a replica they never queried.
@@ -199,12 +229,22 @@ class NodeRuntime:
                     perf_counter_ns() - generated_at
                 ) / 1_000_000
             elif mode == "partitioned":
-                source, fragments = build_role_graph(
-                    self.config,
-                    self.role,
-                    users,
-                    seed,
-                )
+                topology = getattr(self, "topology", None)
+                if topology is None:
+                    source, fragments = build_role_graph(
+                        self.config,
+                        self.role,
+                        users,
+                        seed,
+                    )
+                else:
+                    source, fragments = build_role_graph(
+                        self.config,
+                        self.role,
+                        users,
+                        seed,
+                        topology=topology,
+                    )
                 clone_ms = 0.0
                 generation_ms = (
                     perf_counter_ns() - started
@@ -219,6 +259,7 @@ class NodeRuntime:
                     source,
                     self.role,
                     fragments.sensitive_resources,
+                    authority=getattr(self, "authority", None),
                 )
                 if mode == "partitioned"
                 else []
@@ -246,7 +287,9 @@ class NodeRuntime:
             process_cpu_ms = (process_time_ns() - cpu_started) / 1_000_000
             io_read_after, io_write_after = _process_io_bytes()
             return {
+                "node_id": getattr(self, "node_id", self.role),
                 "role": self.role,
+                "tier_name": getattr(self, "tier", infer_tier(self.role)),
                 "mode": mode,
                 "reasoner": reasoner,
                 "synthetic_users": users,
@@ -408,9 +451,20 @@ class Handler(BaseHTTPRequestHandler):
                 "service": WORKER_SERVICE,
                 "protocol_version": WORKER_PROTOCOL_VERSION,
                 "ontology_version": ONTOLOGY_VERSION,
+                "ontology_revision": ONTOLOGY_REVISION,
                 "query_count": len(runtime.catalog),
                 "reasoning_contract": REASONING_CONTRACT,
+                "node_id": runtime.node_id,
                 "role": runtime.role,
+                "tier": runtime.tier,
+                "authority": runtime.authority,
+                "categories": list(runtime.categories),
+                "topology_name": runtime.topology_name,
+                "topology_fingerprint": (
+                    runtime.topology.fingerprint
+                    if runtime.topology is not None
+                    else ""
+                ),
                 "pid": os.getpid(),
                 "python_version": platform.python_version(),
                 "platform": platform.platform(),
@@ -530,7 +584,7 @@ class NodeServer(HTTPServer):
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Continuum Docker worker node")
+    parser = argparse.ArgumentParser(description="Elastic continuum worker node")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument(
@@ -538,14 +592,51 @@ def main(argv: list[str] | None = None) -> int:
         default=os.environ.get("CONTINUUM_ROOT", "/app"),
     )
     parser.add_argument(
+        "--node-id",
+        default=os.environ.get(
+            "CONTINUUM_NODE_ID",
+            os.environ.get("CONTINUUM_ROLE"),
+        ),
+    )
+    parser.add_argument(
         "--role",
-        default=os.environ.get("CONTINUUM_ROLE", "edge"),
+        dest="legacy_role",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "--tier",
+        default=os.environ.get("CONTINUUM_TIER"),
+        choices=("cloud", "fog", "mist", "edge", "iot"),
+    )
+    parser.add_argument(
+        "--topology-file",
+        default=os.environ.get(
+            "CONTINUUM_TOPOLOGY_FILE",
+            "configs/topology.toml",
+        ),
+    )
+    parser.add_argument(
+        "--topology-name",
+        default=os.environ.get("CONTINUUM_TOPOLOGY_NAME"),
     )
     args = parser.parse_args(argv)
-    runtime = NodeRuntime(Path(args.root).resolve(), args.role)
+    node_id = args.legacy_role or args.node_id
+    if not node_id:
+        parser.error(
+            "set --node-id (or CONTINUUM_NODE_ID); worker identities come "
+            "from the selected composed topology manifest"
+        )
+    runtime = NodeRuntime(
+        Path(args.root).resolve(),
+        node_id,
+        tier=args.tier,
+        topology_name=args.topology_name,
+        topology_file=args.topology_file,
+    )
     server = NodeServer((args.host, args.port), runtime)
     print(
-        f"[node] role={args.role} listening={args.host}:{args.port} "
+        f"[node] id={node_id} tier={runtime.tier} "
+        f"listening={args.host}:{args.port} "
         "base_graph=lazy",
         flush=True,
     )

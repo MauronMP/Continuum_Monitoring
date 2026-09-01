@@ -1,13 +1,15 @@
 """Build the modular runtime assets from the canonical v3.0.0 artefacts.
 
-The two files under ``ontology/legacy`` and ``queries/legacy`` are immutable
-release inputs. This script splits the ontology without losing source triples,
-extracts one SPARQL statement per file, and regenerates the distributed plan.
+The files under ``ontology/legacy`` and ``queries/legacy`` are canonical release
+inputs. Apply documented corrections there, then regenerate; never patch only
+the derived modules. This script splits the ontology without losing source
+triples, extracts one SPARQL statement per file, and regenerates the plan.
 """
 
 from __future__ import annotations
 
 import csv
+import json
 import re
 from collections import defaultdict
 from pathlib import Path
@@ -109,7 +111,7 @@ MODULE_CLASSES = {
         "CityArea", "CloudNode", "Community", "ComputationalNode", "EdgeNode",
         "FogNode", "Geometry", "MistNode", "MobileDevice", "NodeUserRelation",
         "PopulationDensity", "RestrictedZone", "RuralZone", "UrbanEnvironment",
-        "UrbanZone", "DistanceLevel",
+        "UrbanZone", "DistanceLevel", "ZoneType",
     },
     "observability": {
         "AvailabilityLevel", "BatteryLevel", "CommunicationLevel",
@@ -269,7 +271,7 @@ def stable_skolemize(graph: Graph) -> Graph:
 
     RDFLib's Turtle parser uses a random run prefix followed by a stable source
     order suffix (``b1``, ``b2``...). Persisting that suffix once in generated
-    modules prevents five replicated workers from multiplying equivalent blank
+    modules prevents replicated workers from multiplying equivalent blank
     restrictions and makes fragment equality linear instead of exponential.
     """
 
@@ -370,7 +372,7 @@ def split_ontology(source_path: Path = ONTOLOGY_SOURCE) -> list[Path]:
     shape_subjects = closure_from_roots(source, shape_roots)
     schema_types = {
         OWL.Class, OWL.ObjectProperty, OWL.DatatypeProperty,
-        OWL.AnnotationProperty,
+        OWL.AnnotationProperty, RDFS.Datatype,
     }
     schema_roots = {
         subject
@@ -559,11 +561,11 @@ def expectation_for(kind: str, expected_count: int, expected_ask: bool | None) -
 
 def query_scope(query_id: str, tier: str, category: str) -> str:
     # These three inventory/aggregate queries require the complete v3 reference
-    # Mist projection.  RingB is owned deterministically by edge2.
+    # projection for UserB and must execute at its configured authority owner.
     if query_id in {"BASE-Q02", "BASE-Q04", "BASE-Q33"}:
-        return "edge2"
+        return "authority_key:http://example.org/smartcity#UserB"
     if query_id in {"BASE-Q11", "BASE-Q14", "EXT-Q36", "EXT-Q39"}:
-        return "edge1"
+        return "authority_key:http://example.org/smartcity#UserA"
     edge_ids = {
         "BASE-Q01", "BASE-Q15", "BASE-Q25",
         "BASE-Q18", "BASE-Q21", "BASE-Q23", "BASE-Q35",
@@ -581,7 +583,7 @@ def query_scope(query_id: str, tier: str, category: str) -> str:
             "federation", "audit_temporal",
         }
     ):
-        return "edges"
+        return "authorities"
     if category in {"semantic_schema", "policy_governance", "validation"}:
         return "cloud"
     if query_id in {"BASE-Q06", "BASE-Q31", "EXT-Q29", "EXT-Q30"}:
@@ -650,11 +652,14 @@ def split_queries(source_path: Path = QUERY_SOURCE) -> list[Path]:
         scope = query_scope(query_id, tier, category)
         scopes[scope].append(query_id)
         privacy_class = (
-            "restricted" if scope.startswith("edge") and tier == "domain"
-            else "confidential" if scope.startswith("edge") else "internal"
+            "restricted"
+            if scope == "authorities" and tier == "domain"
+            else "confidential"
+            if scope == "authorities" or scope.startswith("authority_key:")
+            else "internal"
         )
         privacy[privacy_class].append(query_id)
-        if scope == "edges":
+        if scope == "authorities":
             strategy = "boolean_or" if kind == "ask" else "set_union"
             merges[strategy].append(query_id)
 
@@ -704,9 +709,15 @@ def split_queries(source_path: Path = QUERY_SOURCE) -> list[Path]:
         "# Authority-aware source selection generated with the v3 catalogue.",
         "[scopes]",
     ]
-    for scope in ("cloud", "fog", "edges", "edge1", "edge2", "edge3"):
+    for scope in (
+        "cloud",
+        "fog",
+        "authorities",
+        "authority_key:http://example.org/smartcity#UserA",
+        "authority_key:http://example.org/smartcity#UserB",
+    ):
         values = ", ".join(f'"{item}"' for item in scopes[scope])
-        lines.append(f"{scope} = [{values}]")
+        lines.append(f"{json.dumps(scope)} = [{values}]")
     lines.extend(["", "[merge]"])
     for strategy in ("set_union", "boolean_or"):
         values = ", ".join(f'"{item}"' for item in merges[strategy])

@@ -1,0 +1,13 @@
+[layer]
+tier = "cloud"
+
+[[nodes]]
+id = "cloud"
+endpoint = "http://127.0.0.1:8191"
+host = "127.0.0.1"
+port = 8191
+container_port = 8080
+local = true
+authority = false
+cpus = 1.0
+memory = "1g"

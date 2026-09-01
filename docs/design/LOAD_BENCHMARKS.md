@@ -1,125 +1,141 @@
-# Benchmark de carga y escalabilidad multidimensional
+# Multidimensional load and scalability benchmark
 
-## Objetivo experimental
+## Purpose and scope
 
-Este benchmark complementa las pruebas de escalabilidad por tamaño del ABox.
-Genera un flujo temporizado de evaluaciones de alerta y ejecuta exactamente el
-mismo protocolo en:
+This benchmark measures how the same semantic alert workload behaves under
+increasing load in three deployment architectures:
 
-1. un proceso monolítico y un nodo;
-2. cinco workers locales de Docker Compose;
-3. cinco equipos físicos: cloud, fog y tres edge.
+1. a monolithic process on one computer;
+2. an elastic local Docker topology;
+3. an elastic physical continuum topology.
 
-Los despliegues distribuidos usan réplicas del grafo para aislar el efecto del
-balanceo de consultas. `node_count` selecciona los primeros 1, 3 o 5 roles en
-orden cloud, fog, edge1, edge2 y edge3. Por tanto, esta prueba no debe
-interpretarse como una evaluación del layout particionado por autoridad.
+The test complements the cumulative and ABox-size suites. Distributed runs use
+replicated logical graphs so that query scale-out can be measured independently
+from ontology partitioning. The distributed-ontology experiment described in
+[Three controlled architecture experiments](THREE_EXPERIMENTS.md) evaluates
+authority-based partitioning separately.
 
-## Diseño de carga
+The active architecture is loaded from `configs/topology.toml`. For a profile
+with `node_count = N`, the coordinator selects the first N enabled nodes in the
+deterministic order declared by the architecture's layer manifests. The run
+fails before measurement if fewer than N nodes are available.
 
-Un evento es una evaluación SPARQL de una alerta. El catálogo aporta 26
-consultas con verdad conocida:
+## Event and workload model
 
-- cinco consultas `ASK` cuya expectativa es `true`;
-- 21 consultas de incumplimiento cuya expectativa es `zero_rows`.
+One event is one SPARQL alert evaluation. The workload cycles deterministically
+through 26 queries with known outcomes:
 
-Los IDs se recorren circularmente. La llegada se programa a tasa constante y
-los eventos que ya han llegado se agrupan hasta `batch_size`. Nunca se ejecuta
-un evento antes de su instante programado. La cola central admite
-`queue_capacity_events`; un exceso queda registrado como pérdida, no se oculta.
-Los lotes aceptados se distribuyen round-robin entre los nodos activos.
+- five `ASK` queries expected to return `true`;
+- 21 violation queries expected to return zero rows.
 
-Cada punto ejecuta, en orden:
+Events are scheduled at a constant arrival rate and accepted events are grouped
+up to `batch_size`. No event runs before its scheduled arrival time. A bounded
+central queue holds at most `queue_capacity_events`; excess, timed-out, or
+failed events are recorded as lost instead of being silently discarded.
+Accepted batches are assigned round-robin to the active nodes.
 
-1. reconstrucción del grafo de referencia;
-2. generación determinista de usuarios, dispositivos, estados y contratos;
-3. cadena sintética de reglas `rdfs:subClassOf`;
-4. relleno determinista hasta el número exacto de triples objetivo;
-5. materialización con RDFS, OWL RL o RDFS+OWL RL;
-6. flujo de eventos;
-7. pérdida lógica del estado y reconstrucción completa para medir recuperación.
+Each measurement point performs these phases in order:
 
-La recuperación medida es la recuperación del estado de aplicación, no el
-reinicio del SO, de Docker ni de la Raspberry Pi.
+1. rebuild the v3.0.0 reference graph;
+2. generate deterministic users, devices, states, and contracts;
+3. add a deterministic synthetic `rdfs:subClassOf` rule chain;
+4. pad the graph to the exact requested triple count;
+5. materialize RDFS, OWL RL, or RDFS+OWL RL closure;
+6. execute the timed event stream;
+7. discard application state and rebuild it to measure recovery.
 
-## Variables independientes
+Recovery means reconstructing the semantic application state. It does not
+include rebooting the operating system, Docker daemon, container, or physical
+device.
 
-`configs/load-benchmark.toml` aplica un diseño one-factor-at-a-time:
+## Independent variables
 
-| Dimensión | Niveles |
-|---|---|
-| Eventos/s | 50, 200, 500, 1.000, 2.500 |
-| Usuarios sintéticos | 500, 1.000, 2.500, 5.000, 10.000 |
-| Triples objetivo por nodo | 25.000, 50.000, 100.000, 250.000, 500.000 |
-| Reglas sintéticas | 0, 25, 50, 100, 250 |
-| Nodos activos | 1, 3, 5 |
+`configs/load-benchmark.toml` defines a one-factor-at-a-time design. Only the
+named dimension changes within a series; the other factors remain at that
+series' baseline.
 
-Los demás factores permanecen en el baseline de cada serie. Hay tres
-repeticiones por punto y se recorren automáticamente los tres perfiles de
-razonamiento configurados. `configs/load-smoke.toml` mantiene la misma
-estructura con volúmenes mínimos.
+| Dimension | Default levels |
+| --- | --- |
+| Events per second | 50, 200, 500, 1,000, 2,500 |
+| Synthetic users | 500, 1,000, 2,500, 5,000, 10,000 |
+| Target triples per node | 25,000, 50,000, 100,000, 250,000, 500,000 |
+| Synthetic rules | 0, 25, 50, 100, 250 |
+| Active nodes | 1, 3, 5 |
 
-## Variables medidas
+The full configuration uses three repetitions per point and runs every
+reasoning profile enabled in `configs/benchmark.toml`. The smoke configuration
+in `configs/load-smoke.toml` preserves the protocol with small volumes and one
+repetition. A smoke result verifies integration only; it is not a statistically
+meaningful performance sample.
 
-- `latency_p50_ms`, `latency_p95_ms`, `latency_p99_ms`: desde la llegada
-  programada hasta la respuesta; incluyen cola, transporte y SPARQL.
-- `events_processed_per_second`: eventos completados divididos por el tiempo
-  real de la fase.
-- `events_lost` y `event_loss_percent`: rechazo por capacidad, timeout o error.
-- `inference_wall_ms`: camino crítico de materialización, es decir, el máximo
-  entre nodos preparados en paralelo.
-- `alert_precision`: `TP / (TP + FP)`.
-- `alert_accuracy`: `(TP + TN) / procesados`; también se guardan recall y F1.
-- `process_cpu_time_ms` y `cpu_percent_per_node_one_core`: CPU de proceso total
-  y normalización por pared, nodos y un núcleo.
-- `max_current_rss_kib`: mayor RSS observada al finalizar fases/lotes.
-  `max_peak_rss_kib` conserva además el máximo histórico del proceso.
-- `disk_read_bytes`, `disk_write_bytes`, `disk_io_bytes`: contadores de E/S de
-  `/proc/self/io`; en plataformas sin procfs se registran como cero.
-- `network_body_bytes`: bytes JSON de petición y respuesta. No incluye
-  cabeceras HTTP, TCP, IP ni enlace.
-- `recovery_wall_ms`: camino crítico para reconstruir el estado.
-- estado y fase de timeout, matriz de confusión, tiempos completos y métricas
-  por nodo.
+## Measured variables
 
-Los CSV detallados son `summary.csv`, `event-runs.csv` y `node-runs.csv`. El
-último permite analizar cloud, fog y cada edge por separado.
+| Metric | Definition |
+| --- | --- |
+| `latency_p50_ms`, `latency_p95_ms`, `latency_p99_ms` | Time from scheduled arrival to response, including queueing, transport, and SPARQL execution. |
+| `events_processed_per_second` | Completed events divided by the measured event-phase wall time. |
+| `events_lost`, `event_loss_percent` | Events rejected because of queue capacity, timeout, or execution error. |
+| `inference_wall_ms` | Critical-path materialization time: the maximum across nodes prepared in parallel. |
+| `alert_precision` | `TP / (TP + FP)`. |
+| `alert_accuracy` | `(TP + TN) / processed`; recall and F1 are also stored. |
+| `process_cpu_time_ms` | Aggregate process CPU time observed during the run. |
+| `cpu_percent_per_node_one_core` | CPU time normalized by wall time, node count, and one logical core. |
+| `max_current_rss_kib` | Largest current RSS sampled at phase or batch boundaries. |
+| `max_peak_rss_kib` | Maximum process high-water mark reported by the platform. |
+| `disk_read_bytes`, `disk_write_bytes`, `disk_io_bytes` | Process I/O counters from `/proc/self/io`; zero when the platform cannot expose them. |
+| `network_body_bytes` | JSON request and response body bytes; excludes HTTP headers and lower network layers. |
+| `recovery_wall_ms` | Critical-path time to reconstruct application state. |
 
-## Timeouts
+The output also records the timeout phase, confusion matrix, complete phase
+timings, and per-node metrics.
 
-El TOML define tres límites explícitos:
+## Timeout semantics
 
-- `request_timeout_seconds`: preparación y petición HTTP individual;
-- `point_timeout_seconds`: fase completa de eventos;
-- `recovery_timeout_seconds`: reconstrucción.
+Three independent limits are configured in the load TOML file:
 
-Un timeout no elimina la observación: marca el estado, conserva la fase y el
-límite y contabiliza los eventos no completados como perdidos. En local se usa
-el deadline del coordinador. Los workers distribuidos aplican además un timer
-interno un segundo antes del timeout HTTP: interrumpen el razonamiento Python,
-liberan el lock y permanecen disponibles para el siguiente perfil.
+- `request_timeout_seconds`: one prepare or HTTP request;
+- `point_timeout_seconds`: the complete event phase for one point;
+- `recovery_timeout_seconds`: state reconstruction.
 
-## Preparación de los workers
+A timeout remains an observation. The row records its status, phase, and limit,
+and unfinished events count as lost. The local coordinator enforces the point
+deadline. Distributed workers also arm an internal timeout one second before
+the HTTP deadline so that interrupted Python reasoning releases its lock and
+the worker remains usable for the next profile.
 
-El benchmark requiere el protocolo de worker 4, que añade reglas, triples
-objetivo, relleno neutral/semántico, recuperación, telemetría y cancelación
-interna de fases. Después de
-actualizar el proyecto hay que
-reconstruir Docker y volver a desplegar los nodos físicos:
+## Prerequisites
+
+Complete the common installation and validation first:
 
 ```bash
-docker compose down
-docker compose up -d --build
+python3 tools/bootstrap.py --with-docker
+.venv/bin/continuum-bench doctor --docker
+.venv/bin/continuum-bench validate
+```
 
+For Docker, start or rebuild the configured topology:
+
+```bash
+.venv/bin/continuum-bench topology down --name docker
+.venv/bin/continuum-bench topology up --name docker
+.venv/bin/continuum-bench topology status --name docker
+```
+
+For physical nodes, deploy the same revision and verify every endpoint:
+
+```bash
 .venv/bin/continuum-bench physical stop --ssh-user pi
 .venv/bin/continuum-bench physical deploy --ssh-user pi
 .venv/bin/continuum-bench physical start --ssh-user pi
 .venv/bin/continuum-bench physical status --ssh-user pi
 ```
 
-## Ejecución
+Passwordless SSH is strongly recommended. See
+[Physical continuum deployment](PHYSICAL_CONTINUUM.md).
 
-Smoke independiente por arquitectura:
+## Smoke runs
+
+Run each architecture independently:
 
 ```bash
 .venv/bin/continuum-bench load monolith \
@@ -135,7 +151,9 @@ Smoke independiente por arquitectura:
   --output-dir outputs/load-smoke
 ```
 
-Experimento completo:
+## Full runs
+
+Run one architecture at a time to avoid resource contention:
 
 ```bash
 .venv/bin/continuum-bench load monolith
@@ -143,48 +161,77 @@ Experimento completo:
 .venv/bin/continuum-bench load physical
 ```
 
-Para ejecutar una serie o puntos concretos sin editar el TOML:
-
-```bash
-.venv/bin/continuum-bench load monolith --dimension target_triples
-.venv/bin/continuum-bench load docker --dimension events_per_second
-.venv/bin/continuum-bench load physical --profile nodes-5
-```
-
-`--dimension` y `--profile` son repetibles y su combinación aplica una
-intersección.
-
-Si Docker y el cluster físico están activos simultáneamente:
+If the Docker and physical topologies are already healthy, the following
+command executes all three in coordinator-defined order:
 
 ```bash
 .venv/bin/continuum-bench load all
 ```
 
-## Figuras y comparación
+Filter a full design without editing TOML:
+
+```bash
+# One complete independent-variable series
+.venv/bin/continuum-bench load monolith --dimension target_triples
+.venv/bin/continuum-bench load docker --dimension events_per_second
+
+# One or more named points
+.venv/bin/continuum-bench load physical --profile nodes-5
+.venv/bin/continuum-bench load physical \
+  --profile triples-100000 --profile triples-250000
+```
+
+`--dimension` and `--profile` are repeatable. When both are supplied, only
+profiles in their intersection run.
+
+## Output files
+
+Each architecture directory contains:
+
+- `summary.csv`: one row per profile, reasoner, and repetition;
+- `event-runs.csv`: event-level status, latency, and correctness;
+- `node-runs.csv`: node-level phase timing and resource metrics;
+- metadata and generated figures where applicable.
+
+Keep all CSV and metadata files with any published figure. The node table is
+required to distinguish cloud, fog, mist, edge, and IoT costs.
+
+## Generate figures
 
 ```bash
 .venv/bin/continuum-bench load plot
 .venv/bin/continuum-bench load plot --show
 ```
 
-Se generan PNG a 300 dpi, PDF y SVG para cada dimensión:
+The report exports 300 dpi PNG plus vector PDF and SVG for every dimension. It
+includes:
 
-- rendimiento: p95 con banda p50–p99, throughput, pérdidas, inferencia, tiempo
-  completo y porcentaje de corridas con timeout;
-- recursos: exactitud, CPU, RSS, disco, red y recuperación;
-- ratios respecto al monolito: speedup de latencia, ganancia de throughput,
-  speedup de inferencia/recuperación, eficiencia de scale-out y diferencia de
-  pérdidas.
-- `load-data-coverage`: matriz de repeticiones completas por arquitectura,
-  razonador y perfil; una comparación de rendimiento solo es publicable cuando
-  ambos puntos tienen todas sus repeticiones.
-- `load-reference-overview`: resumen directamente comparable de latencia a
-  200 eventos/s, pico de throughput, pérdida a 2.500 eventos/s y RSS.
+- p95 latency with a p50-p99 band, throughput, loss, inference time, total
+  time, and timeout rate;
+- alert correctness, CPU, RSS, disk, network, and recovery;
+- latency, throughput, inference, and recovery ratios against the monolith;
+- scale-out efficiency and event-loss differences;
+- data-coverage matrices by architecture, reasoner, profile, and repetition;
+- a reference overview at 200 events/s and at peak offered load.
 
-Los puntos completos muestran mediana y rango mínimo–máximo. Un marcador hueco
-identifica un punto parcial y los ceros derivados de preparaciones fallidas se
-excluyen de inferencia, recuperación y recursos. Las tablas agregadas incluyen
-mediana, mínimo y máximo. Estos rangos son
-descriptivos, no intervalos de confianza. Para publicación conviene fijar el
-hardware, aislar carga de fondo y aumentar `repetitions` si se van a aplicar
-pruebas estadísticas.
+Complete points show the median and minimum-maximum range. Hollow markers
+identify incomplete points. Zeros caused by failed preparation are excluded
+from inference, recovery, and resource aggregates. These ranges are descriptive,
+not confidence intervals.
+
+## Interpretation and publication limits
+
+- Compare only matching ontology revision, query catalog, seed, reasoner,
+  profile, and completed repetition count.
+- Read latency and throughput together with event loss and timeout coverage.
+- A distributed system may finish faster while consuming more aggregate CPU,
+  memory, and network capacity.
+- The replicated test evaluates query distribution, not semantic authority
+  partitioning.
+- Increase repetitions and predefine a statistical analysis before using the
+  results to support a scientific claim.
+- Record hardware, operating system, container limits, background load,
+  thermal state, and dependency versions with the final dataset.
+
+See [Scientific validity and limitations](SCIENTIFIC_VALIDITY.md) for the
+claim boundary.

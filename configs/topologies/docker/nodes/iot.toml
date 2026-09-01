@@ -1,0 +1,4 @@
+[layer]
+tier = "iot"
+
+# Add one or more [[nodes]] tables to enable the IoT layer.

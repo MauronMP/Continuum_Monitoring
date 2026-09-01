@@ -1,0 +1,443 @@
+id,qname,label,kind,module,comment,sources,punned
+http://example.org/smartcity#AHP_consistency_threshold,ex:AHP_consistency_threshold,AHP consistency threshold,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#AIModel,ex:AIModel,AI Model,class,orchestration,Stress prediction model. Exists at different quality levels per continuum layer.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#AccelerometerSensor,ex:AccelerometerSensor,Accelerometer Sensor,class,wellbeing,Determines user mobility and physical activity.,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#AcceptanceProfile,ex:AcceptanceProfile,Acceptance Profile,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#AdaptabilityLevel,ex:AdaptabilityLevel,Adaptability Level,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#AdaptationAction,ex:AdaptationAction,Adaptation Action,class,orchestration,Auditable action produced by an EvaluationState.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#AnonymousIdentifier,ex:AnonymousIdentifier,Anonymous Identifier,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#Artifact,ex:Artifact,Artifact,class,governance,Versionable project artifact.,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#AuthorityScope,ex:AuthorityScope,Authority scope,class,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#AuthorizationDecision,ex:AuthorizationDecision,Authorization Decision,class,governance,"Effective authorization obtained from the intersection of consent record, contract, zone and hard restrictions.","[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#AuthorizationOutcome,ex:AuthorizationOutcome,Authorization Outcome,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#AvailabilityLevel,ex:AvailabilityLevel,Availability Level,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#BatteryLevel,ex:BatteryLevel,Battery Level,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#BufferRecord,ex:BufferRecord,Buffer Record,class,orchestration,Temporary retained data record governed by authorization and storage policies.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#CityArea,ex:CityArea,City Area,class,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#CloudNode,ex:CloudNode,Cloud Node,class,topology,Cloud continuum node for global processing. Selection is conditional on authorization and policies; it is not intrinsically preferred.,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#CommunicationLevel,ex:CommunicationLevel,Communication Level,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#Community,ex:Community,Community,class,topology,"Group of users with similar mobility patterns and routines (neighbourhood, floor, hospital ward).","[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#ComplianceMetric,ex:ComplianceMetric,Compliance Metric,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#ComputationalNode,ex:ComputationalNode,Computational Node,class,topology,Continuum architecture node capable of hosting models and processing data.,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#ConflictResolutionStrategy,ex:ConflictResolutionStrategy,Conflict Resolution Strategy,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#ConsentRange,ex:ConsentRange,Consent Range,class,governance,"Maximum processing scope declared by consent/contract. Includes LocalOnly, CommunityAgg, GlobalAgg and Denied/Revoked. Effective authorization is computed independently.","[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#ConsentRecord,ex:ConsentRecord,Consent Record,class,governance,User-declared consent decision independent from the semantic contract.,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#D_delegation_max,ex:D_delegation_max,maximum delegation depth,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#DataCategory,ex:DataCategory,Data Category,class,governance,"Semantic category of information governed by consent, privacy and transmission policies.","[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#DataContext,ex:DataContext,Data Context,class,observability,Operational context associated with data or a processing/transfer event.,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#DataCriticality,ex:DataCriticality,Data Criticality,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#DataSensitivity,ex:DataSensitivity,Data Sensitivity,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#DecisionAlternative,ex:DecisionAlternative,Decision Alternative,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#DecisionMethod,ex:DecisionMethod,Decision Method,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#DegradationEvent,ex:DegradationEvent,Degradation Event,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#DelegationEvent,ex:DelegationEvent,Delegation Event,class,orchestration,"Reified temporal delegation that records delegator node, delegate node, cause, validity interval and recovery condition.","[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#DeploymentFragment,ex:DeploymentFragment,Deployment fragment,class,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#DeviceConnectionStatus,ex:DeviceConnectionStatus,Device Connection Status,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#DeviceState,ex:DeviceState,Device State,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#DifferentialPrivacyMechanism,ex:DifferentialPrivacyMechanism,Differential Privacy Mechanism,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#DirectIdentifier,ex:DirectIdentifier,Direct Identifier,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#DistanceLevel,ex:DistanceLevel,Distance Level,class,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#EDASensor,ex:EDASensor,EDA Sensor,class,wellbeing,Electrodermal activity sensor.,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#E_device_max,ex:E_device_max,device energy threshold,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#EdgeNode,ex:EdgeNode,Edge Node,class,topology,"Edge continuum node. It is external to the local scope defined for raw physiological observations. Elasticity is a node capability, not a class invariant.","[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#EncryptionMechanism,ex:EncryptionMechanism,Encryption Mechanism,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#EnergyLevel,ex:EnergyLevel,Energy Level,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#EvaluationState,ex:EvaluationState,Evaluation State,class,orchestration,Derived by reasoning over NodeState + UserState + NodeUserRelation.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#FederatedLearningSession,ex:FederatedLearningSession,Federated Learning Session,class,federation,Event of parameter/model transfer between continuum layers (HFL).,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#FogNode,ex:FogNode,Fog Node,class,topology,Fog continuum node for community/zone processing. Elasticity depends on deployment capability and is not fixed by the class.,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#FunctionalRequirement,ex:FunctionalRequirement,Functional Requirement,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#HeartRateSensor,ex:HeartRateSensor,Heart Rate Sensor,class,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#Identifier,ex:Identifier,Identifier,class,governance,"Identifier that may be direct, pseudonymous or anonymous.","[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#MAPESymptom,ex:MAPESymptom,MAPE-K Symptom,class,foundation,Symptom detected in the MAPE-K Monitor/Analyse phases and recorded for auditability.,"[""ontology/modules/foundation.ttl""]",False
+http://example.org/smartcity#MechanismSpecification,ex:MechanismSpecification,Mechanism Specification,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#MigrationCostLevel,ex:MigrationCostLevel,Migration Cost Level,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#MigrationEvent,ex:MigrationEvent,Migration Event,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#MigrationTimeLevel,ex:MigrationTimeLevel,Migration Time Level,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#MistNode,ex:MistNode,Mist Node,class,topology,"Closest node to the user. Minimal capacity, very low latency.","[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#MobileDevice,ex:MobileDevice,Mobile Device,class,topology,User smartphone acting as a personal Mist node. It belongs to the local processing scope when associated with the user.,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#MobilityLevel,ex:MobilityLevel,Mobility Level,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#ModelDegradationCause,ex:ModelDegradationCause,Model Degradation Cause,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#ModelGradientUpdate,ex:ModelGradientUpdate,Model Gradient Update,class,federation,Federated learning update that may leave a mobile device only after anonymization and noise addition.,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#ModelSelectionAction,ex:ModelSelectionAction,Model Selection Action,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#ModelTier,ex:ModelTier,Model Tier,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#N_agents,ex:N_agents,concurrent agent target,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#NodeState,ex:NodeState,Node State,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#NodeUserRelation,ex:NodeUserRelation,Node-User Relation,class,topology,Captures distance and connectivity between a node and a user at a given instant.,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#NonFunctionalRequirement,ex:NonFunctionalRequirement,Non-functional Requirement,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#NonUser,ex:NonUser,Non-User,class,foundation,Person in the environment without a wearable or active participation.,"[""ontology/modules/foundation.ttl""]",False
+http://example.org/smartcity#OffloadingEvent,ex:OffloadingEvent,Offloading Event,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#OntologyArtifact,ex:OntologyArtifact,Ontology Artifact,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#OperationalStatus,ex:OperationalStatus,Operational Status,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#PairwiseComparison,ex:PairwiseComparison,Pairwise Comparison,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#ParametrizedData,ex:ParametrizedData,Parametrized Data,class,orchestration,Pre-computed and aggregated data. Raw physiological data never leaves the device.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#PayloadType,ex:PayloadType,Payload Type,class,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#PerformanceLevel,ex:PerformanceLevel,Performance Level,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#Permission,ex:Permission,Permission,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#PersonStatus,ex:PersonStatus,Person Status,class,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#PhysiologicalObservation,ex:PhysiologicalObservation,Physiological Observation,class,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#PhysiologicalParametrizedData,ex:PhysiologicalParametrizedData,Physiological Parametrized Data,class,wellbeing,"EDA, HR, SpO2, etc. Sent during the day or at night when conditions allow.","[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#PhysiologicalSensor,ex:PhysiologicalSensor,Physiological Sensor,class,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#Policy,ex:Policy,Policy,class,governance,"Normative governance rule from POLICIES-REV-01. Policies are specifications, not execution mechanisms.","[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#PolicyArtifact,ex:PolicyArtifact,Policy Artifact,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#PolicyCategory,ex:PolicyCategory,Policy Category,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#PolicyCategoryRelation,ex:PolicyCategoryRelation,Policy Category Relation,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#PolicyRelationType,ex:PolicyRelationType,Policy Relation Type,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#PolicyType,ex:PolicyType,Policy Type,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#PopulationDensity,ex:PopulationDensity,Population Density,class,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#PrivacyBudgetAccount,ex:PrivacyBudgetAccount,Privacy Budget Account,class,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#PrivacyClass,ex:PrivacyClass,Privacy class,class,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#PrivacyMechanism,ex:PrivacyMechanism,Privacy Mechanism,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#ProcessingLevel,ex:ProcessingLevel,Processing Level,class,foundation,,"[""ontology/modules/foundation.ttl""]",False
+http://example.org/smartcity#ProcessingPurpose,ex:ProcessingPurpose,Processing Purpose,class,governance,"Purpose for which data, model parameters or predictions are processed.","[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#ProcessingScope,ex:ProcessingScope,Processing Scope,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#ProfitabilityLevel,ex:ProfitabilityLevel,Profitability Level,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#PseudonymousIdentifier,ex:PseudonymousIdentifier,Pseudonymous Identifier,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#QueryCatalog,ex:QueryCatalog,Query Catalog,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#QuerySpecification,ex:QuerySpecification,Query Specification,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#QueryType,ex:QueryType,Query Type,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#RecoveryCondition,ex:RecoveryCondition,Recovery Condition,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#ReplicationEvent,ex:ReplicationEvent,Replication Event,class,orchestration,Controlled and idempotent replication or synchronization event.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#Requirement,ex:Requirement,Requirement,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#RequirementsArtifact,ex:RequirementsArtifact,Requirements Artifact,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#ResidualCapacity,ex:ResidualCapacity,Residual Capacity,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#RestrictedZone,ex:RestrictedZone,Restricted Zone,class,topology,"Geographic zone with hard restrictions on external processing/transfer. Raw physiological observations remain on wearable/mobile or authorised personal Mist; Edge, Fog and Cloud are external to local scope.","[""ontology/modules/topology.ttl""]",True
+http://example.org/smartcity#RetentionEvent,ex:RetentionEvent,Retention Event,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#Role,ex:Role,Access Role,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#RollbackEvent,ex:RollbackEvent,Rollback Event,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#RuralZone,ex:RuralZone,Rural Zone,class,topology,Few nodes. Predominance of local retention and controlled transmission.,"[""ontology/modules/topology.ttl""]",True
+http://example.org/smartcity#ScalingEvent,ex:ScalingEvent,Scaling Event,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#Scenario,ex:Scenario,Scenario,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#ScenarioArtifact,ex:ScenarioArtifact,Scenario Artifact,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#SecurityMechanism,ex:SecurityMechanism,Security Mechanism,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#SemanticContract,ex:SemanticContract,Semantic Contract,class,governance,"Temporal agreement binding user, processing purpose(s), consent range and governing policies. It is independent from the user-declared ConsentRecord.","[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#SemanticNodeProfile,ex:SemanticNodeProfile,Semantic node profile,class,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#Service,ex:Service,Service,class,orchestration,Stress prediction or any other continuum service.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#ServiceState,ex:ServiceState,Service State,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#SleepObservation,ex:SleepObservation,Sleep Observation,class,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#SleepParametrizedData,ex:SleepParametrizedData,Sleep Parametrized Data,class,wellbeing,Sleep quality and phase durations. Generated when the user wakes up.,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#SleepSensor,ex:SleepSensor,Sleep Sensor,class,wellbeing,"Captures total duration, phases (REM, deep, light) and sleep quality.","[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#SmartBand,ex:SmartBand,Smart Band,class,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#SmartRing,ex:SmartRing,Smart Ring,class,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#SmartWatch,ex:SmartWatch,Smart Watch,class,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#SpO2Sensor,ex:SpO2Sensor,SpO2 Sensor,class,wellbeing,Blood oxygen saturation sensor.,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#StandardSpecification,ex:StandardSpecification,Standard Specification,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#State,ex:State,State,class,observability,Dynamic state of an entity; temporal and distinguishable from instantaneous observations.,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#StressLevel,ex:StressLevel,Stress Level,class,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#StressObservation,ex:StressObservation,Stress Observation,class,wellbeing,Output of the stress prediction model.,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#SynchronizationEvent,ex:SynchronizationEvent,Synchronization Event,class,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#T_decision_max,ex:T_decision_max,decision threshold,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#T_inference_local,ex:T_inference_local,local inference latency threshold (ms),datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#T_migration_max,ex:T_migration_max,migration interruption threshold,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#T_node_join,ex:T_node_join,node join threshold,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#T_reselection_max,ex:T_reselection_max,reselection threshold,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#T_sparql_monitor,ex:T_sparql_monitor,SPARQL monitoring threshold,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#TemperatureSensor,ex:TemperatureSensor,Skin Temperature Sensor,class,wellbeing,Skin temperature — used as stress indicator.,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#TemporalEntity,ex:TemporalEntity,Temporal Entity,class,observability,"Entity with an explicit validity interval. validTo denotes effective closure, never merely planned expiry.","[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#TrafficWindow,ex:TrafficWindow,Traffic Window,class,observability,Time interval with high demand (morning: wake-up; night: physiological data upload).,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#TransferEvent,ex:TransferEvent,Transfer Event,class,orchestration,"Auditable transfer of data, model updates or other payloads.","[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#TrustAssessment,ex:TrustAssessment,Trust Assessment,class,observability,Versioned assessment explaining a trust score.,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#TrustEvidence,ex:TrustEvidence,Trust Evidence,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#UrbanEnvironment,ex:UrbanEnvironment,Urban Environment,class,topology,Geographic and density context that conditions system connectivity and behaviour.,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#UrbanZone,ex:UrbanZone,Urban Zone,class,topology,High node and user density. More communication options.,"[""ontology/modules/topology.ttl""]",True
+http://example.org/smartcity#User,ex:User,User,class,foundation,System participant with a wearable device.,"[""ontology/modules/foundation.ttl""]",False
+http://example.org/smartcity#UserState,ex:UserState,User State,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#ValidationCampaign,ex:ValidationCampaign,Validation Campaign,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#ValidationRequirement,ex:ValidationRequirement,Validation / Reproducibility Requirement,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#ValidationResult,ex:ValidationResult,Validation Result,class,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#Wearable,ex:Wearable,Wearable,class,wellbeing,"Personal IoT device (smartwatch, smart ring, smart band).","[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#WorkloadLevel,ex:WorkloadLevel,Workload Level,class,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#ZoneType,ex:ZoneType,Zone type,class,topology,"A zone classification referenced by policies. UrbanZone, RuralZone and RestrictedZone are both OWL classes and named ZoneType individuals; OWL 2 DL treats their class and individual interpretations separately.","[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#actionOriginNode,ex:actionOriginNode,action origin node,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#actionTargetNode,ex:actionTargetNode,action target node,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#affectsModel,ex:affectsModel,affects model,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#affectsService,ex:affectsService,affects service,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#aggregatesData,ex:aggregatesData,aggregates data,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#alternativeModelTier,ex:alternativeModelTier,alternative model tier,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#appliedMechanism,ex:appliedMechanism,applied mechanism,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#appliedPolicy,ex:appliedPolicy,applied policy,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#appliedSecurityMechanism,ex:appliedSecurityMechanism,applied security mechanism,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#appliesInZone,ex:appliesInZone,applies in zone,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#appliesPolicy,ex:appliesPolicy,applies policy,object_property,orchestration,Deprecated in v3.0.0; use ex:appliedPolicy. Use appliedPolicy,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#appliesTo,ex:appliesTo,applies to,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#appliesToZoneType,ex:appliesToZoneType,applies to zone type,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#artifactIdentifier,ex:artifactIdentifier,artifact identifier,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#artifactStatus,ex:artifactStatus,artifact status,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#artifactVersion,ex:artifactVersion,artifact version,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#auditsContract,ex:auditsContract,audits contract,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#authoritativeFor,ex:authoritativeFor,authoritative for,object_property,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#authorizationReason,ex:authorizationReason,authorization reason,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#authorizedByEvaluation,ex:authorizedByEvaluation,authorized by evaluation,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#basedOnConsentRecord,ex:basedOnConsentRecord,based on consent record,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#basedOnContract,ex:basedOnContract,based on contract,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#basedOnZone,ex:basedOnZone,based on zone,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#belongsToCommunity,ex:belongsToCommunity,belongs to community,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#belongsToPolicyCategory,ex:belongsToPolicyCategory,belongs to policy category,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#belongsToQueryCatalog,ex:belongsToQueryCatalog,belongs to query catalog,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#budgetForContract,ex:budgetForContract,budget for contract,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#budgetForPurpose,ex:budgetForPurpose,budget for purpose,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#carriesData,ex:carriesData,carries data,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#categoryCode,ex:categoryCode,category code,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#conditionExpression,ex:conditionExpression,condition expression,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#configurationStatus,ex:configurationStatus,configuration status,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#connectsTo,ex:connectsTo,connects to,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#consentSubject,ex:consentSubject,consent subject,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#containsIndividualizedGradients,ex:containsIndividualizedGradients,contains individualized gradients,datatype_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#containsPersistentIdentifier,ex:containsPersistentIdentifier,contains persistent identifier,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#containsPersonalData,ex:containsPersonalData,contains personal data,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#contextDeviceState,ex:contextDeviceState,context device state,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#contextNodeState,ex:contextNodeState,context node state,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#contextProcessingLevel,ex:contextProcessingLevel,context processing level,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#contextPurpose,ex:contextPurpose,context purpose,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#contextZone,ex:contextZone,context zone,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#continuumLevel,ex:continuumLevel,continuum level,datatype_property,topology,Physical/logical continuum level only; not a preference or quality ranking.,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#contractSubject,ex:contractSubject,contract subject,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#coversArea,ex:coversArea,covers area,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#criterionA,ex:criterionA,criterion A,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#criterionB,ex:criterionB,criterion B,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#definedInArtifact,ex:definedInArtifact,defined in artifact,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#delegatedBy,ex:delegatedBy,delegated by,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#delegatesTo,ex:delegatesTo,delegates requests to,object_property,orchestration,"Used when a node is saturated or disconnected. For temporal delegation, use an ex:DelegationEvent with ex:validFrom/ex:validTo and ex:delegatedBy.","[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#delegationDepth,ex:delegationDepth,delegation depth,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#derivedFrom,ex:derivedFrom,derived from,object_property,orchestration,SOSA observation that originated this state and provides its timestamp.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#eligibilityReason,ex:eligibilityReason,eligibility reason,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#estimatedPredictionError,ex:estimatedPredictionError,estimated prediction error,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#evaluatesNode,ex:evaluatesNode,evaluates node,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#evaluatesService,ex:evaluatesService,evaluates service,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#evaluationOrder,ex:evaluationOrder,evaluation order,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#evaluationPurpose,ex:evaluationPurpose,evaluation purpose,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#evaluationUser,ex:evaluationUser,evaluation user,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#evaluationZone,ex:evaluationZone,evaluation zone,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#evidenceContribution,ex:evidenceContribution,evidence contribution,datatype_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#evidenceFactor,ex:evidenceFactor,evidence factor,datatype_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#expiresOnRecoveryOf,ex:expiresOnRecoveryOf,expires on recovery of,object_property,orchestration,Use semantic RecoveryCondition together with validTo/plannedExpiry.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#generatedBy,ex:generatedBy,generated by,object_property,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#governedBy,ex:governedBy,governed by,object_property,governance,"Links users, nodes, services, zones or sessions to the applicable policy according to location and processing context.","[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#graphIRI,ex:graphIRI,graph iri,datatype_property,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#hasAHPScore,ex:hasAHPScore,has AHP / multicriteria score,datatype_property,orchestration,Score of a specific candidate alternative. For AHP it is the AHP result; for other methods the DecisionMethod identifies the scoring semantics.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasActiveConsentRange,ex:hasActiveConsentRange,has active consent range,object_property,governance,Current user-declared range resolved from the active ConsentRecord. It is intentionally independent from the SemanticContract so inconsistencies can be detected.,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasAdaptability,ex:hasAdaptability,has adaptability,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasAnonymizationApplied,ex:hasAnonymizationApplied,has anonymization applied,datatype_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#hasAuthorizationDecision,ex:hasAuthorizationDecision,has authorization decision,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasAuthorizationOutcome,ex:hasAuthorizationOutcome,has authorization outcome,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasAuthorizedDataCategory,ex:hasAuthorizedDataCategory,authorizes data category,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasAvailability,ex:hasAvailability,has availability,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasBatteryLevel,ex:hasBatteryLevel,has battery level,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasCommunication,ex:hasCommunication,has communication level,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasComplianceMetric,ex:hasComplianceMetric,has compliance metric,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasConnectionStatus,ex:hasConnectionStatus,has connection status,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasConsentRange,ex:hasConsentRange,has consent range,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasConsentRecord,ex:hasConsentRecord,has consent record,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasConsistencyRatio,ex:hasConsistencyRatio,has consistency ratio,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasConsistencyThreshold,ex:hasConsistencyThreshold,has consistency threshold,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasDataCategory,ex:hasDataCategory,has data category,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasDataContext,ex:hasDataContext,has data context,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasDataCriticality,ex:hasDataCriticality,has data criticality,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasDataSensitivity,ex:hasDataSensitivity,has data sensitivity,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasDecisionAlternative,ex:hasDecisionAlternative,has decision alternative,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasDecisionMethod,ex:hasDecisionMethod,has decision method,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasDegradationCause,ex:hasDegradationCause,has degradation cause,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasDelegation,ex:hasDelegation,has delegation,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasDetectedSymptom,ex:hasDetectedSymptom,has detected symptom,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasDeviceState,ex:hasDeviceState,has device state,object_property,foundation,,"[""ontology/modules/foundation.ttl""]",False
+http://example.org/smartcity#hasDistance,ex:hasDistance,has distance,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#hasEffectiveConsentRange,ex:hasEffectiveConsentRange,has effective consent range,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasElasticity,ex:hasElasticity,has elasticity,datatype_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#hasEnergyLevel,ex:hasEnergyLevel,has energy level,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasEvaluationTicketID,ex:hasEvaluationTicketID,has evaluation ticket ID,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasGeometry,ex:hasGeometry,has geometry,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#hasIdentifier,ex:hasIdentifier,has identifier,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasLatencyWeight,ex:hasLatencyWeight,has latency weight,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasMigrationCost,ex:hasMigrationCost,has migration cost,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasMigrationTime,ex:hasMigrationTime,has migration time,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasMobileDevice,ex:hasMobileDevice,has mobile device,object_property,foundation,,"[""ontology/modules/foundation.ttl""]",False
+http://example.org/smartcity#hasMobility,ex:hasMobility,has mobility,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasModelQualityWeight,ex:hasModelQualityWeight,has model quality weight,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasModelTier,ex:hasModelTier,has model tier,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasNeighborNode,ex:hasNeighborNode,has neighbor node,object_property,topology,Adjacent node to which requests can be delegated.,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#hasNodeState,ex:hasNodeState,has node state,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasNoiseApplied,ex:hasNoiseApplied,has noise applied,datatype_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#hasOperationalStatus,ex:hasOperationalStatus,has operational status,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasPairwiseComparison,ex:hasPairwiseComparison,has pairwise comparison,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasPayloadType,ex:hasPayloadType,has payload type,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#hasPerformance,ex:hasPerformance,has performance,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasPermission,ex:hasPermission,has permission,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasPersonStatus,ex:hasPersonStatus,has person status,object_property,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#hasPolicyAction,ex:hasPolicyAction,has policy action,datatype_property,governance,Policy action is now described by the normative policy statement and linked mechanisms/actions; retained only for compatibility.,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasPolicyRelationType,ex:hasPolicyRelationType,has policy relation type,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasPolicyStatement,ex:hasPolicyStatement,has policy statement,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasPolicyType,ex:hasPolicyType,has policy type,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasPopulationDensity,ex:hasPopulationDensity,has population density,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#hasPredictedStressLevel,ex:hasPredictedStressLevel,has predicted stress level,object_property,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#hasPrivacyBudget,ex:hasPrivacyBudget,has privacy budget,datatype_property,federation,Differential privacy epsilon value for the FL session.,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#hasPrivacyBudgetAccount,ex:hasPrivacyBudgetAccount,has privacy budget account,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#hasPrivacyClass,ex:hasPrivacyClass,has privacy class,object_property,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#hasPrivacyMechanism,ex:hasPrivacyMechanism,has privacy mechanism,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#hasPrivacyWeight,ex:hasPrivacyWeight,has privacy weight,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasProcessingLevel,ex:hasProcessingLevel,has processing level,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasProcessingPurpose,ex:hasProcessingPurpose,has processing purpose,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasProcessingScope,ex:hasProcessingScope,has processing scope,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasProfitability,ex:hasProfitability,has profitability,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasQueryType,ex:hasQueryType,has query type,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasRecoveryCondition,ex:hasRecoveryCondition,has recovery condition,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasReplicationEvent,ex:hasReplicationEvent,has replication event,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasResidualCapacity,ex:hasResidualCapacity,has residual capacity,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasRole,ex:hasRole,has role,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasSelectionJustification,ex:hasSelectionJustification,has selection justification,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasSemanticContract,ex:hasSemanticContract,has semantic contract,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasServiceState,ex:hasServiceState,has service state,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasTrustAssessment,ex:hasTrustAssessment,has trust assessment,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasTrustEvidence,ex:hasTrustEvidence,has trust evidence,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasTrustScore,ex:hasTrustScore,has trust score,datatype_property,observability,"Normalized historical reliability score [0,1]. A v3-compliant scientific use should also reference TrustAssessment with rule version and historical window.","[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasTrustWeight,ex:hasTrustWeight,has external trust weight,datatype_property,orchestration,External trust criterion used to filter/order already eligible alternatives. It is not part of AHP weight normalization.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hasUserState,ex:hasUserState,has user state,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hasValidationResult,ex:hasValidationResult,has validation result,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#hasWearable,ex:hasWearable,has wearable,object_property,wellbeing,,"[""ontology/domains/wellbeing/schema.ttl""]",False
+http://example.org/smartcity#hasWorkload,ex:hasWorkload,has workload,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#hostedAt,ex:hostedAt,hosted at,object_property,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#hostedOnNode,ex:hostedOnNode,hosted on node,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hostsModel,ex:hostsModel,hosts model,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#hostsService,ex:hostsService,hosts service,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#idempotencyKey,ex:idempotencyKey,idempotency key,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#identifierScope,ex:identifierScope,identifier scope,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#identifierValue,ex:identifierValue,identifier value,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#involvedNode,ex:involvedNode,involved node,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#isEligible,ex:isEligible,is eligible,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#isPreferredNode,ex:isPreferredNode,is preferred node,datatype_property,topology,Historical preferred node for this user based on zone and load.,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#isRedundant,ex:isRedundant,is redundant,datatype_property,federation,Redundant or repetitive data — candidate for elimination to reduce traffic.,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#lastUpdated,ex:lastUpdated,last updated,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#legacyDecisionScore,ex:legacyDecisionScore,legacy decision score,datatype_property,orchestration,Legacy single winning score retained for provenance. It is not equivalent to v3 per-alternative scores.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#locatedIn,ex:locatedIn,located in,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#locatedInZone,ex:locatedInZone,located in zone,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#mechanismDescription,ex:mechanismDescription,mechanism description,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#mechanismIdentifier,ex:mechanismIdentifier,mechanism identifier,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#migrationNote,ex:migrationNote,migration note,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#migrationStatus,ex:migrationStatus,migration status,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#modelLineageStatus,ex:modelLineageStatus,model lineage status,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#modelVersion,ex:modelVersion,model version,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#noiseLevel,ex:noiseLevel,noise level,datatype_property,federation,Magnitude of noise injected into gradients or model parameters before transfer.,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#observedModelQuality,ex:observedModelQuality,observed model quality,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#ontologyDigest,ex:ontologyDigest,ontology digest,datatype_property,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#originatesFromDevice,ex:originatesFromDevice,originates from device,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#pairwiseValue,ex:pairwiseValue,pairwise comparison value,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#parametrizedDataReady,ex:parametrizedDataReady,parametrized data ready,datatype_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#parentDelegation,ex:parentDelegation,parent delegation,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#partOfScenario,ex:partOfScenario,part of scenario,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#plannedExpiry,ex:plannedExpiry,planned expiry,datatype_property,orchestration,Planned deadline distinct from effective closure validTo.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#policyArtifactUsed,ex:policyArtifactUsed,policy artifact used,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#policyIdentifier,ex:policyIdentifier,policy identifier,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#policyVersion,ex:policyVersion,policy version,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#predictionConfidence,ex:predictionConfidence,prediction confidence,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#privacyBudgetConsumed,ex:privacyBudgetConsumed,privacy budget consumed,datatype_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#privacyBudgetMaximum,ex:privacyBudgetMaximum,privacy budget maximum,datatype_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#privacyBudgetRemaining,ex:privacyBudgetRemaining,privacy budget remaining,datatype_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#protectsAtRest,ex:protectsAtRest,protects at rest,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#protectsInTransit,ex:protectsInTransit,protects in transit,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#queryIdentifier,ex:queryIdentifier,query identifier,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#queryInterpretation,ex:queryInterpretation,query interpretation,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#queryPurpose,ex:queryPurpose,query purpose,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#queuedRequests,ex:queuedRequests,queued requests,datatype_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#recommendedMechanism,ex:recommendedMechanism,recommended mechanism,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#relatedRequirement,ex:relatedRequirement,related requirement,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#relatesNode,ex:relatesNode,relates node,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#relatesUser,ex:relatesUser,relates user,object_property,topology,,"[""ontology/modules/topology.ttl""]",False
+http://example.org/smartcity#relationCode,ex:relationCode,relation code,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#relationSourceCategory,ex:relationSourceCategory,relation source category,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#relationTargetCategory,ex:relationTargetCategory,relation target category,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#replicaOf,ex:replicaOf,replica of,object_property,orchestration,,"[""ontology/modules/deployment.ttl"", ""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#replicationSource,ex:replicationSource,replication source,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#replicationTarget,ex:replicationTarget,replication target,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#replicationVersion,ex:replicationVersion,replication version,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#requirementIdentifier,ex:requirementIdentifier,requirement identifier,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#requirementStatement,ex:requirementStatement,requirement statement,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#requirementsArtifactUsed,ex:requirementsArtifactUsed,requirements artifact used,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#requiresConsentRange,ex:requiresConsentRange,requires consent range,object_property,governance,"Minimum consent-aware processing scope required for an action, policy, model tier or FL session.","[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#requiresRecalculation,ex:requiresRecalculation,requires recalculation,datatype_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#resourceUsagePercent,ex:resourceUsagePercent,resource usage (%),datatype_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#resultedInAction,ex:resultedInAction,resulted in action,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#rollbackTarget,ex:rollbackTarget,rollback target,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#scenarioIdentifier,ex:scenarioIdentifier,scenario identifier,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#scenarioMechanism,ex:scenarioMechanism,scenario mechanism,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#scenarioPolicy,ex:scenarioPolicy,scenario policy,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#securityBaselineVersion,ex:securityBaselineVersion,security baseline version,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#selectedAlternative,ex:selectedAlternative,selected alternative,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#selectedModelTier,ex:selectedModelTier,selected model tier,object_property,orchestration,Model tier selected by the AHP-style decision balance.,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#sendTimestamp,ex:sendTimestamp,send timestamp,datatype_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#sentToNode,ex:sentToNode,sent to node,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#sessionTime,ex:sessionTime,session time,datatype_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#stateDuration,ex:stateDuration,state duration,datatype_property,observability,Computed as validTo - validFrom.,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#strategyCode,ex:strategyCode,strategy code,datatype_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#supersedesModel,ex:supersedesModel,supersedes model,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#supportsPolicy,ex:supportsPolicy,supports policy,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#tracedToMechanism,ex:tracedToMechanism,traced to mechanism,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#tracedToPolicy,ex:tracedToPolicy,traced to policy,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#transferDestination,ex:transferDestination,transfer destination,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#transferSource,ex:transferSource,transfer source,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#transfersData,ex:transfersData,transfers data,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#triggeredByState,ex:triggeredByState,triggered by state,object_property,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#trustAssessmentForState,ex:trustAssessmentForState,trust assessment for state,object_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#trustRuleVersion,ex:trustRuleVersion,trust rule version,datatype_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#trustWindowEnd,ex:trustWindowEnd,trust window end,datatype_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#trustWindowStart,ex:trustWindowStart,trust window start,datatype_property,observability,,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#updatesModel,ex:updatesModel,updates model,object_property,federation,,"[""ontology/modules/federation.ttl""]",False
+http://example.org/smartcity#userFeedbackScore,ex:userFeedbackScore,user feedback score,datatype_property,observability,User rating of the previous day's prediction (local model without consent).,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#usesAcceptanceProfile,ex:usesAcceptanceProfile,uses acceptance profile,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#usesEntailmentProfile,ex:usesEntailmentProfile,uses entailment profile,datatype_property,deployment,,"[""ontology/modules/deployment.ttl""]",False
+http://example.org/smartcity#usesIdentifier,ex:usesIdentifier,uses identifier,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#usesModel,ex:usesModel,uses model,object_property,orchestration,"Model used by a service. Distinct from hostsModel, whose subject is a ComputationalNode.","[""ontology/modules/orchestration.ttl""]",False
+http://example.org/smartcity#usesResolutionStrategy,ex:usesResolutionStrategy,uses resolution strategy,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#usesStandard,ex:usesStandard,uses standard,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#validFrom,ex:validFrom,valid from,datatype_property,observability,Effective start timestamp of a temporal entity.,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#validTo,ex:validTo,valid to,datatype_property,observability,Effective closure timestamp. It must not be used for a planned expiration before actual closure.,"[""ontology/modules/observability.ttl""]",False
+http://example.org/smartcity#validationUsesOntology,ex:validationUsesOntology,validation uses ontology,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#validationUsesPolicies,ex:validationUsesPolicies,validation uses policies,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#validationUsesQueries,ex:validationUsesQueries,validation uses queries,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://example.org/smartcity#validationUsesScenarios,ex:validationUsesScenarios,validation uses scenarios,object_property,governance,,"[""ontology/modules/governance.ttl""]",False
+http://purl.org/dc/terms/identifier,dcterms:identifier,identifier,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://purl.org/dc/terms/language,dcterms:language,language,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://purl.org/dc/terms/modified,dcterms:modified,modified,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://purl.org/dc/terms/replaces,dcterms:replaces,replaces,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.opengis.net/ont/geosparql#Feature,geo:Feature,Feature,class,standards,,"[""ontology/modules/orchestration.ttl""]",False
+http://www.opengis.net/ont/geosparql#Geometry,geo:Geometry,Geometry,class,standards,,"[""ontology/modules/topology.ttl""]",False
+http://www.opengis.net/ont/geosparql#hasGeometry,geo:hasGeometry,has geometry,object_property,standards,,"[""ontology/modules/topology.ttl""]",False
+http://www.w3.org/2000/01/rdf-schema#Literal,rdfs:Literal,Literal,reference,standards,,[],False
+http://www.w3.org/2001/XMLSchema#anyURI,xsd:anyURI,any URI,reference,standards,,[],False
+http://www.w3.org/2001/XMLSchema#boolean,xsd:boolean,boolean,reference,standards,,[],False
+http://www.w3.org/2001/XMLSchema#dateTime,xsd:dateTime,date Time,reference,standards,,[],False
+http://www.w3.org/2001/XMLSchema#decimal,xsd:decimal,decimal,reference,standards,,[],False
+http://www.w3.org/2001/XMLSchema#duration,xsd:duration,duration,datatype,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/2001/XMLSchema#integer,xsd:integer,integer,reference,standards,,[],False
+http://www.w3.org/2001/XMLSchema#string,xsd:string,string,reference,standards,,[],False
+http://www.w3.org/ns/shacl#NodeShape,sh:NodeShape,Node Shape,class,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#class,sh:class,class,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#datatype,sh:datatype,datatype,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#maxCount,sh:maxCount,max count,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#message,sh:message,message,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#minCount,sh:minCount,min count,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#or,sh:or,or,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#path,sh:path,path,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#property,sh:property,property,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#severity,sh:severity,severity,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/shacl#targetClass,sh:targetClass,target class,annotation_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/sosa/Observation,sosa:Observation,Observation,class,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/sosa/Platform,sosa:Platform,Platform,class,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/sosa/Sensor,sosa:Sensor,Sensor,class,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/sosa/hasFeatureOfInterest,sosa:hasFeatureOfInterest,has feature of interest,object_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/sosa/hasSimpleResult,sosa:hasSimpleResult,has simple result,datatype_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/sosa/isHostedBy,sosa:isHostedBy,is hosted by,object_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/sosa/madeBySensor,sosa:madeBySensor,made by sensor,object_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/sosa/observedProperty,sosa:observedProperty,observed property,object_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://www.w3.org/ns/sosa/resultTime,sosa:resultTime,result time,datatype_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://xmlns.com/foaf/0.1/Person,foaf:Person,Person,class,standards,,"[""ontology/modules/foundation.ttl""]",False
+http://xmlns.com/foaf/0.1/name,foaf:name,name,datatype_property,standards,,"[""ontology/modules/foundation.ttl""]",False
+https://saref.etsi.org/core/Device,saref:Device,Device,class,standards,,"[""ontology/modules/foundation.ttl""]",False
+urn:continuum:ontology:3.0.0:node:100,expression-d37bf5c1,expression-d37bf5c1,expression,governance,,"[""ontology/modules/governance.ttl""]",False
+urn:continuum:ontology:3.0.0:node:106,expression-76d2834d,expression-76d2834d,expression,governance,,"[""ontology/modules/governance.ttl""]",False
+urn:continuum:ontology:3.0.0:node:126,expression-705c24aa,expression-705c24aa,expression,foundation,,"[""ontology/modules/foundation.ttl""]",False
+urn:continuum:ontology:3.0.0:node:129,expression-1f0b13e2,expression-1f0b13e2,expression,foundation,,"[""ontology/modules/foundation.ttl""]",False
+urn:continuum:ontology:3.0.0:node:132,expression-60e1dabf,expression-60e1dabf,expression,foundation,,"[""ontology/modules/foundation.ttl""]",False
+urn:continuum:ontology:3.0.0:node:140,expression-8e6ef75b,expression-8e6ef75b,expression,foundation,,"[""ontology/modules/foundation.ttl""]",False
+urn:continuum:ontology:3.0.0:node:143,expression-76b8aeb7,expression-76b8aeb7,expression,foundation,,"[""ontology/modules/foundation.ttl""]",False
+urn:continuum:ontology:3.0.0:node:83,expression-1976d051,expression-1976d051,expression,governance,,"[""ontology/modules/governance.ttl""]",False
+urn:continuum:ontology:3.0.0:node:91,expression-fda9cc6d,expression-fda9cc6d,expression,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+urn:continuum:ontology:3.0.0:node:94,expression-77cdc55d,expression-77cdc55d,expression,orchestration,,"[""ontology/modules/orchestration.ttl""]",False
+urn:continuum:ontology:3.0.0:node:97,expression-d609c03c,expression-d609c03c,expression,federation,,"[""ontology/modules/federation.ttl""]",False

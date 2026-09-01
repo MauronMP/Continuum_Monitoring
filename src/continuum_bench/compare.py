@@ -1,4 +1,4 @@
-"""Compare monolithic and five-node distributed benchmark results."""
+"""Compare monolithic and elastic distributed benchmark results."""
 
 from __future__ import annotations
 
@@ -57,7 +57,7 @@ def compare_suite(
     monolith_root: Path,
     docker_root: Path,
     output_root: Path,
-    node_count: int = 5,
+    node_count: int | None = None,
 ) -> tuple[Path, Path]:
     require_release_metadata(monolith_root / suite)
     require_release_metadata(docker_root / suite)
@@ -75,6 +75,9 @@ def compare_suite(
         monolith_ms = float(monolith["total_ms"])
         docker_ms = float(docker["total_wall_ms"])
         speedup = monolith_ms / docker_ms if docker_ms else 0.0
+        distributed_node_count = int(
+            float(docker.get("node_count") or node_count or 5)
+        )
         row: dict[str, Any] = {
             "suite": suite,
             "reasoner": monolith["reasoner"],
@@ -101,7 +104,8 @@ def compare_suite(
                 "monolith_total_ms": monolith_ms,
                 "docker_wall_ms": docker_ms,
                 "speedup": speedup,
-                "parallel_efficiency": speedup / node_count,
+                "node_count": distributed_node_count,
+                "parallel_efficiency": speedup / distributed_node_count,
                 "docker_change_percent": (
                     (docker_ms - monolith_ms) / monolith_ms * 100
                     if monolith_ms

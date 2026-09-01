@@ -1,0 +1,58 @@
+digraph ontology {
+graph [rankdir=TB, bgcolor="white", newrank=true, margin=0,
+       pad="0.16", nodesep="0.25", ranksep="0.28", splines=polyline,
+       fontname="Helvetica", fontnames="svg", labelloc=b, outputorder=edgesfirst];
+node [shape=box, style="rounded,filled", color="#52606D", fontcolor="#17212B",
+      fontname="Helvetica", fontsize=11, margin="0.12,0.08", penwidth=1];
+edge [fontname="Helvetica", fontsize=10, color="#64717D", fontcolor="#26323C",
+      penwidth=0.9, arrowsize=0.65];
+label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="3"><TR><TD BGCOLOR="#FFFFFF" CELLPADDING="5"><FONT POINT-SIZE="10">Foundation</FONT></TD><TD BGCOLOR="#FFFFFF" CELLPADDING="5"><FONT POINT-SIZE="10">Topology</FONT></TD><TD BGCOLOR="#FFFFFF" CELLPADDING="5"><FONT POINT-SIZE="10">Observability</FONT></TD></TR><TR><TD BGCOLOR="#FFFFFF" CELLPADDING="5"><FONT POINT-SIZE="10">Governance</FONT></TD><TD BGCOLOR="#FFFFFF" CELLPADDING="5"><FONT POINT-SIZE="10">Orchestration</FONT></TD><TD BGCOLOR="#FFFFFF" CELLPADDING="5"><FONT POINT-SIZE="10">Federated learning</FONT></TD></TR><TR><TD BGCOLOR="#FFFFFF" CELLPADDING="5"><FONT POINT-SIZE="10">Deployment</FONT></TD><TD BGCOLOR="#FFFFFF" CELLPADDING="5"><FONT POINT-SIZE="10">Wellbeing (optional)</FONT></TD></TR><TR><TD COLSPAN="3"><FONT POINT-SIZE="10">Selected schema relations; repeated boxes denote the same class.</FONT></TD></TR></TABLE>>;
+subgraph cluster_a {
+sortv=0; label="(a) Consent and policy governance";
+labelloc=t; labeljust=l; fontsize=12; color="#DDE2E6"; margin=12;
+"a:http://example.org/smartcity#ConsentRecord" [label="Consent Record\n[Governance]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#ConsentRecord"];
+"a:http://example.org/smartcity#EvaluationState" [label="Evaluation State\n[Orchestration]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#EvaluationState"];
+"a:http://example.org/smartcity#Policy" [label="Policy\n[Governance]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#Policy"];
+"a:http://example.org/smartcity#Requirement" [label="Requirement\n[Governance]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#Requirement"];
+"a:http://example.org/smartcity#SemanticContract" [label="Semantic Contract\n[Governance]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#SemanticContract"];
+"a:http://example.org/smartcity#User" [label="User\n[Foundation]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#User"];
+"a:http://example.org/smartcity#User" -> "a:http://example.org/smartcity#ConsentRecord" [label="has consent\nrecord", tooltip="http://example.org/smartcity#hasConsentRecord"];
+"a:http://example.org/smartcity#User" -> "a:http://example.org/smartcity#SemanticContract" [label="has semantic\ncontract", tooltip="http://example.org/smartcity#hasSemanticContract"];
+"a:http://example.org/smartcity#EvaluationState" -> "a:http://example.org/smartcity#SemanticContract" [label="audits contract", tooltip="http://example.org/smartcity#auditsContract"];
+"a:http://example.org/smartcity#EvaluationState" -> "a:http://example.org/smartcity#Policy" [label="applied policy", tooltip="http://example.org/smartcity#appliedPolicy"];
+"a:http://example.org/smartcity#Requirement" -> "a:http://example.org/smartcity#Policy" [label="traced to policy", tooltip="http://example.org/smartcity#tracedToPolicy"];
+}
+subgraph cluster_b {
+sortv=1; label="(b) Monitoring, deployment and adaptation";
+labelloc=t; labeljust=l; fontsize=12; color="#DDE2E6"; margin=12;
+"b:http://example.org/smartcity#AIModel" [label="AI Model\n[Orchestration]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#AIModel"];
+"b:http://example.org/smartcity#AdaptationAction" [label="Adaptation Action\n[Orchestration]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#AdaptationAction"];
+"b:http://example.org/smartcity#ComputationalNode" [label="Computational\nNode\n[Topology]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#ComputationalNode"];
+"b:http://example.org/smartcity#DecisionAlternative" [label="Decision\nAlternative\n[Orchestration]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#DecisionAlternative"];
+"b:http://example.org/smartcity#DeploymentFragment" [label="Deployment\nfragment\n[Deployment]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#DeploymentFragment"];
+"b:http://example.org/smartcity#EvaluationState" [label="Evaluation State\n[Orchestration]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#EvaluationState"];
+"b:http://example.org/smartcity#NodeState" [label="Node State\n[Observability]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#NodeState"];
+"b:http://example.org/smartcity#EvaluationState" -> "b:http://example.org/smartcity#ComputationalNode" [label="evaluates node", tooltip="http://example.org/smartcity#evaluatesNode"];
+"b:http://example.org/smartcity#ComputationalNode" -> "b:http://example.org/smartcity#NodeState" [label="has node state", tooltip="http://example.org/smartcity#hasNodeState"];
+"b:http://example.org/smartcity#EvaluationState" -> "b:http://example.org/smartcity#DecisionAlternative" [label="has decision\nalternative", tooltip="http://example.org/smartcity#hasDecisionAlternative"];
+"b:http://example.org/smartcity#EvaluationState" -> "b:http://example.org/smartcity#AdaptationAction" [label="resulted in\naction", tooltip="http://example.org/smartcity#resultedInAction"];
+"b:http://example.org/smartcity#AdaptationAction" -> "b:http://example.org/smartcity#AIModel" [label="affects model", tooltip="http://example.org/smartcity#affectsModel"];
+"b:http://example.org/smartcity#DeploymentFragment" -> "b:http://example.org/smartcity#ComputationalNode" [label="hosted at", tooltip="http://example.org/smartcity#hostedAt"];
+}
+subgraph cluster_c {
+sortv=2; label="(c) Model learning and optional wellbeing data";
+labelloc=t; labeljust=l; fontsize=12; color="#DDE2E6"; margin=12;
+"c:http://example.org/smartcity#AIModel" [label="AI Model\n[Orchestration]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#AIModel"];
+"c:http://example.org/smartcity#FederatedLearningSession" [label="Federated\nLearning Session\n[Federated learning]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#FederatedLearningSession"];
+"c:http://example.org/smartcity#ParametrizedData" [label="Parametrized Data\n[Orchestration]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#ParametrizedData"];
+"c:http://example.org/smartcity#User" [label="User\n[Foundation]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#User"];
+"c:http://example.org/smartcity#Wearable" [label="Wearable\n[Wellbeing]", fillcolor="#FFFFFF", tooltip="http://example.org/smartcity#Wearable"];
+"c:http://example.org/smartcity#FederatedLearningSession" -> "c:http://example.org/smartcity#AIModel" [label="updates model", tooltip="http://example.org/smartcity#updatesModel"];
+"c:http://example.org/smartcity#FederatedLearningSession" -> "c:http://example.org/smartcity#ParametrizedData" [label="transfers data", tooltip="http://example.org/smartcity#transfersData"];
+"c:http://example.org/smartcity#ParametrizedData" -> "c:http://example.org/smartcity#Wearable" [label="generated by", tooltip="http://example.org/smartcity#generatedBy"];
+"c:http://example.org/smartcity#User" -> "c:http://example.org/smartcity#Wearable" [label="has wearable", tooltip="http://example.org/smartcity#hasWearable"];
+}
+"a:http://example.org/smartcity#SemanticContract" -> "b:http://example.org/smartcity#EvaluationState" [style=invis, weight=100];
+"b:http://example.org/smartcity#AIModel" -> "c:http://example.org/smartcity#FederatedLearningSession" [style=invis, weight=100];
+"b:http://example.org/smartcity#NodeState" -> "c:http://example.org/smartcity#FederatedLearningSession" [style=invis, weight=100];
+}

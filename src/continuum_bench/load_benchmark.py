@@ -1,4 +1,4 @@
-"""Rate-controlled semantic alert workload for 1, Docker and physical nodes."""
+"""Rate-controlled semantic alert workload for elastic deployments."""
 
 from __future__ import annotations
 
@@ -21,12 +21,12 @@ from typing import Any, Callable, Iterator
 
 from .config import BenchmarkConfig
 from .csv_utils import write_dict_rows
-from .distributed import Endpoint, _parallel, _request
+from .distributed import Endpoint, _parallel, _request, discover
 from .load_config import LoadBenchmarkConfig, LoadProfile
 from .node import NodeRuntime
-from .protocol import worker_health_error
 from .queries import QuerySpec, load_catalog
 from .specification import release_identity
+from .topology import Topology, load_topology
 
 
 class PhaseTimeout(TimeoutError):
@@ -62,27 +62,7 @@ def _is_timeout(error: str) -> bool:
 
 
 def discover_load_endpoints(urls: list[str]) -> list[Endpoint]:
-    endpoints: list[Endpoint] = []
-    for url in urls:
-        health = _request(url, "/health", timeout=5.0, retries=1)
-        error = worker_health_error(health)
-        if error is not None:
-            raise RuntimeError(f"Incompatible worker at {url}: {error}")
-        endpoints.append(
-            Endpoint(url=url.rstrip("/"), role=str(health["role"]))
-        )
-    order = {"cloud": 0, "fog": 1, "edge1": 2, "edge2": 3, "edge3": 4}
-    endpoints.sort(key=lambda item: order.get(item.role, 99))
-    roles = [item.role for item in endpoints]
-    if len(roles) != len(set(roles)):
-        raise ValueError(f"Duplicate load worker roles: {roles}")
-    canonical = ["cloud", "fog", "edge1", "edge2", "edge3"]
-    if roles != canonical[: len(roles)]:
-        raise ValueError(
-            "Load workers must form the canonical cloud/fog/edge prefix; "
-            f"got roles={roles}"
-        )
-    return endpoints
+    return discover(urls)
 
 
 def _alert_specs(config: BenchmarkConfig) -> list[QuerySpec]:
@@ -458,16 +438,35 @@ def run_load_benchmark(
 ) -> Path:
     if architecture not in {"monolith", "docker", "physical"}:
         raise ValueError(f"Unknown load architecture: {architecture}")
-    all_endpoints = (
-        discover_load_endpoints(endpoint_urls or [])
-        if architecture != "monolith"
-        else [Endpoint("local://cloud", "cloud")]
-    )
-    runtime = (
-        NodeRuntime(benchmark_config.root, "cloud")
-        if architecture == "monolith"
-        else None
-    )
+    monolith_topology: Topology | None = None
+    if architecture == "monolith":
+        monolith_topology = load_topology(
+            benchmark_config.resolve(benchmark_config.topology_file),
+            "monolith",
+        )
+        node = monolith_topology.active_nodes[0]
+        all_endpoints = [
+            Endpoint(
+                f"local://{node.node_id}",
+                node.node_id,
+                node.tier,
+                node.authority,
+                node.categories,
+            )
+        ]
+        runtime = NodeRuntime(
+            benchmark_config.root,
+            node.node_id,
+            tier=node.tier,
+            topology_name=monolith_topology.name,
+            topology_file=(
+                monolith_topology.source_path
+                or benchmark_config.topology_file
+            ),
+        )
+    else:
+        all_endpoints = discover_load_endpoints(endpoint_urls or [])
+        runtime = None
     specs = _alert_specs(benchmark_config)
     summary_rows: list[dict[str, Any]] = []
     event_rows: list[dict[str, Any]] = []
@@ -909,6 +908,11 @@ def run_load_benchmark(
         **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "architecture": architecture,
+        "topology": (
+            monolith_topology.public()
+            if monolith_topology is not None
+            else {"endpoint_override": list(endpoint_urls or [])}
+        ),
         "python": platform.python_version(),
         "platform": platform.platform(),
         "project_root": str(benchmark_config.root),

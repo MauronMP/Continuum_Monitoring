@@ -113,7 +113,7 @@ ex:appliesTo a owl:ObjectProperty ;
 ex:appliesToZoneType a owl:ObjectProperty ;
     rdfs:label "applies to zone type" ;
     rdfs:domain ex:Policy ;
-    rdfs:range owl:Class .
+    rdfs:range ex:ZoneType .
 
 ex:artifactIdentifier a owl:DatatypeProperty ;
     rdfs:label "artifact identifier" ;

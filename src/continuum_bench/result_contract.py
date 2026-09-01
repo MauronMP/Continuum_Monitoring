@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .specification import EXPECTED_QUERY_IDS, ONTOLOGY_VERSION
+from .specification import EXPECTED_QUERY_IDS, ONTOLOGY_REVISION, ONTOLOGY_VERSION
 from .reasoners import REASONING_CONTRACT
 
 
@@ -44,5 +44,12 @@ def require_release_metadata(directory: Path) -> dict[str, Any]:
             f"{metadata.get('reasoning_contract')!r}; expected "
             f"{REASONING_CONTRACT!r}. Re-run every architecture after the "
             "RDFS datatype correction; old v3 results cannot be mixed."
+        )
+    if metadata.get("ontology_revision") != ONTOLOGY_REVISION:
+        raise ValueError(
+            f"{directory}: incompatible ontology_revision="
+            f"{metadata.get('ontology_revision')!r}; expected "
+            f"{ONTOLOGY_REVISION!r}. Re-run each architecture with the "
+            "English, datatype-corrected ontology; do not relabel old results."
         )
     return metadata

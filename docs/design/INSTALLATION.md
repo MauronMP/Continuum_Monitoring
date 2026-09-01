@@ -1,51 +1,132 @@
-# Instalación, portabilidad y diagnóstico de un clon limpio
+# Complete installation guide
 
-## Alcance soportado
+This guide starts with a clean clone and ends with a validated installation
+that can run the monolithic, elastic-container Docker, and elastic-host physical
+continuum experiments. Commands are intended to be run from the repository
+root unless a section explicitly says otherwise.
 
-| Entorno | Función | Requisitos mínimos de software |
+## 1. Choose the role of each machine
+
+| Machine | Role | Required software |
 |---|---|---|
-| Ubuntu/Linux x86-64 o ARM64 | Coordinador y pruebas locales | Git, CPython >=3.11, venv y pip |
-| macOS Intel/Apple Silicon | Coordinador y pruebas locales | Git, CPython >=3.11, venv y pip |
-| Windows | Coordinador dentro de WSL2 | Distribución Linux en WSL2; no Python nativo de Windows |
-| Docker | Cinco nodos y cuatro productos | Daemon Linux amd64/arm64, `docker compose` >=2 y Buildx |
-| Raspberry Pi OS de 32/64 bits | Worker físico ligero | Python >=3.11, venv, SSH, rsync y procps |
+| Linux x86-64/ARM64 or macOS | Coordinator, monolithic benchmarks and reporting | Git, 64-bit CPython 3.11-3.13, `venv`, `pip` |
+| Coordinator with Docker | Configurable local nodes and RDFLib/Jena/RDF4J/Oxigraph product benchmarks | Previous row plus a 64-bit Linux Docker daemon, Compose v2 and Buildx |
+| Windows PC | Coordinator through WSL2 | WSL2 Linux distribution, Git and CPython inside WSL2; Docker Desktop with WSL integration for Docker runs |
+| Raspberry Pi OS 32/64 bit | Lightweight physical worker | CPython >=3.11, `venv`, OpenSSH server, `rsync` and `procps` |
 
-La instalación completa necesita wheels compatibles con el sistema: en Linux
-use una distribución moderna con glibc (por ejemplo Ubuntu 24.04), no presuponga
-compatibilidad con Alpine/musl o distribuciones antiguas. La instalación se
-detiene con diagnóstico si la plataforma no dispone de esos binarios.
+Native Windows Python is not supported. Use WSL2. The coordinator must use a
+64-bit Python interpreter; a 32-bit Raspberry Pi is supported only as a
+lightweight worker.
 
-El código del worker mide recursos mediante POSIX (`resource`, señales y,
-cuando existe, `/proc`). No se promete ejecución nativa de toda la suite en
-Windows ni del coordinador completo en ARM de 32 bits. Se comprueban estas
-restricciones antes de instalar. CPython 3.11–3.13 es la matriz de CI; versiones
-posteriores requieren verificar que las dependencias fijadas tienen wheels.
+The tested Python matrix is CPython 3.11, 3.12 and 3.13. A newer interpreter
+may work, but is not accepted until all pinned dependencies provide compatible
+wheels. The installer deliberately refuses to compile missing native
+dependencies.
 
-No hay un mínimo de RAM que garantice terminar todos los perfiles. Cada motor
-tiene por defecto un límite de 3 GiB y cada nodo de 1 GiB; no son reservas de
-memoria. La suma de límites puede superar la RAM física. El diagnóstico avisa
-si Docker ve menos de 8 GiB. Los timeouts/OOM de campañas grandes siguen siendo
-resultados o errores que hay que inspeccionar, no fallos que se deban ocultar.
+Docker should expose at least 8 GiB of memory for a practical full run. This is
+not a guarantee that every large profile will finish: each semantic engine has
+a default 3 GiB limit and each topology node a 1 GiB limit. The limits are
+caps, not reserved memory, and their sum may exceed physical RAM. Keep enough
+free disk for Docker images, Maven dependencies, Python wheels and result
+files. Large timeouts or out-of-memory outcomes are experimental evidence and
+must not be silently discarded.
 
-## 1. Preparación del sistema en Ubuntu Server
+The first installation needs network access to GitHub and PyPI. Docker builds
+also need access to the configured container registry and Maven Central. Do not
+disable TLS verification to work around a proxy or certificate problem.
 
-Un administrador instala los paquetes básicos una vez:
+## 2. Install host prerequisites
+
+### 2.1 Ubuntu 24.04 coordinator
+
+Ubuntu 24.04 is the simplest Linux coordinator because its system Python is
+new enough. Install the base packages once:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y git python3 python3-venv
+sudo apt-get install -y git python3 python3-venv openssh-client rsync
 python3 --version
 ```
 
-Se requiere Python >=3.11; Ubuntu 24.04 proporciona Python 3.12. Si el
-`python3` del sistema es anterior, seleccione explícitamente un intérprete
-compatible con su módulo venv. No sustituya el Python que usa APT.
+The reported version must be at least 3.11. If a different supported
+interpreter is installed, invoke the bootstrap with that exact executable, for
+example `python3.13 tools/bootstrap.py`. Do not replace the Python interpreter
+used internally by APT.
 
-Para Docker use la [instalación oficial de Docker Engine en Ubuntu](https://docs.docker.com/engine/install/ubuntu/),
-incluidos el plugin Compose y Buildx. No se ejecutan instaladores remotos
-mediante `curl | sh` ni se elimina una instalación Docker existente.
+Optional host packages are installed only when their feature is needed:
 
-Compruebe con el usuario que ejecutará las pruebas:
+```bash
+# Vector ontology diagrams
+sudo apt-get install -y graphviz
+
+# Independent OWL 2 DL/HermiT check
+sudo apt-get install -y openjdk-17-jre-headless
+
+# Compile the supplied LaTeX paper example (optional)
+sudo apt-get install -y texlive-latex-base
+```
+
+Java, Maven, Jena and RDF4J are not host prerequisites for the normal
+benchmarks. Java and Maven are supplied by the semantic-engine Docker build.
+Host Java is needed only for the independent Protégé/HermiT validation.
+
+### 2.2 macOS coordinator
+
+Install:
+
+1. Git, either from Xcode Command Line Tools or another trusted package source.
+2. A 64-bit CPython 3.11, 3.12 or 3.13 distribution.
+3. Docker Desktop if Docker benchmarks will be run.
+4. Graphviz if ontology diagrams will be regenerated.
+5. Java 17 and Protégé if the independent HermiT check will be run.
+
+Verify the command-line prerequisites:
+
+```bash
+git --version
+python3 --version
+```
+
+Docker Desktop must be started before running Docker checks. Its official
+installation page is
+<https://docs.docker.com/desktop/setup/install/mac-install/>.
+
+### 2.3 Windows coordinator through WSL2
+
+Install WSL2 and an Ubuntu distribution, then run all repository commands
+inside that Linux distribution. Inside WSL2 install:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y git python3 python3-venv openssh-client rsync
+python3 --version
+```
+
+For container tests, install Docker Desktop and enable integration for the WSL2
+distribution that contains the clone. Do not mix a Windows checkout, native
+Windows Python and WSL commands. See the official Docker Desktop instructions:
+<https://docs.docker.com/desktop/setup/install/windows-install/>.
+
+### 2.4 Docker Engine on Ubuntu
+
+Install Docker Engine from Docker's official APT repository, including these
+packages:
+
+```text
+docker-ce
+docker-ce-cli
+containerd.io
+docker-buildx-plugin
+docker-compose-plugin
+```
+
+Follow the current official repository setup and package commands at
+<https://docs.docker.com/engine/install/ubuntu/>. Do not use the obsolete
+standalone `docker-compose` v1 executable; this project requires the
+`docker compose` v2 plugin.
+
+The user that launches the benchmarks must be able to access the daemon
+without prefixing every command with `sudo`:
 
 ```bash
 docker compose version
@@ -53,187 +134,651 @@ docker buildx version
 docker info
 ```
 
-Si hay `permission denied` sobre `docker.sock`, un administrador debe elegir
-entre Docker rootless o acceso mediante el grupo Docker y renovar la sesión
-del usuario. El [grupo Docker concede privilegios equivalentes a root](https://docs.docker.com/engine/install/linux-postinstall/).
-El proyecto no añade usuarios a grupos, no ejecuta `chmod 666`, no desactiva TLS
-y no requiere ejecutar Python/pytest mediante `sudo`.
+If `docker info` reports a permission error, an administrator must configure
+rootless Docker or grant access according to
+<https://docs.docker.com/engine/install/linux-postinstall/>. Membership in the
+`docker` group grants root-level privileges and requires a new login session.
+The project does not change groups, run `chmod 666` on the Docker socket, or
+run Python and pytest with `sudo`.
 
-Docker Desktop es la alternativa en macOS y Windows/WSL2. El código localiza
-los auxiliares de Docker Desktop en macOS sin sustituir el CLI, contexto o
-proxy elegidos por el usuario. Se respetan `DOCKER_HOST`, contexto y proxy.
-Los endpoints automáticos son locales: si usa un daemon remoto, debe exponer
-los servicios y usar los comandos avanzados con `--endpoints` adecuados.
+## 3. Clone the repository
 
-## 2. Clonar e instalar
+Clone the complete repository and enter it:
 
-Clone la revisión que contiene estos cambios, incluidos `requirements/`, los
-scripts y todos los artefactos de ontología/consultas v3. No copie `.venv`,
-`.cache`, `.env`, credenciales ni resultados de otra máquina.
+```bash
+git clone https://github.com/MauronMP/Continuum_Monitoring.git
+cd Continuum_Monitoring
+```
 
-Desde la raíz del clon:
+If a particular branch or release is required, check it out before installing:
+
+```bash
+git switch BRANCH_NAME
+```
+
+Confirm that the clone includes the code, pinned requirements, ontology and
+query assets:
+
+```bash
+test -f pyproject.toml
+test -f requirements/constraints.txt
+test -f ontology/legacy/smartcity_continuum-v3.0.0.ttl
+test -f queries/legacy/sparql_battery-v3.0.0.sparql
+```
+
+Do not copy `.venv`, `.venv-node`, `.cache`, `.env`, credentials or `outputs`
+from another computer. Virtual environments contain machine-specific paths and
+binaries; benchmark results from another machine are not installation assets.
+
+## 4. Install the coordinator Python environment
+
+Run the dependency-free pre-installation diagnostic:
 
 ```bash
 python3 tools/doctor.py
+```
+
+It checks the Python version, operating system, word size and required project
+files without importing the scientific stack.
+
+Create the project environment and install the pinned dependencies:
+
+```bash
 python3 tools/bootstrap.py
+```
+
+The bootstrap creates `.venv`, installs the project in editable mode with its
+development dependencies, checks dependency consistency and writes setup logs
+under `outputs/runtime/setup/`. It uses `.cache/pip` inside the repository and
+does not mutate the system Python installation.
+
+If `python3` is not the supported interpreter selected in section 2, use that
+interpreter explicitly:
+
+```bash
+python3.13 tools/bootstrap.py
+```
+
+To use a different new virtual-environment directory:
+
+```bash
+python3 tools/bootstrap.py --venv .venv-coordinator
+```
+
+Do not point `--venv` at a copied environment, a symbolic link, or a directory
+that contains unrelated files. The installer intentionally refuses to erase or
+replace such paths.
+
+Confirm the installed command and dependencies:
+
+```bash
+.venv/bin/continuum-bench --help
+.venv/bin/python -m pip check
+```
+
+## 5. Validate the clean installation
+
+Validate ontology syntax, modules, query catalog, policies, expected results,
+SHACL constraints and local reasoning profiles:
+
+```bash
 .venv/bin/continuum-bench validate
+.venv/bin/python tools/check_documentation.py
+```
+
+The documentation check verifies every local Markdown link and deterministically
+regenerates the four English v3 reference manuals in a temporary directory to
+detect stale committed documentation.
+
+Run the automated test suite:
+
+```bash
 .venv/bin/python -m pytest
 ```
 
-El bootstrap:
+Run both fast benchmark workflows without Docker:
 
-- solo crea/reutiliza `.venv` dentro del proyecto (o el destino `--venv`);
-- rechaza sobrescribir un directorio que no sea virtualenv o un enlace;
-- instala versiones fijadas de dependencias, incluido pytest;
-- reutiliza la caché `.cache/pip` y no depende de cachés del administrador;
-- exige wheels: no instala Rust, GCC o Fortran silenciosamente;
-- comprueba dependencias con `pip check`;
-- conserva un log por comando y limita cada instalación a 20 minutos.
+```bash
+.venv/bin/continuum-bench \
+  --config configs/smoke-cumulative.toml \
+  benchmark cumulative \
+  --python-only
 
-Si falta `ensurepip`, instale el paquete venv del intérprete. Si faltan wheels,
-use una combinación soportada de CPython/plataforma; no se omite Oxigraph ni
-otro producto para presentar falsamente una suite completa.
+.venv/bin/continuum-bench \
+  --config configs/smoke-scalability.toml \
+  benchmark scalability \
+  --python-only
+```
 
-El bootstrap no instala Docker Engine ni arranca servicios privilegiados. Esa
-preparación depende del administrador, de políticas de seguridad y de la red.
+These two commands validate only the Python/RDFLib pipeline. They do not prove
+that the external products or distributed topologies are installed.
 
-## 3. Preparar Docker y ejecutar los smokes
+## 6. Prepare the Docker images
+
+Run the Docker-aware diagnostic with the same unprivileged user that will run
+the benchmarks:
 
 ```bash
 python3 tools/doctor.py --docker
-python3 tools/bootstrap.py --with-docker
+```
 
+Build the two shared project images:
+
+```bash
+python3 tools/bootstrap.py --with-docker
+```
+
+This command:
+
+- reuses the existing `.venv`;
+- validates Compose, Buildx and the active Docker daemon;
+- builds the Python image shared by RDFLib, Oxigraph and the configured topology
+  nodes;
+- builds the Java image shared by Jena and RDF4J;
+- does not start a benchmark or leave topology nodes running.
+
+The first build may take substantially longer because it downloads Python
+wheels, base images and Maven dependencies. Later source/query changes reuse
+the dependency layers.
+
+The default local ports are:
+
+| Purpose | Bound host ports |
+|---|---|
+| Default Docker continuum nodes | `127.0.0.1:8191-8195` (elastic in `configs/topologies/docker/nodes/`) |
+| RDFLib, Jena, RDF4J and Oxigraph | `127.0.0.1:8291-8294` |
+| Physical workers | LAN TCP port `8391` |
+
+Check for conflicts before starting a campaign:
+
+```bash
+docker ps
+```
+
+## 7. Verify all four semantic products
+
+The standard smoke commands automatically start RDFLib, Jena, RDF4J and
+Oxigraph, execute the suites and stop the product stack:
+
+```bash
 .venv/bin/continuum-smoke-cumulative
 .venv/bin/continuum-smoke-scalability
-
-# Cinco nodos: reutiliza la imagen Python que acaba de construirse
-docker compose up -d --no-build
-.venv/bin/continuum-bench --config configs/smoke-cumulative.toml \
-  docker cumulative --output-dir outputs/docker-smoke-cumulative
-.venv/bin/continuum-bench --config configs/smoke-scalability.toml \
-  docker scalability --output-dir outputs/docker-smoke-scalability
 ```
 
-`--with-docker` construye imágenes, no ejecuta benchmarks ni reinicia workers.
-El arranque automático también funciona sin esa preparación previa: comprueba
-Compose, Buildx, daemon, arquitectura Linux y configuración; construye una sola vez
-cada imagen compartida (RDFLib/Oxigraph y Jena/RDF4J); después arranca los cuatro
-motores. Las capas de dependencias se reutilizan al cambiar código o consultas.
-Solo cloud/RDFLib y Jena declaran un build; los demás reutilizan esas imágenes
-locales y no intentan descargarlas de Docker Hub. Este comportamiento también
-se aplica al arranque manual mediante `docker compose up -d --build`.
+The semantic roles are intentionally not identical:
 
-Las consultas, tres perfiles y cuatro productos siguen siendo los mismos.
-Oxigraph sigue siendo control SPARQL sin inferencia. Los puertos locales
-8191–8195 y 8291–8294 se vinculan solo a `127.0.0.1`; los workers físicos usan
-el inventario y el puerto 8391 en la LAN.
+- RDFLib/OWL-RL, Jena and RDF4J execute the RDFS-equivalent comparison;
+- Oxigraph is the SPARQL control without inference;
+- the local benchmark also records RDFS, OWL RL and combined RDFS+OWL RL
+  materialisation profiles.
 
-Sin Docker puede comprobar exclusivamente el pipeline Python:
+Inspect the stack manually only when diagnosing a startup failure:
 
 ```bash
-.venv/bin/continuum-bench --config configs/smoke-cumulative.toml benchmark cumulative --python-only
-.venv/bin/continuum-bench --config configs/smoke-scalability.toml benchmark scalability --python-only
-```
+docker compose --progress plain \
+  -f docker-compose.engines.yml \
+  up -d --build
 
-## 4. Diagnosticar un fallo de Compose
-
-```bash
-python3 tools/doctor.py --docker --json
-docker compose --progress plain -f docker-compose.engines.yml up -d --build
 docker compose -f docker-compose.engines.yml ps -a
 docker compose -f docker-compose.engines.yml logs --tail 80
 ```
 
-Los errores ahora incluyen comando, código de salida, últimas 40 líneas y
-ruta del log completo en `outputs/runtime/setup/`. Mientras un comando está
-silencioso se emite progreso cada 30 s. El timeout por build/arranque es de
-1.200 s y puede ajustarse con `CONTINUUM_COMPOSE_TIMEOUT` (segundos positivos).
-El cierre y la recogida de diagnósticos tienen un límite independiente de 60 s.
-Las comprobaciones iniciales tienen 20 s por comando y las peticiones de salud
-del arranque 2 s por endpoint; ya no heredan el timeout de consulta de 900 s.
+Stop that diagnostic stack after inspection:
 
-| Mensaje original | Qué revisar |
+```bash
+docker compose -f docker-compose.engines.yml down
+```
+
+## 8. Start and verify the elastic container topology
+
+`configs/topology.toml` is the architecture catalogue. Docker deployment
+settings live in `configs/topologies/docker/topology.toml`; node identity,
+tier, endpoint, resource limits, authority and category affinities are split
+across `configs/topologies/docker/nodes/{cloud,fog,mist,edge,iot}.toml`.
+Validate the composed configuration after every edit. The lifecycle command
+generates Compose at runtime, so no Python or static Compose rewrite is
+required. See [Elastic topology](ELASTIC_TOPOLOGY.md).
+
+Start one cloud, one fog and three edge containers:
+
+```bash
+.venv/bin/continuum-bench topology validate
+.venv/bin/continuum-bench topology up --name docker
+.venv/bin/continuum-bench topology status --name docker
+```
+
+Verify every endpoint shown by `topology show --name docker`. For the default
+manifest:
+
+```bash
+curl --fail http://127.0.0.1:8191/health
+curl --fail http://127.0.0.1:8192/health
+curl --fail http://127.0.0.1:8193/health
+curl --fail http://127.0.0.1:8194/health
+curl --fail http://127.0.0.1:8195/health
+```
+
+Run separate distributed smokes with sharded placement:
+
+```bash
+.venv/bin/continuum-bench \
+  --config configs/smoke-cumulative.toml \
+  docker cumulative \
+  --layout sharded \
+  --output-dir outputs/docker-smoke-cumulative
+
+.venv/bin/continuum-bench \
+  --config configs/smoke-scalability.toml \
+  docker scalability \
+  --layout sharded \
+  --output-dir outputs/docker-smoke-scalability
+```
+
+Run the same checks with a complete replica on each node:
+
+```bash
+.venv/bin/continuum-bench \
+  --config configs/smoke-cumulative.toml \
+  docker cumulative \
+  --layout replicated \
+  --output-dir outputs/docker-smoke-cumulative-replicated
+
+.venv/bin/continuum-bench \
+  --config configs/smoke-scalability.toml \
+  docker scalability \
+  --layout replicated \
+  --output-dir outputs/docker-smoke-scalability-replicated
+```
+
+The `docker` commands also run the four-product suite unless
+`--topology-only` is explicitly supplied.
+
+## 9. Prepare the four Raspberry Pi workers
+
+The default physical layout uses the coordinator as `cloud` and four Raspberry
+Pi hosts as `fog`, `edge1`, `edge2` and `edge3`. Its deployment settings are in
+`configs/topologies/physical/topology.toml`; add nodes to the corresponding
+file under `configs/topologies/physical/nodes/`. The root
+`configs/topology.toml` only indexes the monolithic, Docker and physical
+manifests. `configs/physical-nodes.toml` is a legacy compatibility inventory.
+
+On every Raspberry Pi, install the worker prerequisites:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y python3 python3-venv openssh-server rsync procps
+python3 --version
+sudo systemctl enable --now ssh
+```
+
+Python must be at least 3.11. The Raspberry Pi does not need Docker, Java,
+Maven, Matplotlib, NumPy, PyOxigraph or Protégé. Deployment installs only the
+pure-Python packages pinned in `requirements-node.txt`.
+
+Give the Raspberry Pi stable addresses and make TCP port 8391 reachable from
+the coordinator. The repository's default inventory currently expects:
+
+| Role | Address |
 |---|---|
-| `permission denied ... docker.sock` | Acceso al daemon con el mismo usuario, no el código SPARQL |
-| `Cannot connect to the Docker daemon` | Servicio/Desktop, contexto y `DOCKER_HOST` |
-| `compose ... unknown command` | Plugin Compose; no sirve el ejecutable legacy v1 |
-| `port ... allocated` | Conflicto en los puertos; no detener contenedores ajenos |
-| `no matching manifest` | Arquitectura del daemon; productos solo Linux de 64 bits |
-| `credential`, `x509`, `resolve`, `429` | Credenciales, certificados, DNS/proxy o límites de descarga |
-| `137`, `OOMKilled`, `no space left` | Memoria o disco disponibles, sin borrar datos automáticamente |
+| cloud | `127.0.0.1:8391` on the coordinator |
+| fog | `192.168.1.137:8391` |
+| edge1 | `192.168.1.138:8391` |
+| edge2 | `192.168.1.139:8391` |
+| edge3 | `192.168.1.140:8391` |
 
-Si falla el arranque, se recogen `ps` y logs y se conservan los contenedores
-para inspección. No se ejecuta `down` contra un arranque parcial de procedencia
-incierta. Un error de cierre nunca sustituye un error anterior de consultas.
-Si el único fallo es el cierre, se indica que el benchmark ya había terminado.
+Edit `configs/topologies/physical/topology.toml` if the username or remote
+installation directory differs. Edit the appropriate layer file for addresses
+and ports. Any positive number of remote roles is supported; retain at least
+one cloud, one local coordinator node and one privacy authority. Use a
+dedicated remote directory below the SSH user's home; broad paths such as `/`,
+`/root` or `/home/pi` are rejected for safety.
 
-Para una máquina con menos recursos puede copiar `.env.example` a `.env` y
-ajustar límites explícitamente. Mantenga el mismo límite para los cuatro
-productos y un heap Java menor que el límite de memoria. Conserve esa
-configuración con la campaña: no compare límites distintos como si fueran el
-mismo experimento. No se reducen perfiles ni límites de manera silenciosa.
-
-## 5. Nodos físicos
-
-En el coordinador: `openssh-client`, `ssh-copy-id` y `rsync`. En cada Raspberry:
-Python >=3.11, `python3-venv`, `openssh-server`, `rsync` y `procps`; SSH activo,
-clave autorizada y puerto 8391 accesible desde el coordinador.
+On the coordinator, check the required SSH and transfer tools:
 
 ```bash
 python3 tools/doctor.py --physical
+```
+
+Create an SSH key if the coordinator has none:
+
+```bash
+ssh-keygen -t ed25519
+```
+
+Install the public key on each remote host. The command requests the SSH
+password once per Raspberry Pi; subsequent lifecycle commands are deliberately
+non-interactive:
+
+```bash
 .venv/bin/continuum-bench physical authorize --ssh-user pi
+```
+
+Do not store the SSH password in the repository or inventory. Passwordless key
+authentication is required because one benchmark performs many remote and HTTP
+operations.
+
+Deploy and start the physical cluster:
+
+```bash
 .venv/bin/continuum-bench physical stop --ssh-user pi
 .venv/bin/continuum-bench physical deploy --ssh-user pi
 .venv/bin/continuum-bench physical start --ssh-user pi
 .venv/bin/continuum-bench physical status --ssh-user pi
 ```
 
-`deploy` comprueba Python/venv/ensurepip/rsync/pgrep/nohup en los cuatro remotos
-antes de copiar a ninguno. Instala únicamente RDFLib, OWL-RL y PyParsing, con
-versiones exactas y wheels puros; no instala Java ni librerías de gráficos.
-También rechaza `remote_dir` amplios como `/` o `/home/pi`: la réplica rsync
-solo debe gestionarse dentro de un directorio dedicado.
+`deploy` first checks every Raspberry Pi for Python, `venv`, `ensurepip`,
+`rsync`, `pgrep` and `nohup`. It does not copy anything until all four machines
+pass. It then synchronises only worker runtime assets and creates
+`.venv-node` remotely.
 
-Para instalar manualmente el worker en un clon en una Raspberry:
+If a Raspberry Pi already has its own complete clone, its lightweight
+environment can also be prepared manually from that clone:
 
 ```bash
 python3 tools/bootstrap.py --profile worker
 PYTHONPATH=src .venv-node/bin/python -m continuum_bench.node --help
 ```
 
-## 6. Reproducibilidad y comprobaciones
+The normal coordinator-driven `physical deploy` workflow is preferred because
+it keeps all four workers on the same repository revision.
 
-`requirements/constraints.txt` fija versiones directas y transitivas del
-entorno comprobado. NumPy usa 2.3.5 en Python 3.11 y 2.5.1 en Python >=3.12;
-use la misma versión de Python al comparar máquinas. Los resultados registran
-`runtime_versions`, además del contrato de ontología/razonamiento.
+## 10. Verify the physical topology
 
-Esto no constituye una construcción bit a bit: las bases Docker conservan
-etiquetas, no digests; los wheels varían por plataforma; las constraints no son
-un lock con hashes. Maven fija las versiones principales en `pom.xml`.
-El sistema tampoco garantiza conectividad, credenciales o permisos en una
-máquina remota que no se ha inspeccionado.
+Run the two small physical suites before a full campaign:
 
-`.github/workflows/portability.yml` prueba clones limpios en Ubuntu 24.04 y
-macOS con CPython 3.11/3.12/3.13. Otro job ejecuta los dos smokes multimotor y
-los cinco nodos Docker. Esos jobs se ejecutarán al publicar los cambios; que
-exista el workflow no significa que ya se haya ejecutado en GitHub.
+```bash
+.venv/bin/continuum-bench \
+  --config configs/smoke-cumulative.toml \
+  physical cumulative \
+  --layout sharded \
+  --ssh-user pi
 
-### Verificación de esta revisión (2026-08-27)
+.venv/bin/continuum-bench \
+  --config configs/smoke-scalability.toml \
+  physical scalability \
+  --layout sharded \
+  --ssh-user pi
+```
 
-Se comprobaron entornos nuevos en macOS/Python 3.13 y Linux ARM64/Python
-3.11 y 3.12, la instalación mínima del worker, ambos Dockerfiles y los smokes
-acumulativo/escalabilidad del monolito, cinco nodos Docker y cuatro productos.
-La suite local final contiene 148 pruebas aprobadas. La construcción Java
-reutilizó la caché Maven; no se presenta como una descarga Maven desde cero.
-Ubuntu nativo, Linux x86-64 y las Raspberry reales no se han ejecutado en esta
-revisión; la matriz de CI queda preparada para ampliar esa comprobación.
+Repeat with replicated placement when that architecture will be evaluated:
 
-Los resultados funcionales Docker están en `outputs/portability/`, y los logs
-de preparación en `outputs/runtime/setup/`. No use estos tiempos como datos de
-artículo: hubo verificaciones concurrentes. Que un smoke termine correctamente
-comprueba sus expectativas, no una equivalencia total entre motores. En el
-smoke de escalabilidad hubo 230/230 acuerdos de resultado observable y 220/230
-de cardinalidad exacta entre los tres motores RDFS; las diferencias quedan
-registradas en `rdfs-equivalence-summary.json`, no se ocultan ni se corrigen
-alterando consultas para pasar la prueba.
+```bash
+.venv/bin/continuum-bench \
+  --config configs/smoke-cumulative.toml \
+  physical cumulative \
+  --layout replicated \
+  --ssh-user pi
+
+.venv/bin/continuum-bench \
+  --config configs/smoke-scalability.toml \
+  physical scalability \
+  --layout replicated \
+  --ssh-user pi
+```
+
+If a worker is unhealthy, inspect status first and then the corresponding log
+under `/home/pi/continuum-bench/runtime/` on that Raspberry Pi. Restart from a
+known state:
+
+```bash
+.venv/bin/continuum-bench physical stop --ssh-user pi
+.venv/bin/continuum-bench physical deploy --ssh-user pi
+.venv/bin/continuum-bench physical start --ssh-user pi
+.venv/bin/continuum-bench physical status --ssh-user pi
+```
+
+## 11. Optional independent OWL 2 DL validation
+
+The normal `continuum-bench validate` command checks the repository contract,
+SHACL and the benchmark reasoning profiles. Release-grade OWL consistency is a
+separate HermiT check because it uses an installed Protégé/OWLAPI runtime and
+is intentionally excluded from timed benchmarks.
+
+Install Java 11 or newer (Java 17 is recommended) and Protégé with HermiT,
+then run:
+
+```bash
+python3 tools/check_owl_consistency.py \
+  --require-dl-profile \
+  --timeout 180 \
+  --output outputs/validation/ontology-english-hermit.json
+```
+
+On Linux or for a non-standard Protégé installation, specify its directory:
+
+```bash
+python3 tools/check_owl_consistency.py \
+  --protege-home /path/to/Protege \
+  --require-dl-profile \
+  --timeout 180 \
+  --output outputs/validation/ontology-english-hermit.json
+```
+
+No Protégé files are modified and no reasoner dependency is downloaded by
+this script. See [ONTOLOGY_PROTEGE.md](ONTOLOGY_PROTEGE.md) for classpath and
+exit-code details.
+
+## 12. Optional ontology diagrams
+
+Install Graphviz using the host package manager, then add the diagram Python
+extra to the existing environment:
+
+```bash
+.venv/bin/python -m pip install -e ".[diagrams]"
+.venv/bin/python -m continuum_bench.diagrams
+.venv/bin/python -m pytest tests/test_diagrams.py
+```
+
+The generated PDF, SVG, PNG, DOT and GraphML artefacts are written under
+`ontology/diagrams`. If Graphviz is not installed, source-only artefacts can
+still be regenerated:
+
+```bash
+.venv/bin/python -m continuum_bench.diagrams --sources-only
+```
+
+## 13. Run the complete benchmark families
+
+Only start full campaigns after every relevant smoke has passed. Full profiles
+can take a long time and may intentionally reach configured timeouts.
+
+Monolithic cumulative and scalability suites:
+
+```bash
+.venv/bin/continuum-bench benchmark all
+```
+
+Elastic Docker topology, both placements:
+
+```bash
+.venv/bin/continuum-bench topology up --name docker
+.venv/bin/continuum-bench docker all --layout sharded
+.venv/bin/continuum-bench docker all --layout replicated
+```
+
+Elastic physical topology, both placements:
+
+```bash
+.venv/bin/continuum-bench physical status --ssh-user pi
+.venv/bin/continuum-bench physical all --layout sharded --ssh-user pi
+.venv/bin/continuum-bench physical all --layout replicated --ssh-user pi
+```
+
+Load experiment across monolithic, Docker and physical architectures:
+
+```bash
+.venv/bin/continuum-bench load all
+```
+
+Scale-out, hardware reasoning and truly distributed ontology experiments across
+all three architectures:
+
+```bash
+.venv/bin/continuum-bench experiment all all
+```
+
+Generate the main plots and cross-architecture analysis:
+
+```bash
+.venv/bin/continuum-bench plot publication
+.venv/bin/continuum-bench load plot
+.venv/bin/continuum-bench experiment plot all
+.venv/bin/continuum-bench experiment analyze
+.venv/bin/continuum-report
+```
+
+The complete command catalogue and the meaning of each test are documented in
+[TESTS.md](TESTS.md), [BENCHMARKS.md](BENCHMARKS.md),
+[LOAD_BENCHMARKS.md](LOAD_BENCHMARKS.md),
+[THREE_EXPERIMENTS.md](THREE_EXPERIMENTS.md),
+[DOCKER_BENCHMARKS.md](DOCKER_BENCHMARKS.md) and
+[PHYSICAL_CONTINUUM.md](PHYSICAL_CONTINUUM.md).
+
+## 14. Resource configuration
+
+The supplied Compose files apply identical defaults to comparable nodes and
+engines. To make an explicit campaign-specific change:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` and record it with the experimental metadata. Available
+settings are:
+
+```text
+CONTINUUM_NODE_CPUS
+CONTINUUM_NODE_MEMORY
+CONTINUUM_ENGINE_CPUS
+CONTINUUM_ENGINE_MEMORY
+CONTINUUM_JAVA_OPTIONS
+```
+
+Keep the same engine limit for RDFLib, Jena, RDF4J and Oxigraph. Keep the Java
+maximum heap below the container memory limit. Never compare campaigns with
+different resource limits as if architecture were the only independent
+variable.
+
+Compose build/start operations use a default 1,200-second setup timeout. It can
+be changed explicitly for a slow first build:
+
+```bash
+CONTINUUM_COMPOSE_TIMEOUT=1800 \
+  .venv/bin/continuum-smoke-cumulative
+```
+
+Changing this setup timeout does not change the workload/query timeouts defined
+in the benchmark configuration files.
+
+## 15. Troubleshooting
+
+### Docker Compose cannot manage the semantic-engine stack
+
+Collect the read-only diagnostic and inspect the retained setup logs:
+
+```bash
+python3 tools/doctor.py --docker --json
+docker compose -f docker-compose.engines.yml ps -a
+docker compose -f docker-compose.engines.yml logs --tail 80
+ls -la outputs/runtime/setup
+```
+
+| Symptom | Meaning/action |
+|---|---|
+| `permission denied ... docker.sock` | The current user cannot access the daemon. Fix Docker access, then start a new login session. |
+| `Cannot connect to the Docker daemon` | Start Docker Engine/Desktop and inspect `docker context show` and `DOCKER_HOST`. |
+| `compose ... unknown command` | Install/upgrade the Compose v2 plugin; the legacy `docker-compose` binary is insufficient. |
+| `buildx ... unknown command` | Install `docker-buildx-plugin`. |
+| `port is already allocated` | Inspect `docker ps`; do not stop unrelated containers. Required ports are 8191-8195 and 8291-8294. |
+| `no matching manifest` or `exec format error` | The active daemon/platform is incompatible. Product images require Linux amd64/arm64 of 64 bits. |
+| `credential`, `x509`, DNS, `429` or timeout | Fix registry credentials, certificates, proxy/DNS or rate limits; do not disable TLS. |
+| exit `137`, `OOMKilled` | Increase Docker memory or reduce an explicitly documented campaign profile. |
+| `no space left on device` | Inspect `docker system df`; do not delete unrelated Docker data automatically. |
+
+If startup fails, the runner preserves the failed containers and records the
+command, exit code, last output lines and complete log in
+`outputs/runtime/setup/`.
+
+### Python dependency installation fails
+
+Confirm the interpreter and rerun the doctor:
+
+```bash
+python3 --version
+python3 tools/doctor.py
+```
+
+If `venv` or `ensurepip` is missing on Ubuntu, install the matching
+`python3-venv` or `python3.X-venv` package. If pip reports that no compatible
+binary wheel exists, use CPython 3.11-3.13 on a supported 64-bit Linux/macOS
+platform. Do not remove PyOxigraph or loosen constraints to make a nominally
+complete coordinator install pass.
+
+### A physical worker is unreachable
+
+```bash
+.venv/bin/continuum-bench physical status --ssh-user pi
+ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=3 pi@192.168.1.139
+```
+
+Check the Raspberry Pi address, SSH service, key authentication, coordinator
+route, firewall and TCP port 8391. Ethernet is strongly recommended for
+publishable measurements; a Wi-Fi SSH reset does not by itself prove that the
+HTTP worker stopped.
+
+## 16. Stop services cleanly
+
+Stop the Docker topology nodes:
+
+```bash
+.venv/bin/continuum-bench topology down --name docker
+```
+
+Stop the independent product stack if it was started manually:
+
+```bash
+docker compose -f docker-compose.engines.yml down
+```
+
+Stop the physical workers without deleting their deployment or results:
+
+```bash
+.venv/bin/continuum-bench physical stop --ssh-user pi
+```
+
+These commands leave host-side result CSV/JSON/figures and built Docker images
+in place.
+
+## 17. Installation acceptance checklist
+
+A coordinator-only installation is ready when all of the following pass:
+
+```bash
+python3 tools/doctor.py
+.venv/bin/python -m pip check
+.venv/bin/continuum-bench validate
+.venv/bin/python tools/check_documentation.py
+.venv/bin/python -m pytest
+```
+
+A complete Docker installation additionally requires:
+
+```bash
+python3 tools/doctor.py --docker
+.venv/bin/continuum-smoke-cumulative
+.venv/bin/continuum-smoke-scalability
+.venv/bin/continuum-bench topology up --name docker
+.venv/bin/continuum-bench topology status --name docker
+```
+
+A complete physical installation additionally requires:
+
+```bash
+python3 tools/doctor.py --physical
+.venv/bin/continuum-bench physical status --ssh-user pi
+```
+
+Do not treat a smoke as benchmark evidence: it proves that the workflow and
+expected-result contracts execute on that installation. Generate scientific
+measurements with the full profiles, preserve metadata and failures, and avoid
+running unrelated heavy workloads concurrently.

@@ -1,0 +1,21 @@
+digraph ontology {
+  graph [rankdir=TB, bgcolor="white", margin=0, pad="0.20", nodesep="0.28",
+         ranksep="0.65", splines=polyline, outputorder=edgesfirst,
+         fontname="Helvetica", fontnames="svg", labelloc=b, labeljust=c];
+  node [shape=box, style="rounded,filled", color="#52606D",
+        fillcolor="white", fontcolor="#17212B", fontname="Helvetica",
+        fontsize=11, margin="0.10,0.07", penwidth=1.0];
+  edge [color="#64717D", fontcolor="#26323C", fontname="Helvetica",
+        fontsize=9, arrowsize=0.65, penwidth=0.8];
+  label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="3"><TR><TD BGCOLOR="#E2F1EC" CELLPADDING="5"><FONT POINT-SIZE="9">Topology</FONT></TD><TD BGCOLOR="#EFEDCC" CELLPADDING="5"><FONT POINT-SIZE="9">Deployment</FONT></TD><TD BGCOLOR="#ECEFF1" CELLPADDING="5"><FONT POINT-SIZE="9">External standards / SHACL</FONT></TD></TR><TR><TD COLSPAN="3"><FONT POINT-SIZE="9">Solid: object property | Hollow arrow: subclass | Dotted: OR/AND membership</FONT></TD></TR><TR><TD COLSPAN="3"><FONT POINT-SIZE="9">Attributes: datatype properties | Registries: unscoped properties / metadata</FONT></TD></TR><TR><TD COLSPAN="3"><FONT POINT-SIZE="9">Dashed gray class boxes: cross-module context</FONT></TD></TR></TABLE>>;
+  "http://example.org/smartcity#AuthorityScope" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#EFEDCC" ALIGN="LEFT"><B>ex:AuthorityScope</B></TD></TR></TABLE>>, fillcolor="#EFEDCC", tooltip="http://example.org/smartcity#AuthorityScope"];
+  "http://example.org/smartcity#ComputationalNode" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#F5F5F5" ALIGN="LEFT"><B>ex:ComputationalNode</B></TD></TR></TABLE>>, fillcolor="#F5F5F5", tooltip="http://example.org/smartcity#ComputationalNode", style="rounded,dashed,filled"];
+  "http://example.org/smartcity#DeploymentFragment" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#EFEDCC" ALIGN="LEFT"><B>ex:DeploymentFragment</B></TD></TR><TR><TD ALIGN="LEFT" TOOLTIP="http://example.org/smartcity#graphIRI"><FONT POINT-SIZE="9">ex:graphIRI: xsd:anyURI</FONT></TD></TR></TABLE>>, fillcolor="#EFEDCC", tooltip="http://example.org/smartcity#DeploymentFragment"];
+  "http://example.org/smartcity#PrivacyClass" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#EFEDCC" ALIGN="LEFT"><B>ex:PrivacyClass</B></TD></TR></TABLE>>, fillcolor="#EFEDCC", tooltip="http://example.org/smartcity#PrivacyClass"];
+  "http://example.org/smartcity#SemanticNodeProfile" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#EFEDCC" ALIGN="LEFT"><B>ex:SemanticNodeProfile</B></TD></TR><TR><TD ALIGN="LEFT" TOOLTIP="http://example.org/smartcity#ontologyDigest"><FONT POINT-SIZE="9">ex:ontologyDigest: xsd:string</FONT></TD></TR><TR><TD ALIGN="LEFT" TOOLTIP="http://example.org/smartcity#usesEntailmentProfile"><FONT POINT-SIZE="9">ex:usesEntailmentProfile: xsd:string</FONT></TD></TR></TABLE>>, fillcolor="#EFEDCC", tooltip="http://example.org/smartcity#SemanticNodeProfile"];
+  "https://saref.etsi.org/core/Device" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#F5F5F5" ALIGN="LEFT"><B>saref:Device</B></TD></TR></TABLE>>, fillcolor="#F5F5F5", tooltip="https://saref.etsi.org/core/Device", style="rounded,dashed,filled"];
+  "http://example.org/smartcity#DeploymentFragment" -> "http://example.org/smartcity#AuthorityScope" [label="ex:authoritativeFor", tooltip="http://example.org/smartcity#authoritativeFor"];
+  "http://example.org/smartcity#DeploymentFragment" -> "http://example.org/smartcity#PrivacyClass" [label="ex:hasPrivacyClass", tooltip="http://example.org/smartcity#hasPrivacyClass"];
+  "http://example.org/smartcity#DeploymentFragment" -> "http://example.org/smartcity#ComputationalNode" [label="ex:hostedAt", tooltip="http://example.org/smartcity#hostedAt"];
+  "https://saref.etsi.org/core/Device" -> "http://example.org/smartcity#ComputationalNode" [dir=back, arrowtail=empty, style=dashed, color="#8A939B", weight=2];
+}

@@ -1,10 +1,13 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ex: <http://example.org/smartcity#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix saref: <https://saref.etsi.org/core/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 ex:MAPESymptom a owl:Class ;
     rdfs:label "MAPE-K Symptom" ;
@@ -32,6 +35,38 @@ ex:hasMobileDevice a owl:ObjectProperty ;
     rdfs:label "Continuum foundation module"@en ;
     owl:versionInfo "3.0.0" .
 
+dcterms:identifier a owl:AnnotationProperty .
+
+dcterms:language a owl:AnnotationProperty .
+
+dcterms:modified a owl:AnnotationProperty .
+
+dcterms:replaces a owl:AnnotationProperty .
+
+xsd:duration a rdfs:Datatype .
+
+sh:NodeShape a owl:Class .
+
+sh:class a owl:AnnotationProperty .
+
+sh:datatype a owl:AnnotationProperty .
+
+sh:maxCount a owl:AnnotationProperty .
+
+sh:message a owl:AnnotationProperty .
+
+sh:minCount a owl:AnnotationProperty .
+
+sh:or a owl:AnnotationProperty .
+
+sh:path a owl:AnnotationProperty .
+
+sh:property a owl:AnnotationProperty .
+
+sh:severity a owl:AnnotationProperty .
+
+sh:targetClass a owl:AnnotationProperty .
+
 sosa:Observation a owl:Class .
 
 sosa:Platform a owl:Class .
@@ -49,6 +84,8 @@ sosa:madeBySensor a owl:ObjectProperty .
 sosa:observedProperty a owl:ObjectProperty .
 
 sosa:resultTime a owl:DatatypeProperty .
+
+foaf:name a owl:DatatypeProperty .
 
 saref:Device a owl:Class .
 

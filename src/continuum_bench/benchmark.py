@@ -18,6 +18,7 @@ from .queries import QuerySpec, by_categories, execute_query, load_catalog
 from .reasoners import materialize
 from .specification import release_identity
 from .synthetic import add_synthetic_data
+from .topology import Topology, load_topology
 
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -34,7 +35,12 @@ def _percentile95(values: list[float]) -> float:
     return statistics.quantiles(values, n=20, method="inclusive")[18]
 
 
+def _monolith_topology(config: BenchmarkConfig) -> Topology:
+    return load_topology(config.resolve(config.topology_file), "monolith")
+
+
 def _metadata(config: BenchmarkConfig, graph: Graph) -> dict[str, Any]:
+    topology = _monolith_topology(config)
     return {
         **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -45,6 +51,8 @@ def _metadata(config: BenchmarkConfig, graph: Graph) -> dict[str, Any]:
         "reasoners": list(config.reasoners),
         "repetitions": config.repetitions,
         "seed": config.seed,
+        "architecture": "monolith",
+        "topology": topology.public(),
     }
 
 
@@ -57,6 +65,9 @@ def _write_metadata(path: Path, metadata: dict[str, Any]) -> None:
 
 
 def _load(config: BenchmarkConfig) -> tuple[Graph, list[QuerySpec]]:
+    # Fail before a potentially long run if the monolithic architecture
+    # configuration is invalid.  Its fingerprint is persisted in metadata.
+    _monolith_topology(config)
     graph = load_graph(config.resolve(path) for path in config.ontology_files)
     specs = load_catalog(
         config.resolve(config.query_catalog),
