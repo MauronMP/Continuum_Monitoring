@@ -214,6 +214,13 @@ Passwordless SSH keys are required after `authorize`; passwords are never
 stored in the repository. Deployment creates a minimal `.venv-node` on each
 remote host and sends a flattened, fingerprinted topology snapshot.
 
+Physical sharded queries use bounded batches and worker-side deadlines from the
+`[distributed]` table in the selected benchmark TOML. Long POSTs are not
+retried by default, avoiding duplicate work on single-threaded Raspberry Pi
+workers. After changing code or timeout settings, stop, deploy, start and check
+the cluster before rerunning. See
+[PHYSICAL_CONTINUUM.md](docs/design/PHYSICAL_CONTINUUM.md#bounded-query-batches-and-timeouts).
+
 ## Multidimensional load benchmark
 
 The load suite independently varies event rate, users, target triples, rules

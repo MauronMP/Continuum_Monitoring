@@ -726,6 +726,26 @@ route, firewall and TCP port 8391. Ethernet is strongly recommended for
 publishable measurements; a Wi-Fi SSH reset does not by itself prove that the
 HTTP worker stopped.
 
+### A physical `partitioned-queries` phase times out
+
+The default authority-sharded runner sends bounded groups of eight queries and
+arms a worker-side deadline five seconds before the 900-second HTTP deadline.
+These values are configured under `[distributed]` in `configs/benchmark.toml`.
+Do not enable transport retries to compensate for slow reasoning: a repeated
+POST can duplicate the same CPU work. Reduce `query_batch_size` to `4` or `1`
+to isolate a slow query, then redeploy and restart every physical worker:
+
+```bash
+.venv/bin/continuum-bench physical stop --ssh-user pi
+.venv/bin/continuum-bench physical deploy --ssh-user pi
+.venv/bin/continuum-bench physical start --ssh-user pi
+.venv/bin/continuum-bench physical status --ssh-user pi
+```
+
+The new terminal diagnostics report the batch number and exact query IDs. Use
+the matching node log to distinguish a genuine reasoning timeout from process
+termination or memory pressure.
+
 ## 16. Stop services cleanly
 
 Stop the Docker topology nodes:

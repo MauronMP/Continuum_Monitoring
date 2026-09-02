@@ -230,6 +230,58 @@ For publishable measurements:
 - randomize or counterbalance architecture run order;
 - preserve failures, resets and timeouts.
 
+## Bounded query batches and timeouts
+
+Authority-sharded queries are not sent to a Raspberry Pi as one unbounded
+70--80 query POST. The coordinator splits each node assignment into bounded
+batches and prints the batch number and active-node load. The defaults live in
+the selected benchmark configuration:
+
+```toml
+[distributed]
+request_timeout_seconds = 900
+request_retries = 0
+query_batch_size = 8
+worker_timeout_margin_seconds = 5
+```
+
+The HTTP timeout applies to one preparation request or one query batch, not to
+the complete stage. The worker deadline expires before the socket deadline, so
+CPU-bound RDFLib work is interrupted and the node remains available. Long POST
+requests are not replayed by default: retrying an already executing batch on a
+single-threaded worker duplicates work and can turn one 900-second timeout into
+approximately 2,700 seconds. Health discovery still retries a transient
+connection failure separately.
+
+For a constrained 32-bit Raspberry Pi, first reduce `query_batch_size` to `4`
+or `1` in `configs/benchmark.toml`. Increase `request_timeout_seconds` only when
+one identified query legitimately needs a larger censoring threshold. Keep the
+same values for every architecture used in a scientific comparison.
+
+These settings are deployed with the project. After changing code or TOML,
+replace every worker release before rerunning:
+
+```bash
+.venv/bin/continuum-bench physical stop --ssh-user pi
+.venv/bin/continuum-bench physical deploy --ssh-user pi
+.venv/bin/continuum-bench physical start --ssh-user pi
+.venv/bin/continuum-bench physical status --ssh-user pi
+```
+
+If a batch still times out, the coordinator error includes its batch number and
+query IDs. Inspect the corresponding worker log, replacing the host and node ID
+with the configured values:
+
+```bash
+ssh pi@RASPBERRY_HOST \
+  'tail -n 100 /home/pi/continuum-bench/runtime/edge3.log'
+```
+
+The cumulative/scalability correctness suites stop on such a timeout because a
+partial federated answer cannot pass the monolithic oracle. Load and separated
+experiment suites retain their documented censored observations for statistical
+analysis.
+
 ## Connection-reset diagnosis
 
 An SSH message such as `Connection reset by peer` does not prove that the HTTP

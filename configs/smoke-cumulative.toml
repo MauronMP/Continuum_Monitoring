@@ -23,6 +23,12 @@ query_catalog = "queries/catalog.csv"
 topology_file = "configs/topology.toml"
 output_dir = "outputs/smoke-cumulative"
 
+[distributed]
+request_timeout_seconds = 120
+request_retries = 0
+query_batch_size = 8
+worker_timeout_margin_seconds = 2
+
 [benchmark]
 reasoners = ["rdfs", "owlrl", "rdfs_owlrl"]
 category_order = [

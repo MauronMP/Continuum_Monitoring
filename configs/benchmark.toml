@@ -23,6 +23,15 @@ query_catalog = "queries/catalog.csv"
 topology_file = "configs/topology.toml"
 output_dir = "outputs"
 
+[distributed]
+# Bound each remote request, not the whole benchmark stage. Queries are split
+# into small batches so low-power physical nodes report progress and one slow
+# query cannot force the complete 70+ query authority workload to be repeated.
+request_timeout_seconds = 900
+request_retries = 0
+query_batch_size = 8
+worker_timeout_margin_seconds = 5
+
 [benchmark]
 reasoners = ["rdfs", "owlrl", "rdfs_owlrl"]
 category_order = [

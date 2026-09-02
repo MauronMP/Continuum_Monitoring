@@ -85,6 +85,25 @@ def test_request_retries_a_transient_disconnect(monkeypatch):
     ]
 
 
+def test_parallel_timeout_reports_the_exact_query_batch(monkeypatch):
+    endpoint = Endpoint("http://edge3", "edge3")
+
+    def fail(*args, **kwargs):
+        raise TimeoutError("timed out")
+
+    monkeypatch.setattr(distributed, "_request", fail)
+
+    with pytest.raises(RuntimeError, match="Q071,Q076"):
+        distributed._parallel(
+            [endpoint],
+            "/queries",
+            {endpoint.url: {"query_ids": ["Q071", "Q076"]}},
+            phase="partitioned-queries-batch-1-of-1",
+            timeout=1,
+            retries=0,
+        )
+
+
 def test_worker_health_rejects_an_old_ontology_release():
     health = {
         "status": "ok",

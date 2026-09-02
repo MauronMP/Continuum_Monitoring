@@ -76,10 +76,20 @@ EDGE_CATEGORIES = {
 }
 
 # Raspberry Pi reasoning/materialisation can legitimately exceed the previous
-# five-minute urllib default. Retries are deliberately visible and their delay
-# remains inside the measured distributed phase wall time.
+# five-minute urllib default. Long POSTs are not retried by default: replaying a
+# timed-out query batch can duplicate CPU work on a single-threaded worker.
 DISTRIBUTED_REQUEST_TIMEOUT_SECONDS = 900.0
-DISTRIBUTED_REQUEST_RETRIES = 2
+DISTRIBUTED_REQUEST_RETRIES = 0
+
+
+def _payload_hint(payload: dict[str, Any]) -> str:
+    query_ids = payload.get("query_ids")
+    if isinstance(query_ids, list):
+        values = [str(value) for value in query_ids]
+        shown = ",".join(values[:12])
+        suffix = f",...(+{len(values) - 12})" if len(values) > 12 else ""
+        return f" query_ids={shown}{suffix}"
+    return ""
 
 
 def _request(
@@ -230,18 +240,21 @@ def _parallel(
             try:
                 results[endpoint.url] = future.result()
             except Exception as error:
+                hint = _payload_hint(payloads[endpoint.url])
+                detail = f";{hint}" if hint else ""
                 print(
                     "[distributed-node] "
                     f"phase={phase_name} role={endpoint.role} "
                     f"endpoint={endpoint.url} status=failed "
                     f"elapsed_ms={endpoint_ms:.2f} "
-                    f"error={type(error).__name__}: {error}",
+                    f"error={type(error).__name__}: {error}{hint}",
                     flush=True,
                 )
                 raise RuntimeError(
                     f"Distributed phase {phase_name!r} failed on "
                     f"role={endpoint.role} endpoint={endpoint.url} after "
                     f"{endpoint_ms:.2f} ms: {type(error).__name__}: {error}"
+                    f"{detail}"
                 ) from error
             print(
                 "[distributed-node] "

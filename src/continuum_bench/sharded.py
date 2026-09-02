@@ -15,8 +15,6 @@ from rdflib import Graph
 
 from .config import BenchmarkConfig
 from .distributed import (
-    DISTRIBUTED_REQUEST_RETRIES,
-    DISTRIBUTED_REQUEST_TIMEOUT_SECONDS,
     Endpoint,
     _parallel,
     _write_csv,
@@ -97,11 +95,13 @@ def _assignment(
 
 
 def _prepare(
+    config: BenchmarkConfig,
     endpoints: list[Endpoint],
     reasoner: str,
     users: int,
     seed: int,
 ) -> tuple[float, dict[str, dict[str, Any]]]:
+    transport = config.distributed
     return _parallel(
         endpoints,
         "/prepare",
@@ -111,30 +111,143 @@ def _prepare(
                 "users": users,
                 "seed": seed,
                 "mode": "partitioned",
+                "phase_timeout_seconds": (
+                    transport.request_timeout_seconds
+                    - transport.worker_timeout_margin_seconds
+                ),
             }
             for endpoint in endpoints
         },
         phase="partitioned-prepare",
+        timeout=transport.request_timeout_seconds,
+        retries=transport.request_retries,
     )
+
+
+def _combined_query_response(
+    responses: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Combine bounded worker batches into the legacy per-node response."""
+
+    if not responses:
+        raise ValueError("At least one query batch response is required")
+    first = responses[0]
+    combined = {
+        key: first[key]
+        for key in ("role", "mode", "reasoner", "synthetic_users")
+    }
+    sum_fields = (
+        "query_count",
+        "query_wall_ms",
+        "query_cpu_ms",
+        "process_cpu_ms",
+        "disk_read_bytes",
+        "disk_write_bytes",
+        "request_bytes",
+        "response_bytes",
+    )
+    combined.update(
+        {
+            key: sum(float(item.get(key, 0)) for item in responses)
+            for key in sum_fields
+        }
+    )
+    combined["query_count"] = int(combined["query_count"])
+    for key in (
+        "disk_read_bytes",
+        "disk_write_bytes",
+        "request_bytes",
+        "response_bytes",
+    ):
+        combined[key] = int(combined[key])
+    combined["current_rss_kib"] = int(
+        responses[-1].get("current_rss_kib", 0)
+    )
+    combined["peak_rss_kib"] = max(
+        int(item.get("peak_rss_kib", 0)) for item in responses
+    )
+    combined["measurements"] = [
+        measurement
+        for item in responses
+        for measurement in item.get("measurements", [])
+    ]
+    combined["_coordinator_attempts"] = 1 + sum(
+        max(int(item.get("_coordinator_attempts", 1)) - 1, 0)
+        for item in responses
+    )
+    combined["query_batch_count"] = len(responses)
+    return combined
 
 
 def _query(
+    config: BenchmarkConfig,
     endpoints: list[Endpoint],
     assignment: dict[str, list[QuerySpec]],
 ) -> tuple[float, dict[str, dict[str, Any]]]:
-    return _parallel(
-        endpoints,
-        "/queries",
-        {
-            url: {
-                "query_ids": [spec.id for spec in specs],
+    transport = config.distributed
+    batch_size = transport.query_batch_size
+    batches = {
+        url: [
+            specs[index : index + batch_size]
+            for index in range(0, len(specs), batch_size)
+        ]
+        for url, specs in assignment.items()
+        if specs
+    }
+    batch_rounds = max((len(items) for items in batches.values()), default=0)
+    wall_ms = 0.0
+    collected: dict[str, list[dict[str, Any]]] = {
+        url: [] for url in batches
+    }
+    endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
+    for batch_index in range(batch_rounds):
+        payloads: dict[str, dict[str, Any]] = {}
+        descriptions: list[str] = []
+        for url, endpoint_batches in batches.items():
+            if batch_index >= len(endpoint_batches):
+                continue
+            query_ids = [spec.id for spec in endpoint_batches[batch_index]]
+            payloads[url] = {
+                "query_ids": query_ids,
                 "include_result_keys": True,
+                "phase_timeout_seconds": (
+                    transport.request_timeout_seconds
+                    - transport.worker_timeout_margin_seconds
+                ),
             }
-            for url, specs in assignment.items()
-            if specs
-        },
-        phase="partitioned-queries",
-    )
+            descriptions.append(
+                f"{endpoint_by_url[url].role}:{len(query_ids)}"
+            )
+        print(
+            "[distributed-batch] phase=partitioned-queries "
+            f"batch={batch_index + 1}/{batch_rounds} "
+            f"nodes={','.join(descriptions)} status=running",
+            flush=True,
+        )
+        batch_wall_ms, responses = _parallel(
+            endpoints,
+            "/queries",
+            payloads,
+            phase=(
+                "partitioned-queries-"
+                f"batch-{batch_index + 1}-of-{batch_rounds}"
+            ),
+            timeout=transport.request_timeout_seconds,
+            retries=transport.request_retries,
+        )
+        wall_ms += batch_wall_ms
+        for url, response in responses.items():
+            collected[url].append(response)
+        print(
+            "[distributed-batch] phase=partitioned-queries "
+            f"batch={batch_index + 1}/{batch_rounds} status=done "
+            f"wall_ms={batch_wall_ms:.2f}",
+            flush=True,
+        )
+    return wall_ms, {
+        url: _combined_query_response(items)
+        for url, items in collected.items()
+    }
 
 
 def _merge_responses(
@@ -356,6 +469,17 @@ def _summary(
             max(int(item.get("_coordinator_attempts", 1)) - 1, 0)
             for item in responses.values()
         ),
+        "node_query_batch_count_sum": sum(
+            int(item.get("query_batch_count", 1))
+            for item in responses.values()
+        ),
+        "max_node_query_batch_count": max(
+            (
+                int(item.get("query_batch_count", 1))
+                for item in responses.values()
+            ),
+            default=0,
+        ),
         "node_query_ms_sum": sum(
             float(item["query_cpu_ms"]) for item in responses.values()
         ),
@@ -473,10 +597,15 @@ def _metadata(
             "transport_bytes": "exact JSON HTTP request/response body sizes",
         },
         "transport": {
-            "timeout_seconds": DISTRIBUTED_REQUEST_TIMEOUT_SECONDS,
-            "retries": DISTRIBUTED_REQUEST_RETRIES,
+            "timeout_seconds": config.distributed.request_timeout_seconds,
+            "retries": config.distributed.request_retries,
+            "query_batch_size": config.distributed.query_batch_size,
+            "worker_timeout_margin_seconds": (
+                config.distributed.worker_timeout_margin_seconds
+            ),
             "retry_delay_in_phase_wall_time": True,
             "retry_counts_in_summary": True,
+            "timeout_scope": "one prepare request or one query batch",
         },
         "routing": (
             "query source selection from queries/execution-plan.toml, "
@@ -526,7 +655,7 @@ def run_sharded_cumulative(
                 flush=True,
             )
             prepare_wall_ms, prepared = _prepare(
-                endpoints, reasoner, 0, config.seed
+                config, endpoints, reasoner, 0, config.seed
             )
             active: set[str] = set()
             for stage, category in enumerate(config.category_order, start=1):
@@ -545,7 +674,9 @@ def run_sharded_cumulative(
                     f"sources={loads} status=running",
                     flush=True,
                 )
-                query_wall_ms, responses = _query(endpoints, assignment)
+                query_wall_ms, responses = _query(
+                    config, endpoints, assignment
+                )
                 common = {
                     "reasoner": reasoner,
                     "repetition": repetition,
@@ -648,10 +779,23 @@ def run_sharded_scalability(
                     flush=True,
                 )
                 prepare_wall_ms, prepared = _prepare(
-                    endpoints, reasoner, users, config.seed
+                    config, endpoints, reasoner, users, config.seed
                 )
                 assignment = _assignment(specs, endpoints)
-                query_wall_ms, responses = _query(endpoints, assignment)
+                loads = ",".join(
+                    f"{endpoint.role}:{len(assignment[endpoint.url])}"
+                    for endpoint in endpoints
+                )
+                print(
+                    f"[{target}-sharded-scalability] "
+                    f"block={block}/{len(config.scale_users)} users={users} "
+                    f"reasoner={reasoner} phase=partitioned-queries "
+                    f"sources={loads} status=running",
+                    flush=True,
+                )
+                query_wall_ms, responses = _query(
+                    config, endpoints, assignment
+                )
                 common = {
                     "reasoner": reasoner,
                     "repetition": repetition,

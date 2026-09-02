@@ -1,8 +1,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from pathlib import Path
 import tomllib
+
+
+@dataclass(frozen=True)
+class DistributedConfig:
+    """Bound one distributed request and the work performed behind it."""
+
+    request_timeout_seconds: float
+    request_retries: int
+    query_batch_size: int
+    worker_timeout_margin_seconds: float
 
 
 @dataclass(frozen=True)
@@ -18,6 +29,7 @@ class BenchmarkConfig:
     scale_users: tuple[int, ...]
     repetitions: int
     seed: int
+    distributed: DistributedConfig
 
     def resolve(self, path: Path) -> Path:
         return path if path.is_absolute() else self.root / path
@@ -30,6 +42,36 @@ def load_config(path: str | Path) -> BenchmarkConfig:
     root = config_path.parents[1]
     paths = raw["paths"]
     benchmark = raw["benchmark"]
+    distributed_raw = raw.get("distributed", {})
+    distributed = DistributedConfig(
+        request_timeout_seconds=float(
+            distributed_raw.get("request_timeout_seconds", 900.0)
+        ),
+        request_retries=int(distributed_raw.get("request_retries", 0)),
+        query_batch_size=int(distributed_raw.get("query_batch_size", 8)),
+        worker_timeout_margin_seconds=float(
+            distributed_raw.get("worker_timeout_margin_seconds", 5.0)
+        ),
+    )
+    if (
+        not math.isfinite(distributed.request_timeout_seconds)
+        or distributed.request_timeout_seconds <= 1
+    ):
+        raise ValueError("distributed.request_timeout_seconds must be > 1")
+    if distributed.request_retries < 0:
+        raise ValueError("distributed.request_retries must be >= 0")
+    if distributed.query_batch_size < 1:
+        raise ValueError("distributed.query_batch_size must be >= 1")
+    if (
+        not math.isfinite(distributed.worker_timeout_margin_seconds)
+        or distributed.worker_timeout_margin_seconds <= 0
+        or distributed.worker_timeout_margin_seconds
+        >= distributed.request_timeout_seconds
+    ):
+        raise ValueError(
+            "distributed.worker_timeout_margin_seconds must be positive and "
+            "smaller than distributed.request_timeout_seconds"
+        )
     return BenchmarkConfig(
         root=root,
         ontology_files=tuple(Path(value) for value in paths["ontology_files"]),
@@ -42,4 +84,5 @@ def load_config(path: str | Path) -> BenchmarkConfig:
         scale_users=tuple(int(value) for value in benchmark["scale_users"]),
         repetitions=int(benchmark["repetitions"]),
         seed=int(benchmark["seed"]),
+        distributed=distributed,
     )

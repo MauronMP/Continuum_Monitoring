@@ -407,6 +407,20 @@ Replicated smokes:
   --layout replicated --ssh-user pi
 ```
 
+The `[distributed]` table in the selected benchmark TOML bounds one remote
+request and one worker phase. Sharded query assignments are split according to
+`query_batch_size` (8 by default), and the terminal reports every batch. The
+default `request_retries = 0` prevents a timed-out 70+ query POST from being
+executed repeatedly on a single-threaded Raspberry Pi. After changing this
+configuration, run `physical stop`, `physical deploy`, `physical start`, and
+`physical status` so every node uses the same release.
+
+If a sharded timeout occurs, the exception identifies the node, batch and exact
+query IDs. A cumulative/scalability run stops because its distributed result is
+incomplete and cannot satisfy the monolithic correctness oracle. This differs
+from the load and separated experiment suites, where timeouts are recorded as
+right-censored observations.
+
 Stop workers without deleting deployments or outputs:
 
 ```bash
@@ -623,7 +637,9 @@ With Docker and physical workers already healthy:
 - Hardware reasoning evaluates endpoints independently, not a cluster speedup.
 - Distributed ontology mode includes partitioning/federation semantics and must
   pass the monolithic result oracle.
-- A timeout is a censored observation, not a missing row.
+- In load and separated experiment outputs, a timeout is a censored
+  observation, not a missing row. The correctness-gated cumulative and
+  scalability suites fail explicitly rather than accepting a partial answer.
 - Event loss and failed profiles must remain in summaries and figures.
 - Result count alone is weaker than the canonical result digest; use the digest
   when both result sets provide it.
