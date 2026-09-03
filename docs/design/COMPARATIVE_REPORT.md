@@ -146,6 +146,11 @@ claims.
 
 - Verify that every plotted series has the intended repetition coverage.
 - Keep timeout rate and failure tables with latency figures.
+- `data/timeout-coverage.csv` reports scheduled, completed, timed-out,
+  transport-error and early-stopped points, plus the maximum completed and
+  first censored load for every architecture/reasoner and product engine.
+  Exact speedup tables exclude censored rows and use only common completed load
+  points.
 - Confirm result equivalence before discussing speedup.
 - Report replicated and authority-sharded layouts as different treatments.
 - State that Docker nodes share one host and therefore do not provide the same

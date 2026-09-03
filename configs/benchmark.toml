@@ -24,13 +24,21 @@ topology_file = "configs/topology.toml"
 output_dir = "outputs"
 
 [distributed]
-# Bound each remote request, not the whole benchmark stage. Queries are split
-# into small batches so low-power physical nodes report progress and one slow
-# query cannot force the complete 70+ query authority workload to be repeated.
-request_timeout_seconds = 900
+# One minute is the response-time acceptance ceiling. A timeout is persisted as
+# a right-censored observation and does not abort the complete suite.
+request_timeout_seconds = 60
 request_retries = 0
-query_batch_size = 8
-worker_timeout_margin_seconds = 5
+query_batch_size = 4
+worker_timeout_margin_seconds = 2
+
+[limits]
+# A phase or complete measurement point that exceeds these limits is not timed
+# to completion. Larger scalability points are recorded as skipped because the
+# first timeout already establishes that the acceptance ceiling was exceeded.
+phase_timeout_seconds = 60
+point_timeout_seconds = 90
+calibration_query_limit = 16
+stop_scaling_after_timeout = true
 
 [benchmark]
 reasoners = ["rdfs", "owlrl", "rdfs_owlrl"]

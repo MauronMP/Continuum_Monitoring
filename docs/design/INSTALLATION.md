@@ -728,9 +728,11 @@ HTTP worker stopped.
 
 ### A physical `partitioned-queries` phase times out
 
-The default authority-sharded runner sends bounded groups of eight queries and
-arms a worker-side deadline five seconds before the 900-second HTTP deadline.
-These values are configured under `[distributed]` in `configs/benchmark.toml`.
+The default authority-sharded runner sends bounded groups of four queries and
+arms a worker-side deadline two seconds before the 60-second HTTP deadline. A
+90-second point budget also bounds preparation plus all batches. These values
+are configured under `[distributed]` and `[limits]` in
+`configs/benchmark.toml`.
 Do not enable transport retries to compensate for slow reasoning: a repeated
 POST can duplicate the same CPU work. Reduce `query_batch_size` to `4` or `1`
 to isolate a slow query, then redeploy and restart every physical worker:
@@ -742,9 +744,10 @@ to isolate a slow query, then redeploy and restart every physical worker:
 .venv/bin/continuum-bench physical status --ssh-user pi
 ```
 
-The new terminal diagnostics report the batch number and exact query IDs. Use
-the matching node log to distinguish a genuine reasoning timeout from process
-termination or memory pressure.
+The terminal diagnostics report the batch number and exact query IDs. The CSV
+records `timeout` or `transport_error`, marks the observation as censored, and
+skips larger scalability points. Use the matching node log to distinguish a
+genuine reasoning timeout from process termination or memory pressure.
 
 ## 16. Stop services cleanly
 

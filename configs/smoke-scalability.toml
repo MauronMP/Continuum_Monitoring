@@ -24,14 +24,20 @@ topology_file = "configs/topology.toml"
 output_dir = "outputs/smoke-scalability"
 
 [distributed]
-request_timeout_seconds = 120
+request_timeout_seconds = 30
 request_retries = 0
-query_batch_size = 8
+query_batch_size = 4
 worker_timeout_margin_seconds = 2
+
+[limits]
+phase_timeout_seconds = 30
+point_timeout_seconds = 45
+calibration_query_limit = 8
+stop_scaling_after_timeout = true
 
 [benchmark]
 reasoners = ["rdfs", "owlrl", "rdfs_owlrl"]
-# Obligatorio por el esquema común; la escalabilidad ejecuta las 115 consultas.
+# Required by the shared schema; scalability executes all 115 queries.
 category_order = [
   "topology",
   "semantic_schema",

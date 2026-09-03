@@ -166,6 +166,21 @@ Keep the CSV, JSON and metadata next to PNG/PDF/SVG figures. A comparison is
 valid only when matched profiles have equivalent result digests and compatible
 ontology, query, reasoner and topology versions.
 
+### Bounded execution and timeout results
+
+The default full configuration uses a 60-second phase/request ceiling and a
+90-second complete-point ceiling; smoke configurations use 30 and 45 seconds.
+These are acceptance thresholds, not estimates of the eventual completion
+time. `summary.csv` records `status=completed`, `timeout`, `transport_error`, or
+`skipped_after_timeout`, together with `censored`, `failed_phase`, the threshold
+and the error. Larger scalability blocks are not executed after a timeout has
+already shown that the topology or engine exceeds the threshold. Do not compute
+speedups from censored rows; report completion/timeout coverage with latency.
+
+Edit `[limits]` and `[distributed]` in the selected benchmark TOML to change
+the scientific threshold. Use exactly the same values for all architectures in
+a comparison and redeploy physical workers after a configuration change.
+
 ## 11. Preserve a reproducible campaign
 
 Record:

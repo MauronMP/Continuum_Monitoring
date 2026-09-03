@@ -33,6 +33,12 @@ def _median_groups(
 ) -> dict[str, list[tuple[float, float]]]:
     values: dict[tuple[str, float], list[float]] = defaultdict(list)
     for row in rows:
+        if (
+            row.get("status", "completed") != "completed"
+            or not row.get(x_field)
+            or not row.get(y_field)
+        ):
+            continue
         values[(row["reasoner"], float(row[x_field]))].append(float(row[y_field]))
     grouped: dict[str, list[tuple[float, float]]] = defaultdict(list)
     for (reasoner, x_value), samples in values.items():
@@ -153,6 +159,12 @@ def _summary_samples(
 ) -> dict[str, list[tuple[float, float, float, float]]]:
     values: dict[tuple[str, float], list[float]] = defaultdict(list)
     for row in rows:
+        if (
+            row.get("status", "completed") != "completed"
+            or not row.get(x_field)
+            or not row.get(y_field)
+        ):
+            continue
         values[(row["reasoner"], float(row[x_field]))].append(
             float(row[y_field])
         )
@@ -174,8 +186,14 @@ def _summary_samples(
 def plot_publication(output_root: Path) -> list[Path]:
     """Create vector and 300-DPI figures with repetition ranges."""
     publication = output_root / "publication"
-    cumulative_rows = _read(output_root / "cumulative" / "summary.csv")
-    scalability_rows = _read(output_root / "scalability" / "summary.csv")
+    cumulative_rows = [
+        row for row in _read(output_root / "cumulative" / "summary.csv")
+        if row.get("status", "completed") == "completed"
+    ]
+    scalability_rows = [
+        row for row in _read(output_root / "scalability" / "summary.csv")
+        if row.get("status", "completed") == "completed"
+    ]
     outputs: list[Path] = []
 
     plt.rcParams.update(
@@ -222,7 +240,6 @@ def plot_publication(output_root: Path) -> list[Path]:
     )
 
     reasoners = sorted({row["reasoner"] for row in scalability_rows})
-    users = sorted({int(row["synthetic_users"]) for row in scalability_rows})
     fig, axes = plt.subplots(
         1,
         len(reasoners),
@@ -233,14 +250,17 @@ def plot_publication(output_root: Path) -> list[Path]:
         subset = [
             row for row in scalability_rows if row["reasoner"] == reasoner
         ]
-        x = np.arange(len(users))
+        reasoner_users = sorted(
+            {int(row["synthetic_users"]) for row in subset}
+        )
+        x = np.arange(len(reasoner_users))
         generation = [
             statistics.median(
                 float(row["generation_ms"])
                 for row in subset
                 if int(row["synthetic_users"]) == value
             )
-            for value in users
+            for value in reasoner_users
         ]
         reasoning = [
             statistics.median(
@@ -248,7 +268,7 @@ def plot_publication(output_root: Path) -> list[Path]:
                 for row in subset
                 if int(row["synthetic_users"]) == value
             )
-            for value in users
+            for value in reasoner_users
         ]
         queries = [
             statistics.median(
@@ -256,7 +276,7 @@ def plot_publication(output_root: Path) -> list[Path]:
                 for row in subset
                 if int(row["synthetic_users"]) == value
             )
-            for value in users
+            for value in reasoner_users
         ]
         axis.bar(x, generation, label="Generation")
         axis.bar(x, reasoning, bottom=generation, label="Reasoning")
@@ -267,7 +287,7 @@ def plot_publication(output_root: Path) -> list[Path]:
             label="SPARQL",
         )
         axis.set_title(reasoner)
-        axis.set_xticks(x, [str(value) for value in users])
+        axis.set_xticks(x, [str(value) for value in reasoner_users])
         axis.set_xlabel("Synthetic users")
         axis.grid(True, axis="y", alpha=0.2)
     axes[0].set_ylabel("Median time (ms)")
@@ -360,6 +380,12 @@ def _engine_samples(
 ) -> dict[str, list[tuple[float, float, float, float]]]:
     values: dict[tuple[str, float], list[float]] = defaultdict(list)
     for row in rows:
+        if (
+            row.get("status", "completed") != "completed"
+            or not row.get(x_field)
+            or not row.get(y_field)
+        ):
+            continue
         values[(row["engine"], float(row[x_field]))].append(
             float(row[y_field])
         )
@@ -378,6 +404,30 @@ def _engine_samples(
     for points in grouped.values():
         points.sort()
     return grouped
+
+
+def _plot_censored_engine_points(axis, rows, x_field: str) -> None:
+    points = [
+        (
+            float(row[x_field]),
+            float(row.get("censored_lower_bound_ms") or row.get("engine_total_ms")),
+        )
+        for row in rows
+        if row.get("status") == "timeout"
+        and row.get(x_field)
+        and (row.get("censored_lower_bound_ms") or row.get("engine_total_ms"))
+    ]
+    if points:
+        axis.scatter(
+            [point[0] for point in points],
+            [point[1] for point in points],
+            marker="x",
+            color="black",
+            s=42,
+            linewidths=1.5,
+            label="Timeout (right-censored lower bound)",
+            zorder=5,
+        )
 
 
 def plot_engine_benchmark(
@@ -426,6 +476,7 @@ def plot_engine_benchmark(
             float(row["stage"]): row["added_category"].replace("_", "\n")
             for row in cumulative
         }
+        _plot_censored_engine_points(axis, cumulative, "stage")
         positions = sorted(category_labels)
         axis.set_xticks(
             positions,
@@ -467,6 +518,9 @@ def plot_engine_benchmark(
                 linewidth=1.5,
                 label=labels[engine],
             )
+        _plot_censored_engine_points(
+            axis, scalability, "synthetic_users"
+        )
         axis.set_xscale("log")
         axis.set_yscale("log")
         axis.set_xlabel("Synthetic users (log scale)")

@@ -17,6 +17,16 @@ class DistributedConfig:
 
 
 @dataclass(frozen=True)
+class ExecutionLimits:
+    """Budgets for bounded benchmarks and right-censored observations."""
+
+    phase_timeout_seconds: float
+    point_timeout_seconds: float
+    calibration_query_limit: int
+    stop_scaling_after_timeout: bool
+
+
+@dataclass(frozen=True)
 class BenchmarkConfig:
     root: Path
     ontology_files: tuple[Path, ...]
@@ -30,6 +40,7 @@ class BenchmarkConfig:
     repetitions: int
     seed: int
     distributed: DistributedConfig
+    limits: ExecutionLimits
 
     def resolve(self, path: Path) -> Path:
         return path if path.is_absolute() else self.root / path
@@ -43,9 +54,10 @@ def load_config(path: str | Path) -> BenchmarkConfig:
     paths = raw["paths"]
     benchmark = raw["benchmark"]
     distributed_raw = raw.get("distributed", {})
+    limits_raw = raw.get("limits", {})
     distributed = DistributedConfig(
         request_timeout_seconds=float(
-            distributed_raw.get("request_timeout_seconds", 900.0)
+            distributed_raw.get("request_timeout_seconds", 60.0)
         ),
         request_retries=int(distributed_raw.get("request_retries", 0)),
         query_batch_size=int(distributed_raw.get("query_batch_size", 8)),
@@ -72,6 +84,34 @@ def load_config(path: str | Path) -> BenchmarkConfig:
             "distributed.worker_timeout_margin_seconds must be positive and "
             "smaller than distributed.request_timeout_seconds"
         )
+    limits = ExecutionLimits(
+        phase_timeout_seconds=float(
+            limits_raw.get(
+                "phase_timeout_seconds",
+                distributed.request_timeout_seconds,
+            )
+        ),
+        point_timeout_seconds=float(
+            limits_raw.get(
+                "point_timeout_seconds",
+                distributed.request_timeout_seconds,
+            )
+        ),
+        calibration_query_limit=int(
+            limits_raw.get("calibration_query_limit", 16)
+        ),
+        stop_scaling_after_timeout=bool(
+            limits_raw.get("stop_scaling_after_timeout", True)
+        ),
+    )
+    for field, value in (
+        ("phase_timeout_seconds", limits.phase_timeout_seconds),
+        ("point_timeout_seconds", limits.point_timeout_seconds),
+    ):
+        if not math.isfinite(value) or value <= 0:
+            raise ValueError(f"limits.{field} must be finite and positive")
+    if limits.calibration_query_limit < 1:
+        raise ValueError("limits.calibration_query_limit must be >= 1")
     return BenchmarkConfig(
         root=root,
         ontology_files=tuple(Path(value) for value in paths["ontology_files"]),
@@ -85,4 +125,5 @@ def load_config(path: str | Path) -> BenchmarkConfig:
         repetitions=int(benchmark["repetitions"]),
         seed=int(benchmark["seed"]),
         distributed=distributed,
+        limits=limits,
     )

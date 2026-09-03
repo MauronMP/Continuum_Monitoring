@@ -9,12 +9,18 @@ from http.client import RemoteDisconnected
 import json
 from pathlib import Path
 import platform
-from time import perf_counter_ns, sleep
+from time import monotonic, perf_counter_ns, sleep
 from typing import Any, Iterable
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from .config import BenchmarkConfig
+from .budget import (
+    PhaseBudgetTimeout,
+    error_text,
+    failure_status,
+    is_boundary_failure,
+)
 from .csv_utils import write_dict_rows
 from .protocol import worker_health_error
 from .queries import QuerySpec, by_categories, load_catalog
@@ -75,10 +81,9 @@ EDGE_CATEGORIES = {
     "wellbeing",
 }
 
-# Raspberry Pi reasoning/materialisation can legitimately exceed the previous
-# five-minute urllib default. Long POSTs are not retried by default: replaying a
-# timed-out query batch can duplicate CPU work on a single-threaded worker.
-DISTRIBUTED_REQUEST_TIMEOUT_SECONDS = 900.0
+# Fallback for internal callers without an explicit benchmark configuration.
+# Public runners use the TOML value and record an exceeded ceiling as censored.
+DISTRIBUTED_REQUEST_TIMEOUT_SECONDS = 60.0
 DISTRIBUTED_REQUEST_RETRIES = 0
 
 
@@ -332,36 +337,170 @@ def _metadata(
         "seed": config.seed,
         "replica_count": len(endpoints),
         "node_count": len(endpoints),
+        "execution_limits": {
+            "phase_timeout_seconds": config.limits.phase_timeout_seconds,
+            "point_timeout_seconds": config.limits.point_timeout_seconds,
+            "stop_scaling_after_timeout": (
+                config.limits.stop_scaling_after_timeout
+            ),
+            "timeout_semantics": "right-censored with monotone early stop",
+        },
     }
 
 
 def _prepare(
+    config: BenchmarkConfig,
     endpoints: list[Endpoint],
     reasoner: str,
     users: int,
     seed: int,
 ) -> tuple[float, dict[str, dict[str, Any]]]:
+    transport = config.distributed
+    timeout = min(
+        transport.request_timeout_seconds,
+        config.limits.point_timeout_seconds,
+    )
     payloads = {
         endpoint.url: {
             "reasoner": reasoner,
             "users": users,
             "seed": seed,
+            "phase_timeout_seconds": (
+                timeout - transport.worker_timeout_margin_seconds
+            ),
         }
         for endpoint in endpoints
     }
-    return _parallel(endpoints, "/prepare", payloads, phase="prepare")
+    return _parallel(
+        endpoints,
+        "/prepare",
+        payloads,
+        phase="prepare",
+        timeout=timeout,
+        retries=transport.request_retries,
+    )
+
+
+def _combine_query_responses(
+    responses: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Combine sequential bounded query batches from one worker."""
+
+    if not responses:
+        raise ValueError("At least one query batch response is required")
+    first = responses[0]
+    combined = {
+        key: first[key]
+        for key in ("role", "mode", "reasoner", "synthetic_users")
+    }
+    for key in (
+        "query_wall_ms",
+        "query_cpu_ms",
+        "process_cpu_ms",
+        "disk_read_bytes",
+        "disk_write_bytes",
+        "request_bytes",
+        "response_bytes",
+    ):
+        combined[key] = sum(float(item.get(key, 0)) for item in responses)
+    combined["query_count"] = sum(
+        int(item.get("query_count", 0)) for item in responses
+    )
+    for key in (
+        "disk_read_bytes",
+        "disk_write_bytes",
+        "request_bytes",
+        "response_bytes",
+    ):
+        combined[key] = int(combined[key])
+    combined["current_rss_kib"] = int(
+        responses[-1].get("current_rss_kib", 0)
+    )
+    combined["peak_rss_kib"] = max(
+        int(item.get("peak_rss_kib", 0)) for item in responses
+    )
+    combined["measurements"] = [
+        measurement
+        for item in responses
+        for measurement in item.get("measurements", [])
+    ]
+    combined["_coordinator_attempts"] = 1 + sum(
+        max(int(item.get("_coordinator_attempts", 1)) - 1, 0)
+        for item in responses
+    )
+    combined["query_batch_count"] = len(responses)
+    return combined
 
 
 def _query(
+    config: BenchmarkConfig,
     endpoints: list[Endpoint],
     assignment: dict[str, list[QuerySpec]],
+    *,
+    timeout_seconds: float | None = None,
+    phase: str = "queries",
 ) -> tuple[float, dict[str, dict[str, Any]]]:
-    payloads = {
-        url: {"query_ids": [spec.id for spec in specs]}
-        for url, specs in assignment.items()
-        if specs
+    transport = config.distributed
+    point_timeout = min(
+        timeout_seconds or config.limits.point_timeout_seconds,
+        config.limits.point_timeout_seconds,
+    )
+    started = monotonic()
+    batches = {
+        url: [
+            specs[index : index + transport.query_batch_size]
+            for index in range(0, len(specs), transport.query_batch_size)
+        ]
+        for url, specs in assignment.items() if specs
     }
-    return _parallel(endpoints, "/queries", payloads, phase="queries")
+    rounds = max((len(value) for value in batches.values()), default=0)
+    collected: dict[str, list[dict[str, Any]]] = {
+        url: [] for url in batches
+    }
+    wall_ms = 0.0
+    endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
+    for index in range(rounds):
+        remaining = point_timeout - (monotonic() - started)
+        request_timeout = min(transport.request_timeout_seconds, remaining)
+        if request_timeout <= transport.worker_timeout_margin_seconds:
+            raise PhaseBudgetTimeout(
+                f"{phase} exceeded its {point_timeout:.1f}s point budget"
+            )
+        payloads = {}
+        labels = []
+        for url, endpoint_batches in batches.items():
+            if index >= len(endpoint_batches):
+                continue
+            query_ids = [spec.id for spec in endpoint_batches[index]]
+            payloads[url] = {
+                "query_ids": query_ids,
+                "phase_timeout_seconds": (
+                    request_timeout
+                    - transport.worker_timeout_margin_seconds
+                ),
+            }
+            labels.append(f"{endpoint_by_url[url].role}:{len(query_ids)}")
+        print(
+            f"[distributed-batch] phase={phase} "
+            f"batch={index + 1}/{rounds} nodes={','.join(labels)} "
+            "status=running",
+            flush=True,
+        )
+        batch_wall_ms, responses = _parallel(
+            endpoints,
+            "/queries",
+            payloads,
+            phase=f"{phase}-batch-{index + 1}-of-{rounds}",
+            timeout=request_timeout,
+            retries=transport.request_retries,
+        )
+        wall_ms += batch_wall_ms
+        for url, response in responses.items():
+            collected[url].append(response)
+    return wall_ms, {
+        url: _combine_query_responses(items)
+        for url, items in collected.items()
+    }
 
 
 def _detail_rows(
@@ -379,10 +518,63 @@ def _detail_rows(
                     "endpoint": url,
                     "role": endpoint.role,
                     "tier_name": endpoint.tier,
+                    "status": "completed",
+                    "censored": False,
                     **measurement,
                 }
             )
     return rows
+
+
+def _censored_summary(
+    common: dict[str, Any],
+    node_count: int,
+    query_count: int,
+    status: str,
+    phase: str,
+    error: str,
+    timeout_seconds: float,
+    elapsed_seconds: float,
+) -> dict[str, Any]:
+    lower_bound_ms = min(max(elapsed_seconds, 0.0), timeout_seconds) * 1000
+    return {
+        **common,
+        "node_count": node_count,
+        "query_count": query_count,
+        "prepare_wall_ms": "",
+        "query_wall_ms": "",
+        "total_wall_ms": lower_bound_ms if status == "timeout" else "",
+        "status": status,
+        "censored": True,
+        "censored_lower_bound_ms": lower_bound_ms,
+        "failed_phase": phase,
+        "timeout_seconds": timeout_seconds,
+        "error": error,
+    }
+
+
+def _censored_detail(
+    common: dict[str, Any],
+    status: str,
+    phase: str,
+    error: str,
+    timeout_seconds: float,
+) -> dict[str, Any]:
+    return {
+        **common,
+        "query_id": "__phase__",
+        "category": "",
+        "tier": "",
+        "duration_ms": "",
+        "result_count": "",
+        "ask_result": "",
+        "result_digest": "",
+        "status": status,
+        "censored": True,
+        "failed_phase": phase,
+        "timeout_seconds": timeout_seconds,
+        "error": error,
+    }
 
 
 def run_docker_cumulative(
@@ -402,18 +594,92 @@ def run_docker_cumulative(
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     details: list[dict[str, Any]] = []
     summaries: list[dict[str, Any]] = []
+    topology_stopped = False
+    stop_reason = ""
 
     for reasoner in config.reasoners:
         for repetition in range(1, config.repetitions + 1):
+            if topology_stopped:
+                for stage, category in enumerate(
+                    config.category_order, start=1
+                ):
+                    common = {
+                        "reasoner": reasoner,
+                        "repetition": repetition,
+                        "stage": stage,
+                        "added_category": category,
+                    }
+                    summaries.append(
+                        _censored_summary(
+                            common,
+                            node_count,
+                            len(by_categories(specs, set(config.category_order[:stage]))),
+                            "skipped_after_timeout",
+                            "early-stop",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                            0.0,
+                        )
+                    )
+                    details.append(
+                        _censored_detail(
+                            common,
+                            "skipped_after_timeout",
+                            "early-stop",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                        )
+                    )
+                continue
             print(
                 f"[docker-cumulative] reasoner={reasoner} "
                 f"repetition={repetition}/{config.repetitions} "
                 f"nodes={node_count} phase=prepare status=running",
                 flush=True,
             )
-            prepare_wall_ms, prepared = _prepare(
-                endpoints, reasoner, 0, config.seed
-            )
+            prepare_started = monotonic()
+            try:
+                prepare_wall_ms, prepared = _prepare(
+                    config, endpoints, reasoner, 0, config.seed
+                )
+            except Exception as error:
+                if not is_boundary_failure(error):
+                    raise
+                status = failure_status(error)
+                stop_reason = error_text(error)
+                for stage, category in enumerate(
+                    config.category_order, start=1
+                ):
+                    common = {
+                        "reasoner": reasoner,
+                        "repetition": repetition,
+                        "stage": stage,
+                        "added_category": category,
+                    }
+                    row_status = status if stage == 1 else "skipped_after_timeout"
+                    summaries.append(
+                        _censored_summary(
+                            common,
+                            node_count,
+                            len(by_categories(specs, set(config.category_order[:stage]))),
+                            row_status,
+                            "prepare",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                            monotonic() - prepare_started if stage == 1 else 0.0,
+                        )
+                    )
+                    details.append(
+                        _censored_detail(
+                            common,
+                            row_status,
+                            "prepare",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                        )
+                    )
+                topology_stopped = config.limits.stop_scaling_after_timeout
+                continue
             active: set[str] = set()
             for stage, category in enumerate(config.category_order, start=1):
                 active.add(category)
@@ -427,13 +693,93 @@ def run_docker_cumulative(
                     "status=running",
                     flush=True,
                 )
-                query_wall_ms, responses = _query(endpoints, assignment)
                 common = {
                     "reasoner": reasoner,
                     "repetition": repetition,
                     "stage": stage,
                     "added_category": category,
                 }
+                query_started = monotonic()
+                try:
+                    query_wall_ms, responses = _query(
+                        config,
+                        endpoints,
+                        assignment,
+                        timeout_seconds=max(
+                            config.limits.point_timeout_seconds
+                            - prepare_wall_ms / 1000,
+                            0.001,
+                        ),
+                    )
+                except Exception as error:
+                    if not is_boundary_failure(error):
+                        raise
+                    status = failure_status(error)
+                    stop_reason = error_text(error)
+                    summaries.append(
+                        _censored_summary(
+                            common,
+                            node_count,
+                            len(active_specs),
+                            status,
+                            "queries",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                            prepare_wall_ms / 1000
+                            + monotonic()
+                            - query_started,
+                        )
+                    )
+                    details.append(
+                        _censored_detail(
+                            common,
+                            status,
+                            "queries",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                        )
+                    )
+                    for skipped_stage in range(
+                        stage + 1, len(config.category_order) + 1
+                    ):
+                        skipped_common = {
+                            "reasoner": reasoner,
+                            "repetition": repetition,
+                            "stage": skipped_stage,
+                            "added_category": config.category_order[
+                                skipped_stage - 1
+                            ],
+                        }
+                        summaries.append(
+                            _censored_summary(
+                                skipped_common,
+                                node_count,
+                                len(
+                                    by_categories(
+                                        specs,
+                                        set(config.category_order[:skipped_stage]),
+                                    )
+                                ),
+                                "skipped_after_timeout",
+                                "early-stop",
+                                stop_reason,
+                                config.limits.point_timeout_seconds,
+                                0.0,
+                            )
+                        )
+                        details.append(
+                            _censored_detail(
+                                skipped_common,
+                                "skipped_after_timeout",
+                                "early-stop",
+                                stop_reason,
+                                config.limits.point_timeout_seconds,
+                            )
+                        )
+                    topology_stopped = (
+                        config.limits.stop_scaling_after_timeout
+                    )
+                    break
                 details.extend(
                     _detail_rows(responses, endpoint_by_url, common)
                 )
@@ -463,6 +809,8 @@ def run_docker_cumulative(
                     "output_triples_per_replica": next(
                         iter(prepared.values())
                     )["output_triples"],
+                    "status": "completed",
+                    "censored": False,
                 }
                 summaries.append(summary)
                 print(
@@ -503,10 +851,41 @@ def run_docker_scalability(
     assignment = _assignment(specs, endpoints)
     details: list[dict[str, Any]] = []
     summaries: list[dict[str, Any]] = []
+    topology_stopped = False
+    stop_reason = ""
 
     for block, users in enumerate(config.scale_users, start=1):
         for reasoner in config.reasoners:
             for repetition in range(1, config.repetitions + 1):
+                common = {
+                    "reasoner": reasoner,
+                    "repetition": repetition,
+                    "synthetic_users": users,
+                    "synthetic_triples": "",
+                }
+                if topology_stopped:
+                    summaries.append(
+                        _censored_summary(
+                            common,
+                            node_count,
+                            len(specs),
+                            "skipped_after_timeout",
+                            "early-stop",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                            0.0,
+                        )
+                    )
+                    details.append(
+                        _censored_detail(
+                            common,
+                            "skipped_after_timeout",
+                            "early-stop",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                        )
+                    )
+                    continue
                 print(
                     f"[docker-scalability] block={block}/{len(config.scale_users)} "
                     f"users={users} reasoner={reasoner} "
@@ -514,18 +893,63 @@ def run_docker_scalability(
                     f"nodes={node_count} phase=prepare status=running",
                     flush=True,
                 )
-                prepare_wall_ms, prepared = _prepare(
-                    endpoints, reasoner, users, config.seed
-                )
-                query_wall_ms, responses = _query(endpoints, assignment)
-                common = {
-                    "reasoner": reasoner,
-                    "repetition": repetition,
-                    "synthetic_users": users,
-                    "synthetic_triples": next(
-                        iter(prepared.values())
-                    )["synthetic_triples"],
-                }
+                point_started = monotonic()
+                phase = "prepare"
+                try:
+                    prepare_wall_ms, prepared = _prepare(
+                        config, endpoints, reasoner, users, config.seed
+                    )
+                    phase = "queries"
+                    query_wall_ms, responses = _query(
+                        config,
+                        endpoints,
+                        assignment,
+                        timeout_seconds=max(
+                            config.limits.point_timeout_seconds
+                            - (monotonic() - point_started),
+                            0.001,
+                        ),
+                    )
+                except Exception as error:
+                    if not is_boundary_failure(error):
+                        raise
+                    status = failure_status(error)
+                    stop_reason = error_text(error)
+                    summaries.append(
+                        _censored_summary(
+                            common,
+                            node_count,
+                            len(specs),
+                            status,
+                            phase,
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                            monotonic() - point_started,
+                        )
+                    )
+                    details.append(
+                        _censored_detail(
+                            common,
+                            status,
+                            phase,
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                        )
+                    )
+                    topology_stopped = (
+                        config.limits.stop_scaling_after_timeout
+                    )
+                    print(
+                        f"[docker-scalability] block={block} users={users} "
+                        f"reasoner={reasoner} phase={phase} status={status} "
+                        f"limit_s={config.limits.point_timeout_seconds:g}; "
+                        "remaining larger points will be skipped",
+                        flush=True,
+                    )
+                    continue
+                common["synthetic_triples"] = next(
+                    iter(prepared.values())
+                )["synthetic_triples"]
                 details.extend(
                     _detail_rows(responses, endpoint_by_url, common)
                 )
@@ -558,6 +982,8 @@ def run_docker_scalability(
                     "output_triples_per_replica": next(
                         iter(prepared.values())
                     )["output_triples"],
+                    "status": "completed",
+                    "censored": False,
                 }
                 summaries.append(summary)
                 print(

@@ -8,14 +8,23 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import platform
-from time import perf_counter_ns
+from time import monotonic, perf_counter_ns
 from typing import Any
 
 from rdflib import Graph
 
 from .config import BenchmarkConfig
+from .budget import (
+    PhaseBudgetTimeout,
+    error_text,
+    failure_status,
+    is_boundary_failure,
+    local_phase_timeout,
+    remaining_seconds,
+)
 from .distributed import (
     Endpoint,
+    _combine_query_responses,
     _parallel,
     _write_csv,
     discover,
@@ -100,8 +109,16 @@ def _prepare(
     reasoner: str,
     users: int,
     seed: int,
+    *,
+    timeout_seconds: float | None = None,
 ) -> tuple[float, dict[str, dict[str, Any]]]:
     transport = config.distributed
+    timeout = min(
+        timeout_seconds or config.limits.point_timeout_seconds,
+        transport.request_timeout_seconds,
+    )
+    if timeout <= transport.worker_timeout_margin_seconds:
+        raise PhaseBudgetTimeout("no time remains for partitioned prepare")
     return _parallel(
         endpoints,
         "/prepare",
@@ -112,79 +129,31 @@ def _prepare(
                 "seed": seed,
                 "mode": "partitioned",
                 "phase_timeout_seconds": (
-                    transport.request_timeout_seconds
+                    timeout
                     - transport.worker_timeout_margin_seconds
                 ),
             }
             for endpoint in endpoints
         },
         phase="partitioned-prepare",
-        timeout=transport.request_timeout_seconds,
+        timeout=timeout,
         retries=transport.request_retries,
     )
-
-
-def _combined_query_response(
-    responses: list[dict[str, Any]],
-) -> dict[str, Any]:
-    """Combine bounded worker batches into the legacy per-node response."""
-
-    if not responses:
-        raise ValueError("At least one query batch response is required")
-    first = responses[0]
-    combined = {
-        key: first[key]
-        for key in ("role", "mode", "reasoner", "synthetic_users")
-    }
-    sum_fields = (
-        "query_count",
-        "query_wall_ms",
-        "query_cpu_ms",
-        "process_cpu_ms",
-        "disk_read_bytes",
-        "disk_write_bytes",
-        "request_bytes",
-        "response_bytes",
-    )
-    combined.update(
-        {
-            key: sum(float(item.get(key, 0)) for item in responses)
-            for key in sum_fields
-        }
-    )
-    combined["query_count"] = int(combined["query_count"])
-    for key in (
-        "disk_read_bytes",
-        "disk_write_bytes",
-        "request_bytes",
-        "response_bytes",
-    ):
-        combined[key] = int(combined[key])
-    combined["current_rss_kib"] = int(
-        responses[-1].get("current_rss_kib", 0)
-    )
-    combined["peak_rss_kib"] = max(
-        int(item.get("peak_rss_kib", 0)) for item in responses
-    )
-    combined["measurements"] = [
-        measurement
-        for item in responses
-        for measurement in item.get("measurements", [])
-    ]
-    combined["_coordinator_attempts"] = 1 + sum(
-        max(int(item.get("_coordinator_attempts", 1)) - 1, 0)
-        for item in responses
-    )
-    combined["query_batch_count"] = len(responses)
-    return combined
 
 
 def _query(
     config: BenchmarkConfig,
     endpoints: list[Endpoint],
     assignment: dict[str, list[QuerySpec]],
+    *,
+    timeout_seconds: float | None = None,
 ) -> tuple[float, dict[str, dict[str, Any]]]:
     transport = config.distributed
+    point_timeout = min(
+        timeout_seconds or config.limits.point_timeout_seconds,
+        config.limits.point_timeout_seconds,
+    )
+    started = monotonic()
     batch_size = transport.query_batch_size
     batches = {
         url: [
@@ -201,6 +170,13 @@ def _query(
     }
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
     for batch_index in range(batch_rounds):
+        remaining = point_timeout - (monotonic() - started)
+        request_timeout = min(transport.request_timeout_seconds, remaining)
+        if request_timeout <= transport.worker_timeout_margin_seconds:
+            raise PhaseBudgetTimeout(
+                "partitioned queries exceeded their "
+                f"{point_timeout:.1f}s point budget"
+            )
         payloads: dict[str, dict[str, Any]] = {}
         descriptions: list[str] = []
         for url, endpoint_batches in batches.items():
@@ -211,7 +187,7 @@ def _query(
                 "query_ids": query_ids,
                 "include_result_keys": True,
                 "phase_timeout_seconds": (
-                    transport.request_timeout_seconds
+                    request_timeout
                     - transport.worker_timeout_margin_seconds
                 ),
             }
@@ -232,7 +208,7 @@ def _query(
                 "partitioned-queries-"
                 f"batch-{batch_index + 1}-of-{batch_rounds}"
             ),
-            timeout=transport.request_timeout_seconds,
+            timeout=request_timeout,
             retries=transport.request_retries,
         )
         wall_ms += batch_wall_ms
@@ -245,7 +221,7 @@ def _query(
             flush=True,
         )
     return wall_ms, {
-        url: _combined_query_response(items)
+        url: _combine_query_responses(items)
         for url, items in collected.items()
     }
 
@@ -269,6 +245,8 @@ def _merge_responses(
                     **common,
                     "endpoint": url,
                     "role": role,
+                    "status": "completed",
+                    "censored": False,
                     **measurement,
                 }
             )
@@ -341,6 +319,8 @@ def _merge_responses(
                 "result_count": result_count,
                 "ask_result": ask_result,
                 "result_digest": result_digest(merged_keys, ask_result),
+                "status": "completed",
+                "censored": False,
             }
         )
     return merged, node_rows
@@ -436,6 +416,8 @@ def _summary(
     ]
     return {
         **common,
+        "status": "completed",
+        "censored": False,
         "node_count": len(prepared),
         "query_count": query_count,
         "source_query_executions": sum(
@@ -545,6 +527,57 @@ def _summary(
     }
 
 
+def _censored_summary(
+    common: dict[str, Any],
+    node_count: int,
+    query_count: int,
+    status: str,
+    phase: str,
+    error: str,
+    timeout_seconds: float,
+    elapsed_seconds: float,
+) -> dict[str, Any]:
+    lower_bound_ms = min(max(elapsed_seconds, 0.0), timeout_seconds) * 1000
+    return {
+        **common,
+        "status": status,
+        "censored": True,
+        "failed_phase": phase,
+        "error": error,
+        "timeout_seconds": timeout_seconds,
+        "censored_lower_bound_ms": lower_bound_ms,
+        "node_count": node_count,
+        "query_count": query_count,
+        "prepare_wall_ms": "",
+        "query_wall_ms": "",
+        "total_wall_ms": lower_bound_ms if status == "timeout" else "",
+    }
+
+
+def _censored_detail(
+    common: dict[str, Any],
+    status: str,
+    phase: str,
+    error: str,
+    timeout_seconds: float,
+) -> dict[str, Any]:
+    return {
+        **common,
+        "query_id": "__phase__",
+        "category": "",
+        "tier": "",
+        "duration_ms": "",
+        "result_count": "",
+        "ask_result": "",
+        "result_digest": "",
+        "status": status,
+        "censored": True,
+        "failed_phase": phase,
+        "timeout_seconds": timeout_seconds,
+        "error": error,
+    }
+
+
 def _metadata(
     config: BenchmarkConfig,
     endpoints: list[Endpoint],
@@ -607,6 +640,17 @@ def _metadata(
             "retry_counts_in_summary": True,
             "timeout_scope": "one prepare request or one query batch",
         },
+        "execution_limits": {
+            "phase_timeout_seconds": config.limits.phase_timeout_seconds,
+            "point_timeout_seconds": config.limits.point_timeout_seconds,
+            "stop_scaling_after_timeout": (
+                config.limits.stop_scaling_after_timeout
+            ),
+            "timeout_semantics": (
+                "right-censored; a failed distributed topology is not used "
+                "for larger scalability points"
+            ),
+        },
         "routing": (
             "query source selection from queries/execution-plan.toml, "
             "parallel owner execution, deterministic set/ASK merge"
@@ -636,27 +680,122 @@ def run_sharded_cumulative(
     baseline_cache: dict[
         str, dict[str, tuple[int, bool | None, str]]
     ] = {}
+    topology_stopped = False
+    stop_reason = ""
 
     for reasoner in config.reasoners:
-        if validate_results:
+        if validate_results and not topology_stopped:
             print(
                 f"[{target}-sharded-cumulative] reasoner={reasoner} "
                 "phase=monolith-validation status=running",
                 flush=True,
             )
-            baseline_cache[reasoner] = _baseline_counts(
-                config, specs, reasoner, 0
-            )
+            try:
+                with local_phase_timeout(
+                    config.limits.point_timeout_seconds
+                ):
+                    baseline_cache[reasoner] = _baseline_counts(
+                        config, specs, reasoner, 0
+                    )
+            except PhaseBudgetTimeout:
+                print(
+                    f"[{target}-sharded-cumulative] reasoner={reasoner} "
+                    "phase=monolith-validation status=timeout; "
+                    "distributed timing will continue without oracle",
+                    flush=True,
+                )
         for repetition in range(1, config.repetitions + 1):
+            if topology_stopped:
+                for stage, category in enumerate(
+                    config.category_order, start=1
+                ):
+                    common = {
+                        "reasoner": reasoner,
+                        "repetition": repetition,
+                        "stage": stage,
+                        "added_category": category,
+                    }
+                    row = _censored_summary(
+                        common,
+                        len(endpoints),
+                        len(by_categories(specs, set(config.category_order[:stage]))),
+                        "skipped_after_timeout",
+                        "early-stop",
+                        stop_reason,
+                        config.limits.point_timeout_seconds,
+                        0.0,
+                    )
+                    summaries.append(row)
+                    detail = _censored_detail(
+                        common,
+                        "skipped_after_timeout",
+                        "early-stop",
+                        stop_reason,
+                        config.limits.point_timeout_seconds,
+                    )
+                    details.append(detail)
+                    node_details.append(detail)
+                continue
             print(
                 f"[{target}-sharded-cumulative] reasoner={reasoner} "
                 f"repetition={repetition}/{config.repetitions} "
                 f"nodes={len(endpoints)} phase=partitioned-prepare status=running",
                 flush=True,
             )
-            prepare_wall_ms, prepared = _prepare(
-                config, endpoints, reasoner, 0, config.seed
-            )
+            prepare_started = monotonic()
+            try:
+                prepare_wall_ms, prepared = _prepare(
+                    config,
+                    endpoints,
+                    reasoner,
+                    0,
+                    config.seed,
+                    timeout_seconds=config.limits.point_timeout_seconds,
+                )
+            except Exception as error:
+                if not is_boundary_failure(error):
+                    raise
+                stop_reason = error_text(error)
+                status = failure_status(error)
+                for stage, category in enumerate(
+                    config.category_order, start=1
+                ):
+                    common = {
+                        "reasoner": reasoner,
+                        "repetition": repetition,
+                        "stage": stage,
+                        "added_category": category,
+                    }
+                    row_status = status if stage == 1 else "skipped_after_timeout"
+                    summaries.append(
+                        _censored_summary(
+                            common,
+                            len(endpoints),
+                            len(by_categories(specs, set(config.category_order[:stage]))),
+                            row_status,
+                            "partitioned-prepare",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                            monotonic() - prepare_started if stage == 1 else 0.0,
+                        )
+                    )
+                    detail = _censored_detail(
+                        common,
+                        row_status,
+                        "partitioned-prepare",
+                        stop_reason,
+                        config.limits.point_timeout_seconds,
+                    )
+                    details.append(detail)
+                    node_details.append(detail)
+                topology_stopped = config.limits.stop_scaling_after_timeout
+                print(
+                    f"[{target}-sharded-cumulative] reasoner={reasoner} "
+                    f"phase=partitioned-prepare status={status} "
+                    f"limit_s={config.limits.point_timeout_seconds:g}",
+                    flush=True,
+                )
+                continue
             active: set[str] = set()
             for stage, category in enumerate(config.category_order, start=1):
                 active.add(category)
@@ -674,15 +813,100 @@ def run_sharded_cumulative(
                     f"sources={loads} status=running",
                     flush=True,
                 )
-                query_wall_ms, responses = _query(
-                    config, endpoints, assignment
-                )
                 common = {
                     "reasoner": reasoner,
                     "repetition": repetition,
                     "stage": stage,
                     "added_category": category,
                 }
+                query_budget = max(
+                    config.limits.point_timeout_seconds
+                    - prepare_wall_ms / 1000,
+                    0.001,
+                )
+                query_started = monotonic()
+                try:
+                    query_wall_ms, responses = _query(
+                        config,
+                        endpoints,
+                        assignment,
+                        timeout_seconds=query_budget,
+                    )
+                except Exception as error:
+                    if not is_boundary_failure(error):
+                        raise
+                    stop_reason = error_text(error)
+                    status = failure_status(error)
+                    summaries.append(
+                        _censored_summary(
+                            common,
+                            len(endpoints),
+                            len(active_specs),
+                            status,
+                            "partitioned-queries",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                            prepare_wall_ms / 1000
+                            + monotonic()
+                            - query_started,
+                        )
+                    )
+                    detail = _censored_detail(
+                        common,
+                        status,
+                        "partitioned-queries",
+                        stop_reason,
+                        config.limits.point_timeout_seconds,
+                    )
+                    details.append(detail)
+                    node_details.append(detail)
+                    for skipped_stage in range(
+                        stage + 1, len(config.category_order) + 1
+                    ):
+                        skipped_common = {
+                            "reasoner": reasoner,
+                            "repetition": repetition,
+                            "stage": skipped_stage,
+                            "added_category": config.category_order[
+                                skipped_stage - 1
+                            ],
+                        }
+                        summaries.append(
+                            _censored_summary(
+                                skipped_common,
+                                len(endpoints),
+                                len(
+                                    by_categories(
+                                        specs,
+                                        set(config.category_order[:skipped_stage]),
+                                    )
+                                ),
+                                "skipped_after_timeout",
+                                "early-stop",
+                                stop_reason,
+                                config.limits.point_timeout_seconds,
+                                0.0,
+                            )
+                        )
+                        skipped_detail = _censored_detail(
+                            skipped_common,
+                            "skipped_after_timeout",
+                            "early-stop",
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                        )
+                        details.append(skipped_detail)
+                        node_details.append(skipped_detail)
+                    topology_stopped = (
+                        config.limits.stop_scaling_after_timeout
+                    )
+                    print(
+                        f"[{target}-sharded-cumulative] reasoner={reasoner} "
+                        f"stage={stage} status={status} "
+                        f"limit_s={config.limits.point_timeout_seconds:g}",
+                        flush=True,
+                    )
+                    break
                 merged, raw = _merge_responses(
                     active_specs, endpoints, responses, common
                 )
@@ -698,7 +922,7 @@ def run_sharded_cumulative(
                         responses,
                     )
                 )
-                if validate_results:
+                if reasoner in baseline_cache:
                     validations.extend(
                         _validation_rows(merged, baseline_cache[reasoner])
                     )
@@ -756,11 +980,13 @@ def run_sharded_scalability(
     node_details: list[dict[str, Any]] = []
     summaries: list[dict[str, Any]] = []
     validations: list[dict[str, Any]] = []
+    topology_stopped = False
+    stop_reason = ""
 
     for block, users in enumerate(config.scale_users, start=1):
         for reasoner in config.reasoners:
             baseline = None
-            if validate_results:
+            if validate_results and not topology_stopped:
                 print(
                     f"[{target}-sharded-scalability] "
                     f"block={block}/{len(config.scale_users)} users={users} "
@@ -768,8 +994,51 @@ def run_sharded_scalability(
                     "status=running",
                     flush=True,
                 )
-                baseline = _baseline_counts(config, specs, reasoner, users)
+                try:
+                    with local_phase_timeout(
+                        config.limits.point_timeout_seconds
+                    ):
+                        baseline = _baseline_counts(
+                            config, specs, reasoner, users
+                        )
+                except PhaseBudgetTimeout as error:
+                    print(
+                        f"[{target}-sharded-scalability] block={block} "
+                        f"users={users} reasoner={reasoner} "
+                        "phase=monolith-validation status=timeout "
+                        f"limit_s={config.limits.point_timeout_seconds:g}; "
+                        "distributed timing will continue without oracle",
+                        flush=True,
+                    )
             for repetition in range(1, config.repetitions + 1):
+                common = {
+                    "reasoner": reasoner,
+                    "repetition": repetition,
+                    "synthetic_users": users,
+                    "synthetic_triples": "",
+                }
+                if topology_stopped:
+                    row = _censored_summary(
+                        common,
+                        len(endpoints),
+                        len(specs),
+                        "skipped_after_timeout",
+                        "early-stop",
+                        stop_reason,
+                        config.limits.point_timeout_seconds,
+                        0.0,
+                    )
+                    summaries.append(row)
+                    detail = _censored_detail(
+                        common,
+                        "skipped_after_timeout",
+                        "early-stop",
+                        stop_reason,
+                        config.limits.point_timeout_seconds,
+                    )
+                    details.append(detail)
+                    node_details.append(detail)
+                    continue
                 print(
                     f"[{target}-sharded-scalability] "
                     f"block={block}/{len(config.scale_users)} users={users} "
@@ -778,32 +1047,83 @@ def run_sharded_scalability(
                     f"nodes={len(endpoints)} phase=partitioned-prepare status=running",
                     flush=True,
                 )
-                prepare_wall_ms, prepared = _prepare(
-                    config, endpoints, reasoner, users, config.seed
-                )
-                assignment = _assignment(specs, endpoints)
-                loads = ",".join(
-                    f"{endpoint.role}:{len(assignment[endpoint.url])}"
-                    for endpoint in endpoints
-                )
-                print(
-                    f"[{target}-sharded-scalability] "
-                    f"block={block}/{len(config.scale_users)} users={users} "
-                    f"reasoner={reasoner} phase=partitioned-queries "
-                    f"sources={loads} status=running",
-                    flush=True,
-                )
-                query_wall_ms, responses = _query(
-                    config, endpoints, assignment
-                )
-                common = {
-                    "reasoner": reasoner,
-                    "repetition": repetition,
-                    "synthetic_users": users,
-                    "synthetic_triples": next(iter(prepared.values()))[
-                        "synthetic_triples"
-                    ],
-                }
+                point_started = monotonic()
+                phase = "partitioned-prepare"
+                try:
+                    prepare_wall_ms, prepared = _prepare(
+                        config,
+                        endpoints,
+                        reasoner,
+                        users,
+                        config.seed,
+                        timeout_seconds=remaining_seconds(
+                            point_started,
+                            config.limits.point_timeout_seconds,
+                        ),
+                    )
+                    assignment = _assignment(specs, endpoints)
+                    loads = ",".join(
+                        f"{endpoint.role}:{len(assignment[endpoint.url])}"
+                        for endpoint in endpoints
+                    )
+                    print(
+                        f"[{target}-sharded-scalability] "
+                        f"block={block}/{len(config.scale_users)} users={users} "
+                        f"reasoner={reasoner} phase=partitioned-queries "
+                        f"sources={loads} status=running",
+                        flush=True,
+                    )
+                    phase = "partitioned-queries"
+                    query_wall_ms, responses = _query(
+                        config,
+                        endpoints,
+                        assignment,
+                        timeout_seconds=remaining_seconds(
+                            point_started,
+                            config.limits.point_timeout_seconds,
+                        ),
+                    )
+                except Exception as error:
+                    if not is_boundary_failure(error):
+                        raise
+                    status = failure_status(error)
+                    stop_reason = error_text(error)
+                    summaries.append(
+                        _censored_summary(
+                            common,
+                            len(endpoints),
+                            len(specs),
+                            status,
+                            phase,
+                            stop_reason,
+                            config.limits.point_timeout_seconds,
+                            monotonic() - point_started,
+                        )
+                    )
+                    detail = _censored_detail(
+                        common,
+                        status,
+                        phase,
+                        stop_reason,
+                        config.limits.point_timeout_seconds,
+                    )
+                    details.append(detail)
+                    node_details.append(detail)
+                    topology_stopped = (
+                        config.limits.stop_scaling_after_timeout
+                    )
+                    print(
+                        f"[{target}-sharded-scalability] block={block} "
+                        f"users={users} reasoner={reasoner} phase={phase} "
+                        f"status={status} "
+                        f"limit_s={config.limits.point_timeout_seconds:g}; "
+                        "remaining larger points will be skipped",
+                        flush=True,
+                    )
+                    continue
+                common["synthetic_triples"] = next(
+                    iter(prepared.values())
+                )["synthetic_triples"]
                 merged, raw = _merge_responses(
                     specs, endpoints, responses, common
                 )

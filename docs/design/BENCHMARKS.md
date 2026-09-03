@@ -122,6 +122,11 @@ cooling, power mode, network, concurrent load and Docker resource settings.
 - Replicated scale-out measures query service, not distributed inference.
 - Sharded performance includes semantic placement and federation overhead.
 - A timeout is a right-censored observation and must remain in reporting.
+- The default acceptance ceiling is 60 seconds per phase/request and 90 seconds
+  per complete point (30/45 seconds for smoke). After the first scalability
+  timeout, larger points for that engine or topology are recorded as skipped.
+- Replicated physical calibration uses a stratified sample capped by
+  `calibration_query_limit`; it does not execute the full catalog on every node.
 - Comparisons require matched configurations and equivalent query results.
 
 See [LOAD_BENCHMARKS.md](LOAD_BENCHMARKS.md) for event-rate, rule, triple and

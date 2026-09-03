@@ -161,7 +161,11 @@ comparison deliberately.
 
 The cumulative suite adds all 16 categories in a fixed order. The scalability
 suite rebuilds an independent deterministic graph for every configured user
-volume and executes all 115 queries.
+volume and executes all 115 queries. Publication runs cap a phase at 60 seconds
+and a complete measurement point at 90 seconds. An exceeded limit is written as
+a right-censored row; larger scalability points for the affected engine or
+topology are skipped instead of being timed to completion. Configure these
+thresholds under `[limits]` and `[distributed]` in `configs/benchmark.toml`.
 
 ## Elastic Docker topology
 

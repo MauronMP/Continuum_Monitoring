@@ -409,17 +409,19 @@ Replicated smokes:
 
 The `[distributed]` table in the selected benchmark TOML bounds one remote
 request and one worker phase. Sharded query assignments are split according to
-`query_batch_size` (8 by default), and the terminal reports every batch. The
+`query_batch_size` (4 by default), and the terminal reports every batch. The
 default `request_retries = 0` prevents a timed-out 70+ query POST from being
 executed repeatedly on a single-threaded Raspberry Pi. After changing this
 configuration, run `physical stop`, `physical deploy`, `physical start`, and
 `physical status` so every node uses the same release.
 
-If a sharded timeout occurs, the exception identifies the node, batch and exact
-query IDs. A cumulative/scalability run stops because its distributed result is
-incomplete and cannot satisfy the monolithic correctness oracle. This differs
-from the load and separated experiment suites, where timeouts are recorded as
-right-censored observations.
+The publication configuration uses a 60-second request/phase ceiling and a
+90-second complete-point ceiling. If a sharded timeout occurs, the terminal
+identifies the node, batch and exact query IDs. The coordinator writes a
+right-censored timeout row, does not validate the partial answer, and records
+larger points as `skipped_after_timeout` rather than waiting for them or
+aborting the complete command. Smoke ceilings are 30 seconds per phase and 45
+seconds per point.
 
 Stop workers without deleting deployments or outputs:
 
@@ -637,9 +639,9 @@ With Docker and physical workers already healthy:
 - Hardware reasoning evaluates endpoints independently, not a cluster speedup.
 - Distributed ontology mode includes partitioning/federation semantics and must
   pass the monolithic result oracle.
-- In load and separated experiment outputs, a timeout is a censored
-  observation, not a missing row. The correctness-gated cumulative and
-  scalability suites fail explicitly rather than accepting a partial answer.
+- In every benchmark family, a timeout is a censored observation, not a missing
+  row. Partial distributed answers are never treated as completed or
+  semantically valid.
 - Event loss and failed profiles must remain in summaries and figures.
 - Result count alone is weaker than the canonical result digest; use the digest
   when both result sets provide it.

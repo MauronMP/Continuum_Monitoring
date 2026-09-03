@@ -8,6 +8,7 @@ from continuum_bench.reporting import (
     _engine_summary_rows,
     _final_rows,
     _node_cost_rows,
+    _status_coverage_rows,
     plot_three_architectures,
 )
 from continuum_bench.specification import release_identity
@@ -64,6 +65,44 @@ def test_final_rows_select_the_largest_load_point():
 
     assert len(final) == 2
     assert {row["reasoner"] for row in final} == {"rdfs", "owlrl"}
+
+
+def test_timeout_coverage_keeps_censored_points_out_of_exact_samples(tmp_path):
+    for suite, x_field in (
+        ("cumulative", "stage"),
+        ("scalability", "synthetic_users"),
+    ):
+        directory = tmp_path / suite
+        directory.mkdir()
+        _release(directory)
+        with (directory / "summary.csv").open(
+            "w", encoding="utf-8", newline=""
+        ) as handle:
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=["reasoner", x_field, "status"],
+            )
+            writer.writeheader()
+            writer.writerows(
+                [
+                    {"reasoner": "rdfs", x_field: 1, "status": "completed"},
+                    {"reasoner": "rdfs", x_field: 2, "status": "timeout"},
+                    {
+                        "reasoner": "rdfs",
+                        x_field: 3,
+                        "status": "skipped_after_timeout",
+                    },
+                ]
+            )
+
+    rows = _status_coverage_rows(tmp_path, "test", "reasoner")
+
+    assert len(rows) == 2
+    assert all(row["completed"] == 1 for row in rows)
+    assert all(row["timeout"] == 1 for row in rows)
+    assert all(row["skipped_after_timeout"] == 1 for row in rows)
+    assert all(row["maximum_completed_load"] == 1 for row in rows)
+    assert all(row["first_censored_load"] == 2 for row in rows)
 
 
 def test_product_summary_includes_all_semantic_engines(tmp_path):

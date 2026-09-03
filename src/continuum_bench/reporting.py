@@ -80,6 +80,15 @@ def _write(path: Path, rows: list[dict[str, Any]]) -> Path:
     return path
 
 
+def _completed(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Exclude right-censored rows from exact latency/speedup aggregates."""
+
+    return [
+        row for row in rows
+        if row.get("status", "completed") == "completed"
+    ]
+
+
 def _median(values: Iterable[float]) -> float:
     return statistics.median(list(values))
 
@@ -91,7 +100,8 @@ def _optional_median(
     values = [
         float(row[field])
         for row in rows
-        if row.get(field, "") not in {"", None}
+        if row.get("status", "completed") == "completed"
+        and row.get(field, "") not in {"", None}
     ]
     return statistics.median(values) if values else ""
 
@@ -103,6 +113,12 @@ def _samples(
 ) -> dict[str, list[tuple[float, float, float, float]]]:
     grouped: dict[tuple[str, float], list[float]] = defaultdict(list)
     for row in rows:
+        if (
+            row.get("status", "completed") != "completed"
+            or not row.get(x_field)
+            or not row.get(y_field)
+        ):
+            continue
         grouped[(row["reasoner"], float(row[x_field]))].append(
             float(row[y_field])
         )
@@ -131,6 +147,12 @@ def _named_samples(
 ) -> dict[str, list[tuple[float, float, float, float]]]:
     grouped: dict[tuple[str, float], list[float]] = defaultdict(list)
     for row in rows:
+        if (
+            row.get("status", "completed") != "completed"
+            or not row.get(x_field)
+            or not row.get(y_field)
+        ):
+            continue
         grouped[(row[name_field], float(row[x_field]))].append(
             float(row[y_field])
         )
@@ -206,8 +228,15 @@ def _final_rows(
     rows: list[dict[str, str]],
     x_field: str,
 ) -> list[dict[str, str]]:
-    maximum = max(float(row[x_field]) for row in rows)
-    return [row for row in rows if float(row[x_field]) == maximum]
+    completed = [
+        row for row in rows
+        if row.get("status", "completed") == "completed"
+        and row.get(x_field)
+    ]
+    if not completed:
+        return []
+    maximum = max(float(row[x_field]) for row in completed)
+    return [row for row in completed if float(row[x_field]) == maximum]
 
 
 def _reasoner_medians(
@@ -217,6 +246,8 @@ def _reasoner_medians(
     output: dict[str, list[float]] = {}
     for reasoner in REASONER_LABELS:
         selected = [row for row in rows if row["reasoner"] == reasoner]
+        if not selected:
+            continue
         output[reasoner] = [
             _median(float(row[field]) for row in selected)
             for field in fields
@@ -266,8 +297,12 @@ def plot_monolith(
     monolith_root: Path,
     figure_root: Path,
 ) -> list[Path]:
-    cumulative = _read(monolith_root / "cumulative" / "summary.csv")
-    scalability = _read(monolith_root / "scalability" / "summary.csv")
+    cumulative = _completed(
+        _read(monolith_root / "cumulative" / "summary.csv")
+    )
+    scalability = _completed(
+        _read(monolith_root / "scalability" / "summary.csv")
+    )
     outputs: list[Path] = []
 
     fig, axes = plt.subplots(2, 2, figsize=(10.5, 7.2))
@@ -366,9 +401,11 @@ def _engine_summary_rows(
         ("scalability", "synthetic_users"),
     ):
         rows = _read(engine_root / suite / "summary.csv")
-        final = _final_rows(rows, x_field)
         for engine in ENGINE_LABELS:
-            selected = [row for row in final if row["engine"] == engine]
+            engine_rows = [
+                row for row in _completed(rows) if row["engine"] == engine
+            ]
+            selected = _final_rows(engine_rows, x_field)
             if not selected:
                 continue
             output.append(
@@ -453,14 +490,15 @@ def plot_product_engines(
         ("cumulative", "stage", "Etapa acumulativa"),
         ("scalability", "synthetic_users", "Usuarios sintéticos"),
     ):
-        rows = _read(engine_root / suite / "summary.csv")
-        present = {row["engine"] for row in rows}
+        all_rows = _read(engine_root / suite / "summary.csv")
+        present = {row["engine"] for row in all_rows}
         missing = set(ENGINE_LABELS) - present
         if missing:
             raise ValueError(
                 f"Missing product engines in {engine_root / suite}: "
                 f"{sorted(missing)}"
             )
+        rows = _completed(all_rows)
         final = _final_rows(rows, x_field)
         fig, axes = plt.subplots(2, 2, figsize=(11.2, 7.5))
         _named_error_line(
@@ -488,7 +526,10 @@ def plot_product_engines(
         )
         _style(axes[1, 0], x_label, "Latencia SPARQL media (ms)")
 
-        engines = list(ENGINE_LABELS)
+        engines = [
+            engine for engine in ENGINE_LABELS
+            if any(row["engine"] == engine for row in final)
+        ]
         inferred = [
             _median(
                 float(row["inferred_triples"])
@@ -537,6 +578,13 @@ def _node_cost_rows(
         list[dict[str, str]],
     ] = defaultdict(list)
     for row in rows:
+        if (
+            row.get("status", "completed") != "completed"
+            or not row.get(run_field)
+            or not row.get("role")
+            or not row.get("duration_ms")
+        ):
+            continue
         key = (
             row["reasoner"],
             row["repetition"],
@@ -636,6 +684,8 @@ def _work_ratio_rows(
 ) -> list[dict[str, str]]:
     output = []
     for row in rows:
+        if row.get("status", "completed") != "completed":
+            continue
         clone = dict(row)
         total_work = (
             float(row["node_reasoning_ms_sum"])
@@ -672,8 +722,12 @@ def plot_docker(
     stem_prefix: str = "docker",
     architecture_label: str = "Docker",
 ) -> tuple[list[Path], list[Path]]:
-    cumulative = _read(docker_root / "cumulative" / "summary.csv")
-    scalability = _read(docker_root / "scalability" / "summary.csv")
+    cumulative = _completed(
+        _read(docker_root / "cumulative" / "summary.csv")
+    )
+    scalability = _completed(
+        _read(docker_root / "scalability" / "summary.csv")
+    )
     cumulative_detail = _read(
         _distributed_detail_path(docker_root, "cumulative")
     )
@@ -909,6 +963,8 @@ def _architecture_points(
         rows = _read(root / suite / "summary.csv")
         grouped: dict[tuple[str, float], list[float]] = defaultdict(list)
         for row in rows:
+            if row.get("status", "completed") != "completed":
+                continue
             grouped[(row["reasoner"], float(row[x_field]))].append(
                 float(row[value_field])
             )
@@ -1004,7 +1060,20 @@ def plot_three_architectures(
             )
             axis.legend(frameon=False, fontsize=8)
 
-        final_load = max(float(row[x_field]) for row in points)
+        load_sets = [
+            {
+                float(row[x_field])
+                for row in points
+                if row["architecture"] == architecture
+                and row["reasoner"] == reasoner
+            }
+            for architecture in architectures
+            for reasoner in REASONER_LABELS
+        ]
+        common_loads = set.intersection(*load_sets) if load_sets else set()
+        final_load = max(common_loads or {
+            float(row[x_field]) for row in points
+        })
         final = [
             row for row in points if float(row[x_field]) == final_load
         ]
@@ -1013,10 +1082,13 @@ def plot_three_architectures(
         for index, architecture in enumerate(architectures):
             values = [
                 next(
-                    float(row["median_ms"])
-                    for row in final
-                    if row["architecture"] == architecture
-                    and row["reasoner"] == reasoner
+                    (
+                        float(row["median_ms"])
+                        for row in final
+                        if row["architecture"] == architecture
+                        and row["reasoner"] == reasoner
+                    ),
+                    np.nan,
                 )
                 for reasoner in REASONER_LABELS
             ]
@@ -1057,14 +1129,25 @@ def _article_architecture_rows(
         ("physical", physical_root),
     )
     rows_by_architecture = {
-        architecture: _read(root / suite / "summary.csv")
+        architecture: _completed(_read(root / suite / "summary.csv"))
         for architecture, root in sources
     }
-    final_load = max(
-        float(row[x_field])
+    load_sets = [
+        {
+            float(row[x_field])
+            for row in rows
+            if row["reasoner"] == reasoner
+        }
         for rows in rows_by_architecture.values()
-        for row in rows
-    )
+        for reasoner in REASONER_LABELS
+    ]
+    common_loads = set.intersection(*load_sets) if load_sets else set()
+    if not common_loads:
+        raise ValueError(
+            f"No common completed {suite} load point across all architectures "
+            "and reasoners; inspect timeout coverage before comparing speedup"
+        )
+    final_load = max(common_loads)
     output: list[dict[str, Any]] = []
     for architecture, rows in rows_by_architecture.items():
         selected = [
@@ -1074,6 +1157,8 @@ def _article_architecture_rows(
             samples = [
                 row for row in selected if row["reasoner"] == reasoner
             ]
+            if not samples:
+                continue
             if architecture == "monolith":
                 totals = [float(row["total_ms"]) for row in samples]
                 prepare = [
@@ -1242,6 +1327,8 @@ def _multi_architecture_points(
         rows = _read(root / suite / "summary.csv")
         grouped: dict[tuple[str, float], list[float]] = defaultdict(list)
         for row in rows:
+            if row.get("status", "completed") != "completed":
+                continue
             grouped[(row["reasoner"], float(row[x_field]))].append(
                 float(row[value_field])
             )
@@ -1388,11 +1475,14 @@ def _monolith_summary_rows(
         ("scalability", "synthetic_users"),
     ):
         rows = _read(monolith_root / suite / "summary.csv")
-        final = _final_rows(rows, x_field)
         for reasoner in REASONER_LABELS:
-            selected = [
-                row for row in final if row["reasoner"] == reasoner
+            reasoner_rows = [
+                row for row in _completed(rows)
+                if row["reasoner"] == reasoner
             ]
+            selected = _final_rows(reasoner_rows, x_field)
+            if not selected:
+                continue
             query_ms = _median(float(row["query_ms"]) for row in selected)
             query_count = _median(
                 float(row["query_count"]) for row in selected
@@ -1446,11 +1536,14 @@ def _docker_summary_rows(
         ("scalability", "synthetic_users"),
     ):
         rows = _read(docker_root / suite / "summary.csv")
-        final = _final_rows(rows, x_field)
         for reasoner in REASONER_LABELS:
-            selected = [
-                row for row in final if row["reasoner"] == reasoner
+            reasoner_rows = [
+                row for row in _completed(rows)
+                if row["reasoner"] == reasoner
             ]
+            selected = _final_rows(reasoner_rows, x_field)
+            if not selected:
+                continue
             query_wall = _median(
                 float(row["query_wall_ms"]) for row in selected
             )
@@ -1549,6 +1642,8 @@ def _deployment_summary_rows(
             selected = [
                 row for row in final if row["reasoner"] == reasoner
             ]
+            if not selected:
+                continue
             speedup = _median(
                 float(row["speedup"]) for row in selected
             )
@@ -1593,6 +1688,66 @@ def _complete_result_root(root: Path | None) -> bool:
         and (root / "cumulative" / "summary.csv").is_file()
         and (root / "scalability" / "summary.csv").is_file()
     )
+
+
+def _status_coverage_rows(
+    root: Path,
+    architecture: str,
+    name_field: str,
+) -> list[dict[str, Any]]:
+    output: list[dict[str, Any]] = []
+    for suite in ("cumulative", "scalability"):
+        x_field = "stage" if suite == "cumulative" else "synthetic_users"
+        rows = _read(root / suite / "summary.csv")
+        names = sorted({row[name_field] for row in rows})
+        for name in names:
+            selected = [row for row in rows if row[name_field] == name]
+            counts = {
+                status: sum(
+                    row.get("status", "completed") == status
+                    for row in selected
+                )
+                for status in (
+                    "completed",
+                    "timeout",
+                    "transport_error",
+                    "failed",
+                    "skipped_after_timeout",
+                )
+            }
+            completed_loads = [
+                float(row[x_field])
+                for row in selected
+                if row.get("status", "completed") == "completed"
+                and row.get(x_field)
+            ]
+            censored_loads = [
+                float(row[x_field])
+                for row in selected
+                if row.get("status", "completed") != "completed"
+                and row.get(x_field)
+            ]
+            output.append(
+                {
+                    "architecture": architecture,
+                    "suite": suite,
+                    "subject_type": name_field,
+                    "subject": name,
+                    "scheduled_points": len(selected),
+                    **counts,
+                    "completion_percent": (
+                        counts["completed"] / len(selected) * 100
+                        if selected else 0.0
+                    ),
+                    "maximum_completed_load": (
+                        max(completed_loads) if completed_loads else ""
+                    ),
+                    "first_censored_load": (
+                        min(censored_loads) if censored_loads else ""
+                    ),
+                }
+            )
+    return output
 
 
 def generate_report(
@@ -1795,6 +1950,24 @@ def generate_report(
         )
         outputs.extend(multi_tables)
         outputs.extend(multi_figures)
+
+    coverage_rows = [
+        row
+        for architecture, root in architecture_roots.items()
+        for row in _status_coverage_rows(
+            root, architecture, "reasoner"
+        )
+    ]
+    for architecture, root in (
+        ("monolith_product_stack", monolith_root / "engines"),
+        ("docker_invoked_product_stack", docker_root / "engines"),
+    ):
+        coverage_rows.extend(
+            _status_coverage_rows(root, architecture, "engine")
+        )
+    outputs.append(
+        _write(data_root / "timeout-coverage.csv", coverage_rows)
+    )
 
     metadata_path = output_root / "report-metadata.json"
     metadata_path.write_text(

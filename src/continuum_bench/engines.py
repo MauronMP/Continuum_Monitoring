@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 import platform
 import statistics
-from time import perf_counter_ns
+from time import monotonic, perf_counter_ns
 from typing import Any, Iterable
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
@@ -17,6 +17,12 @@ from urllib.request import Request, urlopen
 from rdflib import Graph
 
 from .config import BenchmarkConfig
+from .budget import (
+    error_text,
+    failure_status,
+    is_boundary_failure,
+    remaining_seconds,
+)
 from .csv_utils import write_dict_rows
 from .engine_protocol import ENGINE_PROTOCOL_VERSION, ENGINE_SERVICE
 from .ontology import graph_digest, load_graph
@@ -38,7 +44,7 @@ def _request(
     url: str,
     path: str,
     payload: dict[str, Any] | None = None,
-    timeout: float = 900.0,
+    timeout: float = 60.0,
 ) -> dict[str, Any]:
     data = None if payload is None else json.dumps(payload).encode("utf-8")
     request = Request(
@@ -132,8 +138,11 @@ def _ntriples(graph: Graph) -> str:
     )
 
 
-def _query_payload(specs: list[QuerySpec]) -> dict[str, Any]:
-    return {
+def _query_payload(
+    specs: list[QuerySpec],
+    timeout_seconds: float | None = None,
+) -> dict[str, Any]:
+    payload = {
         "queries": [
             {
                 "id": spec.id,
@@ -145,6 +154,9 @@ def _query_payload(specs: list[QuerySpec]) -> dict[str, Any]:
             for spec in specs
         ]
     }
+    if timeout_seconds is not None:
+        payload["phase_timeout_seconds"] = max(timeout_seconds - 1.0, 0.1)
+    return payload
 
 
 def _expectation_ok(spec: QuerySpec, measurement: dict[str, Any]) -> bool:
@@ -223,6 +235,8 @@ def _record_measurements(
             {
                 **common,
                 **normalized,
+                "status": "completed",
+                "censored": False,
                 "expectation": spec.expectation,
                 "expectation_ok": _expectation_ok(spec, measurement),
             }
@@ -231,7 +245,12 @@ def _record_measurements(
 
 
 def _validate_expectations(rows: list[dict[str, Any]]) -> None:
-    failed = [row for row in rows if not row["expectation_ok"]]
+    failed = [
+        row
+        for row in rows
+        if row.get("status", "completed") == "completed"
+        and not row["expectation_ok"]
+    ]
     if failed:
         descriptions = []
         for row in failed[:8]:
@@ -251,6 +270,68 @@ def _validate_expectations(rows: list[dict[str, Any]]) -> None:
         )
 
 
+def _failure_detail(
+    endpoint: EngineEndpoint,
+    common: dict[str, Any],
+    status: str,
+    phase: str,
+    error: str,
+    timeout_seconds: float,
+) -> dict[str, Any]:
+    return {
+        **common,
+        "engine": endpoint.engine,
+        "inference_profile": endpoint.inference_profile,
+        "query_id": "__phase__",
+        "category": "",
+        "tier": "",
+        "duration_ms": "",
+        "result_count": "",
+        "ask_result": "",
+        "result_digest": "",
+        "expectation": "",
+        "expectation_ok": "",
+        "status": status,
+        "censored": True,
+        "failed_phase": phase,
+        "timeout_seconds": timeout_seconds,
+        "error": error,
+    }
+
+
+def _failure_summary(
+    endpoint: EngineEndpoint,
+    common: dict[str, Any],
+    status: str,
+    phase: str,
+    error: str,
+    timeout_seconds: float,
+    elapsed_seconds: float,
+) -> dict[str, Any]:
+    lower_bound_ms = min(max(elapsed_seconds, 0.0), timeout_seconds) * 1000
+    return {
+        **common,
+        "engine": endpoint.engine,
+        "inference_profile": endpoint.inference_profile,
+        "query_count": 0,
+        "input_triples": "",
+        "output_triples": "",
+        "inferred_triples": "",
+        "load_ms": "",
+        "reasoning_ms": "",
+        "prepare_ms": "",
+        "query_ms": "",
+        "engine_total_ms": lower_bound_ms if status == "timeout" else "",
+        "mean_query_ms": "",
+        "status": status,
+        "censored": True,
+        "censored_lower_bound_ms": lower_bound_ms,
+        "failed_phase": phase,
+        "timeout_seconds": timeout_seconds,
+        "error": error,
+    }
+
+
 def run_engine_cumulative(
     config: BenchmarkConfig,
     endpoint_urls: list[str],
@@ -262,8 +343,12 @@ def run_engine_cumulative(
     data = _ntriples(base)
     details: list[dict[str, Any]] = []
     summaries: list[dict[str, Any]] = []
+    phase_timeout = config.limits.phase_timeout_seconds
+    point_timeout = config.limits.point_timeout_seconds
 
     for endpoint in endpoints:
+        endpoint_blocked = False
+        blocked_status = "timeout"
         for warmup in range(1, warmups + 1):
             print(
                 f"[engines-cumulative] engine={endpoint.engine} "
@@ -271,17 +356,78 @@ def run_engine_cumulative(
                 f"warmup={warmup}/{warmups} status=running",
                 flush=True,
             )
-            _request(
-                endpoint.url,
-                "/prepare",
-                {"data_ntriples": data},
-            )
-            _request(
-                endpoint.url,
-                "/queries",
-                _query_payload(specs),
-            )
+            try:
+                _request(
+                    endpoint.url,
+                    "/prepare",
+                    {
+                        "data_ntriples": data,
+                        "phase_timeout_seconds": max(
+                            phase_timeout - 1.0, 0.1
+                        ),
+                    },
+                    timeout=phase_timeout,
+                )
+                _request(
+                    endpoint.url,
+                    "/queries",
+                    _query_payload(specs, phase_timeout),
+                    timeout=phase_timeout,
+                )
+            except Exception as error:
+                if not is_boundary_failure(error):
+                    raise
+                endpoint_blocked = True
+                blocked_status = failure_status(error)
+                print(
+                    f"[engines-cumulative] engine={endpoint.engine} "
+                    f"warmup={warmup}/{warmups} status={blocked_status} "
+                    f"limit_s={phase_timeout:g} error={error_text(error)}",
+                    flush=True,
+                )
+                break
         for repetition in range(1, config.repetitions + 1):
+            if endpoint_blocked:
+                for stage, category in enumerate(
+                    config.category_order, start=1
+                ):
+                    common = {
+                        "repetition": repetition,
+                        "stage": stage,
+                        "added_category": category,
+                    }
+                    status = (
+                        blocked_status
+                        if repetition == 1 and stage == 1
+                        else "skipped_after_timeout"
+                    )
+                    message = (
+                        "engine warm-up exceeded the configured limit"
+                        if status == "timeout"
+                        else "larger/repeated point skipped after timeout"
+                    )
+                    summaries.append(
+                        _failure_summary(
+                            endpoint,
+                            common,
+                            status,
+                            "warmup",
+                            message,
+                            phase_timeout,
+                            phase_timeout if status == blocked_status else 0.0,
+                        )
+                    )
+                    details.append(
+                        _failure_detail(
+                            endpoint,
+                            common,
+                            status,
+                            "warmup",
+                            message,
+                            phase_timeout,
+                        )
+                    )
+                continue
             print(
                 f"[engines-cumulative] engine={endpoint.engine} "
                 f"inference={endpoint.inference_profile} "
@@ -289,13 +435,65 @@ def run_engine_cumulative(
                 "phase=prepare status=running",
                 flush=True,
             )
-            prepared = _request(
-                endpoint.url,
-                "/prepare",
-                {"data_ntriples": data},
-            )
+            point_started = monotonic()
+            try:
+                prepared = _request(
+                    endpoint.url,
+                    "/prepare",
+                    {
+                        "data_ntriples": data,
+                        "phase_timeout_seconds": max(
+                            min(phase_timeout, point_timeout) - 1.0,
+                            0.1,
+                        ),
+                    },
+                    timeout=min(phase_timeout, point_timeout),
+                )
+            except Exception as error:
+                if not is_boundary_failure(error):
+                    raise
+                status = failure_status(error)
+                endpoint_blocked = config.limits.stop_scaling_after_timeout
+                for stage, category in enumerate(
+                    config.category_order, start=1
+                ):
+                    common = {
+                        "repetition": repetition,
+                        "stage": stage,
+                        "added_category": category,
+                    }
+                    row_status = status if stage == 1 else "skipped_after_timeout"
+                    summaries.append(
+                        _failure_summary(
+                            endpoint,
+                            common,
+                            row_status,
+                            "prepare",
+                            error_text(error),
+                            point_timeout,
+                            monotonic() - point_started if stage == 1 else 0.0,
+                        )
+                    )
+                    details.append(
+                        _failure_detail(
+                            endpoint,
+                            common,
+                            row_status,
+                            "prepare",
+                            error_text(error),
+                            point_timeout,
+                        )
+                    )
+                print(
+                    f"[engines-cumulative] engine={endpoint.engine} "
+                    f"repetition={repetition} phase=prepare status={status} "
+                    f"limit_s={point_timeout:g}",
+                    flush=True,
+                )
+                continue
             active: set[str] = set()
             for stage, category in enumerate(config.category_order, start=1):
+                stage_started = monotonic()
                 active.add(category)
                 active_specs = by_categories(specs, active)
                 print(
@@ -307,11 +505,6 @@ def run_engine_cumulative(
                     "status=running",
                     flush=True,
                 )
-                response = _request(
-                    endpoint.url,
-                    "/queries",
-                    _query_payload(active_specs),
-                )
                 common = {
                     "engine": endpoint.engine,
                     "inference_profile": endpoint.inference_profile,
@@ -319,6 +512,87 @@ def run_engine_cumulative(
                     "stage": stage,
                     "added_category": category,
                 }
+                query_timeout = min(
+                    phase_timeout,
+                    max(
+                        point_timeout
+                        - float(prepared["prepare_ms"]) / 1000,
+                        0.001,
+                    ),
+                )
+                try:
+                    response = _request(
+                        endpoint.url,
+                        "/queries",
+                        _query_payload(active_specs, query_timeout),
+                        timeout=query_timeout,
+                    )
+                except Exception as error:
+                    if not is_boundary_failure(error):
+                        raise
+                    status = failure_status(error)
+                    summaries.append(
+                        _failure_summary(
+                            endpoint,
+                            common,
+                            status,
+                            "queries",
+                            error_text(error),
+                            point_timeout,
+                            float(prepared["prepare_ms"]) / 1000
+                            + monotonic()
+                            - stage_started,
+                        )
+                    )
+                    details.append(
+                        _failure_detail(
+                            endpoint,
+                            common,
+                            status,
+                            "queries",
+                            error_text(error),
+                            point_timeout,
+                        )
+                    )
+                    for skipped_stage in range(
+                        stage + 1, len(config.category_order) + 1
+                    ):
+                        skipped_common = {
+                            "repetition": repetition,
+                            "stage": skipped_stage,
+                            "added_category": config.category_order[
+                                skipped_stage - 1
+                            ],
+                        }
+                        summaries.append(
+                            _failure_summary(
+                                endpoint,
+                                skipped_common,
+                                "skipped_after_timeout",
+                                "queries",
+                                "larger cumulative stage skipped after timeout",
+                                point_timeout,
+                                0.0,
+                            )
+                        )
+                        details.append(
+                            _failure_detail(
+                                endpoint,
+                                skipped_common,
+                                "skipped_after_timeout",
+                                "queries",
+                                "larger cumulative stage skipped after timeout",
+                                point_timeout,
+                            )
+                        )
+                    endpoint_blocked = config.limits.stop_scaling_after_timeout
+                    print(
+                        f"[engines-cumulative] engine={endpoint.engine} "
+                        f"stage={stage} status={status} "
+                        f"limit_s={point_timeout:g}",
+                        flush=True,
+                    )
+                    break
                 recorded = _record_measurements(
                     response["measurements"],
                     active_specs,
@@ -345,6 +619,8 @@ def run_engine_cumulative(
                             + float(response["query_wall_ms"])
                         ),
                         "mean_query_ms": statistics.fmean(query_times),
+                        "status": "completed",
+                        "censored": False,
                     }
                 )
                 print(
@@ -366,6 +642,12 @@ def run_engine_cumulative(
         warmups,
     )
     metadata["category_order"] = list(config.category_order)
+    metadata["execution_limits"] = {
+        "phase_timeout_seconds": phase_timeout,
+        "point_timeout_seconds": point_timeout,
+        "stop_scaling_after_timeout": config.limits.stop_scaling_after_timeout,
+        "timeout_semantics": "right-censored; later points are skipped",
+    }
     _write_metadata(output / "metadata.json", metadata)
     _validate_expectations(details)
     return output
@@ -381,6 +663,9 @@ def run_engine_scalability(
     base, specs = _load(config)
     details: list[dict[str, Any]] = []
     summaries: list[dict[str, Any]] = []
+    phase_timeout = config.limits.phase_timeout_seconds
+    point_timeout = config.limits.point_timeout_seconds
+    blocked: dict[str, str] = {}
 
     for block, users in enumerate(config.scale_users, start=1):
         source = _clone(base)
@@ -389,6 +674,41 @@ def run_engine_scalability(
         generation_ms = (perf_counter_ns() - generated_at) / 1_000_000
         data = _ntriples(source)
         for endpoint in endpoints:
+            if endpoint.engine in blocked:
+                for repetition in range(1, config.repetitions + 1):
+                    common = {
+                        "repetition": repetition,
+                        "synthetic_users": users,
+                        "synthetic_triples": synthetic_triples,
+                        "generation_ms": generation_ms,
+                    }
+                    message = (
+                        "larger scalability block skipped after timeout: "
+                        f"{blocked[endpoint.engine]}"
+                    )
+                    summaries.append(
+                        _failure_summary(
+                            endpoint,
+                            common,
+                            "skipped_after_timeout",
+                            "early-stop",
+                            message,
+                            point_timeout,
+                            0.0,
+                        )
+                    )
+                    details.append(
+                        _failure_detail(
+                            endpoint,
+                            common,
+                            "skipped_after_timeout",
+                            "early-stop",
+                            message,
+                            point_timeout,
+                        )
+                    )
+                continue
+            warmup_error: Exception | None = None
             for warmup in range(1, warmups + 1):
                 print(
                     f"[engines-scalability] block={block}/"
@@ -398,17 +718,74 @@ def run_engine_scalability(
                     f"warmup={warmup}/{warmups} status=running",
                     flush=True,
                 )
-                _request(
-                    endpoint.url,
-                    "/prepare",
-                    {"data_ntriples": data},
-                )
-                _request(
-                    endpoint.url,
-                    "/queries",
-                    _query_payload(specs),
-                )
+                try:
+                    _request(
+                        endpoint.url,
+                        "/prepare",
+                        {
+                            "data_ntriples": data,
+                            "phase_timeout_seconds": max(
+                                phase_timeout - 1.0, 0.1
+                            ),
+                        },
+                        timeout=phase_timeout,
+                    )
+                    _request(
+                        endpoint.url,
+                        "/queries",
+                        _query_payload(specs, phase_timeout),
+                        timeout=phase_timeout,
+                    )
+                except Exception as error:
+                    if not is_boundary_failure(error):
+                        raise
+                    warmup_error = error
+                    print(
+                        f"[engines-scalability] block={block} users={users} "
+                        f"engine={endpoint.engine} warmup={warmup}/{warmups} "
+                        f"status={failure_status(error)} "
+                        f"limit_s={phase_timeout:g}",
+                        flush=True,
+                    )
+                    break
             for repetition in range(1, config.repetitions + 1):
+                if warmup_error is not None:
+                    status = (
+                        failure_status(warmup_error)
+                        if repetition == 1
+                        else "skipped_after_timeout"
+                    )
+                    common = {
+                        "repetition": repetition,
+                        "synthetic_users": users,
+                        "synthetic_triples": synthetic_triples,
+                        "generation_ms": generation_ms,
+                    }
+                    summaries.append(
+                        _failure_summary(
+                            endpoint,
+                            common,
+                            status,
+                            "warmup",
+                            error_text(warmup_error),
+                            phase_timeout,
+                            phase_timeout
+                            if status == failure_status(warmup_error)
+                            else 0.0,
+                        )
+                    )
+                    details.append(
+                        _failure_detail(
+                            endpoint,
+                            common,
+                            status,
+                            "warmup",
+                            error_text(warmup_error),
+                            phase_timeout,
+                        )
+                    )
+                    blocked[endpoint.engine] = error_text(warmup_error)
+                    continue
                 print(
                     f"[engines-scalability] block={block}/"
                     f"{len(config.scale_users)} users={users} "
@@ -418,23 +795,75 @@ def run_engine_scalability(
                     "phase=prepare status=running",
                     flush=True,
                 )
-                prepared = _request(
-                    endpoint.url,
-                    "/prepare",
-                    {"data_ntriples": data},
-                )
-                response = _request(
-                    endpoint.url,
-                    "/queries",
-                    _query_payload(specs),
-                )
                 common = {
                     "engine": endpoint.engine,
                     "inference_profile": endpoint.inference_profile,
                     "repetition": repetition,
                     "synthetic_users": users,
                     "synthetic_triples": synthetic_triples,
+                    "generation_ms": generation_ms,
                 }
+                point_started = monotonic()
+                phase = "prepare"
+                try:
+                    prepared = _request(
+                        endpoint.url,
+                        "/prepare",
+                        {
+                            "data_ntriples": data,
+                            "phase_timeout_seconds": max(
+                                min(phase_timeout, point_timeout) - 1.0,
+                                0.1,
+                            ),
+                        },
+                        timeout=min(phase_timeout, point_timeout),
+                    )
+                    phase = "queries"
+                    query_timeout = min(
+                        phase_timeout,
+                        remaining_seconds(point_started, point_timeout),
+                    )
+                    response = _request(
+                        endpoint.url,
+                        "/queries",
+                        _query_payload(specs, query_timeout),
+                        timeout=query_timeout,
+                    )
+                except Exception as error:
+                    if not is_boundary_failure(error):
+                        raise
+                    status = failure_status(error)
+                    message = error_text(error)
+                    summaries.append(
+                        _failure_summary(
+                            endpoint,
+                            common,
+                            status,
+                            phase,
+                            message,
+                            point_timeout,
+                            monotonic() - point_started,
+                        )
+                    )
+                    details.append(
+                        _failure_detail(
+                            endpoint,
+                            common,
+                            status,
+                            phase,
+                            message,
+                            point_timeout,
+                        )
+                    )
+                    if config.limits.stop_scaling_after_timeout:
+                        blocked[endpoint.engine] = message
+                    print(
+                        f"[engines-scalability] block={block} users={users} "
+                        f"engine={endpoint.engine} phase={phase} "
+                        f"status={status} limit_s={point_timeout:g}",
+                        flush=True,
+                    )
+                    continue
                 details.extend(
                     _record_measurements(
                         response["measurements"],
@@ -469,6 +898,8 @@ def run_engine_scalability(
                             / (float(response["query_wall_ms"]) / 1000)
                         ),
                         "mean_query_ms": statistics.fmean(query_times),
+                        "status": "completed",
+                        "censored": False,
                     }
                 )
                 print(
@@ -490,6 +921,12 @@ def run_engine_scalability(
         warmups,
     )
     metadata["scale_users"] = list(config.scale_users)
+    metadata["execution_limits"] = {
+        "phase_timeout_seconds": phase_timeout,
+        "point_timeout_seconds": point_timeout,
+        "stop_scaling_after_timeout": config.limits.stop_scaling_after_timeout,
+        "timeout_semantics": "right-censored; later blocks are skipped per engine",
+    }
     _write_metadata(output / "metadata.json", metadata)
     _validate_expectations(details)
     return output
@@ -511,7 +948,11 @@ def validate_rdfs_equivalence(
     with path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
     rdfs_rows = [
-        row for row in rows if row["inference_profile"] == "rdfs"
+        row
+        for row in rows
+        if row["inference_profile"] == "rdfs"
+        and row.get("status", "completed") == "completed"
+        and row.get("query_id") != "__phase__"
     ]
     key_fields = ["repetition", "query_id"]
     key_fields.append("stage" if suite == "cumulative" else "synthetic_users")
@@ -541,12 +982,19 @@ def validate_rdfs_equivalence(
             for sample in samples
         }
         by_engine = {sample["engine"]: sample for sample in samples}
+        expected_engines = {"jena", "rdf4j", "rdflib"}
+        complete = expected_engines.issubset(by_engine)
         jena_rdf4j_exact = (
-            by_engine["jena"]["result_count"],
-            by_engine["jena"].get("ask_result", ""),
-        ) == (
-            by_engine["rdf4j"]["result_count"],
-            by_engine["rdf4j"].get("ask_result", ""),
+            (
+                by_engine["jena"]["result_count"],
+                by_engine["jena"].get("ask_result", ""),
+            )
+            == (
+                by_engine["rdf4j"]["result_count"],
+                by_engine["rdf4j"].get("ask_result", ""),
+            )
+            if {"jena", "rdf4j"}.issubset(by_engine)
+            else ""
         )
         validations.append(
             {
@@ -571,15 +1019,41 @@ def validate_rdfs_equivalence(
                         key=lambda item: item["engine"],
                     )
                 ),
-                "outcome_equivalent": len(observable_outcomes) == 1,
-                "exact_equivalent": len(exact_outcomes) == 1,
+                "comparison_status": (
+                    "complete" if complete else "insufficient_data"
+                ),
+                "outcome_equivalent": (
+                    len(observable_outcomes) == 1 if complete else ""
+                ),
+                "exact_equivalent": (
+                    len(exact_outcomes) == 1 if complete else ""
+                ),
                 "jena_rdf4j_exact_equivalent": jena_rdf4j_exact,
+            }
+        )
+    if not validations:
+        validations.append(
+            {
+                "suite": suite,
+                "repetition": "",
+                "query_id": "",
+                "stage_or_users": "",
+                "engines": "",
+                "result_counts": "",
+                "ask_results": "",
+                "comparison_status": "no_completed_common_observations",
+                "outcome_equivalent": "",
+                "exact_equivalent": "",
+                "jena_rdf4j_exact_equivalent": "",
             }
         )
     output = output_root / suite / "rdfs-equivalence.csv"
     _write_csv(output, validations)
     mismatches = [
-        row for row in validations if not row["outcome_equivalent"]
+        row
+        for row in validations
+        if row["comparison_status"] == "complete"
+        and not row["outcome_equivalent"]
     ]
     summary = {
         "suite": suite,

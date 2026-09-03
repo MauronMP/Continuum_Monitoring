@@ -239,22 +239,33 @@ the selected benchmark configuration:
 
 ```toml
 [distributed]
-request_timeout_seconds = 900
+request_timeout_seconds = 60
 request_retries = 0
-query_batch_size = 8
-worker_timeout_margin_seconds = 5
+query_batch_size = 4
+worker_timeout_margin_seconds = 2
+
+[limits]
+phase_timeout_seconds = 60
+point_timeout_seconds = 90
+calibration_query_limit = 16
+stop_scaling_after_timeout = true
 ```
 
-The HTTP timeout applies to one preparation request or one query batch, not to
-the complete stage. The worker deadline expires before the socket deadline, so
-CPU-bound RDFLib work is interrupted and the node remains available. Long POST
-requests are not replayed by default: retrying an already executing batch on a
-single-threaded worker duplicates work and can turn one 900-second timeout into
-approximately 2,700 seconds. Health discovery still retries a transient
-connection failure separately.
+The HTTP timeout bounds one preparation request or query batch, while the point
+timeout bounds preparation plus all query batches in one reported observation.
+The worker deadline expires before the socket deadline, so CPU-bound RDFLib
+work is interrupted and the node remains available. Long POST requests are not
+replayed by default because replaying an already executing batch duplicates
+work. Health discovery still retries a transient connection failure separately.
 
-For a constrained 32-bit Raspberry Pi, first reduce `query_batch_size` to `4`
-or `1` in `configs/benchmark.toml`. Increase `request_timeout_seconds` only when
+The replicated physical scheduler no longer runs all 115 queries as an
+unmeasured calibration workload on every Raspberry Pi. It samples at most one
+query per category (16 by default), estimates unsampled query costs from the
+node's category median, and then applies heterogeneous LPT balancing. The limit
+is part of the metadata and can be increased for a dedicated calibration study.
+
+For a constrained 32-bit Raspberry Pi, reduce `query_batch_size` to `2` or `1`
+only when one query must be isolated. Increase the timeouts only when
 one identified query legitimately needs a larger censoring threshold. Keep the
 same values for every architecture used in a scientific comparison.
 
@@ -268,8 +279,10 @@ replace every worker release before rerunning:
 .venv/bin/continuum-bench physical status --ssh-user pi
 ```
 
-If a batch still times out, the coordinator error includes its batch number and
-query IDs. Inspect the corresponding worker log, replacing the host and node ID
+If a batch still times out, the terminal includes its batch number and query
+IDs. The run is not aborted: the current point is stored with `status=timeout`
+and `censored=true`, and larger scalability points are stored as
+`skipped_after_timeout`. Inspect the corresponding worker log, replacing the host and node ID
 with the configured values:
 
 ```bash
@@ -277,10 +290,9 @@ ssh pi@RASPBERRY_HOST \
   'tail -n 100 /home/pi/continuum-bench/runtime/edge3.log'
 ```
 
-The cumulative/scalability correctness suites stop on such a timeout because a
-partial federated answer cannot pass the monolithic oracle. Load and separated
-experiment suites retain their documented censored observations for statistical
-analysis.
+Partial federated answers are never accepted as correct and are not used to
+compute speedup. Completed lower-load points remain available for analysis;
+timeout coverage must be reported alongside latency and throughput.
 
 ## Connection-reset diagnosis
 

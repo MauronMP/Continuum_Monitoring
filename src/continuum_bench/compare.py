@@ -61,8 +61,14 @@ def compare_suite(
 ) -> tuple[Path, Path]:
     require_release_metadata(monolith_root / suite)
     require_release_metadata(docker_root / suite)
-    monolith_summary = _read(monolith_root / suite / "summary.csv")
-    docker_summary = _read(docker_root / suite / "summary.csv")
+    monolith_summary = [
+        row for row in _read(monolith_root / suite / "summary.csv")
+        if row.get("status", "completed") == "completed"
+    ]
+    docker_summary = [
+        row for row in _read(docker_root / suite / "summary.csv")
+        if row.get("status", "completed") == "completed"
+    ]
     docker_by_key = {
         _summary_key(row, suite): row for row in docker_summary
     }
@@ -70,7 +76,9 @@ def compare_suite(
     for monolith in monolith_summary:
         key = _summary_key(monolith, suite)
         if key not in docker_by_key:
-            raise ValueError(f"Docker summary is missing {suite} run {key}")
+            # Timed-out/censored points are intentionally not ratios: their
+            # exact execution time is unknown.
+            continue
         docker = docker_by_key[key]
         monolith_ms = float(monolith["total_ms"])
         docker_ms = float(docker["total_wall_ms"])
@@ -119,8 +127,14 @@ def compare_suite(
         )
         rows.append(row)
 
-    monolith_detail = _read(monolith_root / suite / "query-runs.csv")
-    docker_detail = _read(docker_root / suite / "query-runs.csv")
+    monolith_detail = [
+        row for row in _read(monolith_root / suite / "query-runs.csv")
+        if row.get("status", "completed") == "completed"
+    ]
+    docker_detail = [
+        row for row in _read(docker_root / suite / "query-runs.csv")
+        if row.get("status", "completed") == "completed"
+    ]
     docker_details = {
         _detail_key(row, suite): row for row in docker_detail
     }
@@ -128,7 +142,7 @@ def compare_suite(
     for monolith in monolith_detail:
         key = _detail_key(monolith, suite)
         if key not in docker_details:
-            raise ValueError(f"Docker query results are missing {key}")
+            continue
         docker = docker_details[key]
         monolith_ask = monolith.get("ask_result", "")
         docker_ask = docker.get("ask_result", "")

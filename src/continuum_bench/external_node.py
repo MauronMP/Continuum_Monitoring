@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import argparse
 import json
 import os
@@ -18,6 +18,7 @@ from rdflib import Graph
 import owlrl
 
 from .queries import QueryMeasurement
+from .budget import PhaseBudgetTimeout, local_phase_timeout
 from .reasoners import REASONING_CONTRACT, materialize
 from .engine_protocol import ENGINE_PROTOCOL_VERSION, ENGINE_SERVICE
 
@@ -148,16 +149,27 @@ class Handler(BaseHTTPRequestHandler):
         try:
             length = int(self.headers.get("Content-Length", "0"))
             payload = json.loads(self.rfile.read(length) or b"{}")
-            if self.path == "/prepare":
-                response = self.server.runtime.prepare(
-                    str(payload["data_ntriples"])
-                )
-            elif self.path == "/queries":
-                response = self.server.runtime.execute(payload["queries"])
-            else:
-                self._json(404, {"error": "not found"})
-                return
+            with local_phase_timeout(
+                float(payload.get("phase_timeout_seconds", 0))
+            ):
+                if self.path == "/prepare":
+                    response = self.server.runtime.prepare(
+                        str(payload["data_ntriples"])
+                    )
+                elif self.path == "/queries":
+                    response = self.server.runtime.execute(payload["queries"])
+                else:
+                    self._json(404, {"error": "not found"})
+                    return
             self._json(200, response)
+        except (BrokenPipeError, ConnectionResetError):
+            print(
+                f"[external-node engine={self.server.runtime.engine}] "
+                f"phase={self.path.strip('/')} status=client-disconnected",
+                flush=True,
+            )
+        except PhaseBudgetTimeout as error:
+            self._json(408, {"error": str(error), "timeout": True})
         except (KeyError, TypeError, ValueError, RuntimeError) as error:
             self._json(400, {"error": str(error)})
         except Exception as error:  # pragma: no cover - process boundary
@@ -171,7 +183,7 @@ class Handler(BaseHTTPRequestHandler):
         )
 
 
-class ExternalServer(ThreadingHTTPServer):
+class ExternalServer(HTTPServer):
     def __init__(
         self,
         address: tuple[str, int],
