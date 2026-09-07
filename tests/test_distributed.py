@@ -45,7 +45,7 @@ def test_discover_rejects_an_unrelated_health_service(monkeypatch):
         RuntimeError,
         match="Incompatible continuum worker.*service",
     ):
-        distributed.discover(["http://192.168.1.137:8080"])
+        distributed.discover(["http://10.151.73.241:8080"])
 
 
 def test_request_retries_a_transient_disconnect(monkeypatch):
@@ -102,6 +102,22 @@ def test_parallel_timeout_reports_the_exact_query_batch(monkeypatch):
             timeout=1,
             retries=0,
         )
+
+
+def test_query_batches_spread_lpt_expensive_prefix_across_rounds(config):
+    specs = load_catalog(config.resolve(config.query_catalog), config.root)[:10]
+
+    batches = distributed._interleaved_query_batches(specs, batch_size=4)
+
+    assert [[spec.id for spec in batch] for batch in batches] == [
+        [specs[index].id for index in (0, 3, 6, 9)],
+        [specs[index].id for index in (1, 4, 7)],
+        [specs[index].id for index in (2, 5, 8)],
+    ]
+    assert max(map(len, batches)) == 4
+    assert {spec.id for batch in batches for spec in batch} == {
+        spec.id for spec in specs
+    }
 
 
 def test_worker_health_rejects_an_old_ontology_release():

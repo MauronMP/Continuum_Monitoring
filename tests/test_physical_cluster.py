@@ -82,16 +82,16 @@ def test_authorize_installs_key_on_each_remote_node(config, monkeypatch):
     physical_cluster.authorize_cluster(inventory)
 
     assert commands == [
-        ["ssh-copy-id", "pi@192.168.1.137"],
-        ["ssh-copy-id", "pi@192.168.1.138"],
-        ["ssh-copy-id", "pi@192.168.1.139"],
-        ["ssh-copy-id", "pi@192.168.1.140"],
+        ["ssh-copy-id", "pi@10.151.73.241"],
+        ["ssh-copy-id", "pi@10.151.73.34"],
+        ["ssh-copy-id", "pi@10.151.73.143"],
+        ["ssh-copy-id", "pi@10.151.73.173"],
     ]
 
 
 def test_ssh_lifecycle_commands_disable_password_prompts():
     command = physical_cluster._ssh(
-        "pi@192.168.1.137",
+        "pi@10.151.73.241",
         "true",
     )
 

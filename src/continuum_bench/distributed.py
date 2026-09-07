@@ -432,6 +432,30 @@ def _combine_query_responses(
     return combined
 
 
+def _interleaved_query_batches(
+    specs: list[QuerySpec],
+    batch_size: int,
+) -> list[list[QuerySpec]]:
+    """Distribute an LPT-ordered assignment across bounded HTTP batches.
+
+    ``balanced_assignment`` deliberately returns expensive queries first. A
+    contiguous chunk would therefore put the most expensive queries in the
+    same request and turn a transport batch limit into an accidental workload
+    hotspot. Round-robin packing retains every query exactly once while
+    spreading that expensive prefix across the available rounds.
+    """
+
+    if batch_size < 1:
+        raise ValueError("batch_size must be >= 1")
+    if not specs:
+        return []
+    batch_count = (len(specs) + batch_size - 1) // batch_size
+    batches: list[list[QuerySpec]] = [[] for _ in range(batch_count)]
+    for index, spec in enumerate(specs):
+        batches[index % batch_count].append(spec)
+    return batches
+
+
 def _query(
     config: BenchmarkConfig,
     endpoints: list[Endpoint],
@@ -447,10 +471,10 @@ def _query(
     )
     started = monotonic()
     batches = {
-        url: [
-            specs[index : index + transport.query_batch_size]
-            for index in range(0, len(specs), transport.query_batch_size)
-        ]
+        url: _interleaved_query_batches(
+            specs,
+            transport.query_batch_size,
+        )
         for url, specs in assignment.items() if specs
     }
     rounds = max((len(value) for value in batches.values()), default=0)

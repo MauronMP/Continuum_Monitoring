@@ -20,6 +20,16 @@ Each `[[nodes]]` entry defines identity, SSH host, HTTP endpoint, hardware,
 network capacity, location, authority and semantic categories. Add or remove
 nodes without changing Python code.
 
+The current laboratory inventory is:
+
+| Node | Address | Semantic endpoint |
+| --- | --- | --- |
+| Cloud coordinator | `127.0.0.1` | `http://127.0.0.1:8391` |
+| Fog | `10.151.73.241` | `http://10.151.73.241:8391` |
+| Edge 1 | `10.151.73.34` | `http://10.151.73.34:8391` |
+| Edge 2 | `10.151.73.143` | `http://10.151.73.143:8391` |
+| Edge 3 | `10.151.73.173` | `http://10.151.73.173:8391` |
+
 ```bash
 continuum-bench topology validate --name physical
 continuum-bench doctor --physical
@@ -125,3 +135,7 @@ continuum-bench physical stop --ssh-user pi
 On timeout, inspect the affected worker's runtime log, memory pressure and
 network connectivity. The coordinator records the point as censored and does
 not wait indefinitely. Re-run `deploy` after code or dependency changes.
+
+Balanced replicated queries use interleaved HTTP batches so the expensive
+prefix produced by LPT scheduling is distributed across rounds. After updating
+this code, stop, deploy and restart every worker before repeating a campaign.

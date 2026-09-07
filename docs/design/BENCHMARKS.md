@@ -46,6 +46,11 @@ privacy class, tier and category.
 a bounded calibration sample and heterogeneous longest-processing-time
 scheduling.
 
+The LPT assignment is transported in interleaved batches: its expensive-first
+ordering is spread across HTTP rounds instead of concentrating the most costly
+queries in the first request. This changes only transport packing, not node
+assignment, query coverage or result semantics.
+
 ## Timeouts
 
 A benchmark point is an acceptance test, not an attempt to wait forever. If a
