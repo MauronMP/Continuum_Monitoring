@@ -1,4 +1,4 @@
-"""Install into a project virtualenv; never mutate host packages or Docker permissions."""
+"""Install the coordinator or worker virtual environment safely."""
 
 from __future__ import annotations
 
@@ -10,15 +10,13 @@ import venv
 from pathlib import Path
 
 if sys.version_info < (3, 11):
-    raise SystemExit(
-        "Se requiere Python >=3.11; seleccione ese intérprete antes de crear .venv (Ubuntu 24.04 incluye Python 3.12)."
-    )
+    raise SystemExit("Python >= 3.11 is required before creating a virtualenv.")
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from continuum_bench.environment import (  # noqa: E402 - source import before installation
-    docker_checks,
+from continuum_bench.environment import (  # noqa: E402
+    physical_checks,
     project_checks,
     require_checks,
     runtime_checks,
@@ -27,10 +25,9 @@ from continuum_bench.processes import CommandFailure, run_logged  # noqa: E402
 
 
 def check_virtualenv(python: Path, *, worker: bool) -> None:
-    """Reject copied/old environments before asking pip to modify them."""
     probe = (
         "import struct, sys; "
-        "print(sys.version.split()[0], str(struct.calcsize('P') * 8) + ' bits'); "
+        "print(sys.version.split()[0], str(struct.calcsize('P') * 8) + ' bit'); "
         "sys.exit(0 if sys.version_info >= (3, 11) and "
         f"({worker!r} or struct.calcsize('P') == 8) else 1)"
     )
@@ -44,14 +41,13 @@ def check_virtualenv(python: Path, *, worker: bool) -> None:
         )
     except (OSError, subprocess.TimeoutExpired) as error:
         raise RuntimeError(
-            f"El virtualenv no es ejecutable en este equipo: {python}. "
-            "Use --venv con un directorio nuevo; no se borrará el existente."
+            f"The virtualenv is not executable on this machine: {python}. "
+            "Use --venv with a new directory; existing environments are not removed."
         ) from error
     if result.returncode:
         raise RuntimeError(
-            f"Virtualenv incompatible: {(result.stdout + result.stderr).strip()}. "
-            "Se requiere Python >=3.11 y 64 bits para el coordinador. "
-            "Use --venv con un directorio nuevo."
+            f"Incompatible virtualenv: {(result.stdout + result.stderr).strip()}. "
+            "The coordinator requires Python >= 3.11 and 64-bit execution."
         )
 
 
@@ -95,75 +91,53 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--venv",
         type=Path,
-        help="Por defecto .venv (coordinador) o .venv-node (worker)",
-    )
-    parser.add_argument(
-        "--with-docker",
-        action="store_true",
-        help="Comprobar Docker y construir las dos imágenes compartidas; no iniciar nodos ni benchmarks",
+        help="Default: .venv for coordinator or .venv-node for worker",
     )
     args = parser.parse_args(argv)
     worker = args.profile == "worker"
-    if worker and args.with_docker:
-        parser.error("El worker ligero no usa Docker; omita --with-docker")
     checks = runtime_checks(worker=worker) + project_checks(ROOT)
-    if args.with_docker:
-        checks.extend(docker_checks(ROOT))
+    if not worker:
+        checks.extend(physical_checks())
     try:
         require_checks(checks)
         destination = args.venv or ROOT / (".venv-node" if worker else ".venv")
         if not destination.is_absolute():
             destination = ROOT / destination
         if destination.is_symlink():
-            raise RuntimeError(f"No se modifica un entorno enlazado: {destination}")
+            raise RuntimeError(f"Refusing to modify a linked environment: {destination}")
         if destination.exists() and not (destination / "pyvenv.cfg").is_file():
             raise RuntimeError(
-                f"{destination} existe pero no es un virtualenv. Elija --venv con un directorio nuevo; no se borrará nada."
+                f"{destination} exists but is not a virtualenv. Choose --venv "
+                "with a new directory; nothing will be deleted."
             )
         if not destination.exists():
-            print(f"[bootstrap] creando {destination}", flush=True)
+            print(f"[bootstrap] creating {destination}", flush=True)
             try:
                 venv.EnvBuilder(with_pip=True).create(destination)
             except (OSError, subprocess.SubprocessError) as error:
                 raise RuntimeError(
-                    "No se pudo crear el virtualenv. En Ubuntu instale python3-venv (o python3.X-venv para el intérprete elegido). El instalador no ejecuta sudo ni modifica Python del sistema."
+                    "Could not create the virtualenv. On Ubuntu, install "
+                    "python3-venv or python3.X-venv for the selected interpreter."
                 ) from error
         python = destination / "bin" / "python"
         check_virtualenv(python, worker=worker)
         environment = dict(os.environ)
         environment["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
-        # A writable project cache avoids root-owned/shared ~/.cache/pip and
-        # accelerates repeated setup without copying a machine-specific venv.
         environment.setdefault("PIP_CACHE_DIR", str(ROOT / ".cache" / "pip"))
         for command in install_commands(ROOT, python, worker=worker):
             run_logged(command, root=ROOT, environment=environment, label="install")
-        if args.with_docker:
-            run_logged(
-                [
-                    str(python),
-                    "-m",
-                    "continuum_bench.engine_stack",
-                    "prepare",
-                    "--root",
-                    str(ROOT),
-                ],
-                root=ROOT,
-                environment=environment,
-                timeout=2 * float(environment.get("CONTINUUM_COMPOSE_TIMEOUT", "1200"))
-                + 200,
-                label="docker-prepare",
-            )
-        print(f"[bootstrap] listo: {destination}", flush=True)
+        print(f"[bootstrap] ready: {destination}", flush=True)
         if worker:
             print(f"Worker: PYTHONPATH=src {python} -m continuum_bench.node --help")
         else:
-            print(f"Validación: {python} -m continuum_bench validate")
+            print(f"Validation: {python} -m continuum_bench validate")
         return 0
     except (RuntimeError, OSError, ValueError) as error:
         print(f"[bootstrap] ERROR: {error}", file=sys.stderr)
         if isinstance(error, CommandFailure):
             print(
-                "No se compilan dependencias nativas automáticamente. Si falta un wheel, use CPython 3.11–3.13 en Linux/macOS de 64 bits. No se desactiva TLS.",
+                "Native dependency builds are not attempted automatically. "
+                "Use CPython 3.11-3.13 with binary wheels available.",
                 file=sys.stderr,
             )
         return 1

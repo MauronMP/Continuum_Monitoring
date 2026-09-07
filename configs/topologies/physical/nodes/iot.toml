@@ -1,4 +1,27 @@
 [layer]
 tier = "iot"
 
-# Add one or more [[nodes]] tables when Raspberry Pi nodes use the IoT tier.
+# Add one or more [[nodes]] tables when devices use the IoT tier.
+#
+# Example:
+# [[nodes]]
+# id = "iot1"
+# device_type = "sensor-gateway"
+# host = "192.168.1.160"
+# endpoint = "http://192.168.1.160:8391"
+# local = false
+# port = 8391
+# authority = true
+#
+# [nodes.resources]
+# cpu_cores = 1
+# ram = "512m"
+# storage_mib = 4096
+# processing_capacity = 0.10
+# network_mbps = 10
+#
+# [nodes.location]
+# latitude = 0.0
+# longitude = 0.0
+# altitude_m = 0.0
+# region = "physical-lab"

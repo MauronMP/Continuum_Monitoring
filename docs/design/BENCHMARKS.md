@@ -1,134 +1,59 @@
-# Core benchmark methodology
+# Benchmarks
 
-## Purpose
+The monitoring module provides the same benchmark suites for Docker and
+physical continuum targets.
 
-The core benchmark has two suites that answer different questions:
+Command scope is deliberately explicit: `docker all` and `physical all` run
+only the cumulative and scalability suites. Load, separated experiments,
+study artefacts and semantic acceptance are independent blocks documented in
+the [command reference](COMMAND_REFERENCE.md).
 
-- cumulative: how query workload grows as monitoring capabilities are added;
-- scalability: how the complete workload reacts to larger deterministic ABox
-  volumes.
+## Cumulative
 
-Both use the same ontology, query catalog, seed, reasoner list and output
-contract. They are available in monolithic, replicated and authority-sharded
-deployments.
+The cumulative suite adds categories in the order configured in
+`configs/benchmark.toml`. At every stage, the coordinator prepares the ontology
+on the selected nodes and executes all queries belonging to the accumulated
+category set.
 
-## Reasoning profiles
+This evaluates how monitoring cost grows when a deployment enables more
+policy, requirement and ontology modules.
 
-| Profile | Implementation | Meaning |
-|---|---|---|
-| `rdfs` | RDFLib closure with literal-value guard | RDFS entailment |
-| `owlrl` | OWL-RL | OWL 2 RL rule closure |
-| `rdfs_owlrl` | RDFS followed by OWL-RL | Combined experimental profile |
+## Scalability
 
-These profiles are separate from the product comparison involving RDFLib,
-Apache Jena, Eclipse RDF4J and Oxigraph. Oxigraph is the no-entailment SPARQL
-control.
+The scalability suite increases synthetic users and generated individuals.
+This evaluates how the target responds as ontology size, query demand and
+materialisation cost increase.
 
-## Full and smoke configurations
+## Load and separated experiments
 
-- `configs/benchmark.toml`: publication-oriented categories, volumes,
-  reasoners and repetitions;
-- `configs/smoke-cumulative.toml`: one short cumulative repetition;
-- `configs/smoke-scalability.toml`: two small user volumes.
+The load suite varies events/s, users, triples, rules and active node count.
+The three non-confounded experiments separately measure replicated query
+scale-out, reasoning by node hardware and authority-partitioned ontology
+execution. Docker and physical targets emit the same schemas.
 
-The random seed makes generated IRIs and values deterministic. Each measured
-repetition rebuilds the relevant graph; mutable closure state is not shared
-between reasoners.
+The reporting layer pairs only rows with identical dimension, profile,
+reasoner and node count. It reports p95-latency and inference speedups,
+throughput gain, recovery speedup, event-loss difference and scale-out
+efficiency in both comparison directions. Incomplete or censored pairs remain
+in the coverage table but are excluded from ratio claims.
 
-## Cumulative experiment
+## Layouts
 
-The base graph is materialized once for each reasoner and repetition. Query
-categories are then activated in the configured order. At stage N, every query
-from stages 1 through N is executed.
+`sharded` distributes ontology fragments and queries according to authority,
+privacy class, tier and category.
 
-Independent variable:
+`replicated` loads a full replica on every active node and assigns queries using
+a bounded calibration sample and heterogeneous longest-processing-time
+scheduling.
 
-- cumulative category count and corresponding query count.
+## Timeouts
 
-Measured fields include:
+A benchmark point is an acceptance test, not an attempt to wait forever. If a
+phase exceeds the configured limit, the row is recorded as a censored timeout.
+When monotone early stop is enabled, larger scalability points for the same
+reasoner/layout are skipped after the first timeout.
 
-- input, output and inferred triples;
-- reasoning time;
-- total query time;
-- mean and p95 query latency;
-- stage total time;
-- per-query duration, result count, ASK value and digest.
-
-Reasoning time is displayed with each stage because it is part of end-to-end
-deployment cost, but it is not re-executed separately for every category stage.
-
-## Scalability experiment
-
-For every configured `scale_users` value, the runner copies the same base graph
-and deterministically adds users, devices, states, observations, contracts and
-related resources. Every point is independent: a 1,000-user point does not
-contain a previous point plus 1,000 new users.
-
-Independent variable:
-
-- total synthetic user count, with resulting synthetic and input triples.
-
-Measured fields include generation, reasoning and query time, inferred triples,
-mean/p95 query latency and queries per second. The full 115-query battery is
-executed at every point.
-
-## Monolithic commands
-
-```bash
-.venv/bin/continuum-bench benchmark cumulative
-.venv/bin/continuum-bench benchmark scalability
-.venv/bin/continuum-bench benchmark all
-```
-
-The independent product stack runs automatically. Add `--python-only` to
-exclude it intentionally.
-
-## Distributed timing
-
-Distributed suites report wall time. Per-node CPU time and work sums are cost
-metrics, not latency and must not be substituted for wall time.
-
-Replicated total time contains parallel prepare plus scheduled query wall time.
-Sharded total time contains parallel fragment prepare plus federated query wall
-time. Monolithic-oracle validation is outside the measured phase and is marked
-in metadata.
-
-## Repetitions, warm-ups and statistics
-
-Smoke configurations use one repetition. Publication runs should use the full
-configuration, at least one unmeasured warm-up for product engines and enough
-measured repetitions to report median and dispersion. Preserve raw rows rather
-than only plotted aggregates.
-
-Run architectures in a randomized or counterbalanced order when thermal drift,
-background services or network conditions may bias a fixed order.
-
-## Reproducibility metadata
-
-Every result directory records release identity, ontology graph digest,
-reasoners, repetitions, seed and architecture-specific information. Distributed
-runs also record endpoints and topology fingerprints.
-
-Record external controls that software cannot infer reliably: CPU governor,
-cooling, power mode, network, concurrent load and Docker resource settings.
-
-## Interpretation limits
-
-- Cumulative results reflect repeated execution of the growing query set, not
-  only the newly added category.
-- User count is a workload generator input, not a direct real-world device
-  population claim.
-- More nodes are not expected to help when fixed overhead dominates.
-- Replicated scale-out measures query service, not distributed inference.
-- Sharded performance includes semantic placement and federation overhead.
-- A timeout is a right-censored observation and must remain in reporting.
-- The default acceptance ceiling is 60 seconds per phase/request and 90 seconds
-  per complete point (30/45 seconds for smoke). After the first scalability
-  timeout, larger points for that engine or topology are recorded as skipped.
-- Replicated physical calibration uses a stratified sample capped by
-  `calibration_query_limit`; it does not execute the full catalog on every node.
-- Comparisons require matched configurations and equivalent query results.
-
-See [LOAD_BENCHMARKS.md](LOAD_BENCHMARKS.md) for event-rate, rule, triple and
-node-count dimensions and [THREE_EXPERIMENTS.md](THREE_EXPERIMENTS.md) for the
-deconfounded architecture experiments.
+Timeout rows retain the configured budget and completion state. They are not
+encoded as zero latency, excluded silently or interpreted as successful fast
+runs. Cross-architecture ratios are computed only from matching completed
+observations; coverage plots expose failed, skipped and censored points.

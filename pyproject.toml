@@ -24,7 +24,8 @@ diagrams = ["reportlab>=4.4,<5"]
 continuum-bench = "continuum_bench.cli:main"
 continuum-smoke-cumulative = "continuum_bench.smoke:main_cumulative"
 continuum-smoke-scalability = "continuum_bench.smoke:main_scalability"
-continuum-report = "continuum_bench.reporting:main"
+continuum-smoke-docker-cumulative = "continuum_bench.smoke:main_docker_cumulative"
+continuum-smoke-docker-scalability = "continuum_bench.smoke:main_docker_scalability"
 
 [tool.setuptools.packages.find]
 where = ["src"]

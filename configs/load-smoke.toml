@@ -13,7 +13,7 @@ name = "eps-smoke"
 dimension = "events_per_second"
 events_per_second = 10
 users = 5
-target_triples = 3000
+target_triples = 10000
 rule_count = 2
 node_count = 5
 
@@ -22,6 +22,6 @@ name = "nodes-smoke"
 dimension = "node_count"
 events_per_second = 10
 users = 5
-target_triples = 3000
+target_triples = 10000
 rule_count = 2
 node_count = 1

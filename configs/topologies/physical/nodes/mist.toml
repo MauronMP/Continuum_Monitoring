@@ -1,4 +1,27 @@
 [layer]
 tier = "mist"
 
-# Add one or more [[nodes]] tables when Raspberry Pi nodes use the mist tier.
+# Add one or more [[nodes]] tables when devices use the mist tier.
+#
+# Example:
+# [[nodes]]
+# id = "mist1"
+# device_type = "gateway"
+# host = "192.168.1.150"
+# endpoint = "http://192.168.1.150:8391"
+# local = false
+# port = 8391
+# authority = false
+#
+# [nodes.resources]
+# cpu_cores = 2
+# ram = "1g"
+# storage_mib = 16384
+# processing_capacity = 0.25
+# network_mbps = 100
+#
+# [nodes.location]
+# latitude = 0.0
+# longitude = 0.0
+# altitude_m = 0.0
+# region = "physical-lab"

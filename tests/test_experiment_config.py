@@ -36,13 +36,9 @@ def test_reasoning_profile_selection_is_explicit(config):
 def test_experiment_cli_commands_are_distinct():
     parser = cli._parser()
 
-    scale_out = parser.parse_args(["experiment", "scale-out", "monolith"])
-    hardware = parser.parse_args(
-        ["experiment", "reasoning-hardware", "docker"]
-    )
-    distributed = parser.parse_args(
-        ["experiment", "distributed-ontology", "physical"]
-    )
+    scale_out = parser.parse_args(["experiment", "scale-out"])
+    hardware = parser.parse_args(["experiment", "reasoning-hardware"])
+    distributed = parser.parse_args(["experiment", "distributed-ontology"])
     plot = parser.parse_args(["experiment", "plot", "all"])
     analyze = parser.parse_args(["experiment", "analyze"])
 

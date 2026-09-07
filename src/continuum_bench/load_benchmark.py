@@ -23,10 +23,8 @@ from .config import BenchmarkConfig
 from .csv_utils import write_dict_rows
 from .distributed import Endpoint, _parallel, _request, discover
 from .load_config import LoadBenchmarkConfig, LoadProfile
-from .node import NodeRuntime
 from .queries import QuerySpec, load_catalog
 from .specification import release_identity
-from .topology import Topology, load_topology
 
 
 class PhaseTimeout(TimeoutError):
@@ -327,7 +325,11 @@ def _run_event_stream(
             lost_rows(items, endpoint, "point_timeout_in_flight")
             in_flight.pop(future)
     finally:
-        executor.shutdown(wait=True, cancel_futures=True)
+        # Running thread futures cannot be cancelled. Waiting here would make
+        # the point-level deadline advisory and can stall the coordinator on a
+        # slow physical worker. HTTP calls retain their own bounded timeout;
+        # detach them after recording the requests as right-censored.
+        executor.shutdown(wait=False, cancel_futures=True)
 
     elapsed_ms = (perf_counter_ns() - started) / 1_000_000
     precision = tp / (tp + fp) if tp + fp else 0.0
@@ -436,37 +438,10 @@ def run_load_benchmark(
     output_root: Path,
     endpoint_urls: list[str] | None = None,
 ) -> Path:
-    if architecture not in {"monolith", "docker", "physical"}:
-        raise ValueError(f"Unknown load architecture: {architecture}")
-    monolith_topology: Topology | None = None
-    if architecture == "monolith":
-        monolith_topology = load_topology(
-            benchmark_config.resolve(benchmark_config.topology_file),
-            "monolith",
-        )
-        node = monolith_topology.active_nodes[0]
-        all_endpoints = [
-            Endpoint(
-                f"local://{node.node_id}",
-                node.node_id,
-                node.tier,
-                node.authority,
-                node.categories,
-            )
-        ]
-        runtime = NodeRuntime(
-            benchmark_config.root,
-            node.node_id,
-            tier=node.tier,
-            topology_name=monolith_topology.name,
-            topology_file=(
-                monolith_topology.source_path
-                or benchmark_config.topology_file
-            ),
-        )
-    else:
-        all_endpoints = discover_load_endpoints(endpoint_urls or [])
-        runtime = None
+    if architecture not in {"docker", "physical"}:
+        raise ValueError("Load benchmark target must be docker or physical")
+    all_endpoints = discover_load_endpoints(endpoint_urls or [])
+    runtime = None
     specs = _alert_specs(benchmark_config)
     summary_rows: list[dict[str, Any]] = []
     event_rows: list[dict[str, Any]] = []
@@ -474,10 +449,7 @@ def run_load_benchmark(
 
     for profile_index, profile in enumerate(load_config.profiles, start=1):
         requested_nodes = profile.node_count
-        if architecture == "monolith" and profile.dimension == "node_count":
-            if requested_nodes != 1:
-                continue
-        effective_nodes = 1 if architecture == "monolith" else requested_nodes
+        effective_nodes = requested_nodes
         if effective_nodes > len(all_endpoints):
             raise ValueError(
                 f"{architecture} exposes {len(all_endpoints)} nodes but "
@@ -908,11 +880,7 @@ def run_load_benchmark(
         **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "architecture": architecture,
-        "topology": (
-            monolith_topology.public()
-            if monolith_topology is not None
-            else {"endpoint_override": list(endpoint_urls or [])}
-        ),
+        "topology": {"endpoint_override": list(endpoint_urls or [])},
         "python": platform.python_version(),
         "platform": platform.platform(),
         "project_root": str(benchmark_config.root),

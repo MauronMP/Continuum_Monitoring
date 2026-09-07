@@ -1,0 +1,22 @@
+[validation]
+ontology = "ontology/legacy/smartcity_continuum-v3.0.0.ttl"
+timeout_seconds = 180
+reasoners = ["hermit", "openllet", "jfact", "konclude"]
+
+[reasoners.hermit]
+kind = "owlapi"
+classpath_env = "CONTINUUM_HERMIT_CLASSPATH"
+
+[reasoners.openllet]
+kind = "owlapi"
+classpath_env = "CONTINUUM_OPENLLET_CLASSPATH"
+
+[reasoners.jfact]
+kind = "owlapi"
+classpath_env = "CONTINUUM_JFACT_CLASSPATH"
+
+[reasoners.konclude]
+kind = "command"
+command = ["Konclude", "consistency", "-i", "{ontology}"]
+consistent_pattern = "(?i)ontology\\s+consistent|consistent\\s*[:=]\\s*true"
+inconsistent_pattern = "(?i)ontology\\s+inconsistent|consistent\\s*[:=]\\s*false"

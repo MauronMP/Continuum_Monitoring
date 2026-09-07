@@ -1,4 +1,4 @@
-"""Privacy-aware benchmark coordinator for Docker and physical continuum nodes."""
+"""Privacy-aware benchmark coordinator for physical continuum nodes."""
 
 from __future__ import annotations
 
@@ -376,11 +376,11 @@ def _validation_rows(
                 "query_id": item["query_id"],
                 "execution_scope": item["execution_scope"],
                 "distributed_count": item["result_count"],
-                "monolith_count": expected_count,
+                "canonical_count": expected_count,
                 "distributed_ask": item["ask_result"],
-                "monolith_ask": expected_ask,
+                "canonical_ask": expected_ask,
                 "distributed_digest": item["result_digest"],
-                "monolith_digest": expected_digest,
+                "canonical_digest": expected_digest,
                 "valid": valid,
             }
         )
@@ -611,7 +611,7 @@ def _metadata(
             "exact-order-independent-canonical-result-set; numeric lexical "
             "forms and duplicate solution rows are normalized"
         ),
-        "timing_excludes_monolith_validation": True,
+        "timing_excludes_reference_validation": True,
         "ontology_placement_manifest": str(
             (config.root / "configs/ontology-placement.toml").resolve()
         ),
@@ -687,7 +687,7 @@ def run_sharded_cumulative(
         if validate_results and not topology_stopped:
             print(
                 f"[{target}-sharded-cumulative] reasoner={reasoner} "
-                "phase=monolith-validation status=running",
+                "phase=reference-validation status=running",
                 flush=True,
             )
             try:
@@ -700,8 +700,8 @@ def run_sharded_cumulative(
             except PhaseBudgetTimeout:
                 print(
                     f"[{target}-sharded-cumulative] reasoner={reasoner} "
-                    "phase=monolith-validation status=timeout; "
-                    "distributed timing will continue without oracle",
+                    "phase=reference-validation status=timeout; "
+                    "physical timing will continue without reference results",
                     flush=True,
                 )
         for repetition in range(1, config.repetitions + 1):
@@ -990,7 +990,7 @@ def run_sharded_scalability(
                 print(
                     f"[{target}-sharded-scalability] "
                     f"block={block}/{len(config.scale_users)} users={users} "
-                    f"reasoner={reasoner} phase=monolith-validation "
+                    f"reasoner={reasoner} phase=reference-validation "
                     "status=running",
                     flush=True,
                 )
@@ -1005,9 +1005,9 @@ def run_sharded_scalability(
                     print(
                         f"[{target}-sharded-scalability] block={block} "
                         f"users={users} reasoner={reasoner} "
-                        "phase=monolith-validation status=timeout "
+                        "phase=reference-validation status=timeout "
                         f"limit_s={config.limits.point_timeout_seconds:g}; "
-                        "distributed timing will continue without oracle",
+                        "physical timing will continue without reference results",
                         flush=True,
                     )
             for repetition in range(1, config.repetitions + 1):

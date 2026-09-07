@@ -117,7 +117,12 @@ def load_config(path: str | Path) -> BenchmarkConfig:
         ontology_files=tuple(Path(value) for value in paths["ontology_files"]),
         shape_files=tuple(Path(value) for value in paths["shape_files"]),
         query_catalog=Path(paths["query_catalog"]),
-        topology_file=Path(paths.get("topology_file", "configs/topology.toml")),
+        topology_file=Path(
+            paths.get(
+                "topology_file",
+                "configs/topologies/physical/topology.toml",
+            )
+        ),
         output_dir=Path(paths["output_dir"]),
         reasoners=tuple(benchmark["reasoners"]),
         category_order=tuple(benchmark["category_order"]),

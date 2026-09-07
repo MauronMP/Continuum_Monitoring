@@ -25,7 +25,7 @@ class DatatypeAwareRDFSSemantics(RDFS_Semantics):
     those are not interchangeable RDF literals.  Use RDFLib's datatype- and
     language-aware value equality instead, retaining numeric equivalences.
     Override the public hook, not installed dependency files, so the same
-    correction runs in the monolith, Docker engines and physical workers.
+    correction runs consistently in the coordinator and physical workers.
     """
 
     def one_time_rules(self) -> None:
@@ -62,6 +62,19 @@ class ReasoningMeasurement:
         return self.output_triples - self.input_triples
 
 
+@dataclass(frozen=True)
+class ReasonerEngine:
+    """Common reasoner descriptor used by benchmark configuration."""
+
+    name: str
+    profile: str
+    implementation: str
+    owl_fragment: str
+    supported: bool
+    suitability: str
+    replacement: str = ""
+
+
 _PROFILES: dict[str, Type] = {
     "rdfs": DatatypeAwareRDFSSemantics,
     "owlrl": OWLRL_Semantics,
@@ -69,8 +82,104 @@ _PROFILES: dict[str, Type] = {
 }
 
 
+REASONER_ENGINES: dict[str, ReasonerEngine] = {
+    "rdfs": ReasonerEngine(
+        name="RDFLib RDFS",
+        profile="rdfs",
+        implementation="owlrl.DeductiveClosure with datatype-aware RDFS semantics",
+        owl_fragment="RDFS",
+        supported=True,
+        suitability=(
+            "Portable Python baseline suitable for low-resource physical "
+            "nodes and deterministic bounded experiments."
+        ),
+    ),
+    "owlrl": ReasonerEngine(
+        name="OWL RL",
+        profile="owlrl",
+        implementation="owlrl.OWLRL_Semantics",
+        owl_fragment="OWL 2 RL",
+        supported=True,
+        suitability=(
+            "Rule-based OWL profile suitable for materialisation on constrained "
+            "physical nodes."
+        ),
+    ),
+    "rdfs_owlrl": ReasonerEngine(
+        name="RDFS + OWL RL",
+        profile="rdfs_owlrl",
+        implementation="owlrl.RDFS_OWLRL_Semantics",
+        owl_fragment="RDFS plus OWL 2 RL",
+        supported=True,
+        suitability=(
+            "Combined closure used to quantify the cost of richer semantics."
+        ),
+    ),
+    "hermit": ReasonerEngine(
+        name="HermiT",
+        profile="owl_dl",
+        implementation="Java OWLAPI reasoner",
+        owl_fragment="OWL 2 DL",
+        supported=False,
+        suitability=(
+            "Technically valuable for consistency checking, but unsuitable as "
+            "a default physical benchmark engine on 32-bit Raspberry Pi nodes "
+            "because startup cost, memory use and JVM availability dominate "
+            "the monitored workload."
+        ),
+        replacement="owlrl",
+    ),
+    "openllet": ReasonerEngine(
+        name="Openllet",
+        profile="owl_dl",
+        implementation="Java OWLAPI reasoner",
+        owl_fragment="OWL 2 DL",
+        supported=False,
+        suitability=(
+            "Useful for offline OWL DL validation, but not integrated in the "
+            "bounded physical-node worker because it requires a Java service "
+            "layer not portable to every target node."
+        ),
+        replacement="rdfs_owlrl",
+    ),
+    "jfact": ReasonerEngine(
+        name="JFact",
+        profile="owl_dl",
+        implementation="Java OWLAPI reasoner",
+        owl_fragment="OWL 2 DL",
+        supported=False,
+        suitability=(
+            "Appropriate for ontology development checks, but less suitable "
+            "for repeated low-latency monitoring benchmarks on constrained "
+            "nodes."
+        ),
+        replacement="owlrl",
+    ),
+    "konclude": ReasonerEngine(
+        name="Konclude",
+        profile="owl_dl",
+        implementation="Native OWL reasoner",
+        owl_fragment="OWL 2 DL",
+        supported=False,
+        suitability=(
+            "High-performance native reasoning is attractive on servers, but "
+            "the deployment target includes 32-bit Raspberry Pi nodes where "
+            "portable packages and identical execution semantics are not "
+            "guaranteed."
+        ),
+        replacement="rdfs",
+    ),
+}
+
+
 def available_reasoners() -> tuple[str, ...]:
     return tuple(_PROFILES)
+
+
+def reasoner_catalog() -> tuple[ReasonerEngine, ...]:
+    """Return supported profiles and documented rejected alternatives."""
+
+    return tuple(REASONER_ENGINES.values())
 
 
 def materialize(source: Graph, reasoner: str) -> ReasoningMeasurement:

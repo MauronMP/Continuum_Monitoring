@@ -117,12 +117,11 @@ its inexpensive datatype guard and absence of explicit `owl:Nothing` instances
 are necessary checks, not a substitute for HermiT. SHACL warnings and the
 `EXT-Q76`/`EXT-Q77` scientific-acceptance debt remain separate.
 
-## Existing Docker/physical deployments and results
+## Existing physical deployments and results
 
 Benchmark metadata and worker health now include
 `ontology_revision=3.0.0-en-datatypes-v1`. The coordinator rejects stale workers;
-reports reject earlier or mixed ontology revisions. Rebuild Docker images or
-redeploy and restart physical workers before rerunning benchmarks. Keep old
-results for provenance, but do not rename or relabel them as corrected runs.
-See [Docker updates](DOCKER_BENCHMARKS.md#ext-q68-and-stale-images) and
+reports reject earlier or mixed ontology revisions. Redeploy and restart
+physical workers before rerunning benchmarks. Keep old results for provenance,
+but do not rename or relabel them as corrected runs. See
 [physical deployment](PHYSICAL_CONTINUUM.md).

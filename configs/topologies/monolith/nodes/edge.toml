@@ -1,4 +1,0 @@
-[layer]
-tier = "edge"
-
-# The monolithic baseline intentionally has no edge nodes.

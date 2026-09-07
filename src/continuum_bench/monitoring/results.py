@@ -1,0 +1,28 @@
+"""Structured result-field groups used by monitoring reports."""
+
+COMMON_RESULT_FIELDS = (
+    "experiment_id",
+    "timestamp",
+    "suite",
+    "layout",
+    "reasoner",
+    "node_count",
+    "synthetic_users",
+    "query_count",
+    "policy_category",
+    "status",
+    "censored",
+    "timeout_seconds",
+    "latency_p50_ms",
+    "latency_p95_ms",
+    "latency_p99_ms",
+    "throughput_qps",
+    "reasoning_ms",
+    "query_wall_ms",
+    "process_cpu_ms",
+    "current_rss_kib",
+    "disk_read_bytes",
+    "disk_write_bytes",
+    "network_rx_bytes",
+    "network_tx_bytes",
+)

@@ -9,7 +9,7 @@ from continuum_bench.reasoners import REASONING_CONTRACT
 from continuum_bench.specification import ONTOLOGY_REVISION
 
 
-def test_docker_role_assignment_routes_every_query_once(config):
+def test_physical_role_assignment_routes_every_query_once(config):
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     endpoints = [
         Endpoint("http://cloud", "cloud"),

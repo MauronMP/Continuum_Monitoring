@@ -64,7 +64,7 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
     distribution_users = min(config.scale_users, default=1)
     topology = load_topology(
         config.resolve(config.topology_file),
-        "docker",
+        "physical",
     )
     fragments = build_fragments(
         config,
@@ -77,7 +77,7 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
         distribution_users,
         config.seed,
     )
-    distribution_union_matches = isomorphic(
+    distribution_union_matches_canonical = isomorphic(
         fragments.union(),
         expected_distributed,
     )
@@ -114,7 +114,7 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
             and not range_errors
             and release_contract["ok"]
             and conforms
-            and distribution_union_matches
+            and distribution_union_matches_canonical
             and not any(distribution_privacy_errors.values())
             and not unresolved_profile_imports
             and all(
@@ -144,7 +144,7 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
         "shacl_report": shacl_report,
         "distribution": {
             "synthetic_users": distribution_users,
-            "union_matches_monolith": distribution_union_matches,
+            "union_matches_canonical_graph": distribution_union_matches_canonical,
             "privacy_errors": distribution_privacy_errors,
             "substrate_triples_by_role": (
                 fragments.substrate_triples_by_role

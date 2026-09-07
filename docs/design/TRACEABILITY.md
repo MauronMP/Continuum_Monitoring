@@ -17,14 +17,16 @@
 | Query reference | `docs/reference/SPARQL_QUERIES.md` |
 | Release contract | `continuum_bench.specification` |
 | Synthetic data | `continuum_bench.synthetic` |
-| Cumulative/scalability | `continuum_bench.benchmark` |
+| Cumulative/scalability | `continuum_bench.monitoring` shared suites |
 | Multidimensional load | `continuum_bench.load_benchmark` |
-| Three architecture experiments | `continuum_bench.experiments` |
-| Product comparison | `continuum_bench.engines`, `engine-service` |
-| Elastic topologies | `configs/topology.toml`, `configs/topologies` |
+| Policy cost and mobility study | `continuum_bench.study` |
+| Docker/physical experiments | `continuum_bench.experiments` |
+| Reasoner profiles | `continuum_bench.reasoners` |
+| Elastic topologies | `configs/topologies/docker`, `configs/topologies/physical` |
+| Docker lifecycle | `continuum_bench.docker_cluster` |
 | Physical lifecycle | `continuum_bench.physical_cluster` |
 | Result equivalence | canonical digest and `result-validation.csv` |
-| Publication figures | plotting/reporting/experiment analysis modules |
+| Publication figures | load and experiment reporting modules |
 
 The generated references are derived from executable RDF and CSV rather than
 maintained as independent prose copies:

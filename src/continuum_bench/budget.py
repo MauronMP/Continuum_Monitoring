@@ -2,7 +2,7 @@
 
 Timeouts are observations (the response exceeded an acceptance threshold),
 not harness crashes.  This module keeps that distinction consistent across
-the monolithic, container and physical coordinators.
+the physical coordinator and workers.
 """
 
 from __future__ import annotations

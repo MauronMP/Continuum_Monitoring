@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from pathlib import Path
-from time import sleep
+from time import monotonic, sleep
 
 import pytest
 
@@ -19,7 +19,6 @@ from continuum_bench.load_config import (
 )
 from continuum_bench.load_reporting import (
     _aggregate,
-    _architecture_ratios,
 )
 from continuum_bench.queries import QuerySpec
 
@@ -113,7 +112,7 @@ def test_event_stream_measures_latency_throughput_loss_and_alert_accuracy(
         specs,
         [Endpoint("local://cloud", "cloud")],
         invoke,
-        {"architecture": "monolith"},
+        {"architecture": "physical"},
     )
 
     assert summary["events_offered"] == 4
@@ -173,6 +172,42 @@ def test_event_stream_records_queue_loss(tmp_path):
     assert any(row["lost_reason"] == "queue_capacity" for row in rows)
 
 
+def test_point_timeout_returns_without_waiting_for_running_worker(tmp_path):
+    profile = LoadProfile(
+        name="deadline",
+        dimension="events_per_second",
+        events_per_second=10,
+        duration_seconds=0.1,
+        users=0,
+        target_triples=0,
+        rule_count=0,
+        node_count=1,
+    )
+    workload = replace(
+        _config(tmp_path),
+        batch_size=1,
+        point_timeout_seconds=0.05,
+    )
+
+    def blocked_worker(endpoint, query_ids, timeout):
+        sleep(0.5)
+        return {"measurements": []}
+
+    started = monotonic()
+    summary, rows, _ = _run_event_stream(
+        profile,
+        workload,
+        [_spec("POS", "true")],
+        [Endpoint("local://cloud", "cloud")],
+        blocked_worker,
+        {},
+    )
+
+    assert monotonic() - started < 0.25
+    assert summary["events_lost"] == 1
+    assert rows[0]["lost_reason"] == "point_timeout_in_flight"
+
+
 @pytest.mark.parametrize(
     "message",
     [
@@ -185,7 +220,7 @@ def test_timeout_detection_accepts_common_spellings(message):
     assert _is_timeout(message)
 
 
-def test_load_reporting_computes_timeout_rate_and_architecture_ratios():
+def test_load_reporting_computes_timeout_rate_for_physical_rows():
     base = {
         "profile": "eps-50",
         "dimension": "events_per_second",
@@ -205,9 +240,9 @@ def test_load_reporting_computes_timeout_rate_and_architecture_ratios():
         "node_count": "1",
         "status": "completed",
     }
-    distributed = {
+    physical = {
         **base,
-        "architecture": "docker",
+        "architecture": "physical",
         "latency_p95_ms": "5",
         "events_processed_per_second": "100",
         "inference_wall_ms": "50",
@@ -215,24 +250,18 @@ def test_load_reporting_computes_timeout_rate_and_architecture_ratios():
         "node_count": "5",
         "status": "completed",
     }
-    aggregate = _aggregate(
-        [{**base, "architecture": "monolith"}, distributed]
+    aggregate = _aggregate([physical])
+    physical_row = next(
+        row for row in aggregate if row["architecture"] == "physical"
     )
-    docker = next(
-        row for row in aggregate if row["architecture"] == "docker"
-    )
-    ratios = _architecture_ratios(aggregate)
 
-    assert docker["timeout_rate_percent_median"] == 0
-    assert docker["target_triples_median"] == 25000
-    assert ratios[0]["latency_speedup"] == 2
-    assert ratios[0]["throughput_gain"] == 2.5
-    assert ratios[0]["scale_out_efficiency_percent"] == 50
+    assert physical_row["timeout_rate_percent_median"] == 0
+    assert physical_row["target_triples_median"] == 25000
 
     timeout_aggregate = _aggregate(
         [
             {
-                **distributed,
+                **physical,
                 "profile": "eps-timeout",
                 "status": "workload_timeout",
             }

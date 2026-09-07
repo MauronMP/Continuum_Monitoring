@@ -7,9 +7,7 @@ from continuum_bench.queries import load_catalog
 
 
 def test_physical_inventory_has_expected_addresses(config):
-    endpoints = inventory_endpoints(
-        config.root / "configs" / "physical-nodes.toml"
-    )
+    endpoints = inventory_endpoints(config.resolve(config.topology_file))
 
     assert endpoints == [
         "http://127.0.0.1:8391",

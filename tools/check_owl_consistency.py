@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only HermiT check using an existing Protégé installation or classpath.
+"""Read-only OWLAPI consistency check using an external reasoner classpath.
 
 Optional release validation, not part of timed RDFS/OWL-RL benchmarks. Requires
 Java 11+ (Java 17 recommended); Python uses only its standard library. Nothing
@@ -24,6 +24,11 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT_PREFIX = "CONTINUUM_OWL_REPORT\t"
+OWLAPI_FACTORIES = {
+    "hermit": "org.semanticweb.HermiT.ReasonerFactory",
+    "openllet": "openllet.owlapi.OpenlletReasonerFactory",
+    "jfact": "uk.ac.manchester.cs.jfact.JFactFactory",
+}
 
 
 def find_protege(explicit: Path | None) -> Path:
@@ -72,7 +77,7 @@ def parse_report(output: str) -> dict:
     reports = [line[len(REPORT_PREFIX):] for line in output.splitlines()
                if line.startswith(REPORT_PREFIX)]
     if len(reports) != 1:
-        raise ValueError("HermiT did not return exactly one machine-readable report")
+        raise ValueError("OWL reasoner did not return exactly one machine-readable report")
     report = json.loads(reports[0])
     if not isinstance(report.get("consistent"), bool):
         raise ValueError("HermiT report lacks a Boolean consistency result")
@@ -85,6 +90,10 @@ def main(argv: list[str] | None = None) -> int:
         ROOT / "ontology/legacy/smartcity_continuum-v3.0.0.ttl"
     ))
     parser.add_argument("--protege-home", type=Path)
+    parser.add_argument(
+        "--reasoner", choices=tuple(OWLAPI_FACTORIES), default="hermit",
+        help="OWLAPI reasoner used for consistency checking",
+    )
     parser.add_argument("--classpath", help="Explicit OWLAPI/HermiT dependency classpath")
     parser.add_argument("--java", default="java", help="Java 11+ executable")
     parser.add_argument("--timeout", type=float, default=180.0)
@@ -106,14 +115,24 @@ def main(argv: list[str] | None = None) -> int:
         digest = hashlib.sha256(ontology.read_bytes()).hexdigest()
         with tempfile.TemporaryDirectory(prefix="continuum-hermit-") as temp:
             temporary = Path(temp)
-            classpath = args.classpath or protege_classpath(
-                find_protege(args.protege_home), temporary
-            )
+            classpath = args.classpath
+            if not classpath:
+                environment_name = f"CONTINUUM_{args.reasoner.upper()}_CLASSPATH"
+                classpath = os.environ.get(environment_name)
+            if not classpath and args.reasoner == "hermit":
+                classpath = protege_classpath(
+                    find_protege(args.protege_home), temporary
+                )
+            if not classpath:
+                raise ValueError(
+                    f"Set --classpath or CONTINUUM_{args.reasoner.upper()}_CLASSPATH "
+                    f"for {args.reasoner}."
+                )
             log_config = temporary / "logback.xml"
             log_config.write_text('<configuration><root level="WARN"/></configuration>\n')
             command = [java, "-Xmx2g", f"-Dlogback.configurationFile={log_config}",
                        "-cp", classpath, str(ROOT / "tools/owl/CheckOntology.java"),
-                       str(ontology)]
+                       str(ontology), OWLAPI_FACTORIES[args.reasoner]]
             started = time.perf_counter()
             result = subprocess.run(command, text=True, encoding="utf-8", errors="replace",
                                     capture_output=True, timeout=args.timeout, check=False)
@@ -127,7 +146,8 @@ def main(argv: list[str] | None = None) -> int:
             ) from error
         if digest != hashlib.sha256(ontology.read_bytes()).hexdigest():
             raise ValueError("Ontology changed while HermiT was running; repeat the check")
-        report.update(ontology_file=str(ontology), ontology_sha256=digest,
+        report.update(requested_reasoner=args.reasoner,
+                      ontology_file=str(ontology), ontology_sha256=digest,
                       elapsed_seconds=elapsed, java_exit_code=result.returncode,
                       scope="OWLAPI logical axioms; not SHACL or operational compliance")
         report["ok"] = (result.returncode == 0 and report["consistent"]
@@ -140,7 +160,7 @@ def main(argv: list[str] | None = None) -> int:
         print(rendered, end="")
         return 0 if report["ok"] else 1
     except subprocess.TimeoutExpired:
-        print(f"HermiT timed out after {args.timeout:g}s; consistency is unknown.",
+        print(f"{args.reasoner} timed out after {args.timeout:g}s; consistency is unknown.",
               file=sys.stderr)
         return 2
     except (OSError, ValueError, zipfile.BadZipFile) as error:

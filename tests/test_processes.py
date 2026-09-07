@@ -25,13 +25,13 @@ def test_failed_command_retains_output_exitcode_and_log(tmp_path):
             [
                 sys.executable,
                 "-c",
-                "import sys; print('permission denied docker.sock'); sys.exit(7)",
+                "import sys; print('permission denied ssh'); sys.exit(7)",
             ],
             root=tmp_path,
         )
     assert caught.value.returncode == 7
-    assert "permission denied docker.sock" in str(caught.value)
-    assert "rootless" in str(caught.value)
+    assert "permission denied ssh" in str(caught.value)
+    assert "SSH keys" in str(caught.value)
     assert caught.value.log_path.is_file()
 
 
@@ -54,5 +54,5 @@ def test_missing_command_is_actionable(tmp_path):
 
 @pytest.mark.parametrize("timeout", [0, -1, float("nan"), float("inf")])
 def test_timeout_must_be_finite_and_positive(tmp_path, timeout):
-    with pytest.raises(ValueError, match="positivo"):
+    with pytest.raises(ValueError, match="positive"):
         run_logged([sys.executable, "-c", "pass"], root=tmp_path, timeout=timeout)

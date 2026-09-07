@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import replace
 from pathlib import Path
-import sys
 import webbrowser
 
-from .benchmark import run_cumulative, run_scalability
 from .config import load_config
 from .validation import validate_project
 
@@ -14,207 +13,94 @@ from .validation import validate_project
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="continuum-bench",
-        description="Validate and benchmark the continuum monitoring ontology.",
+        description=(
+            "Validate and benchmark the policy-aware monitoring ontology on "
+            "local Docker and physical continuum infrastructures."
+        ),
     )
     parser.add_argument(
         "--config",
         default="configs/benchmark.toml",
-        help="TOML configuration file (default: configs/benchmark.toml)",
+        help="Benchmark TOML file (default: configs/benchmark.toml)",
     )
     parser.add_argument(
         "--topology-file",
-        help=(
-            "Elastic topology manifest (default: topology_file from the "
-            "benchmark config)"
-        ),
+        help="Elastic Docker or physical topology manifest override",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
-    doctor = subparsers.add_parser("doctor", help="Read-only installation, Docker and SSH diagnostics")
-    doctor.add_argument("--docker", action="store_true")
+
+    doctor = subparsers.add_parser(
+        "doctor",
+        help="Read-only installation and SSH diagnostics",
+    )
     doctor.add_argument("--physical", action="store_true")
+    doctor.add_argument("--docker", action="store_true")
+    doctor.add_argument("--owl", action="store_true")
     doctor.add_argument("--json", action="store_true")
-    subparsers.add_parser("validate", help="Run syntax, policy and reasoner checks")
+
+    subparsers.add_parser(
+        "validate",
+        help="Run syntax, ontology, policy and query checks",
+    )
+
+    owl_validate = subparsers.add_parser(
+        "owl-validate",
+        help="Validate OWL consistency with external DL reasoners",
+    )
+    owl_validate.add_argument(
+        "--reasoner-config", default="configs/owl-reasoners.toml"
+    )
+    owl_validate.add_argument(
+        "--output", default="outputs/validation/owl-reasoners.json"
+    )
+    owl_validate.add_argument(
+        "--require-all",
+        action="store_true",
+        help="Fail when any configured reasoner is unavailable or inconsistent",
+    )
+
     topology = subparsers.add_parser(
         "topology",
-        help="Validate, inspect or manage a manifest-defined topology",
+        help="Validate or inspect a topology manifest",
     )
-    topology.add_argument(
-        "action",
-        choices=("validate", "show", "render", "up", "status", "logs", "down"),
-    )
-    topology.add_argument("--name", default="docker")
-    topology.add_argument(
-        "--output",
-        help=(
-            "Generated Compose path (default: "
-            "outputs/runtime/docker-compose-NAME.yml)"
-        ),
-    )
-    benchmark = subparsers.add_parser("benchmark", help="Run benchmark suites")
-    benchmark.add_argument(
-        "suite",
-        choices=("cumulative", "scalability", "all"),
-    )
-    benchmark.add_argument(
-        "--python-only",
-        action="store_true",
-        help="Skip the automatic Jena/RDF4J/RDFLib/Oxigraph product run",
-    )
-    benchmark.add_argument(
-        "--engine-warmups",
-        type=int,
-        default=1,
-        help="Unmeasured product-engine warm-ups (default: 1)",
-    )
-    benchmark.add_argument(
-        "--keep-engine-services",
-        action="store_true",
-        help="Leave an automatically started engine stack running",
-    )
-    plot = subparsers.add_parser(
-        "plot",
-        help="Regenerate plots from existing benchmark CSV files",
-    )
-    plot.add_argument(
-        "suite",
-        choices=(
-            "cumulative",
-            "scalability",
-            "all",
-            "publication",
-            "engines",
-        ),
-    )
-    plot.add_argument(
-        "--show",
-        action="store_true",
-        help="Open the generated PNG files with the system image viewer",
-    )
-    plot.add_argument(
-        "--engine-dir",
-        default="outputs/engines",
-        help="Cross-engine result root used by 'plot engines'",
-    )
-    plot.add_argument(
-        "--engine-suite",
-        choices=("cumulative", "scalability", "all"),
-        default="all",
-        help="Engine figure subset used by 'plot engines' (default: all)",
-    )
-    engines = subparsers.add_parser(
-        "engines",
-        help="Benchmark independent RDF/reasoning engines",
-    )
-    engines.add_argument(
-        "suite",
-        choices=("cumulative", "scalability", "all"),
-    )
-    engines.add_argument(
-        "--endpoints",
-        default=(
-            "http://127.0.0.1:8291,http://127.0.0.1:8292,"
-            "http://127.0.0.1:8293,http://127.0.0.1:8294"
-        ),
-        help="Comma-separated RDFLib, Jena, RDF4J and Oxigraph URLs",
-    )
-    engines.add_argument(
-        "--warmups",
-        type=int,
-        default=1,
-        help="Unmeasured warm-up runs per engine and dataset (default: 1)",
-    )
-    engines.add_argument("--output-dir", default="outputs/engines")
+    topology.add_argument("action", choices=("validate", "show"))
+    topology.add_argument("--name", default="physical")
+
     docker = subparsers.add_parser(
         "docker",
-        help="Run a benchmark against an elastic Docker topology",
+        help="Manage or benchmark an elastic local Docker continuum",
     )
     docker.add_argument(
-        "suite",
-        choices=("cumulative", "scalability", "all"),
-    )
-    docker.add_argument(
-        "--endpoints",
-        help="Optional comma-separated node URLs overriding the manifest",
+        "action",
+        choices=(
+            "render", "up", "status", "logs", "down",
+            "cumulative", "scalability", "all",
+        ),
     )
     docker.add_argument("--topology-name", default="docker")
+    docker.add_argument("--output-dir", default="outputs/docker")
     docker.add_argument(
-        "--output-dir",
-        default="outputs/docker",
+        "--layout", choices=("replicated", "sharded"), default="sharded"
     )
+    docker.add_argument("--skip-result-validation", action="store_true")
     docker.add_argument(
-        "--layout",
-        choices=("replicated", "sharded"),
-        default="sharded",
-        help=(
-            "Data placement layout (default: sharded; results are written "
-            "below OUTPUT_DIR/LAYOUT)"
-        ),
-    )
-    docker.add_argument(
-        "--topology-only",
+        "--keep-running",
         action="store_true",
-        help="Skip the automatic independent semantic-engine product run",
+        help="Do not stop containers after a benchmark command that started them",
     )
-    docker.add_argument(
-        "--engine-warmups",
-        type=int,
-        default=1,
-        help="Unmeasured product-engine warm-ups (default: 1)",
-    )
-    docker.add_argument(
-        "--keep-engine-services",
-        action="store_true",
-        help="Leave an automatically started engine stack running",
-    )
-    sharded = subparsers.add_parser(
-        "sharded",
-        help=(
-            "Run the authority/privacy-partitioned benchmark on Docker or "
-            "physical nodes"
-        ),
-    )
-    sharded.add_argument("target", choices=("docker", "physical"))
-    sharded.add_argument(
-        "suite",
-        choices=("cumulative", "scalability", "all"),
-    )
-    sharded.add_argument(
-        "--endpoints",
-        help="Optional Docker endpoint override; ignored for physical target",
-    )
-    sharded.add_argument(
-        "--inventory",
-        help="Legacy physical inventory override; ignored for Docker target",
-    )
-    sharded.add_argument(
-        "--topology-name",
-        help="Topology name (default: docker or physical, matching target)",
-    )
-    sharded.add_argument(
-        "--output-dir",
-        help="Result root (default: outputs/sharded-TARGET)",
-    )
-    sharded.add_argument(
-        "--skip-result-validation",
-        action="store_true",
-        help=(
-            "Do not compare merged results with the monolithic oracle "
-            "(validation is enabled by default and excluded from timings)"
-        ),
-    )
+
     fragments = subparsers.add_parser(
         "fragments",
-        help="Export one authority/privacy-aware RDF fragment per node",
+        help="Export authority-aware RDF fragments for physical nodes",
     )
     fragments.add_argument("--users", type=int, default=0)
-    fragments.add_argument(
-        "--output-dir",
-        default="outputs/fragments",
-    )
-    fragments.add_argument("--topology-name", default="docker")
+    fragments.add_argument("--topology-name", default="physical")
+    fragments.add_argument("--output-dir", default="outputs/fragments/physical")
+    fragments.add_argument("--ssh-user")
+
     physical = subparsers.add_parser(
         "physical",
-        help="Deploy, manage or benchmark an elastic physical continuum",
+        help="Deploy, manage or benchmark a physical continuum",
     )
     physical.add_argument(
         "action",
@@ -229,50 +115,32 @@ def _parser() -> argparse.ArgumentParser:
             "all",
         ),
     )
-    physical.add_argument(
-        "--inventory",
-        help="Legacy physical inventory override",
-    )
     physical.add_argument("--topology-name", default="physical")
-    physical.add_argument(
-        "--ssh-user",
-        help="Override cluster.ssh_user for Raspberry Pi management",
-    )
+    physical.add_argument("--ssh-user")
     physical.add_argument("--output-dir", default="outputs/physical")
     physical.add_argument(
         "--layout",
         choices=("replicated", "sharded"),
         default="sharded",
-        help=(
-            "Benchmark data placement layout (default: sharded; ignored by "
-            "lifecycle actions)"
-        ),
+        help="Physical placement strategy (default: sharded)",
     )
+    physical.add_argument(
+        "--skip-result-validation",
+        action="store_true",
+        help="Skip bounded reference validation for sharded query results",
+    )
+
     load = subparsers.add_parser(
         "load",
-        help=(
-            "Run or plot the rate-controlled multidimensional load benchmark"
-        ),
+        help="Run or plot the distributed load benchmark",
     )
-    load.add_argument(
-        "target",
-        choices=("monolith", "docker", "physical", "all", "plot"),
-    )
+    load.add_argument("target", choices=("docker", "physical", "plot"))
     load.add_argument(
         "--load-config",
         default="configs/load-benchmark.toml",
         help="Load profile TOML (default: configs/load-benchmark.toml)",
     )
-    load.add_argument(
-        "--docker-endpoints",
-        help="Optional Docker endpoint override",
-    )
-    load.add_argument(
-        "--inventory",
-        help="Legacy physical inventory override",
-    )
-    load.add_argument("--docker-topology", default="docker")
-    load.add_argument("--physical-topology", default="physical")
+    load.add_argument("--topology-name")
     load.add_argument(
         "--dimension",
         action="append",
@@ -283,24 +151,16 @@ def _parser() -> argparse.ArgumentParser:
             "rule_count",
             "node_count",
         ),
-        help="Run only this independent-variable series; repeatable",
     )
-    load.add_argument(
-        "--profile",
-        action="append",
-        help="Run only this named load profile; repeatable",
-    )
+    load.add_argument("--profile", action="append")
     load.add_argument("--output-dir", default="outputs/load")
-    load.add_argument(
-        "--show",
-        action="store_true",
-        help="Open generated comparison PNG files (plot/all only)",
-    )
+    load.add_argument("--show", action="store_true")
+
     experiment = subparsers.add_parser(
         "experiment",
         help=(
-            "Run separated query scale-out, hardware reasoning, or "
-            "authority-partitioned ontology experiments"
+            "Run Docker/physical scale-out, hardware reasoning or "
+            "distributed-ontology experiments"
         ),
     )
     experiment_commands = experiment.add_subparsers(
@@ -308,53 +168,31 @@ def _parser() -> argparse.ArgumentParser:
         required=True,
     )
 
-    def add_experiment_run_arguments(command_parser) -> None:
+    def add_experiment_arguments(command_parser: argparse.ArgumentParser) -> None:
         command_parser.add_argument(
-            "target",
-            choices=("monolith", "docker", "physical", "all"),
+            "target", choices=("docker", "physical"), nargs="?", default="physical"
         )
         command_parser.add_argument(
             "--experiment-config",
             default="configs/experiments.toml",
         )
-        command_parser.add_argument(
-            "--docker-endpoints",
-            help="Optional Docker endpoint override",
-        )
-        command_parser.add_argument(
-            "--inventory",
-            help="Legacy physical inventory override",
-        )
-        command_parser.add_argument("--docker-topology", default="docker")
-        command_parser.add_argument("--physical-topology", default="physical")
-        command_parser.add_argument(
-            "--output-dir",
-            default="outputs/experiments",
-        )
+        command_parser.add_argument("--topology-name")
+        command_parser.add_argument("--output-dir", default="outputs/experiments")
         command_parser.add_argument(
             "--reasoner",
             action="append",
             choices=("rdfs", "owlrl", "rdfs_owlrl"),
-            help="Run only this reasoning profile; repeatable",
         )
-        command_parser.add_argument(
-            "--profile",
-            action="append",
-            help=(
-                "Select reasoning-hardware profile by name; repeatable and "
-                "ignored by the other experiments"
-            ),
-        )
+        command_parser.add_argument("--profile", action="append")
 
-    for experiment_name in (
+    for name in (
         "scale-out",
         "reasoning-hardware",
         "distributed-ontology",
         "all",
     ):
-        add_experiment_run_arguments(
-            experiment_commands.add_parser(experiment_name)
-        )
+        add_experiment_arguments(experiment_commands.add_parser(name))
+
     experiment_plot = experiment_commands.add_parser("plot")
     experiment_plot.add_argument(
         "suite",
@@ -365,93 +203,37 @@ def _parser() -> argparse.ArgumentParser:
             "all",
         ),
     )
-    experiment_plot.add_argument(
-        "--output-dir",
-        default="outputs/experiments",
-    )
+    experiment_plot.add_argument("--output-dir", default="outputs/experiments")
     experiment_plot.add_argument("--show", action="store_true")
-    experiment_analyze = experiment_commands.add_parser(
-        "analyze",
-        help=(
-            "Calculate matched speedups, costs, break-even and claim verdicts"
-        ),
-    )
-    experiment_analyze.add_argument(
-        "--output-dir",
-        default="outputs/experiments",
-    )
+
+    experiment_analyze = experiment_commands.add_parser("analyze")
+    experiment_analyze.add_argument("--output-dir", default="outputs/experiments")
     experiment_analyze.add_argument("--show", action="store_true")
-    compare = subparsers.add_parser(
-        "compare",
-        help="Compare monolithic and Docker benchmark CSV files",
+
+    study = subparsers.add_parser(
+        "study",
+        help="Generate reproducible traces and policy-category cost summaries",
     )
-    compare.add_argument(
-        "suite",
-        choices=("cumulative", "scalability", "all"),
+    study.add_argument("action", choices=("trace", "category-cost"))
+    study.add_argument(
+        "--study-config",
+        default="configs/policy-cost-study.toml",
+        help="Policy-cost study TOML file",
     )
-    compare.add_argument("--monolith-dir", default="outputs")
-    compare.add_argument(
-        "--docker-dir",
-        default="outputs/docker/sharded",
+    study.add_argument("--topology-name", default="physical")
+    study.add_argument(
+        "--target",
+        choices=("docker", "physical"),
+        default="physical",
+        help="Execution topology used to generate the trace",
     )
-    compare.add_argument("--output-dir", default="outputs/comparison")
+    study.add_argument("--output-dir", default="outputs/study")
+    study.add_argument(
+        "--events",
+        default="outputs/load/physical/event-runs.csv",
+        help="Request/event CSV used by category-cost analysis",
+    )
     return parser
-
-
-def _run_default_product_engines(
-    config,
-    suite: str,
-    output_root: Path,
-    *,
-    warmups: int,
-    keep_running: bool,
-) -> list[str]:
-    if warmups < 0:
-        raise ValueError("Engine warm-ups must be zero or greater")
-    from .engine_stack import semantic_engine_stack
-    from .engines import (
-        run_engine_cumulative,
-        run_engine_scalability,
-        validate_rdfs_equivalence,
-    )
-    from .plotting import plot_engine_benchmark
-
-    paths: list[Path] = []
-    with semantic_engine_stack(
-        config.root,
-        keep_running=keep_running,
-    ) as endpoint_urls:
-        if suite in {"cumulative", "all"}:
-            run_engine_cumulative(
-                config,
-                list(endpoint_urls),
-                output_root,
-                warmups=warmups,
-            )
-            paths.append(
-                validate_rdfs_equivalence(output_root, "cumulative")
-            )
-        if suite in {"scalability", "all"}:
-            run_engine_scalability(
-                config,
-                list(endpoint_urls),
-                output_root,
-                warmups=warmups,
-            )
-            paths.append(
-                validate_rdfs_equivalence(output_root, "scalability")
-            )
-    paths.extend(
-        plot_engine_benchmark(
-            output_root,
-            suites=(
-                ("cumulative", "scalability")
-                if suite == "all"
-                else (suite,)
-            ),
-        )
-    )
-    return [str(path) for path in paths]
 
 
 def _manifest_path(config, override: str | None) -> Path:
@@ -459,326 +241,167 @@ def _manifest_path(config, override: str | None) -> Path:
     return path if path.is_absolute() else config.root / path
 
 
-def _endpoint_override(value: str | None) -> list[str] | None:
-    if not value:
-        return None
-    endpoints = [item.strip() for item in value.split(",") if item.strip()]
-    if not endpoints:
-        raise ValueError("Endpoint override cannot be empty")
-    return endpoints
+def _target_manifest_path(config, override: str | None, target: str) -> Path:
+    if override:
+        return _manifest_path(config, override)
+    if target == "docker":
+        return config.root / "configs/topologies/docker/topology.toml"
+    return _manifest_path(config, None)
 
 
-def _configured_endpoints(
-    config,
-    manifest_override: str | None,
-    topology_name: str,
-    endpoint_override: str | None = None,
-) -> tuple[object, list[str]]:
+def _target_topology(config, args, target: str):
     from .topology import load_topology
 
-    manifest_path = _manifest_path(config, manifest_override)
-    topology = load_topology(manifest_path, topology_name)
-    endpoints = _endpoint_override(endpoint_override) or topology.endpoints()
-    return topology, endpoints
+    name = getattr(args, "topology_name", None) or target
+    return load_topology(
+        _target_manifest_path(config, args.topology_file, target), name
+    )
+
+
+def _physical_inventory(config, args):
+    from .physical_cluster import load_physical_inventory
+
+    return load_physical_inventory(
+        _manifest_path(config, args.topology_file),
+        ssh_user=getattr(args, "ssh_user", None),
+        topology_name=getattr(args, "topology_name", "physical"),
+    )
+
+
+def _open_paths(paths: list[Path]) -> None:
+    for path in paths:
+        if path.suffix == ".png":
+            webbrowser.open(path.resolve().as_uri())
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "doctor":
         from .environment import main as doctor_main
-        options = ["--root", str(Path(args.config).resolve().parents[1])]
-        options += [f"--{name}" for name in ("docker", "physical", "json") if getattr(args, name)]
+
+        config_path = Path(args.config).resolve()
+        options = ["--root", str(config_path.parents[1])]
+        if args.physical:
+            options.append("--physical")
+        if args.docker:
+            options.append("--docker")
+        if args.owl:
+            options.append("--owl")
+        if args.json:
+            options.append("--json")
         return doctor_main(options)
+
     config = load_config(args.config)
-
-    if args.command == "topology":
-        from .topology import (
-            load_topology,
-            load_topology_manifest,
-            render_docker_compose,
-            run_docker_topology,
-        )
-
-        manifest_path = _manifest_path(config, args.topology_file)
-        manifest = load_topology_manifest(manifest_path)
-        if args.action == "validate":
-            print(json.dumps(manifest.public(), indent=2, ensure_ascii=False))
-            return 0
-        selected = load_topology(manifest_path, args.name)
-        if args.action == "show":
-            print(json.dumps(selected.public(), indent=2, ensure_ascii=False))
-            return 0
-        compose_path = (
-            Path(args.output)
-            if args.output
-            else config.root
-            / "outputs"
-            / "runtime"
-            / f"docker-compose-{selected.name}.yml"
-        )
-        if not compose_path.is_absolute():
-            compose_path = config.root / compose_path
-        if args.action == "render":
-            result = render_docker_compose(
-                selected,
-                compose_path,
-                root=config.root,
-            )
-            print(json.dumps({"compose_file": str(result)}, indent=2))
-            return 0
-        return run_docker_topology(
-            selected,
-            compose_path,
-            args.action,
-            root=config.root,
-        )
-
-    if (
-        args.command == "benchmark" and not args.python_only
-        or args.command == "docker" and not args.topology_only
-    ):
-        from .engine_stack import preflight
-        preflight(config.root)
 
     if args.command == "validate":
         report = validate_project(config)
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return 0 if report["ok"] else 1
 
-    if args.command == "engines":
-        from .engines import (
-            run_engine_cumulative,
-            run_engine_scalability,
-            validate_rdfs_equivalence,
-        )
-        from .plotting import plot_engine_benchmark
+    if args.command == "owl-validate":
+        from .owl_validation import validate_external_reasoners
 
-        endpoints = [
-            value.strip()
-            for value in args.endpoints.split(",")
-            if value.strip()
+        reasoner_config = Path(args.reasoner_config)
+        if not reasoner_config.is_absolute():
+            reasoner_config = config.root / reasoner_config
+        output = Path(args.output)
+        if not output.is_absolute():
+            output = config.root / output
+        report = validate_external_reasoners(
+            config.root, reasoner_config, output
+        )
+        print(json.dumps(report, indent=2, ensure_ascii=False))
+        completed = [
+            item for item in report["reasoners"]
+            if item["status"] == "completed"
         ]
-        if args.warmups < 0:
-            raise ValueError("--warmups must be zero or greater")
-        output_root = config.root / args.output_dir
-        paths: list[Path] = []
-        if args.suite in {"cumulative", "all"}:
-            run_engine_cumulative(
-                config,
-                endpoints,
-                output_root,
-                warmups=args.warmups,
-            )
-            paths.append(
-                validate_rdfs_equivalence(output_root, "cumulative")
-            )
-        if args.suite in {"scalability", "all"}:
-            run_engine_scalability(
-                config,
-                endpoints,
-                output_root,
-                warmups=args.warmups,
-            )
-            paths.append(
-                validate_rdfs_equivalence(output_root, "scalability")
-            )
-        paths.extend(
-            plot_engine_benchmark(
-                output_root,
-                suites=(
-                    ("cumulative", "scalability")
-                    if args.suite == "all"
-                    else (args.suite,)
-                ),
-            )
+        success = bool(completed) and all(
+            item.get("consistent") is True for item in completed
         )
-        print(
-            json.dumps(
-                {"engines": [str(path) for path in paths]},
-                indent=2,
-                ensure_ascii=False,
-            )
+        if args.require_all:
+            success = success and report["all_available"] and report["all_consistent"]
+        return 0 if success else 1
+
+    if args.command == "topology":
+        from .topology import load_topology, load_topology_manifest
+
+        manifest_path = _target_manifest_path(
+            config, args.topology_file, args.name
         )
+        if args.action == "validate":
+            manifest = load_topology_manifest(manifest_path)
+            print(json.dumps(manifest.public(), indent=2, ensure_ascii=False))
+            return 0
+        selected = load_topology(manifest_path, args.name)
+        print(json.dumps(selected.public(), indent=2, ensure_ascii=False))
         return 0
 
     if args.command == "docker":
-        from .distributed import (
-            run_docker_cumulative,
-            run_docker_scalability,
-        )
-        from .sharded import (
-            run_sharded_cumulative,
-            run_sharded_scalability,
-        )
+        from .docker_cluster import manage, render, wait_ready
+        from .monitoring import run_distributed_monitoring_suite
 
-        topology, endpoints = _configured_endpoints(
-            config,
-            args.topology_file,
-            args.topology_name,
-            args.endpoints,
-        )
-        output_root = config.root / args.output_dir / args.layout
-        outputs: dict[str, str] = {}
-        cumulative_runner = (
-            run_sharded_cumulative
-            if args.layout == "sharded"
-            else run_docker_cumulative
-        )
-        scalability_runner = (
-            run_sharded_scalability
-            if args.layout == "sharded"
-            else run_docker_scalability
-        )
-        layout_options = (
-            {
-                "target": "docker",
-                "validate_results": True,
-                "topology": topology,
-            }
-            if args.layout == "sharded"
-            else {"topology": topology}
-        )
-        if args.suite in {"cumulative", "all"}:
-            outputs["cumulative"] = str(
-                cumulative_runner(
-                    config,
-                    endpoints,
-                    output_root,
-                    **layout_options,
-                )
-            )
-        if args.suite in {"scalability", "all"}:
-            outputs["scalability"] = str(
-                scalability_runner(
-                    config,
-                    endpoints,
-                    output_root,
-                    **layout_options,
-                )
-            )
-        if not args.topology_only:
-            outputs["engines"] = _run_default_product_engines(
+        topology = _target_topology(config, args, "docker")
+        if topology.kind != "docker":
+            raise ValueError(f"Topology {topology.name!r} is not Docker")
+        if args.action == "render":
+            path = render(config.root, topology)
+            print(json.dumps({"compose_file": str(path)}, indent=2))
+            return 0
+        if args.action in {"up", "status", "logs", "down"}:
+            status = manage(config.root, topology, args.action)
+            if args.action == "up" and status == 0:
+                wait_ready(topology)
+            return status
+
+        owned = False
+        try:
+            try:
+                wait_ready(topology, timeout_seconds=3.0)
+            except RuntimeError:
+                if manage(config.root, topology, "up") != 0:
+                    raise RuntimeError("Docker Compose could not start the workers")
+                owned = True
+                wait_ready(topology)
+            outputs = run_distributed_monitoring_suite(
                 config,
-                args.suite,
-                output_root / "engines",
-                warmups=args.engine_warmups,
-                keep_running=args.keep_engine_services,
+                topology,
+                config.root / args.output_dir,
+                suite=args.action,
+                layout=args.layout,
+                validate_results=not args.skip_result_validation,
             )
-        print(json.dumps(outputs, indent=2, ensure_ascii=False))
-        return 0
+            print(json.dumps(outputs, indent=2, ensure_ascii=False))
+            return 0
+        finally:
+            if owned and not args.keep_running:
+                manage(config.root, topology, "down")
 
     if args.command == "fragments":
-        from .sharded import export_fragments
-        from .topology import load_topology
+        from .monitoring import export_physical_fragments
 
         if args.users < 0:
             raise ValueError("--users must be zero or greater")
-        manifest_path = _manifest_path(config, args.topology_file)
-        topology = load_topology(manifest_path, args.topology_name)
-        paths = export_fragments(
+        inventory = _physical_inventory(config, args)
+        paths = export_physical_fragments(
             config,
+            inventory,
             args.users,
             config.root / args.output_dir,
-            topology=topology,
         )
-        print(
-            json.dumps(
-                {"fragments": [str(path) for path in paths]},
-                indent=2,
-                ensure_ascii=False,
-            )
-        )
-        return 0
-
-    if args.command == "sharded":
-        topology = None
-        from .sharded import (
-            run_sharded_cumulative,
-            run_sharded_scalability,
-        )
-
-        if args.target == "physical":
-            from .physical_cluster import load_physical_inventory
-
-            topology_name = args.topology_name or "physical"
-            inventory_path = (
-                config.root / args.inventory
-                if args.inventory
-                else _manifest_path(config, args.topology_file)
-            )
-            inventory = load_physical_inventory(
-                inventory_path,
-                topology_name=topology_name,
-            )
-            endpoint_urls = [node.endpoint for node in inventory.nodes]
-            topology = inventory.topology
-        else:
-            topology_name = args.topology_name or "docker"
-            topology, endpoint_urls = _configured_endpoints(
-                config,
-                args.topology_file,
-                topology_name,
-                args.endpoints,
-            )
-        output_root = config.root / (
-            args.output_dir or f"outputs/sharded-{args.target}"
-        )
-        sharded_outputs: dict[str, str] = {}
-        run_options = {
-            "target": args.target,
-            "validate_results": not args.skip_result_validation,
-        }
-        if args.target == "docker":
-            run_options["topology"] = topology
-        elif topology is not None:
-            run_options["topology"] = topology
-        if args.suite in {"cumulative", "all"}:
-            sharded_outputs["cumulative"] = str(
-                run_sharded_cumulative(
-                    config,
-                    endpoint_urls,
-                    output_root,
-                    **run_options,
-                )
-            )
-        if args.suite in {"scalability", "all"}:
-            sharded_outputs["scalability"] = str(
-                run_sharded_scalability(
-                    config,
-                    endpoint_urls,
-                    output_root,
-                    **run_options,
-                )
-            )
-        print(json.dumps(sharded_outputs, indent=2, ensure_ascii=False))
+        print(json.dumps({"fragments": [str(path) for path in paths]}, indent=2))
         return 0
 
     if args.command == "physical":
-        from .physical import (
-            run_physical_cumulative,
-            run_physical_scalability,
-        )
+        from .monitoring import run_physical_monitoring_suite
         from .physical_cluster import (
             authorize_cluster,
             deploy_cluster,
-            load_physical_inventory,
             start_cluster,
             status_cluster,
             stop_cluster,
         )
 
-        inventory_path = (
-            config.root / args.inventory
-            if args.inventory
-            else _manifest_path(config, args.topology_file)
-        )
-        inventory_options = {"ssh_user": args.ssh_user}
-        if args.topology_name != "physical":
-            inventory_options["topology_name"] = args.topology_name
-        inventory = load_physical_inventory(
-            inventory_path,
-            **inventory_options,
-        )
+        inventory = _physical_inventory(config, args)
         if args.action == "authorize":
             authorize_cluster(inventory)
             return 0
@@ -795,129 +418,47 @@ def main(argv: list[str] | None = None) -> int:
             stop_cluster(config.root, inventory)
             return 0
 
-        output_root = config.root / args.output_dir / args.layout
-        physical_outputs: dict[str, str] = {}
-        if args.layout == "sharded":
-            from .sharded import (
-                run_sharded_cumulative,
-                run_sharded_scalability,
-            )
-
-            endpoint_urls = [node.endpoint for node in inventory.nodes]
-            cumulative_runner = run_sharded_cumulative
-            scalability_runner = run_sharded_scalability
-            layout_args = (config, endpoint_urls, output_root)
-            layout_options = {
-                "target": "physical",
-                "validate_results": True,
-            }
-            if inventory.topology is not None:
-                layout_options["topology"] = inventory.topology
-        else:
-            cumulative_runner = run_physical_cumulative
-            scalability_runner = run_physical_scalability
-            layout_args = (config, inventory_path, output_root)
-            layout_options = (
-                {}
-                if args.topology_name == "physical"
-                else {"topology_name": args.topology_name}
-            )
-        if args.action in {"cumulative", "all"}:
-            physical_outputs["cumulative"] = str(
-                cumulative_runner(
-                    *layout_args,
-                    **layout_options,
-                )
-            )
-        if args.action in {"scalability", "all"}:
-            physical_outputs["scalability"] = str(
-                scalability_runner(
-                    *layout_args,
-                    **layout_options,
-                )
-            )
-        print(json.dumps(physical_outputs, indent=2, ensure_ascii=False))
+        outputs = run_physical_monitoring_suite(
+            config,
+            inventory,
+            config.root / args.output_dir,
+            suite=args.action,
+            layout=args.layout,
+            validate_results=not args.skip_result_validation,
+        )
+        print(json.dumps(outputs, indent=2, ensure_ascii=False))
         return 0
 
     if args.command == "load":
         from .load_benchmark import run_load_benchmark
         from .load_config import load_load_config, select_load_profiles
         from .load_reporting import plot_load_comparison
-        from .physical import inventory_endpoints
 
         output_root = config.root / args.output_dir
         if args.target == "plot":
             paths = plot_load_comparison(output_root)
             if args.show:
-                for path in paths:
-                    if path.suffix == ".png":
-                        webbrowser.open(path.resolve().as_uri())
-            print(
-                json.dumps(
-                    {"load_plots": [str(path) for path in paths]},
-                    indent=2,
-                    ensure_ascii=False,
-                )
-            )
+                _open_paths(paths)
+            print(json.dumps({"load_plots": [str(path) for path in paths]}, indent=2))
             return 0
-        workload = load_load_config(config.root / args.load_config)
         workload = select_load_profiles(
-            workload,
+            load_load_config(config.root / args.load_config),
             dimensions=args.dimension,
             names=args.profile,
         )
-        _, docker_endpoints = _configured_endpoints(
+        topology = _target_topology(config, args, args.target)
+        endpoints = topology.endpoints()
+        output = run_load_benchmark(
             config,
-            args.topology_file,
-            args.docker_topology,
-            args.docker_endpoints,
+            workload,
+            args.target,
+            output_root,
+            endpoints,
         )
-        physical_inventory = (
-            config.root / args.inventory
-            if args.inventory
-            else _manifest_path(config, args.topology_file)
-        )
-        targets = (
-            ("monolith", "docker", "physical")
-            if args.target == "all"
-            else (args.target,)
-        )
-        outputs: dict[str, str | list[str]] = {}
-        for target in targets:
-            endpoints = (
-                None
-                if target == "monolith"
-                else (
-                    docker_endpoints
-                    if target == "docker"
-                    else inventory_endpoints(
-                        physical_inventory,
-                        args.physical_topology,
-                    )
-                )
-            )
-            outputs[target] = str(
-                run_load_benchmark(
-                    config,
-                    workload,
-                    target,
-                    output_root,
-                    endpoints,
-                )
-            )
-        if args.target == "all":
-            plot_paths = plot_load_comparison(output_root)
-            outputs["plots"] = [str(path) for path in plot_paths]
-            if args.show:
-                for path in plot_paths:
-                    if path.suffix == ".png":
-                        webbrowser.open(path.resolve().as_uri())
-        print(json.dumps(outputs, indent=2, ensure_ascii=False))
+        print(json.dumps({args.target: str(output)}, indent=2, ensure_ascii=False))
         return 0
 
     if args.command == "experiment":
-        from dataclasses import replace
-
         from .experiment_analysis import analyze_experiments
         from .experiment_config import (
             load_experiment_config,
@@ -928,20 +469,13 @@ def main(argv: list[str] | None = None) -> int:
             plot_experiments,
         )
         from .experiments import EXPERIMENTS, run_experiment
-        from .physical import inventory_endpoints
 
         output_root = config.root / args.output_dir
         if args.experiment_name == "plot":
-            selected = (
-                EXPERIMENTS
-                if args.suite == "all"
-                else (args.suite,)
-            )
+            selected = EXPERIMENTS if args.suite == "all" else (args.suite,)
             paths = plot_experiments(output_root, selected)
             if args.show:
-                for path in paths:
-                    if path.suffix == ".png":
-                        webbrowser.open(path.resolve().as_uri())
+                _open_paths(paths)
             print(
                 json.dumps(
                     {"experiment_plots": [str(path) for path in paths]},
@@ -954,9 +488,7 @@ def main(argv: list[str] | None = None) -> int:
             paths = analyze_experiments(output_root)
             paths.extend(plot_claim_analysis(output_root))
             if args.show:
-                for path in paths:
-                    if path.suffix == ".png":
-                        webbrowser.open(path.resolve().as_uri())
+                _open_paths(paths)
             print(
                 json.dumps(
                     {"experiment_analysis": [str(path) for path in paths]},
@@ -975,160 +507,72 @@ def main(argv: list[str] | None = None) -> int:
         )
         if args.reasoner:
             config = replace(config, reasoners=tuple(args.reasoner))
-        _, docker_endpoints = _configured_endpoints(
-            config,
-            args.topology_file,
-            args.docker_topology,
-            args.docker_endpoints,
-        )
-        targets = (
-            ("monolith", "docker", "physical")
-            if args.target == "all"
-            else (args.target,)
-        )
-        physical_endpoints = (
-            inventory_endpoints(
-                (
-                    config.root / args.inventory
-                    if args.inventory
-                    else _manifest_path(config, args.topology_file)
-                ),
-                args.physical_topology,
-            )
-            if "physical" in targets
-            else []
-        )
-        names = (
+        topology = _target_topology(config, args, args.target)
+        endpoints = topology.endpoints()
+        selected = (
             EXPERIMENTS
             if args.experiment_name == "all"
             else (args.experiment_name,)
         )
-        outputs: dict[str, str | list[str]] = {}
-        for name in names:
-            for target in targets:
-                endpoints = (
-                    None
-                    if target == "monolith"
-                    else (
-                        docker_endpoints
-                        if target == "docker"
-                        else physical_endpoints
-                    )
+        outputs = {
+            name: str(
+                run_experiment(
+                    name,
+                    config,
+                    workload,
+                    args.target,
+                    output_root,
+                    endpoint_urls=endpoints,
                 )
-                outputs[f"{name}:{target}"] = str(
-                    run_experiment(
-                        name,
-                        config,
-                        workload,
-                        target,
-                        output_root,
-                        endpoints,
-                    )
-                )
-        if args.target == "all":
-            paths = plot_experiments(output_root, tuple(names))
-            outputs["plots"] = [str(path) for path in paths]
-            analysis_paths = analyze_experiments(output_root)
-            analysis_paths.extend(plot_claim_analysis(output_root))
-            outputs["analysis"] = [
-                str(path) for path in analysis_paths
-            ]
+            )
+            for name in selected
+        }
         print(json.dumps(outputs, indent=2, ensure_ascii=False))
         return 0
 
-    if args.command == "compare":
-        from .compare import compare_all, compare_suite
-        from .plotting import plot_comparison
+    if args.command == "study":
+        from .study import analyze_category_costs, generate_study_trace
+        from .study.config import load_study_config
 
-        monolith_root = config.root / args.monolith_dir
-        docker_root = config.root / args.docker_dir
         output_root = config.root / args.output_dir
-        if args.suite == "all":
-            paths = compare_all(monolith_root, docker_root, output_root)
-            paths.extend(plot_comparison(output_root))
-        else:
-            paths = list(
-                compare_suite(
-                    args.suite,
-                    monolith_root,
-                    docker_root,
-                    output_root,
+        if args.action == "trace":
+            study_config_path = Path(args.study_config)
+            if not study_config_path.is_absolute():
+                study_config_path = config.root / study_config_path
+            paths = generate_study_trace(
+                config,
+                load_study_config(study_config_path),
+                output_root,
+                topology_name=args.topology_name,
+                target=args.target,
+            )
+            print(
+                json.dumps(
+                    {"study_trace": [str(path) for path in paths]},
+                    indent=2,
+                    ensure_ascii=False,
                 )
             )
-            paths.extend(plot_comparison(output_root, (args.suite,)))
+            return 0
+        events_path = Path(args.events)
+        if not events_path.is_absolute():
+            events_path = config.root / events_path
+        paths = analyze_category_costs(
+            config,
+            events_path,
+            output_root / "category-cost",
+        )
         print(
             json.dumps(
-                {"comparison": [str(path) for path in paths]},
+                {"category_cost": [str(path) for path in paths]},
                 indent=2,
                 ensure_ascii=False,
             )
         )
         return 0
 
-    from .plotting import (
-        plot_cumulative,
-        plot_engine_benchmark,
-        plot_publication,
-        plot_scalability,
-    )
-
-    outputs: dict[str, list[str]] = {}
-    if args.command == "plot":
-        output_root = config.resolve(config.output_dir)
-        if args.suite == "engines":
-            outputs["engines"] = [
-                str(path)
-                for path in plot_engine_benchmark(
-                    config.root / args.engine_dir,
-                    suites=(
-                        ("cumulative", "scalability")
-                        if args.engine_suite == "all"
-                        else (args.engine_suite,)
-                    ),
-                )
-            ]
-        if args.suite == "publication":
-            outputs["publication"] = [
-                str(path) for path in plot_publication(output_root)
-            ]
-        if args.suite in {"cumulative", "all"}:
-            outputs["cumulative"] = [
-                str(path) for path in plot_cumulative(output_root / "cumulative")
-            ]
-        if args.suite in {"scalability", "all"}:
-            outputs["scalability"] = [
-                str(path)
-                for path in plot_scalability(output_root / "scalability")
-            ]
-        if args.show:
-            for paths in outputs.values():
-                for path in paths:
-                    webbrowser.open(Path(path).resolve().as_uri())
-        print(json.dumps(outputs, indent=2, ensure_ascii=False))
-        return 0
-
-    output_root = config.resolve(config.output_dir)
-    if args.suite in {"cumulative", "all"}:
-        directory = run_cumulative(config)
-        outputs["cumulative"] = [
-            str(path) for path in plot_cumulative(directory)
-        ]
-    if args.suite in {"scalability", "all"}:
-        directory = run_scalability(config)
-        outputs["scalability"] = [
-            str(path) for path in plot_scalability(directory)
-        ]
-    if not args.python_only:
-        outputs["engines"] = _run_default_product_engines(
-            config,
-            args.suite,
-            output_root / "engines",
-            warmups=args.engine_warmups,
-            keep_running=args.keep_engine_services,
-        )
-    print(json.dumps(outputs, indent=2, ensure_ascii=False))
-    return 0
+    raise AssertionError(f"Unhandled command: {args.command}")
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

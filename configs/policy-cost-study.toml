@@ -1,0 +1,58 @@
+[study]
+experiment_id = "continuum-policy-cost-study"
+seed = 2026
+duration_seconds = 30.0
+request_count = 500
+client_count = 2
+warmup_seconds = 3.0
+
+[workload]
+arrival_model = "poisson"
+execution_mode = "open_loop"
+concurrency = 16
+request_rate_per_second = 20.0
+category_distribution = "zipf"
+zipf_exponent = 1.15
+hotspot_fraction = 0.2
+hotspot_share = 0.8
+burst_probability = 0.05
+burst_size = 10
+ramp_start_rate_per_second = 5.0
+ramp_end_rate_per_second = 50.0
+
+[workload.category_weights]
+observability = 2.0
+identity_consent = 1.5
+policy_governance = 1.2
+security_identity = 1.0
+
+[mobility]
+model = "random_waypoint"
+seed = 2026
+area_width_m = 100.0
+area_height_m = 100.0
+min_speed_mps = 0.3
+max_speed_mps = 1.5
+pause_seconds = 1.0
+step_seconds = 1.0
+boundary = "reflect"
+grid_spacing_m = 20.0
+turn_probability = 0.25
+gauss_markov_alpha = 0.75
+mean_speed_mps = 0.8
+mean_direction_degrees = 0.0
+
+[network]
+model = "distance_aware"
+base_latency_ms = 3.0
+latency_per_meter_ms = 0.08
+base_bandwidth_mbps = 100.0
+bandwidth_decay_per_meter = 0.3
+packet_loss_per_meter = 0.0005
+jitter_ms = 1.0
+
+[placement]
+strategy = "partitioned_selective_replication"
+
+[scheduler]
+strategy = "data_locality_aware"

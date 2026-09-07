@@ -34,9 +34,9 @@ class CommandFailure(RuntimeError):
         self.log_path = log_path
         self.timed_out = timed_out
         super().__init__(
-            f"{'Timeout' if timed_out else 'Fallo'} ejecutando: {shlex.join(command)}\n"
-            f"Código de salida: {returncode}\nLog completo: {log_path}\n"
-            f"Últimas líneas:\n{output or '(sin salida)'}\n{failure_hint(output)}"
+            f"{'Timeout' if timed_out else 'Failure'} while running: {shlex.join(command)}\n"
+            f"Exit code: {returncode}\nComplete log: {log_path}\n"
+            f"Last lines:\n{output or '(no output)'}\n{failure_hint(output)}"
         )
 
 
@@ -68,7 +68,7 @@ def run_logged(
     label: str = "setup",
 ) -> Path:
     if not math.isfinite(timeout) or timeout <= 0:
-        raise ValueError("El timeout debe ser positivo")
+        raise ValueError("timeout must be positive")
     directory = root / "outputs" / "runtime" / "setup"
     directory.mkdir(parents=True, exist_ok=True)
     recent: deque[str] = deque(maxlen=40)

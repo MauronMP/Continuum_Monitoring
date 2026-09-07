@@ -19,7 +19,7 @@ EX = Namespace("http://example.org/smartcity#")
 SH = Namespace("http://www.w3.org/ns/shacl#")
 
 
-def test_fragments_reconstruct_monolithic_graph(config):
+def test_fragments_reconstruct_canonical_graph(config):
     expected = load_graph(
         config.resolve(path) for path in config.ontology_files
     )
@@ -69,12 +69,12 @@ def test_reference_links_to_private_objects_stay_at_their_authority(config):
     assert any("evaluatesNode" in violation for violation in violations)
 
 
-def test_q17_and_q20_edge_union_matches_monolith(config):
+def test_q17_and_q20_edge_union_matches_canonical(config):
     users = 10
-    monolith = load_graph(
+    canonical = load_graph(
         config.resolve(path) for path in config.ontology_files
     )
-    add_synthetic_data(monolith, users, config.seed)
+    add_synthetic_data(canonical, users, config.seed)
     fragments = build_fragments(config, users)
     specs = {
         spec.id: spec
@@ -85,7 +85,7 @@ def test_q17_and_q20_edge_union_matches_monolith(config):
     }
 
     for query_id in ("BASE-Q17", "BASE-Q20"):
-        expected = execute_query_detailed(monolith, specs[query_id])
+        expected = execute_query_detailed(canonical, specs[query_id])
         edge_results = [
             execute_query_detailed(fragments.graphs[role], specs[query_id])
             for role in ("edge1", "edge2", "edge3")
@@ -101,10 +101,10 @@ def test_q17_and_q20_edge_union_matches_monolith(config):
 
 
 def test_single_authority_queries_preserve_complete_bindings(config):
-    monolith = load_graph(
+    canonical = load_graph(
         config.resolve(path) for path in config.ontology_files
     )
-    add_synthetic_data(monolith, 10, config.seed)
+    add_synthetic_data(canonical, 10, config.seed)
     fragments = build_fragments(config, 10)
     specs = {
         spec.id: spec
@@ -120,7 +120,7 @@ def test_single_authority_queries_preserve_complete_bindings(config):
         ("EXT-Q03", "cloud"),
         ("EXT-Q80", "cloud"),
     ):
-        expected = execute_query_detailed(monolith, specs[query_id])
+        expected = execute_query_detailed(canonical, specs[query_id])
         actual = execute_query_detailed(
             fragments.graphs[role],
             specs[query_id],
@@ -130,7 +130,7 @@ def test_single_authority_queries_preserve_complete_bindings(config):
 
 
 def test_single_authority_aggregates_are_exact_without_synthetic_data(config):
-    monolith = load_graph(
+    canonical = load_graph(
         config.resolve(path) for path in config.ontology_files
     )
     fragments = build_fragments(config, 0)
@@ -146,7 +146,7 @@ def test_single_authority_aggregates_are_exact_without_synthetic_data(config):
         ("BASE-Q33", "edge2"),
         ("EXT-Q03", "cloud"),
     ):
-        expected = execute_query_detailed(monolith, specs[query_id])
+        expected = execute_query_detailed(canonical, specs[query_id])
         actual = execute_query_detailed(
             fragments.graphs[role],
             specs[query_id],
@@ -155,10 +155,10 @@ def test_single_authority_aggregates_are_exact_without_synthetic_data(config):
         assert sorted(actual.result_keys) == sorted(expected.result_keys)
 
 
-def test_v3_execution_plan_preserves_all_monolithic_results(config):
+def test_v3_execution_plan_preserves_all_canonical_results(config):
     """Every v3 query must keep its result under authority fragmentation."""
 
-    monolith = load_graph(
+    canonical = load_graph(
         config.resolve(path) for path in config.ontology_files
     )
     fragments = build_fragments(config, 0)
@@ -168,7 +168,7 @@ def test_v3_execution_plan_preserves_all_monolithic_results(config):
     )
 
     for spec in specs:
-        expected = execute_query_detailed(monolith, spec)
+        expected = execute_query_detailed(canonical, spec)
         endpoints = [
             Endpoint(f"http://{role}", role)
             for role in fragments.graphs

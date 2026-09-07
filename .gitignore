@@ -9,9 +9,15 @@ __pycache__/
 .env
 build/
 dist/
+tmp/
+runtime/
+*.log
+*.pid
 outputs/**/*.csv
 outputs/**/*.json
 outputs/**/*.png
 outputs/**/*.pdf
 outputs/**/*.svg
+outputs/**/*.log
 outputs/**/runtime/
+outputs/fragments/

@@ -3,24 +3,69 @@ tier = "edge"
 
 [[nodes]]
 id = "edge1"
+device_type = "raspberry-pi-500"
 host = "192.168.1.138"
 endpoint = "http://192.168.1.138:8391"
 local = false
 port = 8391
 authority = true
 
+[nodes.resources]
+cpu_cores = 4
+cpu_architecture = "armv7l-32bit"
+ram = "2g"
+storage_mib = 32768
+processing_capacity = 0.40
+network_mbps = 100
+
+[nodes.location]
+latitude = 0.0
+longitude = 0.0
+altitude_m = 0.0
+region = "physical-lab"
+
 [[nodes]]
 id = "edge2"
+device_type = "raspberry-pi-500"
 host = "192.168.1.139"
 endpoint = "http://192.168.1.139:8391"
 local = false
 port = 8391
 authority = true
 
+[nodes.resources]
+cpu_cores = 4
+cpu_architecture = "armv7l-32bit"
+ram = "2g"
+storage_mib = 32768
+processing_capacity = 0.40
+network_mbps = 100
+
+[nodes.location]
+latitude = 0.0
+longitude = 0.0
+altitude_m = 0.0
+region = "physical-lab"
+
 [[nodes]]
 id = "edge3"
+device_type = "raspberry-pi-500"
 host = "192.168.1.140"
 endpoint = "http://192.168.1.140:8391"
 local = false
 port = 8391
 authority = true
+
+[nodes.resources]
+cpu_cores = 4
+cpu_architecture = "armv7l-32bit"
+ram = "2g"
+storage_mib = 32768
+processing_capacity = 0.40
+network_mbps = 100
+
+[nodes.location]
+latitude = 0.0
+longitude = 0.0
+altitude_m = 0.0
+region = "physical-lab"

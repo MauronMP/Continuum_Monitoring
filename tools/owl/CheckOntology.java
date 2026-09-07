@@ -4,15 +4,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.profiles.OWL2DLProfile;
 import org.semanticweb.owlapi.profiles.OWLProfileReport;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
-/** Optional OWLAPI/HermiT check; no changes to the loaded ontology. */
+/** OWLAPI consistency check using a reasoner factory selected at runtime. */
 class CheckOntology {
     private static String quote(String value) {
         StringBuilder result = new StringBuilder("\"");
@@ -30,13 +30,28 @@ class CheckOntology {
     }
 
     public static void main(String[] args) throws Exception {
+        if (args.length != 2) {
+            throw new IllegalArgumentException(
+                "usage: CheckOntology <ontology> <OWLReasonerFactory class>");
+        }
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         OWLOntology ontology = manager.loadOntologyFromOntologyDocument(new File(args[0]));
         OWLProfileReport profile = new OWL2DLProfile().checkOntology(ontology);
         Map<String, Integer> violations = new TreeMap<>();
         profile.getViolations().forEach(violation ->
             violations.merge(violation.getClass().getSimpleName(), 1, Integer::sum));
-        OWLReasoner reasoner = new ReasonerFactory().createReasoner(ontology);
+        Class<?> factoryClass = Class.forName(args[1]);
+        Object factoryObject;
+        try {
+            factoryObject = factoryClass.getMethod("getInstance").invoke(null);
+        } catch (NoSuchMethodException ignored) {
+            factoryObject = factoryClass.getDeclaredConstructor().newInstance();
+        }
+        if (!(factoryObject instanceof OWLReasonerFactory)) {
+            throw new IllegalArgumentException(args[1] + " is not an OWLReasonerFactory");
+        }
+        OWLReasonerFactory factory = (OWLReasonerFactory) factoryObject;
+        OWLReasoner reasoner = factory.createReasoner(ontology);
         boolean consistent;
         List<String> unsatisfiable = new ArrayList<>();
         try {

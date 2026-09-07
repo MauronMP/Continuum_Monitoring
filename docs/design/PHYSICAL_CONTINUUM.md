@@ -1,338 +1,127 @@
-# Elastic physical-continuum benchmark
+# Physical continuum user guide
 
-## Default topology
+This guide contains only the workflow for a coordinator and elastic physical
+workers. Docker is not required on Raspberry Pi nodes.
 
-The root catalog loads `configs/topologies/physical/topology.toml`, which
-composes one file per tier from `configs/topologies/physical/nodes/`.
+## Topology
 
-The initial example is:
+The source of truth is `configs/topologies/physical/topology.toml`. Nodes are
+split by continuum tier:
 
-| Node | Tier | Host | Endpoint |
-|---|---|---|---|
-| `cloud` | cloud | coordinator | `http://127.0.0.1:8391` |
-| `fog` | fog | Raspberry Pi | `http://192.168.1.137:8391` |
-| `edge1` | edge | Raspberry Pi | `http://192.168.1.138:8391` |
-| `edge2` | edge | Raspberry Pi | `http://192.168.1.139:8391` |
-| `edge3` | edge | Raspberry Pi | `http://192.168.1.140:8391` |
-
-Edit the corresponding tier file when a host, address, port or tier differs.
-Any positive number of cloud, fog, mist, edge and IoT nodes is supported,
-subject to topology validation. The old `configs/physical-nodes.toml` is a
-legacy reproduction format only.
-
-## Coordinator prerequisites
-
-The coordinator needs the normal project environment plus OpenSSH client and
-`rsync`:
-
-```bash
-python3 tools/doctor.py --physical
-.venv/bin/continuum-bench topology validate
-.venv/bin/continuum-bench topology show --name physical
+```text
+configs/topologies/physical/nodes/cloud.toml
+configs/topologies/physical/nodes/fog.toml
+configs/topologies/physical/nodes/mist.toml
+configs/topologies/physical/nodes/edge.toml
+configs/topologies/physical/nodes/iot.toml
 ```
 
-## Remote worker prerequisites
-
-On each Raspberry Pi or Linux worker:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y python3 python3-venv openssh-server rsync procps
-python3 --version
-sudo systemctl enable --now ssh
-```
-
-Python must be 3.11 or newer. Give every host a stable address and allow the
-configured worker port from the coordinator.
-
-Lightweight workers do not need Docker, Java, Maven, Matplotlib, NumPy,
-PyOxigraph or Protégé. Deployment installs only the portable packages pinned in
-`requirements-node.txt`.
-
-Raspberry Pi 500 hardware uses a 64-bit CPU but may run a 32-bit userland. Such
-workers can execute RDFLib RDFS/OWL-RL profiles. Do not label Jena, RDF4J or
-Oxigraph as physical-node engines unless the operating system, Java runtime and
-images have actually been migrated and validated for that platform.
-
-## SSH authentication
-
-Create a coordinator key if none exists:
+Each `[[nodes]]` entry defines identity, SSH host, HTTP endpoint, hardware,
+network capacity, location, authority and semantic categories. Add or remove
+nodes without changing Python code.
 
 ```bash
-ssh-keygen -t ed25519
+continuum-bench topology validate --name physical
+continuum-bench doctor --physical
 ```
 
-Install it on every unique remote host:
+## Initial authorization and deployment
+
+Install Python 3.11+, `venv`, `rsync`, `procps` and an SSH server on every
+worker. Then run from the coordinator:
 
 ```bash
-.venv/bin/continuum-bench physical authorize --ssh-user pi
+continuum-bench physical authorize --ssh-user pi
+continuum-bench physical deploy --ssh-user pi
+continuum-bench physical start --ssh-user pi
+continuum-bench physical status --ssh-user pi
 ```
 
-This command may ask for each remote password once through `ssh-copy-id`.
-Passwords are never stored in TOML, environment files or source code. All
-subsequent lifecycle commands use `BatchMode=yes` and fail rather than wait for
-an interactive password.
-
-Verify manually if needed:
-
-```bash
-ssh -o BatchMode=yes pi@192.168.1.137 true
-ssh -o BatchMode=yes pi@192.168.1.138 true
-ssh -o BatchMode=yes pi@192.168.1.139 true
-ssh -o BatchMode=yes pi@192.168.1.140 true
-```
-
-## Deployment
-
-```bash
-.venv/bin/continuum-bench physical deploy --ssh-user pi
-```
-
-Deployment performs these steps:
-
-1. validates key authentication and remote Python/venv/rsync/procps before
-   copying any host;
-2. mirrors only release-owned `src`, `configs`, `ontology` and `queries`;
-3. copies `requirements-node.txt`;
-4. creates or updates `.venv-node` under the dedicated remote directory;
-5. installs pinned portable dependencies;
-6. flattens the selected composed topology into
-   `runtime/active-topology.toml` and copies the same fingerprinted snapshot to
-   every worker.
-
-`rsync --delete` is restricted to release-owned subdirectories. It does not
-delete the virtual environment, runtime logs, results or parent directory.
-Broad remote directories such as `/`, `/root`, `/tmp` or `/home/pi` are
-rejected.
-
-## Start, health and stop
-
-```bash
-.venv/bin/continuum-bench physical start --ssh-user pi
-.venv/bin/continuum-bench physical status --ssh-user pi
-.venv/bin/continuum-bench physical stop --ssh-user pi
-```
-
-PID and log files are separated by node ID. Start replaces a stale worker only
-when its expected identity/fingerprint contract fails. Stop matches executable,
-node ID and port, allowing recovery from stale PID files without killing
-unrelated processes.
-
-Health requires the correct service, protocol, ontology version/revision,
-reasoning contract, query count, node identity, tier and topology fingerprint.
+`authorize` installs SSH keys so passwords are neither repeatedly requested nor
+stored in configuration. `deploy` creates the lightweight `.venv-node` suited
+to 32-bit Raspberry Pi workers and synchronizes the required project files.
 
 ## Smoke tests
 
-Start the workers first, then run sharded smokes:
+```bash
+continuum-smoke-cumulative --ssh-user pi
+continuum-smoke-scalability --ssh-user pi
+continuum-smoke-cumulative --layout replicated --ssh-user pi
+continuum-smoke-scalability --layout replicated --ssh-user pi
+```
+
+Smokes verify SSH/HTTP availability, partition transfer, bounded execution and
+result serialization. They are not performance evidence.
+
+## Normal monitoring benchmarks
 
 ```bash
-.venv/bin/continuum-bench \
-  --config configs/smoke-cumulative.toml \
-  physical cumulative \
-  --layout sharded \
-  --ssh-user pi \
-  --output-dir outputs/physical-smoke-cumulative
-
-.venv/bin/continuum-bench \
-  --config configs/smoke-scalability.toml \
-  physical scalability \
-  --layout sharded \
-  --ssh-user pi \
-  --output-dir outputs/physical-smoke-scalability
+continuum-bench physical cumulative --layout sharded --ssh-user pi
+continuum-bench physical scalability --layout sharded --ssh-user pi
+continuum-bench physical all --layout replicated --ssh-user pi
 ```
 
-Replicated smokes:
+`physical all` runs cumulative and scalability only. It does not run load,
+experiments, studies or validators.
+
+## Complete load matrix
 
 ```bash
-.venv/bin/continuum-bench \
-  --config configs/smoke-cumulative.toml \
-  physical cumulative \
-  --layout replicated \
-  --ssh-user pi \
-  --output-dir outputs/physical-smoke-cumulative-replicated
-
-.venv/bin/continuum-bench \
-  --config configs/smoke-scalability.toml \
-  physical scalability \
-  --layout replicated \
-  --ssh-user pi \
-  --output-dir outputs/physical-smoke-scalability-replicated
+continuum-bench load physical
 ```
 
-## Full benchmark layouts
-
-Authority-partitioned ontology:
+There is no literal `load all` action. Running `load physical` without filters
+executes every configured physical load profile. A focused run uses:
 
 ```bash
-.venv/bin/continuum-bench physical cumulative \
-  --layout sharded --ssh-user pi
-.venv/bin/continuum-bench physical scalability \
-  --layout sharded --ssh-user pi
-.venv/bin/continuum-bench physical all \
-  --layout sharded --ssh-user pi
+continuum-bench load physical --dimension events_per_second
+continuum-bench load physical --dimension users
+continuum-bench load physical --dimension target_triples
+continuum-bench load physical --dimension rule_count
+continuum-bench load physical --dimension node_count
+continuum-bench load physical --profile <profile-name>
 ```
 
-Complete replica per active node:
+## Complete experiment family
 
 ```bash
-.venv/bin/continuum-bench physical cumulative \
-  --layout replicated --ssh-user pi
-.venv/bin/continuum-bench physical scalability \
-  --layout replicated --ssh-user pi
-.venv/bin/continuum-bench physical all \
-  --layout replicated --ssh-user pi
+continuum-bench experiment all physical
 ```
 
-`sharded physical ...` remains a compatible endpoint-only alias after workers
-are already running:
+This is equivalent to running these three distinct experiments:
 
 ```bash
-.venv/bin/continuum-bench sharded physical all \
-  --topology-name physical \
-  --output-dir outputs/sharded-physical
+continuum-bench experiment scale-out physical
+continuum-bench experiment reasoning-hardware physical
+continuum-bench experiment distributed-ontology physical
 ```
 
-## Adaptive replicated scheduling
+## Mobility, costs and plots
 
-The replicated physical coordinator calibrates query cost on the available
-hardware and uses longest-processing-time scheduling. It does not assume that
-the coordinator and Raspberry Pi workers have equal capacity.
-
-Primary distributed latency is wall time. The sum of node work is a resource
-cost. Waiting for the slowest preparation is expected because all replicas must
-be ready before the measured query phase.
-
-## Load and separated experiments
+Static topology coordinates anchor the infrastructure. Deterministic client
+mobility is generated independently by the study module.
 
 ```bash
-.venv/bin/continuum-bench load physical
-
-.venv/bin/continuum-bench experiment scale-out physical
-.venv/bin/continuum-bench experiment reasoning-hardware physical
-.venv/bin/continuum-bench experiment distributed-ontology physical
-.venv/bin/continuum-bench experiment all physical
+continuum-bench study trace --target physical --topology-name physical \
+  --output-dir outputs/study/physical
+continuum-bench study category-cost \
+  --events outputs/load/physical/event-runs.csv \
+  --output-dir outputs/study/physical-cost
+continuum-bench load plot
+continuum-bench experiment plot all
+continuum-bench experiment analyze
 ```
 
-The hardware experiment evaluates each endpoint independently. Scale-out uses
-replicas. Distributed ontology uses authority placement and a monolithic oracle.
-Do not merge these interpretations.
+The trace command prepares a replayable schedule; it does not claim measured
+query or resource values. Category-cost analysis consumes measured event rows.
 
-## Experimental controls
-
-For publishable measurements:
-
-- use wired Ethernet;
-- synchronize clocks, even though latency is measured by the coordinator;
-- fix Raspberry Pi power mode, CPU governor and cooling;
-- record OS version and 32/64-bit userland;
-- avoid SSH terminal sessions and unrelated workload;
-- keep topology, reasoners, seeds, timeouts and query catalog identical;
-- randomize or counterbalance architecture run order;
-- preserve failures, resets and timeouts.
-
-## Bounded query batches and timeouts
-
-Authority-sharded queries are not sent to a Raspberry Pi as one unbounded
-70--80 query POST. The coordinator splits each node assignment into bounded
-batches and prints the batch number and active-node load. The defaults live in
-the selected benchmark configuration:
-
-```toml
-[distributed]
-request_timeout_seconds = 60
-request_retries = 0
-query_batch_size = 4
-worker_timeout_margin_seconds = 2
-
-[limits]
-phase_timeout_seconds = 60
-point_timeout_seconds = 90
-calibration_query_limit = 16
-stop_scaling_after_timeout = true
-```
-
-The HTTP timeout bounds one preparation request or query batch, while the point
-timeout bounds preparation plus all query batches in one reported observation.
-The worker deadline expires before the socket deadline, so CPU-bound RDFLib
-work is interrupted and the node remains available. Long POST requests are not
-replayed by default because replaying an already executing batch duplicates
-work. Health discovery still retries a transient connection failure separately.
-
-The replicated physical scheduler no longer runs all 115 queries as an
-unmeasured calibration workload on every Raspberry Pi. It samples at most one
-query per category (16 by default), estimates unsampled query costs from the
-node's category median, and then applies heterogeneous LPT balancing. The limit
-is part of the metadata and can be increased for a dedicated calibration study.
-
-For a constrained 32-bit Raspberry Pi, reduce `query_batch_size` to `2` or `1`
-only when one query must be isolated. Increase the timeouts only when
-one identified query legitimately needs a larger censoring threshold. Keep the
-same values for every architecture used in a scientific comparison.
-
-These settings are deployed with the project. After changing code or TOML,
-replace every worker release before rerunning:
+## Shutdown and troubleshooting
 
 ```bash
-.venv/bin/continuum-bench physical stop --ssh-user pi
-.venv/bin/continuum-bench physical deploy --ssh-user pi
-.venv/bin/continuum-bench physical start --ssh-user pi
-.venv/bin/continuum-bench physical status --ssh-user pi
+continuum-bench physical status --ssh-user pi
+continuum-bench physical stop --ssh-user pi
 ```
 
-If a batch still times out, the terminal includes its batch number and query
-IDs. The run is not aborted: the current point is stored with `status=timeout`
-and `censored=true`, and larger scalability points are stored as
-`skipped_after_timeout`. Inspect the corresponding worker log, replacing the host and node ID
-with the configured values:
-
-```bash
-ssh pi@RASPBERRY_HOST \
-  'tail -n 100 /home/pi/continuum-bench/runtime/edge3.log'
-```
-
-Partial federated answers are never accepted as correct and are not used to
-compute speedup. Completed lower-load points remain available for analysis;
-timeout coverage must be reported alongside latency and throughput.
-
-## Connection-reset diagnosis
-
-An SSH message such as `Connection reset by peer` does not prove that the HTTP
-worker stopped. Check separately:
-
-```bash
-ping 192.168.1.139
-ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=3 \
-  pi@192.168.1.139
-curl --fail http://192.168.1.139:8391/health
-```
-
-On the Raspberry Pi inspect:
-
-```bash
-free -h
-df -h
-uptime
-vcgencmd get_throttled 2>/dev/null || true
-tail -n 100 /home/pi/continuum-bench/runtime/edge2.log
-```
-
-Common causes are Wi-Fi instability, power/thermal throttling, out-of-memory,
-stale workers, wrong addresses and firewall rules. Redeploy after code,
-ontology, query, protocol or topology changes:
-
-```bash
-.venv/bin/continuum-bench physical stop --ssh-user pi
-.venv/bin/continuum-bench physical deploy --ssh-user pi
-.venv/bin/continuum-bench physical start --ssh-user pi
-.venv/bin/continuum-bench physical status --ssh-user pi
-```
-
-## Interpretation limits
-
-- Five physical nodes do not necessarily outperform a modern coordinator.
-- Raspberry Pi materialization can dominate a barrier-based replicated run.
-- Sharding reduces per-authority data but adds transport and merge overhead.
-- Network and serialization cost must be reported, not hidden.
-- The lightweight physical suite compares Python reasoning profiles only.
-- Results from a 32-bit worker are not interchangeable with 64-bit container
-  product results.
+On timeout, inspect the affected worker's runtime log, memory pressure and
+network connectivity. The coordinator records the point as censored and does
+not wait indefinitely. Re-run `deploy` after code or dependency changes.

@@ -1,4 +1,4 @@
 [layer]
 tier = "mist"
 
-# Add one or more [[nodes]] tables to enable the mist layer.
+# Add [[nodes]] entries here to activate mist-tier containers.

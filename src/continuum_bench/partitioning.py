@@ -218,7 +218,7 @@ def load_substrate(
 ) -> Graph:
     """Load the immutable semantic substrate for a deployment role.
 
-    Without a role this returns the logical monolithic substrate.  With a role
+    Without a role this returns the canonical logical substrate. With a role
     it applies the explicit placement manifest, so validation shapes remain at
     cloud and wellbeing terms are not copied to fog.
     """
@@ -504,7 +504,7 @@ def _resolve_topology(
 ) -> Topology:
     return topology or load_topology(
         config.resolve(config.topology_file),
-        "docker",
+        "physical",
     )
 
 

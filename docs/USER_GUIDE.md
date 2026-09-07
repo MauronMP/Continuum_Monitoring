@@ -1,209 +1,112 @@
-# Continuum benchmark user guide
+# User guide
 
-This guide provides the shortest complete path from a clean clone to validated
-monolithic, Docker and physical-continuum results. Detailed method and option
-references are linked where each step introduces them.
+This page contains the workflow shared by every execution target. Operational
+instructions are intentionally separated:
 
-## 1. Select the deployment scope
+- [Docker Compose guide](design/DOCKER_COMPOSE_GUIDE.md): local elastic
+  containers, lifecycle, smokes, benchmarks, load and experiments.
+- [Physical continuum guide](design/PHYSICAL_CONTINUUM.md): coordinator,
+  Raspberry Pi workers, SSH deployment, smokes and physical campaigns.
+- [Command reference](design/COMMAND_REFERENCE.md): copy-and-run commands for
+  the complete suites and each independent block.
 
-| Scope | Required host capabilities |
-|---|---|
-| Monolithic Python | 64-bit CPython 3.11-3.13 |
-| Semantic products | Docker, Compose v2 and Buildx |
-| Elastic local continuum | Docker plus ports 8191-8195 or configured alternatives |
-| Physical continuum | Coordinator plus SSH-accessible Python 3.11+ workers |
-| OWL 2 DL release check | Java 11+ and Protégé/HermiT |
+## Installation
 
-Use WSL2 on Windows. A 32-bit Raspberry Pi is supported as a lightweight
-physical worker, not as a coordinator or independent Jena/RDF4J/Oxigraph host.
-
-## 2. Install from a clean clone
+Follow the [complete installation guide](design/INSTALLATION.md), then run:
 
 ```bash
-git clone https://github.com/MauronMP/Continuum_Monitoring.git
+git clone <repository-url> Continuum_Monitoring
 cd Continuum_Monitoring
-python3 tools/doctor.py
-python3 tools/bootstrap.py
-.venv/bin/python -m pip check
+python3 tools/bootstrap.py --profile coordinator
+. .venv/bin/activate
 ```
 
-For Docker:
+Docker requires Docker Engine/Desktop and Compose v2. Physical execution
+requires SSH/rsync on the coordinator and Python 3.11+, `venv`, `rsync`,
+`procps` and SSH on every worker.
+
+## Common acceptance checks
 
 ```bash
-python3 tools/doctor.py --docker
-python3 tools/bootstrap.py --with-docker
+continuum-bench topology validate --name docker
+continuum-bench topology validate --name physical
+continuum-bench validate
+continuum-bench owl-validate
+python -m pytest
+python3 tools/check_documentation.py
 ```
 
-Do not copy `.venv`, `.venv-node`, `.env`, credentials or `outputs` from
-another machine. Follow [INSTALLATION.md](design/INSTALLATION.md) if any doctor
-check fails.
-
-## 3. Validate configuration and semantics
+`validate` covers RDF parsing, SHACL, query contracts and the portable
+`rdfs`, `owlrl` and `rdfs_owlrl` materializers. External OWL 2 DL consistency
+is separate. After installing HermiT, Openllet, JFact and Konclude, run the
+strict gate:
 
 ```bash
-.venv/bin/continuum-bench topology validate
-.venv/bin/continuum-bench validate
-.venv/bin/python tools/check_documentation.py
-.venv/bin/python -m pytest
+continuum-bench doctor --owl
+continuum-bench owl-validate --require-all
 ```
 
-Do not proceed to a long campaign until these commands pass. The optional
-HermiT gate is documented in [ONTOLOGY_PROTEGE.md](design/ONTOLOGY_PROTEGE.md).
+## Elastic configuration
 
-## 4. Run smoke tests
-
-```bash
-.venv/bin/python -m pytest -m smoke_cumulative
-.venv/bin/python -m pytest -m smoke_scalability
-.venv/bin/continuum-smoke-cumulative
-.venv/bin/continuum-smoke-scalability
-```
-
-The first two are fast development contracts. The latter two create measured
-outputs and automatically exercise RDFLib, Jena, RDF4J and Oxigraph. See
-[TESTS.md](design/TESTS.md) for Python-only and architecture-specific variants.
-
-## 5. Configure nodes
-
-Edit only the architecture and layer concerned:
+Docker and physical targets have independent manifests and tier files:
 
 ```text
-configs/topologies/ARCHITECTURE/topology.toml
-configs/topologies/ARCHITECTURE/nodes/cloud.toml
-configs/topologies/ARCHITECTURE/nodes/fog.toml
-configs/topologies/ARCHITECTURE/nodes/mist.toml
-configs/topologies/ARCHITECTURE/nodes/edge.toml
-configs/topologies/ARCHITECTURE/nodes/iot.toml
+configs/topologies/docker/{topology.toml,nodes/*.toml}
+configs/topologies/physical/{topology.toml,nodes/*.toml}
 ```
 
-Then run:
+Add a `[[nodes]]` table to `cloud.toml`, `fog.toml`, `mist.toml`, `edge.toml`
+or `iot.toml`. IDs, hosts, endpoints and ports must be unique. The runner reads
+the enabled nodes dynamically; Python and Compose source files do not need to
+be rewritten.
+
+## Test-family selection
+
+Choose the smallest family that answers the research question:
+
+- Smoke tests verify that the infrastructure and execution path work.
+- Normal cumulative/scalability benchmarks measure category growth and RDF
+  volume/user growth under `sharded` or `replicated` placement.
+- Load benchmarks stress independent demand dimensions and collect
+  request-level latency, throughput, loss, accuracy, recovery and resources.
+- Experiments isolate scale-out, hardware reasoning and genuinely distributed
+  ontology placement.
+- Study commands generate reproducible workload/mobility traces and aggregate
+  category, policy and query costs from measured event data.
+
+`docker all` and `physical all` run cumulative plus scalability only. There is
+no literal `load all` subcommand: unfiltered `load docker` or `load physical`
+means all configured load profiles. `experiment all <target>` runs the three
+separated scientific experiments, not the normal or load benchmarks.
+
+## Results and interpretation
+
+Results are written under `outputs/` with metadata describing target,
+topology, layout, reasoner, profile, repetitions and budgets. Timeouts are
+right-censored observations: they remain visible in coverage reporting and are
+not converted into zero latency. Architecture ratios use only matched,
+completed rows.
 
 ```bash
-.venv/bin/continuum-bench topology validate
-.venv/bin/continuum-bench topology show --name ARCHITECTURE
+continuum-bench load plot
+continuum-bench experiment plot all
+continuum-bench experiment analyze
 ```
 
-Use `monolith`, `docker` or `physical` for `ARCHITECTURE`. The complete field
-contract and resize procedure are in
-[ELASTIC_TOPOLOGY.md](design/ELASTIC_TOPOLOGY.md).
+Study traces are deterministic schedules, not measured query executions.
+Category-cost analysis only reports resource metrics present in the benchmark
+event data.
 
-## 6. Run the monolithic baseline
+## Troubleshooting entry points
 
 ```bash
-.venv/bin/continuum-bench benchmark all
-.venv/bin/continuum-bench load monolith
-.venv/bin/continuum-bench experiment all monolith
+continuum-bench doctor --docker
+continuum-bench doctor --physical
+continuum-bench doctor --owl
+continuum-bench docker logs
+continuum-bench physical status --ssh-user pi
 ```
 
-This establishes the one-node baseline needed by comparative reports.
-
-## 7. Run the local Docker continuum
-
-```bash
-.venv/bin/continuum-bench topology up --name docker
-.venv/bin/continuum-bench topology status --name docker
-
-.venv/bin/continuum-bench docker all --layout sharded
-.venv/bin/continuum-bench docker all --layout replicated
-.venv/bin/continuum-bench load docker
-.venv/bin/continuum-bench experiment all docker
-
-.venv/bin/continuum-bench topology down --name docker
-```
-
-Leave the topology running between commands to avoid including setup in
-measured phases. Use `--topology-only` on `docker` benchmark commands only when
-the separate semantic-product dimension is intentionally excluded.
-
-## 8. Deploy and run physical workers
-
-Install Python 3.11+, `python3-venv`, OpenSSH server, `rsync` and `procps` on
-every remote host. Configure stable IP addresses in
-`configs/topologies/physical/nodes/*.toml`.
-
-```bash
-python3 tools/doctor.py --physical
-.venv/bin/continuum-bench physical authorize --ssh-user pi
-.venv/bin/continuum-bench physical deploy --ssh-user pi
-.venv/bin/continuum-bench physical start --ssh-user pi
-.venv/bin/continuum-bench physical status --ssh-user pi
-
-.venv/bin/continuum-bench physical all --layout sharded --ssh-user pi
-.venv/bin/continuum-bench physical all --layout replicated --ssh-user pi
-.venv/bin/continuum-bench load physical
-.venv/bin/continuum-bench experiment all physical
-
-.venv/bin/continuum-bench physical stop --ssh-user pi
-```
-
-Use Ethernet, synchronized clocks, fixed cooling and a fixed power mode for
-publication runs. See [PHYSICAL_CONTINUUM.md](design/PHYSICAL_CONTINUUM.md).
-
-## 9. Run all architecture experiments
-
-When Docker and physical workers are already healthy:
-
-```bash
-.venv/bin/continuum-bench load all
-.venv/bin/continuum-bench experiment all all
-```
-
-For clearer failure isolation, run each architecture and experiment separately
-as listed in [TESTS.md](design/TESTS.md).
-
-## 10. Generate comparisons
-
-```bash
-.venv/bin/continuum-bench compare all
-.venv/bin/continuum-bench load plot
-.venv/bin/continuum-bench experiment plot all
-.venv/bin/continuum-bench experiment analyze
-.venv/bin/continuum-bench plot publication
-.venv/bin/continuum-report
-```
-
-Keep the CSV, JSON and metadata next to PNG/PDF/SVG figures. A comparison is
-valid only when matched profiles have equivalent result digests and compatible
-ontology, query, reasoner and topology versions.
-
-### Bounded execution and timeout results
-
-The default full configuration uses a 60-second phase/request ceiling and a
-90-second complete-point ceiling; smoke configurations use 30 and 45 seconds.
-These are acceptance thresholds, not estimates of the eventual completion
-time. `summary.csv` records `status=completed`, `timeout`, `transport_error`, or
-`skipped_after_timeout`, together with `censored`, `failed_phase`, the threshold
-and the error. Larger scalability blocks are not executed after a timeout has
-already shown that the topology or engine exceeds the threshold. Do not compute
-speedups from censored rows; report completion/timeout coverage with latency.
-
-Edit `[limits]` and `[distributed]` in the selected benchmark TOML to change
-the scientific threshold. Use exactly the same values for all architectures in
-a comparison and redeploy physical workers after a configuration change.
-
-## 11. Preserve a reproducible campaign
-
-Record:
-
-- Git commit and dirty-worktree state;
-- ontology and query release identifiers;
-- all TOML configuration files;
-- topology fingerprints;
-- host OS, CPU, memory, architecture and Python version;
-- Docker and image versions where applicable;
-- Raspberry Pi model, OS bitness, power mode, cooling and network;
-- warm-ups, repetitions, timeouts and failures;
-- complete result directories.
-
-Read [SCIENTIFIC_VALIDITY.md](design/SCIENTIFIC_VALIDITY.md) before using a
-figure in a paper.
-
-## 12. Stop services
-
-```bash
-.venv/bin/continuum-bench topology down --name docker
-docker compose -f docker-compose.engines.yml down
-.venv/bin/continuum-bench physical stop --ssh-user pi
-```
-
-These commands preserve result files and built images.
+For installation failures, see [Installation](design/INSTALLATION.md). For
+methodological limits and scientific interpretation, see
+[Scientific validity](design/SCIENTIFIC_VALIDITY.md).

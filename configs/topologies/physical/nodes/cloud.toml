@@ -3,8 +3,23 @@ tier = "cloud"
 
 [[nodes]]
 id = "cloud"
+device_type = "coordinator"
 host = "127.0.0.1"
 endpoint = "http://127.0.0.1:8391"
 local = true
 port = 8391
 authority = false
+
+[nodes.resources]
+cpu_cores = 4
+cpu_architecture = "arm64"
+ram = "8g"
+storage_mib = 262144
+processing_capacity = 1.0
+network_mbps = 1000
+
+[nodes.location]
+latitude = 0.0
+longitude = 0.0
+altitude_m = 0.0
+region = "local-lab"

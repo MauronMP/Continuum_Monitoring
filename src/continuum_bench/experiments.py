@@ -24,7 +24,6 @@ from .csv_utils import write_dict_rows
 from .distributed import Endpoint, _parallel, _request, discover
 from .experiment_config import ExperimentConfig, ReasoningProfile
 from .load_benchmark import _local_timeout
-from .node import NodeRuntime
 from .queries import QuerySpec, execute_query_detailed, load_catalog
 from .specification import release_identity
 from .sharded import (
@@ -34,7 +33,6 @@ from .sharded import (
     _summary as sharded_summary,
     _validation_rows,
 )
-from .topology import load_topology
 
 
 EXPERIMENTS = (
@@ -143,29 +141,9 @@ def _target_runtime(
     config: BenchmarkConfig,
     target: str,
     endpoint_urls: list[str] | None,
-) -> tuple[NodeRuntime | None, list[Endpoint]]:
-    if target == "monolith":
-        topology = load_topology(
-            config.resolve(config.topology_file), "monolith"
-        )
-        node = topology.active_nodes[0]
-        return NodeRuntime(
-            config.root,
-            node.node_id,
-            tier=node.tier,
-            topology_name=topology.name,
-            topology_file=topology.source_path or config.topology_file,
-        ), [
-            Endpoint(
-                f"local://{node.node_id}",
-                node.node_id,
-                node.tier,
-                node.authority,
-                node.categories,
-            )
-        ]
+) -> tuple[None, list[Endpoint]]:
     if target not in {"docker", "physical"}:
-        raise ValueError(f"Unknown experiment target {target!r}")
+        raise ValueError("Experiment target must be docker or physical")
     return None, discover(endpoint_urls or [])
 
 
@@ -195,7 +173,7 @@ def _phase_payload(
 
 
 def _prepare_one(
-    runtime: NodeRuntime | None,
+    runtime: object | None,
     endpoint: Endpoint,
     payload: dict[str, Any],
     timeout: float,
@@ -216,7 +194,7 @@ def _prepare_one(
 
 
 def _execute_one(
-    runtime: NodeRuntime | None,
+    runtime: object | None,
     endpoint: Endpoint,
     query_ids: list[str],
     timeout: float,
@@ -246,7 +224,7 @@ def _execute_one(
 
 
 def _replicated_prepare(
-    runtime: NodeRuntime | None,
+    runtime: object | None,
     endpoints: list[Endpoint],
     payload: dict[str, Any],
     timeout: float,
@@ -265,7 +243,7 @@ def _replicated_prepare(
 
 
 def _execute_query_assignment(
-    runtime: NodeRuntime | None,
+    runtime: object | None,
     endpoints: list[Endpoint],
     assignment: dict[str, list[str]],
     timeout: float,
@@ -301,7 +279,7 @@ def _execute_query_assignment(
 
 
 def _calibrate_query_costs(
-    runtime: NodeRuntime | None,
+    runtime: object | None,
     endpoints: list[Endpoint],
     specs: list[QuerySpec],
     timeout: float,
@@ -406,9 +384,7 @@ def run_scale_out(
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     summary_rows: list[dict[str, Any]] = []
     query_rows: list[dict[str, Any]] = []
-    node_counts = (
-        (1,) if target == "monolith" else workload.scale_out_node_counts
-    )
+    node_counts = workload.scale_out_node_counts
     timeout = workload.request_timeout_seconds
     for node_count in node_counts:
         if node_count > len(all_endpoints):
@@ -785,84 +761,6 @@ def run_reasoning_hardware(
     return output
 
 
-def _monolith_distributed_point(
-    runtime: NodeRuntime,
-    endpoint: Endpoint,
-    specs: list[QuerySpec],
-    workload: ExperimentConfig,
-    reasoner: str,
-    users: int,
-) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    payload = _phase_payload(
-        workload,
-        reasoner=reasoner,
-        users=users,
-        mode="replicated",
-        padding_mode="neutral",
-    )
-    prepare_wall_ms, prepared = _prepare_one(
-        runtime, endpoint, payload, workload.request_timeout_seconds
-    )
-    query_wall_ms, response = _execute_one(
-        runtime,
-        endpoint,
-        [spec.id for spec in specs],
-        workload.request_timeout_seconds,
-        include_result_keys=True,
-    )
-    measurements = response["measurements"]
-    summary = {
-        "status": "completed",
-        "prepare_wall_ms": prepare_wall_ms,
-        "max_node_reasoning_ms": prepared["reasoning_ms"],
-        "node_reasoning_ms_sum": prepared["reasoning_ms"],
-        "query_wall_ms": query_wall_ms,
-        "total_wall_ms": prepare_wall_ms + query_wall_ms,
-        "query_count": len(measurements),
-        "source_query_executions": len(measurements),
-        "federation_fanout_factor": 1.0,
-        "logical_input_triples": prepared["input_triples"],
-        "aggregate_fragment_triples": prepared["input_triples"],
-        "aggregate_output_triples": prepared["output_triples"],
-        "aggregate_inferred_triples": prepared["inferred_triples"],
-        "max_fragment_triples": prepared["input_triples"],
-        "max_fragment_fraction": 1.0,
-        "storage_replication_factor": 1.0,
-        "max_node_peak_rss_kib": max(
-            int(prepared.get("peak_rss_kib", 0)),
-            int(response.get("peak_rss_kib", 0)),
-        ),
-        "sum_node_prepare_current_rss_kib": int(
-            prepared.get("current_rss_kib", 0)
-        ),
-        "sum_node_query_current_rss_kib": int(
-            response.get("current_rss_kib", 0)
-        ),
-        "max_sum_node_current_rss_kib": max(
-            int(prepared.get("current_rss_kib", 0)),
-            int(response.get("current_rss_kib", 0)),
-        ),
-        "node_prepare_process_cpu_ms_sum": float(
-            prepared.get("process_cpu_ms", 0.0)
-        ),
-        "node_query_process_cpu_ms_sum": float(
-            response.get("process_cpu_ms", 0.0)
-        ),
-        "total_process_cpu_ms": (
-            float(prepared.get("process_cpu_ms", 0.0))
-            + float(response.get("process_cpu_ms", 0.0))
-        ),
-        "prepare_request_bytes_sum": 0,
-        "prepare_response_bytes_sum": 0,
-        "query_request_bytes_sum": 0,
-        "query_response_bytes_sum": 0,
-        "result_validation_rate": 1.0,
-        "oracle_status": "self",
-        "oracle_error": "",
-    }
-    return summary, measurements
-
-
 def run_distributed_ontology(
     config: BenchmarkConfig,
     workload: ExperimentConfig,
@@ -896,94 +794,72 @@ def run_distributed_ontology(
                     "synthetic_users": users,
                     "reasoner": reasoner,
                     "repetition": repetition,
-                    "node_count": 1 if target == "monolith" else len(endpoints),
+                    "node_count": len(endpoints),
                 }
                 try:
-                    if runtime is not None:
-                        summary, measurements = _monolith_distributed_point(
-                            runtime,
-                            endpoints[0],
-                            specs,
-                            workload,
-                            reasoner,
-                            users,
-                        )
-                        summary_rows.append({**common, **summary, "error": ""})
-                        query_rows.extend(
-                            {
-                                **common,
-                                "endpoint": endpoints[0].url,
-                                "role": endpoints[0].role,
-                                "execution_scope": "monolith",
-                                **measurement,
+                    payload = _phase_payload(
+                        workload,
+                        reasoner=reasoner,
+                        users=users,
+                        mode="partitioned",
+                    )
+                    prepare_wall_ms, prepared = _parallel(
+                        endpoints,
+                        "/prepare",
+                        {
+                            endpoint.url: payload for endpoint in endpoints
+                        },
+                        phase="experiment-partitioned-prepare",
+                        timeout=timeout,
+                        retries=0,
+                    )
+                    assignment = sharded_assignment(specs, endpoints)
+                    query_wall_ms, responses = _parallel(
+                        endpoints,
+                        "/queries",
+                        {
+                            url: {
+                                "query_ids": [
+                                    spec.id for spec in assigned
+                                ],
+                                "include_result_keys": True,
+                                "phase_timeout_seconds": max(
+                                    timeout - 1.0, 0.1
+                                ),
                             }
-                            for measurement in measurements
-                        )
-                    else:
-                        payload = _phase_payload(
-                            workload,
-                            reasoner=reasoner,
-                            users=users,
-                            mode="partitioned",
-                        )
-                        prepare_wall_ms, prepared = _parallel(
-                            endpoints,
-                            "/prepare",
-                            {
-                                endpoint.url: payload
-                                for endpoint in endpoints
-                            },
-                            phase="experiment-partitioned-prepare",
-                            timeout=timeout,
-                            retries=0,
-                        )
-                        assignment = sharded_assignment(specs, endpoints)
-                        query_wall_ms, responses = _parallel(
-                            endpoints,
-                            "/queries",
-                            {
-                                url: {
-                                    "query_ids": [
-                                        spec.id for spec in assigned
-                                    ],
-                                    "include_result_keys": True,
-                                    "phase_timeout_seconds": max(
-                                        timeout - 1.0, 0.1
-                                    ),
-                                }
-                                for url, assigned in assignment.items()
-                                if assigned
-                            },
-                            phase="experiment-federated-queries",
-                            timeout=timeout,
-                            retries=0,
-                        )
-                        merged, raw = _merge_responses(
-                            specs, endpoints, responses, common
-                        )
-                        query_rows.extend(
-                            {**common, **item} for item in raw
-                        )
-                        summary = sharded_summary(
-                            common,
-                            len(specs),
-                            prepare_wall_ms,
-                            query_wall_ms,
-                            prepared,
-                            responses,
-                        )
-                        summary_row = {
-                            **summary,
-                            "status": "completed",
-                            "error": "",
-                            "result_validation_rate": "",
-                            "oracle_status": "pending",
-                            "oracle_error": "",
-                        }
-                        summary_rows.append(summary_row)
-                        pending_validation.append(
-                            (common, merged, summary_row)
-                        )
+                            for url, assigned in assignment.items()
+                            if assigned
+                        },
+                        phase="experiment-federated-queries",
+                        timeout=timeout,
+                        retries=0,
+                    )
+                    merged, raw = _merge_responses(
+                        specs, endpoints, responses, common
+                    )
+                    query_rows.extend(
+                        {**common, **item} for item in raw
+                    )
+                    summary = sharded_summary(
+                        common,
+                        len(specs),
+                        prepare_wall_ms,
+                        query_wall_ms,
+                        prepared,
+                        responses,
+                    )
+                    summary_row = {
+                        **summary,
+                        "status": "completed",
+                        "error": "",
+                        "result_validation_rate": "",
+                        "reference_status": "pending",
+                        "reference_error": "",
+                    }
+                    summary_rows.append(summary_row)
+                    pending_validation.append(
+                        (common, merged, summary_row)
+                    )
                 except Exception as error:
                     summary_rows.append(
                         {
@@ -998,11 +874,11 @@ def run_distributed_ontology(
                     print(f"{label} status=failed error={error}", flush=True)
                     continue
                 print(f"{label} status=done", flush=True)
-            if target != "monolith" and pending_validation:
+            if pending_validation:
                 print(
                     "[experiment-distributed-ontology] "
                     f"architecture={target} users={users} "
-                    f"reasoner={reasoner} phase=monolith-oracle "
+                    f"reasoner={reasoner} phase=reference-graph "
                     "status=running timing=excluded",
                     flush=True,
                 )
@@ -1014,12 +890,12 @@ def run_distributed_ontology(
                 except Exception as error:
                     baseline_error = f"{type(error).__name__}: {error}"
                     for _, _, summary_row in pending_validation:
-                        summary_row["oracle_status"] = "failed"
-                        summary_row["oracle_error"] = baseline_error
+                        summary_row["reference_status"] = "failed"
+                        summary_row["reference_error"] = baseline_error
                     print(
                         "[experiment-distributed-ontology] "
                         f"architecture={target} users={users} "
-                        f"reasoner={reasoner} phase=monolith-oracle "
+                        f"reasoner={reasoner} phase=reference-graph "
                         f"status=failed error={baseline_error}; "
                         "measurements remain explicitly unvalidated",
                         flush=True,
@@ -1035,18 +911,18 @@ def run_distributed_ontology(
                     )
                     rate = valid_count / len(validation)
                     summary_row["result_validation_rate"] = rate
-                    summary_row["oracle_status"] = "completed"
+                    summary_row["reference_status"] = "completed"
                     if rate != 1.0:
                         summary_row["status"] = "invalid_results"
                         summary_row["error"] = (
                             f"{len(validation) - valid_count}/"
                             f"{len(validation)} query results differ from "
-                            "the monolithic oracle"
+                            "the canonical reference graph"
                         )
                 print(
                     "[experiment-distributed-ontology] "
                     f"architecture={target} users={users} "
-                    f"reasoner={reasoner} phase=monolith-oracle "
+                    f"reasoner={reasoner} phase=reference-graph "
                     "status=done",
                     flush=True,
                 )
@@ -1061,17 +937,13 @@ def run_distributed_ontology(
     )
     metadata.update(
         {
-            "layout": (
-                "monolithic-oracle"
-                if target == "monolith"
-                else "authority-and-privacy-partitioned"
-            ),
-            "logical_dataset_is_equal_across_architectures": True,
+            "layout": "authority-and-privacy-partitioned",
+            "logical_dataset_is_equal_to_reference_graph": True,
             "distributed_reasoning": (
                 "local materialisation per fragment plus federated query merge"
             ),
             "validation": (
-                "exact order-independent result bag against monolithic oracle"
+                "exact order-independent result bag against canonical reference graph"
             ),
             "ontology_placement_manifest": str(
                 config.root / "configs/ontology-placement.toml"

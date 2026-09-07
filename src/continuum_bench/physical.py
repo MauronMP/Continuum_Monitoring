@@ -25,6 +25,7 @@ from .distributed import (
 from .queries import QuerySpec, by_categories, load_catalog
 from .specification import release_identity
 from .physical_cluster import load_physical_inventory
+from .topology import Topology
 
 
 def inventory_endpoints(
@@ -229,16 +230,24 @@ def _metadata(
     config: BenchmarkConfig,
     endpoints: list[Endpoint],
     suite: str,
-    inventory: Path,
+    inventory: Path | Topology,
 ) -> dict[str, Any]:
+    architecture = (
+        inventory.kind if isinstance(inventory, Topology) else "physical"
+    )
     return {
         **release_identity(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),
         "platform": platform.platform(),
         "suite": suite,
-        "mode": "physical-elastic-adaptive-lpt",
-        "inventory": str(inventory.resolve()),
+        "mode": f"{architecture}-elastic-adaptive-lpt",
+        "architecture": architecture,
+        "inventory": (
+            str(inventory.resolve())
+            if isinstance(inventory, Path)
+            else str(inventory.source_path or inventory.name)
+        ),
         "endpoints": [
             {
                 "url": endpoint.url,
@@ -371,19 +380,23 @@ def _append_failure(
 
 def run_physical_cumulative(
     config: BenchmarkConfig,
-    inventory: Path,
+    inventory: Path | Topology,
     output_root: Path,
     topology_name: str = "physical",
 ) -> Path:
-    declared = load_physical_inventory(
-        inventory,
-        topology_name=topology_name,
+    declared = (
+        load_physical_inventory(inventory, topology_name=topology_name)
+        if isinstance(inventory, Path)
+        else None
     )
-    endpoint_urls = [node.endpoint for node in declared.nodes]
+    topology = inventory if isinstance(inventory, Topology) else declared.topology
+    target = topology.kind if topology is not None else "physical"
+    declared_nodes = topology.active_nodes if topology is not None else declared.nodes
+    endpoint_urls = [node.endpoint for node in declared_nodes]
     endpoints = discover(
         endpoint_urls,
-        declared.nodes,
-        declared.topology.fingerprint if declared.topology is not None else None,
+        declared_nodes,
+        topology.fingerprint if topology is not None else None,
     )
     node_count = len(endpoints)
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
@@ -423,7 +436,7 @@ def run_physical_cumulative(
                     )
             continue
         print(
-            f"[physical-cumulative] reasoner={reasoner} "
+            f"[{target}-cumulative] reasoner={reasoner} "
             f"phase=calibration-prepare nodes={node_count} status=running",
             flush=True,
         )
@@ -432,7 +445,7 @@ def run_physical_cumulative(
         try:
             _prepare(config, endpoints, reasoner, 0, config.seed)
             print(
-                f"[physical-cumulative] reasoner={reasoner} "
+                f"[{target}-cumulative] reasoner={reasoner} "
                 f"phase=calibration nodes={node_count} "
                 f"queries={min(len(specs), config.limits.calibration_query_limit)} "
                 "status=running",
@@ -482,7 +495,7 @@ def run_physical_cumulative(
                     )
             topology_stopped = config.limits.stop_scaling_after_timeout
             print(
-                f"[physical-cumulative] reasoner={reasoner} phase={phase} "
+                f"[{target}-cumulative] reasoner={reasoner} phase={phase} "
                 f"status={status} "
                 f"limit_s={config.limits.phase_timeout_seconds:g}",
                 flush=True,
@@ -509,7 +522,7 @@ def run_physical_cumulative(
                     )
                 continue
             print(
-                f"[physical-cumulative] reasoner={reasoner} "
+                f"[{target}-cumulative] reasoner={reasoner} "
                 f"repetition={repetition}/{config.repetitions} "
                 f"nodes={node_count} phase=prepare status=running",
                 flush=True,
@@ -561,7 +574,7 @@ def run_physical_cumulative(
                     for endpoint in endpoints
                 )
                 print(
-                    f"[physical-cumulative] reasoner={reasoner} "
+                    f"[{target}-cumulative] reasoner={reasoner} "
                     f"repetition={repetition}/{config.repetitions} "
                     f"stage={stage}/{len(config.category_order)} "
                     f"category={category} queries={len(active_specs)} "
@@ -665,7 +678,7 @@ def run_physical_cumulative(
                 )
                 summaries.append(summary)
                 print(
-                    f"[physical-cumulative] reasoner={reasoner} "
+                    f"[{target}-cumulative] reasoner={reasoner} "
                     f"stage={stage}/{len(config.category_order)} "
                     f"category={category} status=done "
                     f"wall_ms={summary['total_wall_ms']:.2f}",
@@ -688,19 +701,23 @@ def run_physical_cumulative(
 
 def run_physical_scalability(
     config: BenchmarkConfig,
-    inventory: Path,
+    inventory: Path | Topology,
     output_root: Path,
     topology_name: str = "physical",
 ) -> Path:
-    declared = load_physical_inventory(
-        inventory,
-        topology_name=topology_name,
+    declared = (
+        load_physical_inventory(inventory, topology_name=topology_name)
+        if isinstance(inventory, Path)
+        else None
     )
-    endpoint_urls = [node.endpoint for node in declared.nodes]
+    topology = inventory if isinstance(inventory, Topology) else declared.topology
+    target = topology.kind if topology is not None else "physical"
+    declared_nodes = topology.active_nodes if topology is not None else declared.nodes
+    endpoint_urls = [node.endpoint for node in declared_nodes]
     endpoints = discover(
         endpoint_urls,
-        declared.nodes,
-        declared.topology.fingerprint if declared.topology is not None else None,
+        declared_nodes,
+        topology.fingerprint if topology is not None else None,
     )
     node_count = len(endpoints)
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
@@ -746,7 +763,7 @@ def run_physical_scalability(
                     nodes.append(detail)
                 continue
             print(
-                f"[physical-scalability] block={block}/"
+                f"[{target}-scalability] block={block}/"
                 f"{len(config.scale_users)} users={users} "
                 f"reasoner={reasoner} phase=calibration-prepare "
                 f"nodes={node_count} status=running",
@@ -757,7 +774,7 @@ def run_physical_scalability(
             try:
                 _prepare(config, endpoints, reasoner, users, config.seed)
                 print(
-                    f"[physical-scalability] block={block}/"
+                    f"[{target}-scalability] block={block}/"
                     f"{len(config.scale_users)} users={users} "
                     f"reasoner={reasoner} phase=calibration "
                     f"nodes={node_count} "
@@ -817,7 +834,7 @@ def run_physical_scalability(
                     )
                 topology_stopped = config.limits.stop_scaling_after_timeout
                 print(
-                    f"[physical-scalability] block={block} users={users} "
+                    f"[{target}-scalability] block={block} users={users} "
                     f"reasoner={reasoner} phase={phase} status={status} "
                     f"limit_s={config.limits.phase_timeout_seconds:g}; "
                     "remaining larger points will be skipped",
@@ -841,7 +858,7 @@ def run_physical_scalability(
                     )
                     continue
                 print(
-                    f"[physical-scalability] block={block}/"
+                    f"[{target}-scalability] block={block}/"
                     f"{len(config.scale_users)} users={users} "
                     f"reasoner={reasoner} "
                     f"repetition={repetition}/{config.repetitions} "
@@ -866,7 +883,7 @@ def run_physical_scalability(
                         for endpoint in endpoints
                     )
                     print(
-                        f"[physical-scalability] block={block}/"
+                        f"[{target}-scalability] block={block}/"
                         f"{len(config.scale_users)} users={users} "
                         f"reasoner={reasoner} balance={loads} status=running",
                         flush=True,
@@ -920,7 +937,7 @@ def run_physical_scalability(
                         config.limits.stop_scaling_after_timeout
                     )
                     print(
-                        f"[physical-scalability] block={block} users={users} "
+                        f"[{target}-scalability] block={block} users={users} "
                         f"reasoner={reasoner} phase={phase} status={status} "
                         f"limit_s={config.limits.point_timeout_seconds:g}",
                         flush=True,
@@ -976,7 +993,7 @@ def run_physical_scalability(
                 )
                 summaries.append(summary)
                 print(
-                    f"[physical-scalability] block={block}/"
+                    f"[{target}-scalability] block={block}/"
                     f"{len(config.scale_users)} users={users} "
                     f"reasoner={reasoner} status=done "
                     f"queries={len(specs)} "

@@ -15,20 +15,23 @@ import numpy as np
 
 from .csv_utils import write_dict_rows
 from .result_contract import require_release_metadata
-from .reporting import REASONER_LABELS
+REASONER_LABELS = {
+    "rdfs": "RDFS",
+    "owlrl": "OWL RL",
+    "rdfs_owlrl": "RDFS + OWL RL",
+}
 
 
 DIMENSION_X = {
-    "events_per_second": ("events_per_second", "Eventos ofrecidos/s"),
-    "users": ("synthetic_users", "Usuarios sintéticos"),
-    "target_triples": ("target_triples", "Triples objetivo/nodo"),
-    "rule_count": ("rule_count", "Reglas sintéticas"),
-    "node_count": ("node_count", "Nodos activos"),
+    "events_per_second": ("events_per_second", "Offered events/s"),
+    "users": ("synthetic_users", "Synthetic users"),
+    "target_triples": ("target_triples", "Target triples/node"),
+    "rule_count": ("rule_count", "Synthetic rules"),
+    "node_count": ("node_count", "Active nodes"),
 }
 LOAD_ARCHITECTURE_LABELS = {
-    "monolith": "Monolito (1 nodo)",
-    "docker": "Docker local",
-    "physical": "Continuum físico",
+    "docker": "Local Docker continuum",
+    "physical": "Physical continuum",
 }
 
 
@@ -189,84 +192,94 @@ def _save(fig, path: Path) -> list[Path]:
 def _architecture_ratios(
     rows: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Compare Docker/physical rows with the matching one-node baseline."""
+    """Return symmetric Docker/physical ratios for matched workloads."""
 
-    monolith = [
-        row for row in rows if row["architecture"] == "monolith"
-    ]
+    lookup = {
+        (
+            row["architecture"],
+            row["dimension"],
+            row["profile"],
+            row["reasoner"],
+        ): row
+        for row in rows
+        if row.get("comparison_eligible")
+    }
+    x_fields = {
+        dimension: field for dimension, (field, _) in DIMENSION_X.items()
+    }
+
+    def ratio(numerator: Any, denominator: Any) -> float | str:
+        if numerator in {"", None} or denominator in {"", None}:
+            return ""
+        denominator_value = float(denominator)
+        return (
+            ""
+            if denominator_value == 0
+            else float(numerator) / denominator_value
+        )
+
     output: list[dict[str, Any]] = []
-
-    def value(row: dict[str, Any], field: str) -> float | None:
-        raw = row.get(f"{field}_median", "")
-        return None if raw == "" else float(raw)
-
-    for row in rows:
-        if row["architecture"] not in {"docker", "physical"}:
-            continue
-        candidates = [
-            baseline
-            for baseline in monolith
-            if baseline["reasoner"] == row["reasoner"]
-            and baseline["dimension"] == row["dimension"]
-            and (
-                row["dimension"] == "node_count"
-                or baseline["profile"] == row["profile"]
+    for architecture in ("docker", "physical"):
+        baseline_architecture = (
+            "physical" if architecture == "docker" else "docker"
+        )
+        for row in rows:
+            if row["architecture"] != architecture:
+                continue
+            baseline = lookup.get(
+                (
+                    baseline_architecture,
+                    row["dimension"],
+                    row["profile"],
+                    row["reasoner"],
+                )
             )
-        ]
-        if not candidates:
-            continue
-        baseline = min(
-            candidates,
-            key=lambda item: float(item["node_count_median"]),
-        )
-        if (
-            not row["comparison_eligible"]
-            or not baseline["comparison_eligible"]
-        ):
-            continue
-        x_field, _ = DIMENSION_X[row["dimension"]]
-        item = {
-            "architecture": row["architecture"],
-            "profile": row["profile"],
-            "dimension": row["dimension"],
-            "reasoner": row["reasoner"],
-            "independent_value": row[f"{x_field}_median"],
-            "node_count": row["node_count_median"],
-            "baseline_profile": baseline["profile"],
-        }
-        ratio_fields = (
-            ("latency_p95_ms", "latency_speedup"),
-            ("events_processed_per_second", "throughput_gain"),
-            ("inference_wall_ms", "inference_speedup"),
-            ("recovery_wall_ms", "recovery_speedup"),
-        )
-        for field, result_field in ratio_fields:
-            base_value = value(baseline, field)
-            distributed_value = value(row, field)
-            if (
-                base_value is None
-                or distributed_value is None
-                or base_value <= 0
-                or distributed_value <= 0
-            ):
-                item[result_field] = ""
-            elif result_field == "throughput_gain":
-                item[result_field] = distributed_value / base_value
-            else:
-                item[result_field] = base_value / distributed_value
-        gain = item["throughput_gain"]
-        nodes = float(item["node_count"])
-        item["scale_out_efficiency_percent"] = (
-            float(gain) / nodes * 100 if gain != "" and nodes else ""
-        )
-        base_loss = value(baseline, "event_loss_percent")
-        distributed_loss = value(row, "event_loss_percent")
-        item["loss_delta_percentage_points"] = (
-            distributed_loss - base_loss
-            if base_loss is not None and distributed_loss is not None
-            else ""
-        )
-        output.append(item)
+            if baseline is None or not row.get("comparison_eligible"):
+                continue
+            node_ratio = ratio(
+                row["node_count_median"], baseline["node_count_median"]
+            )
+            throughput_gain = ratio(
+                row["events_processed_per_second_median"],
+                baseline["events_processed_per_second_median"],
+            )
+            efficiency = (
+                ""
+                if throughput_gain == "" or node_ratio in {"", 0}
+                else float(throughput_gain) / float(node_ratio) * 100
+            )
+            x_field = x_fields[row["dimension"]]
+            output.append(
+                {
+                    "architecture": architecture,
+                    "baseline_architecture": baseline_architecture,
+                    "dimension": row["dimension"],
+                    "profile": row["profile"],
+                    "reasoner": row["reasoner"],
+                    "independent_value": row[f"{x_field}_median"],
+                    "latency_speedup": ratio(
+                        baseline["latency_p95_ms_median"],
+                        row["latency_p95_ms_median"],
+                    ),
+                    "throughput_gain": throughput_gain,
+                    "inference_speedup": ratio(
+                        baseline["inference_wall_ms_median"],
+                        row["inference_wall_ms_median"],
+                    ),
+                    "recovery_speedup": ratio(
+                        baseline["recovery_wall_ms_median"],
+                        row["recovery_wall_ms_median"],
+                    ),
+                    "scale_out_efficiency_percent": efficiency,
+                    "loss_delta_percentage_points": (
+                        float(row["event_loss_percent_median"])
+                        - float(baseline["event_loss_percent_median"])
+                        if row["event_loss_percent_median"] != ""
+                        and baseline["event_loss_percent_median"] != ""
+                        else ""
+                    ),
+                }
+            )
     return output
 
 
@@ -279,14 +292,14 @@ def _plot_ratio_comparison(
     outputs: list[Path] = []
     styles = {"rdfs": "-", "owlrl": "--", "rdfs_owlrl": ":"}
     metrics = (
-        ("latency_speedup", "Speedup de latencia p95 (×)"),
-        ("throughput_gain", "Ganancia de throughput (×)"),
-        ("inference_speedup", "Speedup de inferencia (×)"),
-        ("recovery_speedup", "Speedup de recuperación (×)"),
-        ("scale_out_efficiency_percent", "Eficiencia scale-out (%)"),
+        ("latency_speedup", "p95 latency speedup (×)"),
+        ("throughput_gain", "Throughput gain (×)"),
+        ("inference_speedup", "Inference speedup (×)"),
+        ("recovery_speedup", "Recovery speedup (×)"),
+        ("scale_out_efficiency_percent", "Scale-out efficiency (%)"),
         (
             "loss_delta_percentage_points",
-            "Diferencia de pérdida (p.p.)",
+            "Loss difference (p.p.)",
         ),
     )
     for dimension, (_, xlabel) in DIMENSION_X.items():
@@ -393,7 +406,7 @@ def _factorized_legend(
             linewidth=2,
             label=LOAD_ARCHITECTURE_LABELS[architecture],
         )
-        for architecture in ("monolith", "docker", "physical")
+        for architecture in ("docker", "physical")
     ]
     handles.extend(
         Line2D(
@@ -415,7 +428,7 @@ def _factorized_legend(
                 marker="o",
                 markerfacecolor="none",
                 linestyle="none",
-                label="Parcial (<3/3 rep.)",
+                label="Partial (<all repetitions)",
             )
         )
     figure.legend(
@@ -468,7 +481,7 @@ def _series(
     x_field: str,
 ) -> list[tuple[str, str, list[dict[str, Any]]]]:
     output = []
-    for architecture in ("monolith", "docker", "physical"):
+    for architecture in ("docker", "physical"):
         for reasoner in REASONER_LABELS:
             selected = [
                 row
@@ -623,7 +636,7 @@ def _plot_data_coverage(
     )
     row_keys = [
         (architecture, reasoner)
-        for architecture in ("monolith", "docker", "physical")
+        for architecture in ("docker", "physical")
         for reasoner in REASONER_LABELS
     ]
     lookup = {
@@ -697,9 +710,9 @@ def _plot_data_coverage(
                     ),
                 )
     colorbar = figure.colorbar(image, ax=axis, pad=0.01)
-    colorbar.set_label("Fracción de repeticiones completadas")
-    axis.set_xlabel("Perfil experimental")
-    axis.set_ylabel("Arquitectura y razonador")
+    colorbar.set_label("Completed repetition fraction")
+    axis.set_xlabel("Experimental profile")
+    axis.set_ylabel("Architecture and reasoner")
     figure.tight_layout()
     return _save(
         figure,
@@ -711,7 +724,7 @@ def _reference_summary(
     rows: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
-    for architecture in ("monolith", "docker", "physical"):
+    for architecture in ("docker", "physical"):
         for reasoner in REASONER_LABELS:
             selected = [
                 row
@@ -791,10 +804,10 @@ def _plot_reference_overview(
     colors: dict[str, Any],
 ) -> list[Path]:
     metrics = (
-        ("latency_p95_at_200_seconds", "Latencia p95 a 200 eventos/s (s)"),
-        ("peak_processed_eps", "Pico de eventos procesados/s"),
-        ("loss_at_2500_percent", "Pérdida a 2.500 eventos/s (%)"),
-        ("rss_at_200_mib", "RSS a 200 eventos/s (MiB)"),
+        ("latency_p95_at_200_seconds", "p95 latency at 200 events/s (s)"),
+        ("peak_processed_eps", "Peak processed events/s"),
+        ("loss_at_2500_percent", "Loss at 2,500 events/s (%)"),
+        ("rss_at_200_mib", "RSS at 200 events/s (MiB)"),
     )
     figure, axes = plt.subplots(2, 2, figsize=(10.8, 7.2))
     reasoners = list(REASONER_LABELS)
@@ -806,7 +819,7 @@ def _plot_reference_overview(
         strict=True,
     ):
         for architecture_index, architecture in enumerate(
-            ("monolith", "docker", "physical")
+            ("docker", "physical")
         ):
             selected = {
                 row["reasoner"]: row
@@ -837,7 +850,7 @@ def _plot_reference_overview(
         handles,
         labels,
         loc="upper center",
-        ncol=3,
+        ncol=1,
         frameon=False,
     )
     figure.tight_layout(rect=(0, 0, 1, 0.94))
@@ -865,7 +878,7 @@ def plot_load_comparison(
     ):
         old_table.unlink(missing_ok=True)
     rows: list[dict[str, str]] = []
-    for architecture in ("monolith", "docker", "physical"):
+    for architecture in ("docker", "physical"):
         path = result_root / architecture / "summary.csv"
         if path.is_file():
             rows.extend(_read(path))
@@ -883,9 +896,8 @@ def plot_load_comparison(
     outputs: list[Path] = [data_path]
     colors_raw = plt.rcParams["axes.prop_cycle"].by_key()["color"]
     colors = {
-        "monolith": colors_raw[0],
-        "docker": colors_raw[1],
-        "physical": colors_raw[2],
+        "docker": colors_raw[0],
+        "physical": colors_raw[1],
     }
     markers = {"rdfs": "o", "owlrl": "s", "rdfs_owlrl": "^"}
     quality = _data_quality_rows(aggregate)
@@ -937,28 +949,28 @@ def plot_load_comparison(
         performance_metrics = (
             (
                 "latency_p95_seconds",
-                "Latencia p95 (s); banda p50–p99",
+                "p95 latency (s); p50-p99 band",
                 True,
             ),
             (
                 "events_processed_per_second",
-                "Eventos procesados/s",
+                "Processed events/s",
                 False,
             ),
-            ("event_loss_percent", "Eventos perdidos (%)", False),
+            ("event_loss_percent", "Lost events (%)", False),
             (
                 "inference_wall_seconds",
-                "Inferencia crítica (s)",
+                "Critical inference (s)",
                 False,
             ),
             (
                 "pipeline_wall_seconds",
-                "Pipeline completo (s)",
+                "Complete pipeline (s)",
                 False,
             ),
             (
                 "noncompletion_rate_percent",
-                "Corridas no completadas (%)",
+                "Non-completed runs (%)",
                 False,
             ),
         )
@@ -1021,17 +1033,17 @@ def plot_load_comparison(
 
         resources, axes = plt.subplots(2, 3, figsize=(13.0, 7.6))
         resource_metrics = (
-            ("alert_accuracy", "Exactitud de alertas"),
+            ("alert_accuracy", "Alert accuracy"),
             (
                 "cpu_percent_per_node_one_core",
-                "CPU media/nodo (% de un núcleo)",
+                "Mean CPU/node (% of one core)",
             ),
-            ("max_current_rss_mib", "RSS observada máxima (MiB)"),
-            ("disk_io_mib", "E/S de disco (MiB)"),
-            ("network_body_mib", "Red HTTP útil (MiB)"),
+            ("max_current_rss_mib", "Maximum observed RSS (MiB)"),
+            ("disk_io_mib", "Disk I/O (MiB)"),
+            ("network_body_mib", "Useful HTTP payload (MiB)"),
             (
                 "recovery_wall_seconds",
-                "Recuperación de estado (s)",
+                "State recovery (s)",
             ),
         )
         for axis, (field, ylabel) in zip(

@@ -20,7 +20,7 @@ shape_files = [
   "ontology/shapes/federated-learning.ttl",
 ]
 query_catalog = "queries/catalog.csv"
-topology_file = "configs/topology.toml"
+topology_file = "configs/topologies/physical/topology.toml"
 output_dir = "outputs"
 
 [distributed]

@@ -1,4 +1,0 @@
-[layer]
-tier = "iot"
-
-# The monolithic baseline intentionally has no IoT nodes.

@@ -4,9 +4,9 @@ version = 2
 [topology]
 name = "docker"
 kind = "docker"
-description = "Local elastic Docker Compose continuum"
-compose_project = "continuum-benchmark"
-image = "continuum-benchmark-node:latest"
+description = "Elastic local continuum formed by Docker Compose workers"
+compose_project = "continuum-monitoring"
+image = "continuum-monitoring-node:latest"
 dockerfile = "docker/Dockerfile"
 network = "continuum"
 bind_host = "127.0.0.1"

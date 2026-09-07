@@ -1,4 +1,4 @@
-"""HTTP worker used by configurable Docker and physical topologies."""
+"""HTTP worker used by configurable physical topologies."""
 
 from __future__ import annotations
 
@@ -141,7 +141,7 @@ class NodeRuntime:
         *,
         tier: str | None = None,
         topology_name: str | None = None,
-        topology_file: str | Path = "configs/topology.toml",
+        topology_file: str | Path = "configs/topologies/physical/topology.toml",
     ) -> None:
         self.root = root
         self.role = role
@@ -167,7 +167,7 @@ class NodeRuntime:
             self.authority = self.tier in {"edge", "iot"}
             self.categories = default_categories(self.tier)
         self.config = load_config(root / "configs/benchmark.toml")
-        # The full monolithic graph is loaded lazily. Sharded workers otherwise
+        # The full logical graph is loaded lazily. Sharded workers otherwise
         # paid the memory cost of a replica they never queried.
         self.base_graph: Graph | None = None
         self.catalog = {
@@ -196,7 +196,7 @@ class NodeRuntime:
             graph.add(triple)
         return graph
 
-    def _monolithic_base(self) -> Graph:
+    def _logical_base(self) -> Graph:
         if self.base_graph is None:
             self.base_graph = load_graph(
                 self.config.resolve(path)
@@ -220,7 +220,7 @@ class NodeRuntime:
             cpu_started = process_time_ns()
             started = perf_counter_ns()
             if mode == "replicated":
-                source = self._copy(self._monolithic_base())
+                source = self._copy(self._logical_base())
                 fragments = None
                 clone_ms = (perf_counter_ns() - started) / 1_000_000
                 generated_at = perf_counter_ns()
@@ -437,7 +437,12 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
-        self.wfile.write(data)
+        try:
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError):
+            # Readiness probes may close after receiving enough headers. The
+            # worker response was already computed and remains healthy.
+            return
 
     def do_GET(self) -> None:  # noqa: N802
         if self.path != "/health":
@@ -612,7 +617,7 @@ def main(argv: list[str] | None = None) -> int:
         "--topology-file",
         default=os.environ.get(
             "CONTINUUM_TOPOLOGY_FILE",
-            "configs/topology.toml",
+            "configs/topologies/physical/topology.toml",
         ),
     )
     parser.add_argument(

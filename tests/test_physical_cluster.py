@@ -33,7 +33,7 @@ def test_status_rejects_wrong_worker_contract(config, monkeypatch):
 
 def test_elastic_manifest_is_the_default_physical_inventory(config):
     inventory = load_physical_inventory(
-        config.root / "configs" / "topology.toml"
+        config.resolve(config.topology_file)
     )
 
     assert inventory.topology_name == "physical"
@@ -57,7 +57,7 @@ def test_elastic_manifest_is_the_default_physical_inventory(config):
 
 def test_manifest_ssh_override_updates_remote_paths(config):
     inventory = load_physical_inventory(
-        config.root / "configs" / "topology.toml",
+        config.resolve(config.topology_file),
         ssh_user="benchmark",
     )
 
@@ -125,7 +125,7 @@ def test_remote_start_records_python_pid_not_background_shell(
 
 def test_remote_start_passes_elastic_manifest_to_worker(config, monkeypatch):
     inventory = load_physical_inventory(
-        config.root / "configs" / "topology.toml"
+        config.resolve(config.topology_file)
     )
     node = next(item for item in inventory.nodes if item.role == "edge2")
     commands = []
@@ -170,7 +170,7 @@ def test_remote_stop_recovers_from_a_stale_pid_file(config, monkeypatch):
 
 def test_start_replaces_workers_with_a_stale_topology(config, monkeypatch):
     inventory = load_physical_inventory(
-        config.root / "configs" / "topology.toml"
+        config.resolve(config.topology_file)
     )
     status_calls = 0
     stopped = []

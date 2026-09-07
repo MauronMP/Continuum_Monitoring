@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
 from .cli import main
 
@@ -25,8 +26,9 @@ def main_cumulative() -> int:
         [
             "--config",
             str(root / "configs/smoke-cumulative.toml"),
-            "benchmark",
+            "physical",
             "cumulative",
+            *sys.argv[1:],
         ]
     )
 
@@ -37,7 +39,28 @@ def main_scalability() -> int:
         [
             "--config",
             str(root / "configs/smoke-scalability.toml"),
-            "benchmark",
+            "physical",
             "scalability",
+            *sys.argv[1:],
+        ]
+    )
+
+
+def main_docker_cumulative() -> int:
+    root = _project_root()
+    return main(
+        [
+            "--config", str(root / "configs/smoke-cumulative.toml"),
+            "docker", "cumulative", *sys.argv[1:],
+        ]
+    )
+
+
+def main_docker_scalability() -> int:
+    root = _project_root()
+    return main(
+        [
+            "--config", str(root / "configs/smoke-scalability.toml"),
+            "docker", "scalability", *sys.argv[1:],
         ]
     )

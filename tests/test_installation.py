@@ -16,7 +16,7 @@ def bootstrap(root):
     return module
 
 
-def test_docker_runtime_dependencies_match_package(root):
+def test_runtime_dependencies_match_package(root):
     project = tomllib.loads((root / "pyproject.toml").read_text())["project"]
     declared = {
         re.split(r"[><=;\[]", item)[0].lower() for item in project["dependencies"]
@@ -54,14 +54,14 @@ def test_bootstrap_rejects_an_old_virtualenv(bootstrap, monkeypatch, tmp_path):
     monkeypatch.setattr(
         bootstrap.subprocess,
         "run",
-        lambda *a, **kw: subprocess.CompletedProcess(a, 1, "3.9.2 64 bits", ""),
+        lambda *a, **kw: subprocess.CompletedProcess(a, 1, "3.9.2 64 bit", ""),
     )
-    with pytest.raises(RuntimeError, match="Virtualenv incompatible"):
+    with pytest.raises(RuntimeError, match="Incompatible virtualenv"):
         bootstrap.check_virtualenv(tmp_path / "python", worker=False)
 
 
 def test_bootstrap_rejects_a_copied_virtualenv(bootstrap, tmp_path):
-    with pytest.raises(RuntimeError, match="no es ejecutable"):
+    with pytest.raises(RuntimeError, match="not executable"):
         bootstrap.check_virtualenv(tmp_path / "missing-python", worker=False)
 
 
