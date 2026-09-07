@@ -59,3 +59,37 @@ def test_owlapi_adapter_preserves_machine_readable_consistency(
 
     assert result["status"] == "completed"
     assert result["consistent"] is True
+
+
+def test_owlapi_adapter_uses_installed_project_classpath(
+    root, tmp_path, monkeypatch
+):
+    runtime = root / ".runtime"
+    runtime.mkdir(exist_ok=True)
+    classpath_file = runtime / "owl-validation.classpath"
+    previous = classpath_file.read_text() if classpath_file.exists() else None
+    classpath_file.write_text("project-runtime.jar\n")
+    monkeypatch.delenv("CONTINUUM_JFACT_CLASSPATH", raising=False)
+    observed = {}
+
+    def execute(name, command, timeout):
+        observed["command"] = command
+        return {"reasoner": name, "status": "completed", "consistent": True}
+
+    monkeypatch.setattr(owl_validation, "_execute_json", execute)
+    try:
+        owl_validation._run_owlapi(
+            root,
+            root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+            "jfact",
+            {"classpath_env": "CONTINUUM_JFACT_CLASSPATH"},
+            10,
+        )
+    finally:
+        if previous is None:
+            classpath_file.unlink()
+            runtime.rmdir()
+        else:
+            classpath_file.write_text(previous)
+
+    assert "project-runtime.jar" in observed["command"]

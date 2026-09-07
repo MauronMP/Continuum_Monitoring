@@ -109,21 +109,18 @@ The portable benchmark materializers (`rdfs`, `owlrl`, `rdfs_owlrl`) are Python
 dependencies. HermiT, Openllet, JFact and Konclude are separate ontology
 consistency validators and are not silently substituted when unavailable.
 
-Install Java 17 and Maven for the Java adapters:
+Install Java 17, Maven and Docker, then use the project installer:
 
 ```bash
 sudo apt-get install -y openjdk-17-jre-headless maven
-mkdir -p .runtime
-mvn -f tools/owl/pom.xml dependency:build-classpath \
-  -Dmdep.outputFile=../../.runtime/owl-validation.classpath
-export CONTINUUM_OPENLLET_CLASSPATH="$(cat .runtime/owl-validation.classpath)"
-export CONTINUUM_JFACT_CLASSPATH="$(cat .runtime/owl-validation.classpath)"
+python3 tools/install_owl_reasoners.py
 ```
 
-HermiT can use the jars shipped with Protégé by setting `PROTEGE_HOME`, or an
-explicit `CONTINUUM_HERMIT_CLASSPATH`. Install Konclude separately and expose
-its executable on `PATH`. Full platform-specific details are in
-[External OWL reasoners](OWL_REASONERS.md).
+The installer resolves pinned HermiT, Openllet and JFact dependencies and uses
+a native or containerized Konclude backend. It also converts Turtle to OWL/XML
+before Konclude. The same operation can be requested during initial setup with
+`python3 tools/bootstrap.py --profile coordinator --with-owl-reasoners`.
+Platform-specific details are in [External OWL reasoners](OWL_REASONERS.md).
 
 ```bash
 continuum-bench doctor --owl

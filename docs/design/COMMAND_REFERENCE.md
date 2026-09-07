@@ -84,6 +84,10 @@ continuum-bench experiment analyze
 continuum-bench physical stop --ssh-user pi
 ```
 
+Category/policy/query cost files are written below
+`outputs/study/physical-cost/category-cost/`. This analysis is not included in
+`physical all` or `load physical`; it consumes the load event dataset.
+
 ## D. Individual monitoring blocks
 
 ```bash

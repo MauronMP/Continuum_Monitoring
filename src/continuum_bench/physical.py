@@ -726,12 +726,12 @@ def run_physical_scalability(
     summaries: list[dict[str, Any]] = []
     assignments: list[dict[str, Any]] = []
     nodes: list[dict[str, Any]] = []
-    topology_stopped = False
-    stop_reason = ""
+    stopped_reasoners: dict[str, str] = {}
 
     for block, users in enumerate(config.scale_users, start=1):
         for reasoner in config.reasoners:
-            if topology_stopped:
+            if reasoner in stopped_reasoners:
+                stop_reason = stopped_reasoners[reasoner]
                 for repetition in range(1, config.repetitions + 1):
                     common = {
                         "reasoner": reasoner,
@@ -832,17 +832,19 @@ def run_physical_scalability(
                         "skipped_after_timeout", "early-stop", stop_reason,
                         config.limits.point_timeout_seconds,
                     )
-                topology_stopped = config.limits.stop_scaling_after_timeout
+                if config.limits.stop_scaling_after_timeout:
+                    stopped_reasoners[reasoner] = stop_reason
                 print(
                     f"[{target}-scalability] block={block} users={users} "
                     f"reasoner={reasoner} phase={phase} status={status} "
                     f"limit_s={config.limits.phase_timeout_seconds:g}; "
-                    "remaining larger points will be skipped",
+                    "larger points for this reasoner will be skipped",
                     flush=True,
                 )
                 continue
             for repetition in range(1, config.repetitions + 1):
-                if topology_stopped:
+                if reasoner in stopped_reasoners:
+                    stop_reason = stopped_reasoners[reasoner]
                     common = {
                         "reasoner": reasoner,
                         "repetition": repetition,
@@ -933,9 +935,8 @@ def run_physical_scalability(
                     details.append(detail)
                     assignments.append(detail)
                     nodes.append(detail)
-                    topology_stopped = (
-                        config.limits.stop_scaling_after_timeout
-                    )
+                    if config.limits.stop_scaling_after_timeout:
+                        stopped_reasoners[reasoner] = stop_reason
                     print(
                         f"[{target}-scalability] block={block} users={users} "
                         f"reasoner={reasoner} phase={phase} status={status} "

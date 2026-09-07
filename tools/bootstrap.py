@@ -93,6 +93,14 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="Default: .venv for coordinator or .venv-node for worker",
     )
+    parser.add_argument(
+        "--with-owl-reasoners",
+        action="store_true",
+        help=(
+            "Install pinned HermiT/Openllet/JFact dependencies and prepare "
+            "the Konclude Docker backend (coordinator only)"
+        ),
+    )
     args = parser.parse_args(argv)
     worker = args.profile == "worker"
     checks = runtime_checks(worker=worker) + project_checks(ROOT)
@@ -126,6 +134,17 @@ def main(argv: list[str] | None = None) -> int:
         environment.setdefault("PIP_CACHE_DIR", str(ROOT / ".cache" / "pip"))
         for command in install_commands(ROOT, python, worker=worker):
             run_logged(command, root=ROOT, environment=environment, label="install")
+        if args.with_owl_reasoners:
+            if worker:
+                raise RuntimeError(
+                    "OWL validators belong on the coordinator, not a worker"
+                )
+            run_logged(
+                [str(python), str(ROOT / "tools/install_owl_reasoners.py")],
+                root=ROOT,
+                environment=environment,
+                label="owl-install",
+            )
         print(f"[bootstrap] ready: {destination}", flush=True)
         if worker:
             print(f"Worker: PYTHONPATH=src {python} -m continuum_bench.node --help")

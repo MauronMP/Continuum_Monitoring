@@ -1,5 +1,6 @@
 import pytest
-from urllib.error import URLError
+from io import BytesIO
+from urllib.error import HTTPError, URLError
 
 from continuum_bench import distributed
 from continuum_bench.distributed import Endpoint, _assignment
@@ -101,6 +102,27 @@ def test_parallel_timeout_reports_the_exact_query_batch(monkeypatch):
             phase="partitioned-queries-batch-1-of-1",
             timeout=1,
             retries=0,
+        )
+
+
+def test_http_application_error_preserves_worker_response(monkeypatch):
+    def fail(request, timeout):
+        raise HTTPError(
+            request.full_url,
+            400,
+            "Bad Request",
+            {},
+            BytesIO(b'{"error":"target_triples below current size"}'),
+        )
+
+    monkeypatch.setattr(distributed, "urlopen", fail)
+
+    with pytest.raises(HTTPError, match="target_triples below current size"):
+        distributed._request(
+            "http://cloud",
+            "/prepare",
+            {"target_triples": 25000},
+            timeout=1,
         )
 
 

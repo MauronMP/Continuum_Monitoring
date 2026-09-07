@@ -25,6 +25,7 @@ from .budget import (
 from .distributed import (
     Endpoint,
     _combine_query_responses,
+    _interleaved_query_batches,
     _parallel,
     _write_csv,
     discover,
@@ -154,12 +155,11 @@ def _query(
         config.limits.point_timeout_seconds,
     )
     started = monotonic()
-    batch_size = transport.query_batch_size
     batches = {
-        url: [
-            specs[index : index + batch_size]
-            for index in range(0, len(specs), batch_size)
-        ]
+        url: _interleaved_query_batches(
+            specs,
+            transport.query_batch_size,
+        )
         for url, specs in assignment.items()
         if specs
     }
@@ -980,13 +980,12 @@ def run_sharded_scalability(
     node_details: list[dict[str, Any]] = []
     summaries: list[dict[str, Any]] = []
     validations: list[dict[str, Any]] = []
-    topology_stopped = False
-    stop_reason = ""
+    stopped_reasoners: dict[str, str] = {}
 
     for block, users in enumerate(config.scale_users, start=1):
         for reasoner in config.reasoners:
             baseline = None
-            if validate_results and not topology_stopped:
+            if validate_results and reasoner not in stopped_reasoners:
                 print(
                     f"[{target}-sharded-scalability] "
                     f"block={block}/{len(config.scale_users)} users={users} "
@@ -1017,7 +1016,8 @@ def run_sharded_scalability(
                     "synthetic_users": users,
                     "synthetic_triples": "",
                 }
-                if topology_stopped:
+                if reasoner in stopped_reasoners:
+                    stop_reason = stopped_reasoners[reasoner]
                     row = _censored_summary(
                         common,
                         len(endpoints),
@@ -1109,15 +1109,14 @@ def run_sharded_scalability(
                     )
                     details.append(detail)
                     node_details.append(detail)
-                    topology_stopped = (
-                        config.limits.stop_scaling_after_timeout
-                    )
+                    if config.limits.stop_scaling_after_timeout:
+                        stopped_reasoners[reasoner] = stop_reason
                     print(
                         f"[{target}-sharded-scalability] block={block} "
                         f"users={users} reasoner={reasoner} phase={phase} "
                         f"status={status} "
                         f"limit_s={config.limits.point_timeout_seconds:g}; "
-                        "remaining larger points will be skipped",
+                        "larger points for this reasoner will be skipped",
                         flush=True,
                     )
                     continue

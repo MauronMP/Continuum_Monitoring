@@ -17,6 +17,6 @@ classpath_env = "CONTINUUM_JFACT_CLASSPATH"
 
 [reasoners.konclude]
 kind = "command"
-command = ["Konclude", "consistency", "-i", "{ontology}"]
+command = ["{python}", "{root}/tools/owl/run_konclude.py", "consistency", "-i", "{ontology}"]
 consistent_pattern = "(?i)ontology\\s+consistent|consistent\\s*[:=]\\s*true"
 inconsistent_pattern = "(?i)ontology\\s+inconsistent|consistent\\s*[:=]\\s*false"

@@ -27,7 +27,7 @@ Requires Python 3.11+, Git and either Docker with Compose v2 or OpenSSH/rsync.
 ```bash
 git clone <repository-url> Continuum_Monitoring
 cd Continuum_Monitoring
-python3 tools/bootstrap.py
+python3 tools/bootstrap.py --profile coordinator
 . .venv/bin/activate
 continuum-bench validate
 continuum-bench owl-validate
@@ -36,6 +36,12 @@ continuum-bench owl-validate
 `owl-validate` runs all available external validators. After installing HermiT,
 Openllet, JFact and Konclude, use `continuum-bench owl-validate --require-all`
 as the strict release gate.
+
+Install their pinned validation runtime automatically with:
+
+```bash
+python3 tools/install_owl_reasoners.py
+```
 
 ## Local Docker continuum
 

@@ -61,7 +61,7 @@ def _run_reasoner(
     if kind == "owlapi":
         return _run_owlapi(root, ontology, name, definition, timeout)
     if kind == "command":
-        return _run_command(ontology, name, definition, timeout)
+        return _run_command(root, ontology, name, definition, timeout)
     return {"reasoner": name, "status": "invalid_configuration", "consistent": None}
 
 
@@ -74,6 +74,9 @@ def _run_owlapi(
 ) -> dict[str, Any]:
     classpath_env = str(definition.get("classpath_env", ""))
     classpath = os.environ.get(classpath_env, "") if classpath_env else ""
+    installed_classpath = root / ".runtime/owl-validation.classpath"
+    if not classpath and installed_classpath.is_file():
+        classpath = installed_classpath.read_text(encoding="utf-8").strip()
     if name != "hermit" and not classpath:
         return {
             "reasoner": name,
@@ -97,6 +100,7 @@ def _run_owlapi(
 
 
 def _run_command(
+    root: Path,
     ontology: Path,
     name: str,
     definition: dict[str, Any],
@@ -105,15 +109,21 @@ def _run_command(
     template = [str(value) for value in definition.get("command", [])]
     if not template:
         return {"reasoner": name, "status": "invalid_configuration", "consistent": None}
-    executable = shutil.which(template[0])
+    values = {
+        "ontology": str(ontology),
+        "root": str(root),
+        "python": sys.executable,
+    }
+    rendered = [value.format(**values) for value in template]
+    executable = shutil.which(rendered[0])
     if executable is None:
         return {
             "reasoner": name,
             "status": "unavailable",
             "consistent": None,
-            "detail": f"Executable not found: {template[0]}",
+            "detail": f"Executable not found: {rendered[0]}",
         }
-    command = [executable, *(value.format(ontology=str(ontology)) for value in template[1:])]
+    command = [executable, *rendered[1:]]
     started = time.perf_counter()
     try:
         completed = subprocess.run(

@@ -3,6 +3,41 @@
 This guide contains only the workflow for a coordinator and elastic physical
 workers. Docker is not required on Raspberry Pi nodes.
 
+## Complete physical suite: copy-and-run order
+
+After editing the topology, the complete workflow is:
+
+```bash
+. .venv/bin/activate
+continuum-bench doctor --physical
+continuum-bench topology validate --name physical
+continuum-bench validate
+continuum-bench physical authorize --ssh-user pi
+continuum-bench physical stop --ssh-user pi
+continuum-bench physical deploy --ssh-user pi
+continuum-bench physical start --ssh-user pi
+continuum-bench physical status --ssh-user pi
+
+continuum-smoke-cumulative --ssh-user pi
+continuum-smoke-scalability --ssh-user pi
+
+continuum-bench physical all --layout sharded --ssh-user pi
+continuum-bench physical all --layout replicated --ssh-user pi
+continuum-bench load physical
+continuum-bench experiment all physical
+
+continuum-bench study category-cost \
+  --events outputs/load/physical/event-runs.csv \
+  --output-dir outputs/study/physical-cost
+continuum-bench load plot
+continuum-bench experiment plot all
+continuum-bench experiment analyze
+continuum-bench physical stop --ssh-user pi
+```
+
+The two `physical all` commands are different experimental treatments, not
+duplicates. Neither includes load, experiments or category-cost analysis.
+
 ## Topology
 
 The source of truth is `configs/topologies/physical/topology.toml`. Nodes are
@@ -124,6 +159,32 @@ continuum-bench experiment analyze
 
 The trace command prepares a replayable schedule; it does not claim measured
 query or resource values. Category-cost analysis consumes measured event rows.
+
+## Category, policy and query workload cost
+
+This is the analysis that determines which semantic categories, policies and
+queries generate the most demand. It must be run after `load physical`:
+
+```bash
+continuum-bench study category-cost \
+  --events outputs/load/physical/event-runs.csv \
+  --output-dir outputs/study/physical-cost
+```
+
+The command creates:
+
+```text
+outputs/study/physical-cost/category-cost/
+├── category-cost-summary.csv
+├── policy-cost-summary.csv
+└── query-cost-summary.csv
+```
+
+The summaries include popularity, attributed request equivalents, completion
+rate, p50/p90/p95/p99 latency, mean engine time, structural complexity, total
+latency impact and any CPU, memory, disk or network fields present in the load
+events. A query linked to multiple policies contributes `1/N` to each policy,
+preventing duplicated total cost.
 
 ## Shutdown and troubleshooting
 

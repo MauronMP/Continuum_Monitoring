@@ -119,9 +119,23 @@ def _request(
                 if isinstance(result, dict):
                     result["_coordinator_attempts"] = attempt + 1
                 return result
-        except HTTPError:
+        except HTTPError as error:
             # Application errors are deterministic and must not be hidden by
-            # transport retries.
+            # transport retries. Preserve the worker's JSON explanation: the
+            # HTTP status alone is insufficient to diagnose an invalid load
+            # profile or stale worker contract.
+            try:
+                body = error.read().decode("utf-8", errors="replace").strip()
+            except OSError:
+                body = ""
+            if body:
+                raise HTTPError(
+                    error.url,
+                    error.code,
+                    f"{error.reason}; worker_response={body[:1000]}",
+                    error.headers,
+                    None,
+                ) from error
             raise
         except (
             ConnectionError,

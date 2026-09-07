@@ -56,7 +56,11 @@ assignment, query coverage or result semantics.
 A benchmark point is an acceptance test, not an attempt to wait forever. If a
 phase exceeds the configured limit, the row is recorded as a censored timeout.
 When monotone early stop is enabled, larger scalability points for the same
-reasoner/layout are skipped after the first timeout.
+reasoner/layout are skipped after the first timeout. Other reasoners continue;
+one expensive profile can no longer suppress the rest of the reasoner matrix.
+
+Query batches are interleaved for both replicated and sharded execution so
+adjacent costly catalog queries are not concentrated in one HTTP request.
 
 Timeout rows retain the configured budget and completion state. They are not
 encoded as zero latency, excluded silently or interpreted as successful fast

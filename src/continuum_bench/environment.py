@@ -218,15 +218,24 @@ def owl_reasoner_checks() -> list[Check]:
                 "See docs/design/OWL_REASONERS.md.",
             )
         )
-    for reasoner in ("OPENLLET", "JFACT"):
+    shared_classpath = Path(__file__).resolve().parents[2] / (
+        ".runtime/owl-validation.classpath"
+    )
+    for reasoner in ("HERMIT", "OPENLLET", "JFACT"):
         name = f"CONTINUUM_{reasoner}_CLASSPATH"
         value = os.environ.get(name, "")
+        configured = value or (
+            str(shared_classpath) if shared_classpath.is_file() else ""
+        )
         checks.append(
             Check(
                 f"owl-{reasoner.lower()}-classpath",
-                "ok" if value else "warning",
-                value or "not configured",
-                f"Set {name}; see docs/design/OWL_REASONERS.md.",
+                "ok" if configured else "warning",
+                configured or "not configured",
+                (
+                    "Run 'python3 tools/install_owl_reasoners.py' or set "
+                    f"{name}; see docs/design/OWL_REASONERS.md."
+                ),
             )
         )
     return checks
