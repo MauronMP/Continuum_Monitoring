@@ -112,7 +112,7 @@ def load_config(path: str | Path) -> BenchmarkConfig:
             raise ValueError(f"limits.{field} must be finite and positive")
     if limits.calibration_query_limit < 1:
         raise ValueError("limits.calibration_query_limit must be >= 1")
-    return BenchmarkConfig(
+    config = BenchmarkConfig(
         root=root,
         ontology_files=tuple(Path(value) for value in paths["ontology_files"]),
         shape_files=tuple(Path(value) for value in paths["shape_files"]),
@@ -132,3 +132,32 @@ def load_config(path: str | Path) -> BenchmarkConfig:
         distributed=distributed,
         limits=limits,
     )
+    _validate_benchmark(config)
+    return config
+
+
+def _validate_benchmark(config: BenchmarkConfig) -> None:
+    supported_reasoners = {"rdfs", "owlrl", "rdfs_owlrl"}
+    if not config.reasoners:
+        raise ValueError("benchmark.reasoners cannot be empty")
+    unknown_reasoners = sorted(set(config.reasoners) - supported_reasoners)
+    if unknown_reasoners:
+        raise ValueError(
+            f"benchmark.reasoners contains unsupported values: {unknown_reasoners}"
+        )
+    if len(config.reasoners) != len(set(config.reasoners)):
+        raise ValueError("benchmark.reasoners must not contain duplicates")
+    if not config.category_order:
+        raise ValueError("benchmark.category_order cannot be empty")
+    if len(config.category_order) != len(set(config.category_order)):
+        raise ValueError("benchmark.category_order must not contain duplicates")
+    if config.repetitions < 1:
+        raise ValueError("benchmark.repetitions must be >= 1")
+    if not config.scale_users:
+        raise ValueError("benchmark.scale_users cannot be empty")
+    if any(value < 0 for value in config.scale_users):
+        raise ValueError("benchmark.scale_users must be non-negative")
+    if tuple(sorted(set(config.scale_users))) != config.scale_users:
+        raise ValueError(
+            "benchmark.scale_users must be unique and strictly increasing"
+        )

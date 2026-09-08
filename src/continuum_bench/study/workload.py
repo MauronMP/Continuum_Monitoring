@@ -28,16 +28,20 @@ def generate_study_trace(
     study: PolicyCostStudyConfig,
     output_dir: Path,
     *,
-    topology_name: str = "physical",
+    topology_name: str | None = None,
     target: str = "physical",
 ) -> list[Path]:
     """Generate reproducible request, mobility and query-feature datasets."""
 
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
-    topology_path = config.resolve(config.topology_file)
-    if target == "docker":
-        topology_path = config.root / "configs/topologies/docker/topology.toml"
-    topology = load_topology(topology_path, topology_name)
+    if target not in {"local", "docker", "physical"}:
+        raise ValueError("Study target must be local, docker or physical")
+    topology_key = "monolith" if target == "local" else target
+    selected_name = topology_name or topology_key
+    topology_path = (
+        config.root / f"configs/topologies/{topology_key}/topology.toml"
+    )
+    topology = load_topology(topology_path, selected_name)
     endpoints = [
         Endpoint(
             node.endpoint,
@@ -223,7 +227,7 @@ def generate_study_trace(
                 "network_model": study.network.model,
                 "placement_strategy": study.placement.strategy,
                 "scheduler_strategy": study.scheduler.strategy,
-                "topology_name": topology_name,
+                "topology_name": selected_name,
                 "target": target,
                 "node_count": len(endpoints),
                 "arrival_model": study.workload.arrival_model,

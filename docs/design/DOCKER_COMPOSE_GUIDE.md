@@ -29,6 +29,7 @@ continuum-bench docker render
 
 ```bash
 continuum-bench doctor --docker
+continuum-bench preflight
 docker compose version
 docker info
 continuum-bench docker up
@@ -44,12 +45,16 @@ Docker should therefore have at least 5 GiB available.
 ```bash
 continuum-smoke-docker-cumulative
 continuum-smoke-docker-scalability
+continuum-smoke-docker-load
+continuum-smoke-docker-experiments
 continuum-smoke-docker-cumulative --layout replicated
 continuum-smoke-docker-scalability --layout replicated
 ```
 
-Smokes verify connectivity, deployment, bounded query execution and result
-serialization. They are not used as performance evidence.
+Smokes verify connectivity, deployment, bounded query execution, result
+serialization, zero event loss and semantic reference results. They use
+isolated `outputs/smoke/` paths and fail on censored/incomplete rows. They are
+not used as performance evidence.
 
 ## Normal monitoring benchmarks
 
@@ -98,10 +103,24 @@ continuum-bench experiment reasoning-hardware docker
 continuum-bench experiment distributed-ontology docker
 ```
 
+## Independent semantic products
+
+```bash
+continuum-smoke-engines
+continuum-bench engines all
+continuum-bench engines plot
+```
+
+The engine stack is separate from the five-node continuum and automatically
+runs RDFLib, Jena, RDF4J and Oxigraph. First-time image construction is bounded
+by `CONTINUUM_COMPOSE_BUILD_TIMEOUT` (600 s by default); service startup is
+bounded by `CONTINUUM_COMPOSE_TIMEOUT` and benchmark points by the selected
+benchmark TOML.
+
 ## Study, plots and shutdown
 
 ```bash
-continuum-bench study trace --target docker --topology-name docker \
+continuum-bench study trace --target docker \
   --output-dir outputs/study/docker
 continuum-bench study category-cost \
   --events outputs/load/docker/event-runs.csv \

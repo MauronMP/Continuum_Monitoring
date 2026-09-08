@@ -1,0 +1,4 @@
+[layer]
+tier = "fog"
+
+# Add [[nodes]] entries only when this architecture stops being monolithic.

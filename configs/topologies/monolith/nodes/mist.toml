@@ -1,0 +1,4 @@
+[layer]
+tier = "mist"
+
+# Intentionally empty for the single-node reference architecture.

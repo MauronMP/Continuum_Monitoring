@@ -26,6 +26,7 @@ selected by omitting filters:
 ```bash
 continuum-bench load docker
 continuum-bench load physical
+continuum-bench load local
 ```
 
 By contrast, `continuum-bench experiment all docker` and `continuum-bench
@@ -36,6 +37,7 @@ experiment families sequentially.
 
 ```bash
 python -m pytest
+continuum-bench preflight
 python3 tools/check_documentation.py
 git diff --check
 ```
@@ -64,11 +66,22 @@ structural validation.
 
 ## Smoke tests
 
+Local:
+
+```bash
+continuum-smoke-local-cumulative
+continuum-smoke-local-scalability
+continuum-smoke-local-load
+continuum-smoke-local-experiments
+```
+
 Docker:
 
 ```bash
 continuum-smoke-docker-cumulative
 continuum-smoke-docker-scalability
+continuum-smoke-docker-load
+continuum-smoke-docker-experiments
 continuum-smoke-docker-cumulative --layout replicated
 continuum-smoke-docker-scalability --layout replicated
 ```
@@ -76,21 +89,42 @@ continuum-smoke-docker-scalability --layout replicated
 Physical:
 
 ```bash
-continuum-smoke-cumulative --ssh-user pi
-continuum-smoke-scalability --ssh-user pi
-continuum-smoke-cumulative --layout replicated --ssh-user pi
-continuum-smoke-scalability --layout replicated --ssh-user pi
+continuum-smoke-physical-cumulative --ssh-user pi
+continuum-smoke-physical-scalability --ssh-user pi
+continuum-smoke-physical-load
+continuum-smoke-physical-experiments
+continuum-smoke-physical-cumulative --layout replicated --ssh-user pi
+continuum-smoke-physical-scalability --layout replicated --ssh-user pi
 ```
 
 Smokes use bounded profiles and one repetition to verify deployment,
-partitioning, query execution, result transport and CSV generation. They are
-not performance evidence.
+partitioning, query execution, result transport and CSV generation. They now
+inspect the generated summaries and exit non-zero for timeout, early skip,
+event loss or incomplete semantic validation. They are not performance
+evidence.
+
+The unit suite also injects simulated HTTP 408/timeout failures into both
+replicated and sharded scalability runners. It verifies that later points for
+the affected reasoner become `skipped_after_timeout` while the other reasoners
+still execute. This checks the failure policy without waiting for a real
+deadline.
+
+The independent semantic-product smoke is:
+
+```bash
+continuum-smoke-engines
+continuum-bench engines plot
+```
+
+It starts and checks RDFLib, Jena, RDF4J and Oxigraph automatically.
 
 ## Monitoring benchmarks
 
 Run cumulative and scalability independently:
 
 ```bash
+continuum-bench local cumulative
+continuum-bench local scalability
 continuum-bench docker cumulative --layout sharded
 continuum-bench docker scalability --layout sharded
 continuum-bench physical cumulative --layout sharded --ssh-user pi
@@ -112,6 +146,7 @@ not include load, experiments, studies, unit tests or OWL validation.
 ## Load campaign
 
 ```bash
+continuum-bench load local
 continuum-bench load docker
 continuum-bench load physical
 ```
@@ -124,6 +159,11 @@ right-censored outcomes instead of blocking the suite indefinitely.
 ## Three separated experiments
 
 ```bash
+continuum-bench experiment scale-out local
+continuum-bench experiment reasoning-hardware local
+continuum-bench experiment distributed-ontology local
+continuum-bench experiment all local
+
 continuum-bench experiment scale-out docker
 continuum-bench experiment reasoning-hardware docker
 continuum-bench experiment distributed-ontology docker
@@ -143,10 +183,15 @@ continuum-bench experiment all physical
 ## Study and figures
 
 ```bash
-continuum-bench study trace --target docker --topology-name docker \
+continuum-bench study trace --target local \
+  --output-dir outputs/study/local
+continuum-bench study trace --target docker \
   --output-dir outputs/study/docker
-continuum-bench study trace --target physical --topology-name physical \
+continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
+continuum-bench study category-cost \
+  --events outputs/load/local/event-runs.csv \
+  --output-dir outputs/study/local-cost
 continuum-bench study category-cost \
   --events outputs/load/docker/event-runs.csv \
   --output-dir outputs/study/docker-cost
@@ -156,12 +201,15 @@ continuum-bench study category-cost \
 continuum-bench load plot
 continuum-bench experiment plot all
 continuum-bench experiment analyze
+continuum-bench engines plot
 ```
 
 Trace generation is deterministic workload preparation, not live semantic
 replay. Cost analysis consumes measured event rows; it does not invent missing
 resource metrics. Figures are generated as 300-DPI PNG, PDF and SVG where
-supported.
+supported. Experiment plotting also writes `experiment-data-quality.csv` and a
+stacked coverage figure, keeping completed, censored and failed observations
+visible.
 
 The exact end-to-end command order is maintained in
 [Command reference](COMMAND_REFERENCE.md).

@@ -18,6 +18,9 @@ def test_experiment_smoke_config_defines_all_three_families(config):
         "rule_count",
         "users",
     }
+    assert "triples-10000" in {
+        item.name for item in workload.reasoning_profiles
+    }
     assert workload.distributed_users == (0, 10)
 
 

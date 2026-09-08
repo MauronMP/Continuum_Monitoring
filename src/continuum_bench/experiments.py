@@ -14,11 +14,17 @@ import os
 from pathlib import Path
 import platform
 import struct
-from time import perf_counter_ns
+from time import monotonic, perf_counter_ns
 from typing import Any
 
 import numpy as np
 
+from .budget import (
+    error_text,
+    failure_status,
+    is_boundary_failure,
+    remaining_seconds,
+)
 from .config import BenchmarkConfig
 from .csv_utils import write_dict_rows
 from .distributed import Endpoint, _parallel, _request, discover
@@ -114,6 +120,7 @@ def _metadata(
         "reasoners": list(config.reasoners),
         "repetitions": workload.repetitions,
         "request_timeout_seconds": workload.request_timeout_seconds,
+        "point_timeout_seconds": workload.point_timeout_seconds,
         "seed": workload.seed,
         "node_count": len(endpoints),
         "endpoints": [
@@ -141,9 +148,22 @@ def _target_runtime(
     config: BenchmarkConfig,
     target: str,
     endpoint_urls: list[str] | None,
-) -> tuple[None, list[Endpoint]]:
+) -> tuple[object | None, list[Endpoint]]:
+    if target == "local":
+        from .node import NodeRuntime
+
+        runtime = NodeRuntime(config.root, "monolith", tier="cloud")
+        return runtime, [
+            Endpoint(
+                "local://monolith",
+                "monolith",
+                tier="cloud",
+                authority=True,
+                categories=tuple(config.category_order),
+            )
+        ]
     if target not in {"docker", "physical"}:
-        raise ValueError("Experiment target must be docker or physical")
+        raise ValueError("Experiment target must be local, docker or physical")
     return None, discover(endpoint_urls or [])
 
 
@@ -384,8 +404,12 @@ def run_scale_out(
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     summary_rows: list[dict[str, Any]] = []
     query_rows: list[dict[str, Any]] = []
-    node_counts = workload.scale_out_node_counts
+    node_counts = (
+        (1,) if target == "local" else workload.scale_out_node_counts
+    )
     timeout = workload.request_timeout_seconds
+    point_timeout = workload.point_timeout_seconds
+    stopped_points: dict[tuple[int, str], str] = {}
     for node_count in node_counts:
         if node_count > len(all_endpoints):
             raise ValueError(
@@ -396,11 +420,26 @@ def run_scale_out(
         endpoints = all_endpoints[:node_count]
         for reasoner in config.reasoners:
             for repetition in range(1, workload.repetitions + 1):
+                stop_key = (node_count, reasoner)
                 label = (
                     f"[experiment-scale-out] architecture={target} "
                     f"nodes={node_count} reasoner={reasoner} "
                     f"repetition={repetition}/{workload.repetitions}"
                 )
+                if stop_key in stopped_points:
+                    summary_rows.append(
+                        {
+                            "architecture": target,
+                            "node_count": node_count,
+                            "reasoner": reasoner,
+                            "repetition": repetition,
+                            "query_round": 0,
+                            "status": "skipped_after_timeout",
+                            "error": stopped_points[stop_key],
+                        }
+                    )
+                    print(f"{label} status=skipped_after_timeout", flush=True)
+                    continue
                 print(f"{label} phase=prepare status=running", flush=True)
                 payload = _phase_payload(
                     workload,
@@ -411,11 +450,17 @@ def run_scale_out(
                     rule_count=workload.scale_out_rule_count,
                     padding_mode=workload.scale_out_padding_mode,
                 )
+                point_started = monotonic()
                 try:
                     prepare_wall_ms, prepared = _replicated_prepare(
-                        runtime, endpoints, payload, timeout
+                        runtime,
+                        endpoints,
+                        payload,
+                        min(timeout, remaining_seconds(point_started, point_timeout)),
                     )
                 except Exception as error:
+                    status = failure_status(error)
+                    message = error_text(error)
                     summary_rows.append(
                         {
                             "architecture": target,
@@ -423,16 +468,19 @@ def run_scale_out(
                             "reasoner": reasoner,
                             "repetition": repetition,
                             "query_round": 0,
-                            "status": "prepare_failed",
-                            "error": f"{type(error).__name__}: {error}",
+                            "status": status,
+                            "error": message,
                         }
                     )
                     print(
                         f"{label} phase=prepare status=failed error={error}",
                         flush=True,
                     )
+                    if is_boundary_failure(error):
+                        stopped_points[stop_key] = message
                     continue
                 warmup_failed = ""
+                warmup_boundary = False
                 calibration_consistent = False
                 query_costs: dict[str, dict[str, float]] = {}
                 print(
@@ -447,12 +495,16 @@ def run_scale_out(
                             runtime,
                             endpoints,
                             specs,
-                            timeout,
+                            min(
+                                timeout,
+                                remaining_seconds(point_started, point_timeout),
+                            ),
                             workload.warmup_query_rounds,
                         )
                     )
                 except Exception as error:
-                    warmup_failed = f"{type(error).__name__}: {error}"
+                    warmup_failed = error_text(error)
+                    warmup_boundary = is_boundary_failure(error)
                 if warmup_failed:
                     summary_rows.append(
                         {
@@ -471,6 +523,8 @@ def run_scale_out(
                         f"error={warmup_failed}",
                         flush=True,
                     )
+                    if warmup_boundary:
+                        stopped_points[stop_key] = warmup_failed
                     continue
                 known_digests: dict[str, str] = {}
                 for query_round in range(1, workload.query_rounds + 1):
@@ -490,9 +544,14 @@ def run_scale_out(
                             runtime,
                             endpoints,
                             assignment,
-                            timeout,
+                            min(
+                                timeout,
+                                remaining_seconds(point_started, point_timeout),
+                            ),
                         )
                     except Exception as error:
+                        status = failure_status(error)
+                        message = error_text(error)
                         summary_rows.append(
                             {
                                 "architecture": target,
@@ -500,11 +559,14 @@ def run_scale_out(
                                 "reasoner": reasoner,
                                 "repetition": repetition,
                                 "query_round": query_round,
-                                "status": "query_failed",
-                                "error": f"{type(error).__name__}: {error}",
+                                "status": status,
+                                "error": message,
                                 "prepare_wall_ms_excluded": prepare_wall_ms,
                             }
                         )
+                        if is_boundary_failure(error):
+                            stopped_points[stop_key] = message
+                            break
                         continue
                     common = {
                         "architecture": target,
@@ -650,7 +712,11 @@ def run_reasoning_hardware(
 
     runtime, endpoints = _target_runtime(config, target, endpoint_urls)
     rows: list[dict[str, Any]] = []
-    timeout = workload.request_timeout_seconds
+    timeout = min(
+        workload.request_timeout_seconds,
+        workload.point_timeout_seconds,
+    )
+    stopped_dimensions: dict[tuple[str, str, str], str] = {}
     for endpoint in endpoints:
         for profile in workload.reasoning_profiles:
             for reasoner in config.reasoners:
@@ -685,18 +751,34 @@ def run_reasoning_hardware(
                         "rule_count": profile.rule_count,
                         "padding_mode": profile.padding_mode,
                     }
+                    stop_key = (endpoint.url, reasoner, profile.dimension)
+                    if stop_key in stopped_dimensions:
+                        rows.append(
+                            {
+                                **common,
+                                "status": "skipped_after_timeout",
+                                "error": stopped_dimensions[stop_key],
+                                "prepare_wall_ms": "",
+                                "timeout_seconds": timeout,
+                            }
+                        )
+                        print(
+                            f"{label} status=skipped_after_timeout",
+                            flush=True,
+                        )
+                        continue
                     try:
                         wall_ms, result = _prepare_one(
                             runtime, endpoint, payload, timeout
                         )
                     except Exception as error:
+                        status = failure_status(error)
+                        message = error_text(error)
                         rows.append(
                             {
                                 **common,
-                                "status": "timeout"
-                                if "timeout" in str(error).lower()
-                                else "failed",
-                                "error": f"{type(error).__name__}: {error}",
+                                "status": status,
+                                "error": message,
                                 "prepare_wall_ms": "",
                                 "timeout_seconds": timeout,
                             }
@@ -705,6 +787,8 @@ def run_reasoning_hardware(
                             f"{label} status=failed error={error}",
                             flush=True,
                         )
+                        if is_boundary_failure(error):
+                            stopped_dimensions[stop_key] = message
                         continue
                     rows.append(
                         {
@@ -776,6 +860,8 @@ def run_distributed_ontology(
     query_rows: list[dict[str, Any]] = []
     validation_rows: list[dict[str, Any]] = []
     timeout = workload.request_timeout_seconds
+    point_timeout = workload.point_timeout_seconds
+    stopped_reasoners: dict[str, str] = {}
     for users in workload.distributed_users:
         for reasoner in config.reasoners:
             pending_validation: list[
@@ -796,44 +882,92 @@ def run_distributed_ontology(
                     "repetition": repetition,
                     "node_count": len(endpoints),
                 }
+                if reasoner in stopped_reasoners:
+                    summary_rows.append(
+                        {
+                            **common,
+                            "status": "skipped_after_timeout",
+                            "error": stopped_reasoners[reasoner],
+                            "timeout_seconds": timeout,
+                        }
+                    )
+                    print(
+                        f"{label} status=skipped_after_timeout",
+                        flush=True,
+                    )
+                    continue
                 try:
+                    point_started = monotonic()
                     payload = _phase_payload(
                         workload,
                         reasoner=reasoner,
                         users=users,
-                        mode="partitioned",
+                        mode=("replicated" if runtime is not None else "partitioned"),
                     )
-                    prepare_wall_ms, prepared = _parallel(
-                        endpoints,
-                        "/prepare",
-                        {
-                            endpoint.url: payload for endpoint in endpoints
-                        },
-                        phase="experiment-partitioned-prepare",
-                        timeout=timeout,
-                        retries=0,
-                    )
-                    assignment = sharded_assignment(specs, endpoints)
-                    query_wall_ms, responses = _parallel(
-                        endpoints,
-                        "/queries",
-                        {
-                            url: {
-                                "query_ids": [
-                                    spec.id for spec in assigned
-                                ],
-                                "include_result_keys": True,
-                                "phase_timeout_seconds": max(
-                                    timeout - 1.0, 0.1
-                                ),
-                            }
-                            for url, assigned in assignment.items()
-                            if assigned
-                        },
-                        phase="experiment-federated-queries",
-                        timeout=timeout,
-                        retries=0,
-                    )
+                    if runtime is not None:
+                        prepare_wall_ms, prepared = _replicated_prepare(
+                            runtime,
+                            endpoints,
+                            payload,
+                            min(
+                                timeout,
+                                remaining_seconds(point_started, point_timeout),
+                            ),
+                        )
+                        assignment = {
+                            endpoints[0].url: list(specs)
+                        }
+                        query_wall_ms, responses = _execute_query_assignment(
+                            runtime,
+                            endpoints,
+                            {
+                                endpoints[0].url: [spec.id for spec in specs]
+                            },
+                            min(
+                                timeout,
+                                remaining_seconds(point_started, point_timeout),
+                            ),
+                            # Point-level budget includes preparation.
+                            include_result_keys=True,
+                        )
+                    else:
+                        prepare_wall_ms, prepared = _parallel(
+                            endpoints,
+                            "/prepare",
+                            {
+                                endpoint.url: payload for endpoint in endpoints
+                            },
+                            phase="experiment-partitioned-prepare",
+                            timeout=min(
+                                timeout,
+                                remaining_seconds(point_started, point_timeout),
+                            ),
+                            retries=0,
+                        )
+                        assignment = sharded_assignment(specs, endpoints)
+                        query_wall_ms, responses = _parallel(
+                            endpoints,
+                            "/queries",
+                            {
+                                url: {
+                                    "query_ids": [
+                                        spec.id for spec in assigned
+                                    ],
+                                    "include_result_keys": True,
+                                    "phase_timeout_seconds": max(
+                                        timeout - 1.0, 0.1
+                                    ),
+                                }
+                                for url, assigned in assignment.items()
+                                if assigned
+                            },
+                            phase="experiment-federated-queries",
+                            timeout=min(
+                                timeout,
+                                remaining_seconds(point_started, point_timeout),
+                            ),
+                            retries=0,
+                        )
                     merged, raw = _merge_responses(
                         specs, endpoints, responses, common
                     )
@@ -861,17 +995,19 @@ def run_distributed_ontology(
                         (common, merged, summary_row)
                     )
                 except Exception as error:
+                    status = failure_status(error)
+                    message = error_text(error)
                     summary_rows.append(
                         {
                             **common,
-                            "status": "timeout"
-                            if "timeout" in str(error).lower()
-                            else "failed",
-                            "error": f"{type(error).__name__}: {error}",
+                            "status": status,
+                            "error": message,
                             "timeout_seconds": timeout,
                         }
                     )
                     print(f"{label} status=failed error={error}", flush=True)
+                    if is_boundary_failure(error):
+                        stopped_reasoners[reasoner] = message
                     continue
                 print(f"{label} status=done", flush=True)
             if pending_validation:
@@ -937,16 +1073,27 @@ def run_distributed_ontology(
     )
     metadata.update(
         {
-            "layout": "authority-and-privacy-partitioned",
+            "layout": (
+                "canonical-single-node"
+                if target == "local"
+                else "authority-and-privacy-partitioned"
+            ),
             "logical_dataset_is_equal_to_reference_graph": True,
             "distributed_reasoning": (
-                "local materialisation per fragment plus federated query merge"
+                "single-process canonical materialisation"
+                if target == "local"
+                else (
+                    "local materialisation per fragment plus federated "
+                    "query merge"
+                )
             ),
             "validation": (
                 "exact order-independent result bag against canonical reference graph"
             ),
-            "ontology_placement_manifest": str(
-                config.root / "configs/ontology-placement.toml"
+            "ontology_placement_manifest": (
+                "not-applicable-single-node-control"
+                if target == "local"
+                else str(config.root / "configs/ontology-placement.toml")
             ),
             "users": list(workload.distributed_users),
         }

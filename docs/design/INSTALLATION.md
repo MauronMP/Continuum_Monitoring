@@ -1,7 +1,7 @@
 # Installation and environment preparation
 
 This guide starts from a clean clone. Run every command from the repository
-root. The coordinator can execute the monolithic checks, the elastic Docker
+root. The coordinator can execute the native monolith, the elastic Docker
 continuum and the physical continuum. Raspberry Pi workers do not need Docker.
 
 ## 1. Coordinator prerequisites
@@ -39,7 +39,9 @@ continuum-bench --help
 ```
 
 `tools/bootstrap.py` creates `.venv`, upgrades the packaging tools and installs
-the project with its test and diagram dependencies. The equivalent manual
+the project with its test dependencies. It does not require Docker, SSH/rsync
+or Java unless that optional target is used. Add the optional `diagrams` extra only
+when regenerating the ontology atlas. The equivalent manual
 installation is:
 
 ```bash
@@ -69,6 +71,17 @@ continuum-bench doctor --docker
 The default five-container topology reserves one CPU and 1 GiB per node.
 Allocate at least 5 GiB to Docker, or reduce resource limits in
 `configs/topologies/docker/nodes/*.toml`.
+
+The independent product-engine suite creates four additional, short-lived
+containers (RDFLib, Jena, RDF4J and Oxigraph). It builds pinned Python and Java
+21 images automatically:
+
+```bash
+continuum-smoke-engines
+continuum-bench engines all
+```
+
+No host Maven installation is needed for these four product containers.
 
 ## 4. Physical workers
 
@@ -135,13 +148,24 @@ reasoner is missing, times out, reports inconsistency or cannot complete.
 
 ```bash
 continuum-bench doctor --docker --physical --owl
+continuum-bench topology validate --name monolith
 continuum-bench topology validate --name docker
 continuum-bench topology validate --name physical
 continuum-bench validate
+continuum-bench preflight
 python -m pytest
 python3 tools/check_documentation.py
 ```
 
+The Docker doctor checks both the Compose v2 client and access to the running
+daemon. If `docker-compose` is healthy but `docker-daemon` fails, start Docker
+Engine/Desktop and ensure the current user can run `docker info` without
+`sudo` before starting a smoke.
+
 `continuum-bench validate` checks parsing, SHACL, query contracts and portable
 materialization. It does not prove OWL 2 DL consistency; that is the purpose of
 `owl-validate`.
+
+`continuum-bench preflight` calculates the exact asserted graph lower bound for
+every load and experiment profile. It rejects an impossible `target_triples`
+value locally, before an HTTP request can become a worker-side 400 response.

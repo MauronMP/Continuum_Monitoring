@@ -1,9 +1,9 @@
 # Continuum Monitoring Ontology Benchmark
 
 Reproducible evaluation of a modular, policy-aware monitoring ontology across
-an elastic local Docker continuum and a real physical continuum. Both targets
-use the same ontology, SPARQL catalog, generators, reasoners, time budgets and
-scientific result contracts.
+a native monolith, an elastic local Docker continuum and a real physical
+continuum. All targets use the same ontology, SPARQL catalog, generators,
+reasoners, time budgets and scientific result contracts.
 
 ## Structure
 
@@ -12,11 +12,12 @@ scientific result contracts.
 | `src/continuum_bench/core` | Infrastructure-neutral domain model. |
 | `src/continuum_bench/monitoring` | Shared cumulative/scalability orchestration. |
 | `src/continuum_bench/study` | Workload, mobility and policy-cost studies. |
+| `configs/topologies/monolith` | Single-process reference split by tier. |
 | `configs/topologies/docker` | Elastic Docker nodes split by tier. |
 | `configs/topologies/physical` | Elastic physical nodes split by tier. |
 | `ontology`, `queries` | Modular semantic model and categorized SPARQL battery. |
 
-Docker and physical deployments are infrastructure adapters, not separate
+Local, Docker and physical deployments are infrastructure adapters, not separate
 benchmark implementations. Docker is therefore a reproducible staging target
 for the physical campaign.
 
@@ -30,6 +31,7 @@ cd Continuum_Monitoring
 python3 tools/bootstrap.py --profile coordinator
 . .venv/bin/activate
 continuum-bench validate
+continuum-bench preflight
 continuum-bench owl-validate
 ```
 
@@ -41,6 +43,18 @@ Install their pinned validation runtime automatically with:
 
 ```bash
 python3 tools/install_owl_reasoners.py
+```
+
+## Native monolith
+
+```bash
+continuum-smoke-local-cumulative
+continuum-smoke-local-scalability
+continuum-smoke-local-load
+continuum-smoke-local-experiments
+continuum-bench local all
+continuum-bench load local
+continuum-bench experiment all local
 ```
 
 ## Local Docker continuum
@@ -70,6 +84,8 @@ Smoke tests:
 ```bash
 continuum-smoke-docker-cumulative
 continuum-smoke-docker-scalability
+continuum-smoke-docker-load
+continuum-smoke-docker-experiments
 ```
 
 `docker all` covers cumulative and scalability only. The load, experiment,
@@ -82,6 +98,10 @@ continuum-bench physical authorize --ssh-user pi
 continuum-bench physical deploy --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
+continuum-smoke-physical-cumulative --ssh-user pi
+continuum-smoke-physical-scalability --ssh-user pi
+continuum-smoke-physical-load
+continuum-smoke-physical-experiments
 continuum-bench physical all --layout sharded --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 continuum-bench load physical
@@ -91,6 +111,20 @@ continuum-bench physical stop --ssh-user pi
 
 `physical all` likewise covers cumulative and scalability only. See the
 command reference for the ordered complete suite.
+
+## Independent semantic products
+
+```bash
+continuum-smoke-engines
+continuum-bench engines all
+continuum-bench engines plot
+```
+
+This command automatically executes RDFLib, Jena, RDF4J and Oxigraph; engine
+names do not need to be passed manually. HermiT, Openllet, JFact and Konclude
+remain separate OWL 2 DL consistency validators invoked by `owl-validate`.
+The plot command requires all four products in each selected summary and writes
+300-DPI PNG plus vector PDF/SVG figures.
 
 ## Evaluation families
 
@@ -105,6 +139,7 @@ command reference for the ordered complete suite.
 Timeouts are stored as right-censored observations. Results go to `outputs/`.
 See [the user guide](docs/USER_GUIDE.md),
 [installation](docs/design/INSTALLATION.md),
+[monolith guide](docs/design/MONOLITH_GUIDE.md),
 [Docker Compose guide](docs/design/DOCKER_COMPOSE_GUIDE.md),
 [physical continuum guide](docs/design/PHYSICAL_CONTINUUM.md),
 [command reference](docs/design/COMMAND_REFERENCE.md),

@@ -101,8 +101,12 @@ def project_checks(root: Path) -> list[Check]:
         "configs/benchmark.toml",
         "configs/owl-reasoners.toml",
         "configs/topologies/docker/topology.toml",
+        "configs/topologies/monolith/topology.toml",
         "configs/topologies/physical/topology.toml",
         "docker/Dockerfile",
+        "docker-compose.engines.yml",
+        "docker/engines/Dockerfile",
+        "engine-service/pom.xml",
         "queries/catalog.csv",
         "queries/execution-plan.toml",
         "ontology/core/schema.ttl",
@@ -131,7 +135,7 @@ def project_checks(root: Path) -> list[Check]:
             from .topology import load_topology_manifest
 
             details = []
-            for architecture in ("docker", "physical"):
+            for architecture in ("monolith", "docker", "physical"):
                 manifest = load_topology_manifest(
                     root
                     / f"configs/topologies/{architecture}/topology.toml"
@@ -148,7 +152,7 @@ def project_checks(root: Path) -> list[Check]:
                     "error",
                     str(error),
                     (
-                        "Fix configs/topologies/{docker,physical}/*.toml and run "
+                        "Fix configs/topologies/{monolith,docker,physical}/*.toml and run "
                         "'continuum-bench topology validate'."
                     ),
                 )
@@ -189,12 +193,34 @@ def docker_checks() -> list[Check]:
             timeout=15,
         )
         detail = (result.stdout or result.stderr).strip()
-        return [Check(
+        compose_check = Check(
             "docker-compose",
             "ok" if result.returncode == 0 else "error",
             detail or "unavailable",
-            "Install/enable Docker Compose v2 and ensure the daemon is running.",
-        )]
+            "Install or enable the Docker Compose v2 plugin.",
+        )
+        if result.returncode:
+            return [compose_check]
+        daemon = subprocess.run(
+            [docker, "info", "--format", "{{.ServerVersion}}"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        daemon_detail = (daemon.stdout or daemon.stderr).strip()
+        return [
+            compose_check,
+            Check(
+                "docker-daemon",
+                "ok" if daemon.returncode == 0 else "error",
+                daemon_detail or "unavailable",
+                (
+                    "Start Docker Engine/Desktop and verify that "
+                    "'docker info' succeeds for the current user."
+                ),
+            ),
+        ]
     except (OSError, subprocess.TimeoutExpired) as error:
         return [Check(
             "docker-compose", "error", str(error),

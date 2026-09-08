@@ -43,6 +43,17 @@ def _parser() -> argparse.ArgumentParser:
         help="Run syntax, ontology, policy and query checks",
     )
 
+    preflight = subparsers.add_parser(
+        "preflight",
+        help="Validate load/experiment sizes before contacting workers",
+    )
+    preflight.add_argument(
+        "--load-config", default="configs/load-benchmark.toml"
+    )
+    preflight.add_argument(
+        "--experiment-config", default="configs/experiments.toml"
+    )
+
     owl_validate = subparsers.add_parser(
         "owl-validate",
         help="Validate OWL consistency with external DL reasoners",
@@ -50,6 +61,30 @@ def _parser() -> argparse.ArgumentParser:
     owl_validate.add_argument(
         "--reasoner-config", default="configs/owl-reasoners.toml"
     )
+
+    engines = subparsers.add_parser(
+        "engines",
+        help="Run all RDFLib, Jena, RDF4J and Oxigraph engine benchmarks",
+    )
+    engines.add_argument(
+        "suite", choices=("cumulative", "scalability", "all", "plot")
+    )
+    engines.add_argument(
+        "--plot-suite",
+        choices=("cumulative", "scalability", "all"),
+        default="all",
+        help="Suite selected when the engines action is plot",
+    )
+    engines.add_argument(
+        "--endpoints",
+        help=(
+            "Optional comma-separated engine URLs; omit to manage the pinned "
+            "Docker engine stack automatically"
+        ),
+    )
+    engines.add_argument("--warmups", type=int, default=1)
+    engines.add_argument("--output-dir", default="outputs/engines")
+    engines.add_argument("--keep-running", action="store_true")
     owl_validate.add_argument(
         "--output", default="outputs/validation/owl-reasoners.json"
     )
@@ -65,6 +100,15 @@ def _parser() -> argparse.ArgumentParser:
     )
     topology.add_argument("action", choices=("validate", "show"))
     topology.add_argument("--name", default="physical")
+
+    local = subparsers.add_parser(
+        "local",
+        help="Run the single-process monolithic reference benchmark",
+    )
+    local.add_argument(
+        "action", choices=("cumulative", "scalability", "all")
+    )
+    local.add_argument("--output-dir", default="outputs/local")
 
     docker = subparsers.add_parser(
         "docker",
@@ -134,7 +178,9 @@ def _parser() -> argparse.ArgumentParser:
         "load",
         help="Run or plot the distributed load benchmark",
     )
-    load.add_argument("target", choices=("docker", "physical", "plot"))
+    load.add_argument(
+        "target", choices=("local", "docker", "physical", "plot")
+    )
     load.add_argument(
         "--load-config",
         default="configs/load-benchmark.toml",
@@ -159,7 +205,7 @@ def _parser() -> argparse.ArgumentParser:
     experiment = subparsers.add_parser(
         "experiment",
         help=(
-            "Run Docker/physical scale-out, hardware reasoning or "
+            "Run local/Docker/physical scale-out, hardware reasoning or "
             "distributed-ontology experiments"
         ),
     )
@@ -170,7 +216,10 @@ def _parser() -> argparse.ArgumentParser:
 
     def add_experiment_arguments(command_parser: argparse.ArgumentParser) -> None:
         command_parser.add_argument(
-            "target", choices=("docker", "physical"), nargs="?", default="physical"
+            "target",
+            choices=("local", "docker", "physical"),
+            nargs="?",
+            default="physical",
         )
         command_parser.add_argument(
             "--experiment-config",
@@ -220,10 +269,13 @@ def _parser() -> argparse.ArgumentParser:
         default="configs/policy-cost-study.toml",
         help="Policy-cost study TOML file",
     )
-    study.add_argument("--topology-name", default="physical")
+    study.add_argument(
+        "--topology-name",
+        help="Topology name (defaults to the selected target)",
+    )
     study.add_argument(
         "--target",
-        choices=("docker", "physical"),
+        choices=("local", "docker", "physical"),
         default="physical",
         help="Execution topology used to generate the trace",
     )
@@ -244,8 +296,8 @@ def _manifest_path(config, override: str | None) -> Path:
 def _target_manifest_path(config, override: str | None, target: str) -> Path:
     if override:
         return _manifest_path(config, override)
-    if target == "docker":
-        return config.root / "configs/topologies/docker/topology.toml"
+    if target in {"monolith", "docker", "physical"}:
+        return config.root / f"configs/topologies/{target}/topology.toml"
     return _manifest_path(config, None)
 
 
@@ -298,6 +350,15 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return 0 if report["ok"] else 1
 
+    if args.command == "preflight":
+        from .preflight import validate_default_workloads
+
+        load_path = config.root / args.load_config
+        experiment_path = config.root / args.experiment_config
+        report = validate_default_workloads(config, load_path, experiment_path)
+        print(json.dumps(report, indent=2, ensure_ascii=False))
+        return 0
+
     if args.command == "owl-validate":
         from .owl_validation import validate_external_reasoners
 
@@ -322,6 +383,70 @@ def main(argv: list[str] | None = None) -> int:
             success = success and report["all_available"] and report["all_consistent"]
         return 0 if success else 1
 
+    if args.command == "engines":
+        from contextlib import nullcontext
+
+        if args.suite == "plot":
+            from .engine_reporting import plot_engine_benchmarks
+
+            output_root = Path(args.output_dir)
+            if not output_root.is_absolute():
+                output_root = config.root / output_root
+            selected = (
+                ("cumulative", "scalability")
+                if args.plot_suite == "all"
+                else (args.plot_suite,)
+            )
+            paths = plot_engine_benchmarks(output_root, selected)
+            print(
+                json.dumps(
+                    {"engine_plots": [str(path) for path in paths]},
+                    indent=2,
+                    ensure_ascii=False,
+                )
+            )
+            return 0
+
+        from .engine_stack import semantic_engine_stack
+        from .engines import (
+            run_engine_cumulative,
+            run_engine_scalability,
+            validate_rdfs_equivalence,
+        )
+
+        if args.warmups < 0:
+            raise ValueError("--warmups must be zero or greater")
+        output_root = Path(args.output_dir)
+        if not output_root.is_absolute():
+            output_root = config.root / output_root
+        if args.endpoints:
+            urls = tuple(
+                value.strip()
+                for value in args.endpoints.split(",")
+                if value.strip()
+            )
+            context = nullcontext(urls)
+        else:
+            context = semantic_engine_stack(
+                config.root, keep_running=args.keep_running
+            )
+        outputs: dict[str, str] = {}
+        with context as endpoint_urls:
+            if args.suite in {"cumulative", "all"}:
+                path = run_engine_cumulative(
+                    config, list(endpoint_urls), output_root, args.warmups
+                )
+                validate_rdfs_equivalence(output_root, "cumulative")
+                outputs["cumulative"] = str(path)
+            if args.suite in {"scalability", "all"}:
+                path = run_engine_scalability(
+                    config, list(endpoint_urls), output_root, args.warmups
+                )
+                validate_rdfs_equivalence(output_root, "scalability")
+                outputs["scalability"] = str(path)
+        print(json.dumps(outputs, indent=2, ensure_ascii=False))
+        return 0
+
     if args.command == "topology":
         from .topology import load_topology, load_topology_manifest
 
@@ -334,6 +459,21 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         selected = load_topology(manifest_path, args.name)
         print(json.dumps(selected.public(), indent=2, ensure_ascii=False))
+        return 0
+
+    if args.command == "local":
+        from .benchmark import run_cumulative, run_scalability
+
+        output = Path(args.output_dir)
+        if not output.is_absolute():
+            output = config.root / output
+        local_config = replace(config, output_dir=output)
+        outputs: dict[str, str] = {}
+        if args.action in {"cumulative", "all"}:
+            outputs["cumulative"] = str(run_cumulative(local_config))
+        if args.action in {"scalability", "all"}:
+            outputs["scalability"] = str(run_scalability(local_config))
+        print(json.dumps(outputs, indent=2, ensure_ascii=False))
         return 0
 
     if args.command == "docker":
@@ -432,10 +572,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "load":
         from .load_benchmark import run_load_benchmark
         from .load_config import load_load_config, select_load_profiles
-        from .load_reporting import plot_load_comparison
 
         output_root = config.root / args.output_dir
         if args.target == "plot":
+            from .load_reporting import plot_load_comparison
+
             paths = plot_load_comparison(output_root)
             if args.show:
                 _open_paths(paths)
@@ -446,8 +587,13 @@ def main(argv: list[str] | None = None) -> int:
             dimensions=args.dimension,
             names=args.profile,
         )
-        topology = _target_topology(config, args, args.target)
-        endpoints = topology.endpoints()
+        from .preflight import validate_load_workload
+
+        validate_load_workload(config, workload)
+        endpoints = None
+        if args.target != "local":
+            topology = _target_topology(config, args, args.target)
+            endpoints = topology.endpoints()
         output = run_load_benchmark(
             config,
             workload,
@@ -459,19 +605,16 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "experiment":
-        from .experiment_analysis import analyze_experiments
         from .experiment_config import (
             load_experiment_config,
             select_reasoning_profiles,
-        )
-        from .experiment_reporting import (
-            plot_claim_analysis,
-            plot_experiments,
         )
         from .experiments import EXPERIMENTS, run_experiment
 
         output_root = config.root / args.output_dir
         if args.experiment_name == "plot":
+            from .experiment_reporting import plot_experiments
+
             selected = EXPERIMENTS if args.suite == "all" else (args.suite,)
             paths = plot_experiments(output_root, selected)
             if args.show:
@@ -485,6 +628,9 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
         if args.experiment_name == "analyze":
+            from .experiment_analysis import analyze_experiments
+            from .experiment_reporting import plot_claim_analysis
+
             paths = analyze_experiments(output_root)
             paths.extend(plot_claim_analysis(output_root))
             if args.show:
@@ -505,10 +651,15 @@ def main(argv: list[str] | None = None) -> int:
             load_experiment_config(experiment_path),
             args.profile,
         )
+        from .preflight import validate_experiment_workload
+
+        validate_experiment_workload(config, workload, experiment_path)
         if args.reasoner:
             config = replace(config, reasoners=tuple(args.reasoner))
-        topology = _target_topology(config, args, args.target)
-        endpoints = topology.endpoints()
+        endpoints = None
+        if args.target != "local":
+            topology = _target_topology(config, args, args.target)
+            endpoints = topology.endpoints()
         selected = (
             EXPERIMENTS
             if args.experiment_name == "all"

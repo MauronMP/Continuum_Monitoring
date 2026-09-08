@@ -680,11 +680,11 @@ def run_sharded_cumulative(
     baseline_cache: dict[
         str, dict[str, tuple[int, bool | None, str]]
     ] = {}
-    topology_stopped = False
+    stopped_reasoners: dict[str, str] = {}
     stop_reason = ""
 
     for reasoner in config.reasoners:
-        if validate_results and not topology_stopped:
+        if validate_results and reasoner not in stopped_reasoners:
             print(
                 f"[{target}-sharded-cumulative] reasoner={reasoner} "
                 "phase=reference-validation status=running",
@@ -705,7 +705,8 @@ def run_sharded_cumulative(
                     flush=True,
                 )
         for repetition in range(1, config.repetitions + 1):
-            if topology_stopped:
+            if reasoner in stopped_reasoners:
+                stop_reason = stopped_reasoners[reasoner]
                 for stage, category in enumerate(
                     config.category_order, start=1
                 ):
@@ -788,7 +789,8 @@ def run_sharded_cumulative(
                     )
                     details.append(detail)
                     node_details.append(detail)
-                topology_stopped = config.limits.stop_scaling_after_timeout
+                if config.limits.stop_scaling_after_timeout:
+                    stopped_reasoners[reasoner] = stop_reason
                 print(
                     f"[{target}-sharded-cumulative] reasoner={reasoner} "
                     f"phase=partitioned-prepare status={status} "
@@ -897,9 +899,8 @@ def run_sharded_cumulative(
                         )
                         details.append(skipped_detail)
                         node_details.append(skipped_detail)
-                    topology_stopped = (
-                        config.limits.stop_scaling_after_timeout
-                    )
+                    if config.limits.stop_scaling_after_timeout:
+                        stopped_reasoners[reasoner] = stop_reason
                     print(
                         f"[{target}-sharded-cumulative] reasoner={reasoner} "
                         f"stage={stage} status={status} "

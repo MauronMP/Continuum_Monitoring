@@ -3,9 +3,9 @@ repetitions = 3
 duration_seconds = 2.0
 batch_size = 25
 queue_capacity_events = 500
-request_timeout_seconds = 120
-point_timeout_seconds = 180
-recovery_timeout_seconds = 180
+request_timeout_seconds = 45
+point_timeout_seconds = 60
+recovery_timeout_seconds = 45
 seed = 2026
 
 # One-factor-at-a-time profiles. Fixed values remain at the baseline so each

@@ -1,0 +1,4 @@
+[layer]
+tier = "edge"
+
+# Intentionally empty for the single-node reference architecture.

@@ -1,14 +1,15 @@
 # Scientific validity and limitations
 
 This repository provides a reproducible validation and performance
-infrastructure for a modular monitoring ontology on real continuum nodes. It is
+infrastructure for a modular monitoring ontology on a native monolith, local
+containers and real continuum nodes. It is
 not an ontology standard, accreditation procedure or formal certification.
 Passing the suite supports only the structural, functional and performance
 claims that are explicitly tested.
 
 ## Validation layers
 
-The physical suite evaluates complementary concerns:
+The complete suite evaluates complementary concerns:
 
 1. RDF/Turtle parsing and graph loading;
 2. RDFS and OWL RL materialisation plus detection of `owl:Nothing`
@@ -20,7 +21,9 @@ The physical suite evaluates complementary concerns:
 6. synthetic-volume scalability with right-censored timeouts;
 7. exact result preservation for the authority-partitioned physical layout;
 8. isolated reasoning-hardware measurements for each physical node;
-9. query scale-out with calibrated replica scheduling.
+9. query scale-out with calibrated replica scheduling;
+10. independent product behaviour in RDFLib, Jena, RDF4J and Oxigraph;
+11. OWL 2 DL consistency with HermiT, Openllet, JFact and Konclude.
 
 Absence of an inferred `owl:Nothing` member alone does not prove complete OWL
 2 DL consistency. The separate Protégé workflow remains the appropriate tool

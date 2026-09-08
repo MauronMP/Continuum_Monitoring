@@ -7,6 +7,7 @@ from continuum_bench.synthetic import (
     add_synthetic_rules,
     iter_synthetic_triples,
     pad_to_target_triples,
+    synthetic_triple_count,
 )
 
 
@@ -49,6 +50,19 @@ def test_streamed_triples_are_identical_to_graph_generation():
     assert len(triples) == len(set(triples))
     assert set(triples) == set(graph)
     assert added == len(triples)
+    assert synthetic_triple_count(10) == len(triples)
+
+
+def test_synthetic_triple_count_covers_shared_node_groups():
+    assert synthetic_triple_count(0) == 0
+    assert synthetic_triple_count(100) == sum(
+        1 for _ in iter_synthetic_triples(100)
+    )
+    assert synthetic_triple_count(101) == sum(
+        1 for _ in iter_synthetic_triples(101)
+    )
+    with pytest.raises(ValueError, match="non-negative"):
+        synthetic_triple_count(-1)
 
 
 def test_rule_chain_and_exact_triple_padding():

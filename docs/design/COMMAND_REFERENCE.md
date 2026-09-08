@@ -11,9 +11,11 @@ Target-specific preparation is documented separately in the
 
 ```bash
 continuum-bench doctor --docker --physical --owl
+continuum-bench topology validate --name monolith
 continuum-bench topology validate --name docker
 continuum-bench topology validate --name physical
 continuum-bench validate
+continuum-bench preflight
 continuum-bench owl-validate
 python -m pytest
 python3 tools/check_documentation.py
@@ -23,7 +25,28 @@ git diff --check
 For a release in an environment where all external reasoners are installed,
 replace `owl-validate` with `owl-validate --require-all`.
 
-## B. Complete Docker suite
+## B. Complete monolith suite
+
+```bash
+continuum-smoke-local-cumulative
+continuum-smoke-local-scalability
+continuum-smoke-local-load
+continuum-smoke-local-experiments
+
+continuum-bench local all
+continuum-bench load local
+continuum-bench experiment all local
+continuum-bench study trace --target local \
+  --output-dir outputs/study/local
+continuum-bench study category-cost \
+  --events outputs/load/local/event-runs.csv \
+  --output-dir outputs/study/local-cost
+```
+
+The monolith provides the native one-node baseline used by architecture
+comparisons. See the [monolith guide](MONOLITH_GUIDE.md).
+
+## C. Complete Docker suite
 
 ```bash
 continuum-bench docker render
@@ -32,13 +55,15 @@ continuum-bench docker status
 
 continuum-smoke-docker-cumulative
 continuum-smoke-docker-scalability
+continuum-smoke-docker-load
+continuum-smoke-docker-experiments
 
 continuum-bench docker all --layout sharded --keep-running
 continuum-bench docker all --layout replicated --keep-running
 continuum-bench load docker
 continuum-bench experiment all docker
 
-continuum-bench study trace --target docker --topology-name docker \
+continuum-bench study trace --target docker \
   --output-dir outputs/study/docker
 continuum-bench study category-cost \
   --events outputs/load/docker/event-runs.csv \
@@ -53,7 +78,7 @@ continuum-bench docker down
 The stack must remain running for load and experiment blocks. `--keep-running`
 prevents a benchmark-owned stack from being stopped between blocks.
 
-## C. Complete physical suite
+## D. Complete physical suite
 
 Edit `configs/topologies/physical/nodes/*.toml` first.
 
@@ -64,15 +89,17 @@ continuum-bench physical deploy --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
 
-continuum-smoke-cumulative --ssh-user pi
-continuum-smoke-scalability --ssh-user pi
+continuum-smoke-physical-cumulative --ssh-user pi
+continuum-smoke-physical-scalability --ssh-user pi
+continuum-smoke-physical-load
+continuum-smoke-physical-experiments
 
 continuum-bench physical all --layout sharded --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 continuum-bench load physical
 continuum-bench experiment all physical
 
-continuum-bench study trace --target physical --topology-name physical \
+continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
 continuum-bench study category-cost \
   --events outputs/load/physical/event-runs.csv \
@@ -88,9 +115,28 @@ Category/policy/query cost files are written below
 `outputs/study/physical-cost/category-cost/`. This analysis is not included in
 `physical all` or `load physical`; it consumes the load event dataset.
 
-## D. Individual monitoring blocks
+## E. Independent semantic-product block
 
 ```bash
+continuum-smoke-engines
+continuum-bench engines cumulative
+continuum-bench engines scalability
+continuum-bench engines all
+continuum-bench engines plot
+continuum-bench engines plot --plot-suite cumulative
+continuum-bench engines plot --plot-suite scalability
+```
+
+Every engine command runs RDFLib, Jena, RDF4J and Oxigraph automatically. It
+is distinct from `owl-validate`, which runs HermiT, Openllet, JFact and
+Konclude as OWL consistency validators. `engines plot` refuses partial product
+summaries, so all four names are guaranteed to appear in a valid figure.
+
+## F. Individual monitoring blocks
+
+```bash
+continuum-bench local cumulative
+continuum-bench local scalability
 continuum-bench docker cumulative --layout sharded
 continuum-bench docker scalability --layout sharded
 continuum-bench physical cumulative --layout sharded --ssh-user pi
@@ -99,7 +145,7 @@ continuum-bench physical scalability --layout sharded --ssh-user pi
 
 Replace `sharded` with `replicated` for the replication baseline.
 
-## E. Individual load dimensions
+## G. Individual load dimensions
 
 ```bash
 continuum-bench load docker --dimension events_per_second
@@ -109,12 +155,16 @@ continuum-bench load docker --dimension rule_count
 continuum-bench load docker --dimension node_count
 ```
 
-Replace `docker` with `physical`, or select one named configuration with
+Replace `docker` with `local` or `physical`, or select one named configuration with
 `--profile <profile-name>`.
 
-## F. Individual scientific experiments
+## H. Individual scientific experiments
 
 ```bash
+continuum-bench experiment scale-out local
+continuum-bench experiment reasoning-hardware local
+continuum-bench experiment distributed-ontology local
+
 continuum-bench experiment scale-out docker
 continuum-bench experiment reasoning-hardware docker
 continuum-bench experiment distributed-ontology docker
@@ -124,7 +174,7 @@ continuum-bench experiment reasoning-hardware physical
 continuum-bench experiment distributed-ontology physical
 ```
 
-## G. Custom configuration files
+## I. Custom configuration files
 
 Global options precede the subcommand:
 
@@ -137,7 +187,7 @@ continuum-bench --topology-file configs/topologies/docker/topology.toml \
 Subcommand-specific options follow their subcommand. Use `continuum-bench
 <command> --help` before starting a long campaign.
 
-## H. What “complete” means
+## J. What “complete” means
 
 No single `all` command executes every family. A complete evaluation comprises:
 
@@ -145,7 +195,8 @@ No single `all` command executes every family. A complete evaluation comprises:
 2. cumulative and scalability in both layouts;
 3. multidimensional load;
 4. scale-out, reasoning-hardware and distributed-ontology experiments;
-5. trace/cost artefacts and plots.
+5. the RDFLib/Jena/RDF4J/Oxigraph product matrix;
+6. trace/cost artefacts and plots.
 
 Docker and physical runs are not duplicates: they apply the same workload
 contracts to different infrastructures. Sharded and replicated runs are also

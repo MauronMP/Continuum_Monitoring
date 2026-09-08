@@ -24,6 +24,20 @@ def require_docker() -> None:
     if result.returncode:
         detail = (result.stderr or result.stdout).strip()
         raise RuntimeError(f"Docker Compose v2 is unavailable: {detail}")
+    daemon = subprocess.run(
+        ["docker", "info", "--format", "{{.ServerVersion}}"],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    if daemon.returncode:
+        detail = (daemon.stderr or daemon.stdout).strip()
+        raise RuntimeError(
+            "Docker is installed but its daemon is unavailable for the "
+            f"current user: {detail}. Start Docker Engine/Desktop and run "
+            "'docker info' before retrying."
+        )
 
 
 def compose_path(root: Path, topology: Topology) -> Path:

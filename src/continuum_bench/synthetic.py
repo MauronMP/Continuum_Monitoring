@@ -14,6 +14,21 @@ SOSA = Namespace("http://www.w3.org/ns/sosa/")
 Triple = tuple[Node, Node, Node]
 
 
+def synthetic_triple_count(users: int) -> int:
+    """Return the exact size of the deterministic synthetic ABox.
+
+    The generator emits 70 triples per user and 21 triples per group of at
+    most 100 users (the shared edge node, state and trust assessment).  Keeping
+    this calculation separate lets configuration preflight reject impossible
+    ``target_triples`` values without allocating a large RDF graph.
+    """
+
+    if users < 0:
+        raise ValueError("users must be non-negative")
+    node_count = (users + 99) // 100
+    return users * 70 + node_count * 21
+
+
 def _time(index: int) -> Literal:
     value = datetime(2026, 1, 1, tzinfo=timezone.utc) + timedelta(seconds=index)
     return Literal(value.isoformat().replace("+00:00", "Z"), datatype=XSD.dateTime)

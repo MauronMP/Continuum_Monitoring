@@ -6,7 +6,12 @@ from pathlib import Path
 from statistics import median
 from typing import Iterable
 
+from .plot_environment import configure_matplotlib
+
+configure_matplotlib()
 import matplotlib.pyplot as plt
+
+from .csv_utils import write_dict_rows
 
 
 REASONER_LABELS = {
@@ -14,11 +19,12 @@ REASONER_LABELS = {
     "owlrl": "OWL RL",
     "rdfs_owlrl": "RDFS + OWL RL",
 }
+ARCHITECTURES = ("local", "docker", "physical")
 
 
 def _rows(root: Path, experiment: str) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
-    for architecture in ("docker", "physical"):
+    for architecture in ARCHITECTURES:
         path = root / architecture / experiment / "summary.csv"
         if path.is_file():
             with path.open(encoding="utf-8", newline="") as handle:
@@ -28,6 +34,46 @@ def _rows(root: Path, experiment: str) -> list[dict[str, str]]:
                     if row.get("status") == "completed"
                 )
     return rows
+
+
+def _quality_rows(
+    root: Path,
+    experiments: Iterable[str],
+) -> list[dict[str, str | int | float]]:
+    groups: dict[tuple[str, str, str], list[str]] = defaultdict(list)
+    for architecture in ARCHITECTURES:
+        for experiment in experiments:
+            path = root / architecture / experiment / "summary.csv"
+            if not path.is_file():
+                continue
+            with path.open(encoding="utf-8", newline="") as handle:
+                for row in csv.DictReader(handle):
+                    reasoner = row.get("reasoner", "unknown")
+                    groups[(architecture, experiment, reasoner)].append(
+                        row.get("status", "unknown")
+                    )
+    output: list[dict[str, str | int | float]] = []
+    for (architecture, experiment, reasoner), statuses in sorted(
+        groups.items()
+    ):
+        completed = sum(status == "completed" for status in statuses)
+        timeout = sum("timeout" in status for status in statuses)
+        failed = len(statuses) - completed - timeout
+        output.append(
+            {
+                "architecture": architecture,
+                "experiment": experiment,
+                "reasoner": reasoner,
+                "samples": len(statuses),
+                "completed_samples": completed,
+                "timeout_samples": timeout,
+                "failed_or_other_samples": failed,
+                "completion_rate_percent": completed / len(statuses) * 100,
+                "timeout_rate_percent": timeout / len(statuses) * 100,
+                "failed_or_other_rate_percent": failed / len(statuses) * 100,
+            }
+        )
+    return output
 
 
 def _save(figure: plt.Figure, base: Path) -> list[Path]:
@@ -75,7 +121,7 @@ def plot_scale_out(root: Path) -> list[Path]:
     )
     for column, reasoner in enumerate(reasoners):
         axis = axes[0][column]
-        for architecture in ("docker", "physical"):
+        for architecture in ARCHITECTURES:
             points = sorted(
                 (int(nodes), value)
                 for (item_architecture, item_reasoner, nodes), value in values.items()
@@ -167,7 +213,7 @@ def plot_distributed_ontology(root: Path) -> list[Path]:
     )
     for column, reasoner in enumerate(reasoners):
         axis = axes[0][column]
-        for architecture in ("docker", "physical"):
+        for architecture in ARCHITECTURES:
             points = sorted(
                 (int(users), value / 1000)
                 for (item_architecture, item_reasoner, users), value in values.items()
@@ -188,6 +234,73 @@ def plot_distributed_ontology(root: Path) -> list[Path]:
     return _save(figure, root / "figures" / "architecture-distributed-ontology")
 
 
+def plot_experiment_coverage(
+    root: Path,
+    experiments: Iterable[str],
+) -> list[Path]:
+    """Plot completed, timeout and other outcomes without hiding censoring."""
+
+    rows = _quality_rows(root, experiments)
+    if not rows:
+        return []
+    table = root / "analysis" / "experiment-data-quality.csv"
+    write_dict_rows(table, rows, empty_message="No experiment quality rows")
+    labels = [
+        f"{row['architecture']} · {row['experiment']} · "
+        f"{REASONER_LABELS.get(str(row['reasoner']), row['reasoner'])}"
+        for row in rows
+    ]
+    completed = [float(row["completion_rate_percent"]) for row in rows]
+    timeout = [float(row["timeout_rate_percent"]) for row in rows]
+    failed = [float(row["failed_or_other_rate_percent"]) for row in rows]
+    positions = list(range(len(rows)))
+    figure, axis = plt.subplots(
+        figsize=(10.5, max(3.2, 0.34 * len(rows) + 1.5))
+    )
+    axis.barh(positions, completed, color="#2E8B57", label="Completed")
+    axis.barh(
+        positions,
+        timeout,
+        left=completed,
+        color="#E69F00",
+        label="Timeout/censored",
+    )
+    failed_left = [
+        completed_value + timeout_value
+        for completed_value, timeout_value in zip(
+            completed, timeout, strict=True
+        )
+    ]
+    axis.barh(
+        positions,
+        failed,
+        left=failed_left,
+        color="#D55E00",
+        label="Failed/other",
+    )
+    for position, row in zip(positions, rows, strict=True):
+        axis.text(
+            101,
+            position,
+            f"n={row['samples']}",
+            va="center",
+            fontsize=7,
+        )
+    axis.set_yticks(positions)
+    axis.set_yticklabels(labels, fontsize=7)
+    axis.set_xlim(0, 108)
+    axis.set_xlabel("Observed outcomes (%)")
+    axis.grid(True, axis="x", alpha=0.25)
+    axis.legend(
+        frameon=False,
+        ncol=3,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.01),
+    )
+    figure.tight_layout()
+    return [table, *_save(figure, root / "figures" / "experiment-data-coverage")]
+
+
 def plot_experiments(root: Path, selected: Iterable[str]) -> list[Path]:
     outputs: list[Path] = []
     selected_set = set(selected)
@@ -197,6 +310,7 @@ def plot_experiments(root: Path, selected: Iterable[str]) -> list[Path]:
         outputs.extend(plot_reasoning_hardware(root))
     if "distributed-ontology" in selected_set:
         outputs.extend(plot_distributed_ontology(root))
+    outputs.extend(plot_experiment_coverage(root, selected_set))
     return outputs
 
 

@@ -405,11 +405,12 @@ def run_physical_cumulative(
     summaries: list[dict[str, Any]] = []
     assignments: list[dict[str, Any]] = []
     nodes: list[dict[str, Any]] = []
-    topology_stopped = False
+    stopped_reasoners: dict[str, str] = {}
     stop_reason = ""
 
     for reasoner in config.reasoners:
-        if topology_stopped:
+        if reasoner in stopped_reasoners:
+            stop_reason = stopped_reasoners[reasoner]
             for repetition in range(1, config.repetitions + 1):
                 for stage, category in enumerate(
                     config.category_order, start=1
@@ -493,7 +494,8 @@ def run_physical_cumulative(
                         monotonic() - phase_started
                         if row_status == status else 0.0,
                     )
-            topology_stopped = config.limits.stop_scaling_after_timeout
+            if config.limits.stop_scaling_after_timeout:
+                stopped_reasoners[reasoner] = stop_reason
             print(
                 f"[{target}-cumulative] reasoner={reasoner} phase={phase} "
                 f"status={status} "
@@ -502,7 +504,8 @@ def run_physical_cumulative(
             )
             continue
         for repetition in range(1, config.repetitions + 1):
-            if topology_stopped:
+            if reasoner in stopped_reasoners:
+                stop_reason = stopped_reasoners[reasoner]
                 for stage, category in enumerate(
                     config.category_order, start=1
                 ):
@@ -556,7 +559,8 @@ def run_physical_cumulative(
                         config.limits.point_timeout_seconds,
                         monotonic() - point_started if stage == 1 else 0.0,
                     )
-                topology_stopped = config.limits.stop_scaling_after_timeout
+                if config.limits.stop_scaling_after_timeout:
+                    stopped_reasoners[reasoner] = stop_reason
                 continue
             recorded_calibration_ms = (
                 calibration_ms if repetition == 1 else 0.0
@@ -637,9 +641,8 @@ def run_physical_cumulative(
                             "skipped_after_timeout", "early-stop", stop_reason,
                             config.limits.point_timeout_seconds,
                         )
-                    topology_stopped = (
-                        config.limits.stop_scaling_after_timeout
-                    )
+                    if config.limits.stop_scaling_after_timeout:
+                        stopped_reasoners[reasoner] = stop_reason
                     break
                 details.extend(
                     _detail_rows(responses, endpoint_by_url, common)

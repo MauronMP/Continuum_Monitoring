@@ -26,6 +26,8 @@ jobs:
       - run: python tools/bootstrap.py
       - run: .venv/bin/python -m pytest
       - run: .venv/bin/continuum-bench validate
+      - run: .venv/bin/continuum-bench preflight
+      - run: .venv/bin/continuum-bench preflight --load-config configs/load-smoke.toml --experiment-config configs/experiments-smoke.toml
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -34,17 +36,26 @@ jobs:
 
   docker:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # Individual gates are bounded below; the job ceiling must exceed their
+    # combined worst case plus image-build and setup time.
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - run: python tools/bootstrap.py --with-docker
-      - run: .venv/bin/continuum-smoke-cumulative
-      - run: .venv/bin/continuum-smoke-scalability
-      - run: docker compose up -d --no-build
-      - run: .venv/bin/continuum-bench --config configs/smoke-scalability.toml docker all --topology-only --output-dir outputs/ci-docker
+      - run: python tools/bootstrap.py
+      - run: .venv/bin/continuum-bench doctor --docker
+      - run: .venv/bin/continuum-smoke-docker-cumulative
+        timeout-minutes: 10
+      - run: .venv/bin/continuum-smoke-docker-scalability
+        timeout-minutes: 10
+      - run: .venv/bin/continuum-smoke-docker-load
+        timeout-minutes: 10
+      - run: .venv/bin/continuum-smoke-docker-experiments
+        timeout-minutes: 15
+      - run: .venv/bin/continuum-smoke-engines
+        timeout-minutes: 15
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -52,5 +63,5 @@ jobs:
           path: outputs/
       - if: always()
         run: |
-          docker compose down
-          docker compose -f docker-compose.engines.yml down
+          .venv/bin/continuum-bench docker down || true
+          docker compose -f docker-compose.engines.yml down || true

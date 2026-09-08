@@ -14,6 +14,7 @@ from .result_contract import require_release_metadata
 
 
 EXPERIMENTS = ("scale-out", "reasoning-hardware", "distributed-ontology")
+ARCHITECTURES = ("local", "docker", "physical")
 
 
 def _read_csv(path: Path) -> list[dict[str, str]]:
@@ -76,7 +77,7 @@ def analyze_experiments(root: Path) -> list[Path]:
         ),
     }
     manifest: dict[str, Any] = {"architectures": {}, "experiments": {}}
-    for architecture in ("docker", "physical"):
+    for architecture in ARCHITECTURES:
         manifest["architectures"][architecture] = {}
         for experiment, (keys, fields) in specifications.items():
             rows = _read_csv(root / architecture / experiment / "summary.csv")

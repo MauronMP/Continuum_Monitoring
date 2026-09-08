@@ -286,10 +286,13 @@ class NodeRuntime:
             self.mode = mode
             process_cpu_ms = (process_time_ns() - cpu_started) / 1_000_000
             io_read_after, io_write_after = _process_io_bytes()
+            tier_name = getattr(self, "tier", None)
+            if not tier_name:
+                tier_name = infer_tier(self.role)
             return {
                 "node_id": getattr(self, "node_id", self.role),
                 "role": self.role,
-                "tier_name": getattr(self, "tier", infer_tier(self.role)),
+                "tier_name": tier_name,
                 "mode": mode,
                 "reasoner": reasoner,
                 "synthetic_users": users,

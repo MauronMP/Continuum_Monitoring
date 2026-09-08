@@ -10,6 +10,7 @@ from continuum_bench.distributed import Endpoint
 from continuum_bench.load_benchmark import (
     _is_timeout,
     _run_event_stream,
+    _workload_specs,
 )
 from continuum_bench.load_config import (
     LoadBenchmarkConfig,
@@ -76,6 +77,16 @@ def test_full_load_config_covers_all_independent_variables_and_high_scale(
     assert [profile.name for profile in selected.profiles] == ["eps-2500"]
 
 
+def test_load_workload_covers_every_query_category(config):
+    specs = _workload_specs(config)
+
+    assert len(specs) == 115
+    assert {spec.category for spec in specs} == set(config.category_order)
+    assert {spec.category for spec in specs[: len(config.category_order)]} == (
+        set(config.category_order)
+    )
+
+
 def test_event_stream_measures_latency_throughput_loss_and_alert_accuracy(
     tmp_path,
 ):
@@ -103,7 +114,10 @@ def test_event_stream_measures_latency_throughput_loss_and_alert_accuracy(
                 for query_id in query_ids
             ],
             "process_cpu_ms": 0.2,
+            "current_rss_kib": 80,
             "peak_rss_kib": 100,
+            "request_bytes": 20,
+            "response_bytes": 40,
         }
 
     summary, rows, node_metrics = _run_event_stream(
@@ -124,7 +138,17 @@ def test_event_stream_measures_latency_throughput_loss_and_alert_accuracy(
     assert summary["events_processed_per_second"] > 0
     assert summary["alert_precision"] == 1
     assert summary["alert_accuracy"] == 1
+    assert summary["alerts_evaluated"] == 4
     assert len(rows) == 4
+    assert sum(row["process_cpu_ms"] for row in rows) == pytest.approx(
+        node_metrics["cloud"]["process_cpu_ms"]
+    )
+    assert all(row["current_rss_kib"] == 80 for row in rows)
+    assert all(
+        row["resource_attribution"]
+        == "batch-duration-proportional;rss-observed"
+        for row in rows
+    )
     assert node_metrics["cloud"]["events"] == 4
 
 

@@ -5,7 +5,8 @@ from pathlib import Path
 
 if sys.version_info < (3, 11):
     raise SystemExit(
-        "Se requiere Python >=3.11. En Ubuntu 22.04 seleccione un intérprete más reciente o use Ubuntu 24.04+."
+        "Python >=3.11 is required. On Ubuntu 22.04, select a newer "
+        "interpreter or use Ubuntu 24.04+."
     )
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from continuum_bench.environment import main

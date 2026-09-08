@@ -4,9 +4,27 @@ import subprocess
 import pytest
 
 
+def _legacy_inventory(tmp_path, remote_dir):
+    path = tmp_path / "legacy-inventory.toml"
+    path.write_text(
+        "[cluster]\n"
+        'ssh_user = "pi"\n'
+        f'remote_dir = "{remote_dir}"\n'
+        f'remote_python = "{remote_dir}/.venv-node/bin/python"\n'
+        "[[nodes]]\n"
+        'role = "cloud"\n'
+        'host = "127.0.0.1"\n'
+        'endpoint = "http://127.0.0.1:8391"\n'
+        "local = true\n"
+        "port = 8391\n",
+        encoding="utf-8",
+    )
+    return path
+
+
 def test_status_rejects_wrong_worker_contract(config, monkeypatch):
     inventory = load_physical_inventory(
-        config.root / "configs" / "physical-nodes.toml"
+        config.resolve(config.topology_file)
     )
     monkeypatch.setattr(
         physical_cluster,
@@ -70,7 +88,7 @@ def test_manifest_ssh_override_updates_remote_paths(config):
 
 def test_authorize_installs_key_on_each_remote_node(config, monkeypatch):
     inventory = load_physical_inventory(
-        config.root / "configs" / "physical-nodes.toml"
+        config.resolve(config.topology_file)
     )
     commands = []
     monkeypatch.setattr(
@@ -103,7 +121,7 @@ def test_remote_start_records_python_pid_not_background_shell(
     monkeypatch,
 ):
     inventory = load_physical_inventory(
-        config.root / "configs" / "physical-nodes.toml"
+        config.resolve(config.topology_file)
     )
     node = next(item for item in inventory.nodes if item.role == "edge2")
     commands = []
@@ -120,7 +138,7 @@ def test_remote_start_records_python_pid_not_background_shell(
     assert "worker_pid=$!" in remote
     assert 'echo "$worker_pid"' in remote
     assert "cd /home/pi/continuum-bench || exit 20; nohup" in remote
-    assert "--topology-name" not in remote
+    assert "--topology-name physical" in remote
 
 
 def test_remote_start_passes_elastic_manifest_to_worker(config, monkeypatch):
@@ -147,7 +165,7 @@ def test_remote_start_passes_elastic_manifest_to_worker(config, monkeypatch):
 
 def test_remote_stop_recovers_from_a_stale_pid_file(config, monkeypatch):
     inventory = load_physical_inventory(
-        config.root / "configs" / "physical-nodes.toml"
+        config.resolve(config.topology_file)
     )
     node = next(item for item in inventory.nodes if item.role == "edge2")
     commands = []
@@ -215,7 +233,7 @@ def test_start_replaces_workers_with_a_stale_topology(config, monkeypatch):
 
 
 def test_deploy_checks_all_remotes_before_copying(config, monkeypatch):
-    inventory = load_physical_inventory(config.root / "configs/physical-nodes.toml")
+    inventory = load_physical_inventory(config.resolve(config.topology_file))
     monkeypatch.setattr(physical_cluster, "_verify_key_auth", lambda inventory: None)
     monkeypatch.setattr(physical_cluster, "physical_checks", lambda: [])
     calls = []
@@ -231,8 +249,6 @@ def test_deploy_checks_all_remotes_before_copying(config, monkeypatch):
 
 @pytest.mark.parametrize("directory", ["/", "/home/pi", "/home/pi/", "/home/pi/../other", "/tmp", "/var/tmp/"])
 def test_inventory_rejects_broad_deployment_targets(config, tmp_path, directory):
-    text = (config.root / "configs/physical-nodes.toml").read_text().replace('/home/{ssh_user}/continuum-bench"', directory + '"')
-    path = tmp_path / "inventory.toml"
-    path.write_text(text)
+    path = _legacy_inventory(tmp_path, directory)
     with pytest.raises(ValueError, match="dedicated remote_dir"):
         load_physical_inventory(path)

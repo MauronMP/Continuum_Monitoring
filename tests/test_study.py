@@ -80,6 +80,22 @@ def test_generate_study_trace_can_target_docker_topology(config, tmp_path):
     assert '"node_count": 5' in metadata
 
 
+def test_generate_study_trace_can_target_local_control(config, tmp_path):
+    study = load_study_config(config.root / "configs/policy-cost-study.toml")
+
+    outputs = generate_study_trace(
+        config,
+        study,
+        tmp_path / "local",
+        target="local",
+    )
+
+    metadata = Path(outputs[-1]).read_text(encoding="utf-8")
+    assert '"target": "local"' in metadata
+    assert '"topology_name": "monolith"' in metadata
+    assert '"node_count": 1' in metadata
+
+
 def test_category_cost_analysis_joins_query_metadata(config, tmp_path):
     events = tmp_path / "event-runs.csv"
     events.write_text(
@@ -105,6 +121,16 @@ def test_category_cost_analysis_joins_query_metadata(config, tmp_path):
     category_summary = (tmp_path / "analysis" / "category-cost-summary.csv")
     assert "observability" in category_summary.read_text(encoding="utf-8")
     assert "policy_governance" in category_summary.read_text(encoding="utf-8")
+    with (
+        tmp_path / "analysis" / "policy-cost-summary.csv"
+    ).open(encoding="utf-8", newline="") as handle:
+        policy_rows = list(csv.DictReader(handle))
+    assert sum(
+        float(row["attributed_request_equivalents"]) for row in policy_rows
+    ) == pytest.approx(3.0)
+    assert sum(float(row["popularity_share"]) for row in policy_rows) == (
+        pytest.approx(1.0)
+    )
 
 
 @pytest.mark.parametrize(

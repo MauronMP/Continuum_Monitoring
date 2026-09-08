@@ -3,6 +3,8 @@
 This page contains the workflow shared by every execution target. Operational
 instructions are intentionally separated:
 
+- [Monolith guide](design/MONOLITH_GUIDE.md): native one-process control,
+  smokes, benchmarks, load and experiments.
 - [Docker Compose guide](design/DOCKER_COMPOSE_GUIDE.md): local elastic
   containers, lifecycle, smokes, benchmarks, load and experiments.
 - [Physical continuum guide](design/PHYSICAL_CONTINUUM.md): coordinator,
@@ -28,9 +30,11 @@ requires SSH/rsync on the coordinator and Python 3.11+, `venv`, `rsync`,
 ## Common acceptance checks
 
 ```bash
+continuum-bench topology validate --name monolith
 continuum-bench topology validate --name docker
 continuum-bench topology validate --name physical
 continuum-bench validate
+continuum-bench preflight
 continuum-bench owl-validate
 python -m pytest
 python3 tools/check_documentation.py
@@ -48,9 +52,10 @@ continuum-bench owl-validate --require-all
 
 ## Elastic configuration
 
-Docker and physical targets have independent manifests and tier files:
+All three targets have independent manifests and tier files:
 
 ```text
+configs/topologies/monolith/{topology.toml,nodes/*.toml}
 configs/topologies/docker/{topology.toml,nodes/*.toml}
 configs/topologies/physical/{topology.toml,nodes/*.toml}
 ```
@@ -74,9 +79,10 @@ Choose the smallest family that answers the research question:
 - Study commands generate reproducible workload/mobility traces and aggregate
   category, policy and query costs from measured event data.
 
-`docker all` and `physical all` run cumulative plus scalability only. There is
-no literal `load all` subcommand: unfiltered `load docker` or `load physical`
-means all configured load profiles. `experiment all <target>` runs the three
+`local all`, `docker all` and `physical all` run cumulative plus scalability
+only. There is no literal `load all` subcommand: unfiltered `load local`,
+`load docker` or `load physical` means all configured load profiles.
+`experiment all <target>` runs the three
 separated scientific experiments, not the normal or load benchmarks.
 
 ## Results and interpretation
@@ -85,7 +91,16 @@ Results are written under `outputs/` with metadata describing target,
 topology, layout, reasoner, profile, repetitions and budgets. Timeouts are
 right-censored observations: they remain visible in coverage reporting and are
 not converted into zero latency. Architecture ratios use only matched,
-completed rows.
+completed rows; Docker and physical speedups use the matching monolith row as
+their baseline.
+
+RDFLib, Jena, RDF4J and Oxigraph are exercised without naming each engine:
+
+```bash
+continuum-smoke-engines
+continuum-bench engines all
+continuum-bench engines plot
+```
 
 ```bash
 continuum-bench load plot

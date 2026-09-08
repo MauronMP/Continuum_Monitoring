@@ -1,6 +1,7 @@
 [experiment]
 repetitions = 1
 request_timeout_seconds = 30
+point_timeout_seconds = 45
 seed = 2026
 query_rounds = 1
 warmup_query_rounds = 1
@@ -15,10 +16,10 @@ padding_mode = "neutral"
 [reasoning_hardware]
 
 [[reasoning_hardware.profiles]]
-name = "triples-5000"
+name = "triples-10000"
 dimension = "target_triples"
 users = 5
-target_triples = 5000
+target_triples = 10000
 rule_count = 0
 padding_mode = "neutral"
 
@@ -26,7 +27,7 @@ padding_mode = "neutral"
 name = "rules-5"
 dimension = "rule_count"
 users = 5
-target_triples = 5000
+target_triples = 10000
 rule_count = 5
 padding_mode = "neutral"
 

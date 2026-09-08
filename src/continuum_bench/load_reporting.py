@@ -8,6 +8,9 @@ from pathlib import Path
 import statistics
 from typing import Any
 
+from .plot_environment import configure_matplotlib
+
+configure_matplotlib()
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.ticker import FixedLocator, NullFormatter
@@ -30,9 +33,12 @@ DIMENSION_X = {
     "node_count": ("node_count", "Active nodes"),
 }
 LOAD_ARCHITECTURE_LABELS = {
+    "local": "Monolithic host",
     "docker": "Local Docker continuum",
     "physical": "Physical continuum",
 }
+ARCHITECTURES = ("local", "docker", "physical")
+DISTRIBUTED_ARCHITECTURES = ("docker", "physical")
 
 
 def _read(path: Path) -> list[dict[str, str]]:
@@ -192,7 +198,7 @@ def _save(fig, path: Path) -> list[Path]:
 def _architecture_ratios(
     rows: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Return symmetric Docker/physical ratios for matched workloads."""
+    """Return distributed/local ratios for matched completed workloads."""
 
     lookup = {
         (
@@ -219,10 +225,8 @@ def _architecture_ratios(
         )
 
     output: list[dict[str, Any]] = []
-    for architecture in ("docker", "physical"):
-        baseline_architecture = (
-            "physical" if architecture == "docker" else "docker"
-        )
+    for architecture in DISTRIBUTED_ARCHITECTURES:
+        baseline_architecture = "local"
         for row in rows:
             if row["architecture"] != architecture:
                 continue
@@ -314,7 +318,7 @@ def _plot_ratio_comparison(
             metrics,
             strict=True,
         ):
-            for architecture in ("docker", "physical"):
+            for architecture in DISTRIBUTED_ARCHITECTURES:
                 for reasoner in REASONER_LABELS:
                     selected = [
                         row
@@ -406,7 +410,7 @@ def _factorized_legend(
             linewidth=2,
             label=LOAD_ARCHITECTURE_LABELS[architecture],
         )
-        for architecture in ("docker", "physical")
+        for architecture in ARCHITECTURES
     ]
     handles.extend(
         Line2D(
@@ -481,7 +485,7 @@ def _series(
     x_field: str,
 ) -> list[tuple[str, str, list[dict[str, Any]]]]:
     output = []
-    for architecture in ("docker", "physical"):
+    for architecture in ARCHITECTURES:
         for reasoner in REASONER_LABELS:
             selected = [
                 row
@@ -636,7 +640,7 @@ def _plot_data_coverage(
     )
     row_keys = [
         (architecture, reasoner)
-        for architecture in ("docker", "physical")
+        for architecture in ARCHITECTURES
         for reasoner in REASONER_LABELS
     ]
     lookup = {
@@ -724,7 +728,7 @@ def _reference_summary(
     rows: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
-    for architecture in ("docker", "physical"):
+    for architecture in ARCHITECTURES:
         for reasoner in REASONER_LABELS:
             selected = [
                 row
@@ -763,9 +767,13 @@ def _reference_summary(
                 {
                     "architecture": architecture,
                     "reasoner": reasoner,
-                    "max_tested_loss_free_eps": max(
-                        float(row["events_per_second_median"])
-                        for row in loss_free
+                    "max_tested_loss_free_eps": (
+                        max(
+                            float(row["events_per_second_median"])
+                            for row in loss_free
+                        )
+                        if loss_free
+                        else ""
                     ),
                     "peak_processed_eps": max(
                         float(
@@ -810,16 +818,25 @@ def _plot_reference_overview(
         ("rss_at_200_mib", "RSS at 200 events/s (MiB)"),
     )
     figure, axes = plt.subplots(2, 2, figsize=(10.8, 7.2))
-    reasoners = list(REASONER_LABELS)
+    reasoners = [
+        reasoner
+        for reasoner in REASONER_LABELS
+        if any(row["reasoner"] == reasoner for row in rows)
+    ]
     positions = np.arange(len(reasoners))
-    width = 0.24
+    present_architectures = [
+        architecture
+        for architecture in ARCHITECTURES
+        if any(row["architecture"] == architecture for row in rows)
+    ]
+    width = min(0.72 / max(len(present_architectures), 1), 0.24)
     for axis, (field, ylabel) in zip(
         axes.flat,
         metrics,
         strict=True,
     ):
         for architecture_index, architecture in enumerate(
-            ("docker", "physical")
+            present_architectures
         ):
             selected = {
                 row["reasoner"]: row
@@ -827,10 +844,18 @@ def _plot_reference_overview(
                 if row["architecture"] == architecture
             }
             values = [
-                float(selected[reasoner][field])
+                (
+                    float(selected[reasoner][field])
+                    if reasoner in selected
+                    and selected[reasoner].get(field, "") != ""
+                    else np.nan
+                )
                 for reasoner in reasoners
             ]
-            offset = (architecture_index - 1) * width
+            offset = (
+                architecture_index
+                - (len(present_architectures) - 1) / 2
+            ) * width
             bars = axis.bar(
                 positions + offset,
                 values,
@@ -838,7 +863,16 @@ def _plot_reference_overview(
                 color=colors[architecture],
                 label=LOAD_ARCHITECTURE_LABELS[architecture],
             )
-            axis.bar_label(bars, fmt="%.1f", fontsize=6, padding=2)
+            labels = [
+                f"{value:.1f}" if np.isfinite(value) else ""
+                for value in values
+            ]
+            axis.bar_label(
+                bars,
+                labels=labels,
+                fontsize=6,
+                padding=2,
+            )
         axis.set_xticks(positions)
         axis.set_xticklabels(
             [REASONER_LABELS[value] for value in reasoners]
@@ -850,7 +884,7 @@ def _plot_reference_overview(
         handles,
         labels,
         loc="upper center",
-        ncol=1,
+        ncol=max(len(present_architectures), 1),
         frameon=False,
     )
     figure.tight_layout(rect=(0, 0, 1, 0.94))
@@ -878,7 +912,7 @@ def plot_load_comparison(
     ):
         old_table.unlink(missing_ok=True)
     rows: list[dict[str, str]] = []
-    for architecture in ("docker", "physical"):
+    for architecture in ARCHITECTURES:
         path = result_root / architecture / "summary.csv"
         if path.is_file():
             rows.extend(_read(path))
@@ -896,8 +930,9 @@ def plot_load_comparison(
     outputs: list[Path] = [data_path]
     colors_raw = plt.rcParams["axes.prop_cycle"].by_key()["color"]
     colors = {
-        "docker": colors_raw[0],
-        "physical": colors_raw[1],
+        "local": colors_raw[0],
+        "docker": colors_raw[1],
+        "physical": colors_raw[2],
     }
     markers = {"rdfs": "o", "owlrl": "s", "rdfs_owlrl": "^"}
     quality = _data_quality_rows(aggregate)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+import math
 from pathlib import Path
 import tomllib
 
@@ -19,6 +20,7 @@ class ReasoningProfile:
 class ExperimentConfig:
     repetitions: int
     request_timeout_seconds: float
+    point_timeout_seconds: float
     seed: int
     query_rounds: int
     warmup_query_rounds: int
@@ -50,9 +52,13 @@ def load_experiment_config(path: str | Path) -> ExperimentConfig:
         )
         for item in reasoning["profiles"]
     )
+    request_timeout = float(settings["request_timeout_seconds"])
     config = ExperimentConfig(
         repetitions=int(settings["repetitions"]),
-        request_timeout_seconds=float(settings["request_timeout_seconds"]),
+        request_timeout_seconds=request_timeout,
+        point_timeout_seconds=float(
+            settings.get("point_timeout_seconds", request_timeout)
+        ),
         seed=int(settings["seed"]),
         query_rounds=int(settings["query_rounds"]),
         warmup_query_rounds=int(settings["warmup_query_rounds"]),
@@ -93,8 +99,18 @@ def select_reasoning_profiles(
 def _validate(config: ExperimentConfig) -> None:
     if config.repetitions < 1:
         raise ValueError("experiment.repetitions must be >= 1")
-    if config.request_timeout_seconds <= 1:
+    if (
+        not math.isfinite(config.request_timeout_seconds)
+        or config.request_timeout_seconds <= 1
+    ):
         raise ValueError("request_timeout_seconds must be > 1")
+    if (
+        not math.isfinite(config.point_timeout_seconds)
+        or config.point_timeout_seconds < config.request_timeout_seconds
+    ):
+        raise ValueError(
+            "point_timeout_seconds must be >= request_timeout_seconds"
+        )
     if config.query_rounds < 1 or config.warmup_query_rounds < 1:
         raise ValueError(
             "query rounds and calibration warm-ups must both be >= 1"
@@ -111,6 +127,12 @@ def _validate(config: ExperimentConfig) -> None:
         sorted(config.scale_out_node_counts)
     ):
         raise ValueError("scale_out.node_counts must be strictly increasing")
+    if min(
+        config.scale_out_users,
+        config.scale_out_target_triples,
+        config.scale_out_rule_count,
+    ) < 0:
+        raise ValueError("scale_out users, triples and rules must be non-negative")
     if not config.reasoning_profiles:
         raise ValueError("reasoning_hardware.profiles cannot be empty")
     allowed_dimensions = {"target_triples", "rule_count", "users"}
@@ -129,5 +151,25 @@ def _validate(config: ExperimentConfig) -> None:
             raise ValueError(
                 f"{profile.name}: padding_mode must be neutral or semantic"
             )
+    dimension_fields = {
+        "target_triples": "target_triples",
+        "rule_count": "rule_count",
+        "users": "users",
+    }
+    for dimension, field in dimension_fields.items():
+        values = [
+            getattr(profile, field)
+            for profile in config.reasoning_profiles
+            if profile.dimension == dimension
+        ]
+        if values and values != sorted(set(values)):
+            raise ValueError(
+                f"reasoning_hardware {dimension} profiles must be unique "
+                "and strictly increasing"
+            )
     if any(value < 0 for value in config.distributed_users):
         raise ValueError("distributed_ontology.users must be non-negative")
+    if tuple(sorted(set(config.distributed_users))) != config.distributed_users:
+        raise ValueError(
+            "distributed_ontology.users must be unique and strictly increasing"
+        )

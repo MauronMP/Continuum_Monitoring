@@ -25,3 +25,34 @@ def test_docker_check_reports_missing_binary(monkeypatch):
 
     assert checks[0].name == "docker"
     assert checks[0].status == "error"
+
+
+def test_docker_check_distinguishes_compose_from_daemon(monkeypatch):
+    class Result:
+        def __init__(self, returncode, stdout="", stderr=""):
+            self.returncode = returncode
+            self.stdout = stdout
+            self.stderr = stderr
+
+    monkeypatch.setattr(
+        environment.shutil, "which", lambda name: "/usr/bin/docker"
+    )
+    responses = iter(
+        (
+            Result(0, "Docker Compose version v2"),
+            Result(1, stderr="Cannot connect to the Docker daemon"),
+        )
+    )
+    monkeypatch.setattr(
+        "subprocess.run", lambda *args, **kwargs: next(responses)
+    )
+
+    checks = environment.docker_checks()
+
+    assert [item.name for item in checks] == [
+        "docker-compose",
+        "docker-daemon",
+    ]
+    assert checks[0].status == "ok"
+    assert checks[1].status == "error"
+    assert "Cannot connect" in checks[1].detail

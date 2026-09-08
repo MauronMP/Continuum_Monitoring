@@ -63,7 +63,9 @@ def discover_load_endpoints(urls: list[str]) -> list[Endpoint]:
     return discover(urls)
 
 
-def _alert_specs(config: BenchmarkConfig) -> list[QuerySpec]:
+def _workload_specs(config: BenchmarkConfig) -> list[QuerySpec]:
+    """Return the full catalog while verifying the alert-evaluation subset."""
+
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     alerts = [
         spec for spec in specs if spec.expectation in {"true", "zero_rows"}
@@ -74,7 +76,24 @@ def _alert_specs(config: BenchmarkConfig) -> list[QuerySpec]:
         raise ValueError(
             "Alert workload requires positive ASK and negative violation queries"
         )
-    return alerts
+    grouped = {
+        category: [spec for spec in specs if spec.category == category]
+        for category in config.category_order
+    }
+    interleaved = []
+    for index in range(max(map(len, grouped.values()))):
+        interleaved.extend(
+            values[index]
+            for values in grouped.values()
+            if index < len(values)
+        )
+    if len(interleaved) != len(specs):
+        raise ValueError("Load query schedule lost catalog entries")
+    return interleaved
+
+
+def _is_alert(spec: QuerySpec) -> bool:
+    return spec.expectation in {"true", "zero_rows"}
 
 
 def _percentile(values: list[float], percentile: int) -> float:
@@ -95,8 +114,8 @@ def _prediction(spec: QuerySpec, measurement: dict[str, Any]) -> bool:
     return int(measurement["result_count"]) > 0
 
 
-def _truth(spec: QuerySpec) -> bool:
-    return spec.expectation == "true"
+def _truth(spec: QuerySpec) -> bool | str:
+    return spec.expectation == "true" if _is_alert(spec) else ""
 
 
 def _empty_role_metrics(endpoints: list[Endpoint]) -> dict[str, dict[str, float]]:
@@ -123,6 +142,8 @@ def _run_event_stream(
     endpoints: list[Endpoint],
     invoke: Callable[[Endpoint, list[str], float], dict[str, Any]],
     common: dict[str, Any],
+    *,
+    point_timeout_seconds: float | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, dict[str, float]]]:
     offered = profile.offered_events
     batch_size = load_config.batch_size
@@ -131,10 +152,25 @@ def _run_event_stream(
     rows: list[dict[str, Any]] = []
     latencies: list[float] = []
     tp = fp = tn = fn = 0
+    alerts_evaluated = 0
     processed = 0
     lost = 0
     started = perf_counter_ns()
-    deadline = started + int(load_config.point_timeout_seconds * 1e9)
+    point_budget = (
+        load_config.point_timeout_seconds
+        if point_timeout_seconds is None
+        else point_timeout_seconds
+    )
+    if point_budget <= 0:
+        raise PhaseTimeout("no point budget remains for the event stream")
+    query_offset = (
+        (int(common.get("repetition", 1)) - 1) * offered
+    ) % len(specs)
+
+    def scheduled_spec(index: int) -> QuerySpec:
+        return specs[(query_offset + index) % len(specs)]
+
+    deadline = started + int(point_budget * 1e9)
     event_index = 0
     batch_index = 0
     in_flight: dict[
@@ -167,7 +203,7 @@ def _run_event_stream(
             )
 
     def harvest(done: set[Future]) -> None:
-        nonlocal processed, tp, fp, tn, fn
+        nonlocal processed, tp, fp, tn, fn, alerts_evaluated
         completed_at = perf_counter_ns()
         for future in done:
             endpoint, items = in_flight.pop(future)
@@ -205,24 +241,38 @@ def _run_event_stream(
                 metrics["max_current_rss_kib"],
                 float(response.get("current_rss_kib", 0.0)),
             )
+            durations = [
+                float(measurement.get("duration_ms", 0.0))
+                for measurement in measurements
+            ]
+            duration_total = sum(durations)
             for (event_id, spec, scheduled), measurement in zip(
                 items,
                 measurements,
                 strict=True,
             ):
                 latency_ms = (completed_at - scheduled) / 1_000_000
-                predicted = _prediction(spec, measurement)
+                alert = _is_alert(spec)
+                predicted = _prediction(spec, measurement) if alert else ""
                 truth = _truth(spec)
-                if truth and predicted:
-                    tp += 1
-                elif not truth and predicted:
-                    fp += 1
-                elif truth and not predicted:
-                    fn += 1
-                else:
-                    tn += 1
+                if alert:
+                    alerts_evaluated += 1
+                    if truth and predicted:
+                        tp += 1
+                    elif not truth and predicted:
+                        fp += 1
+                    elif truth and not predicted:
+                        fn += 1
+                    else:
+                        tn += 1
                 processed += 1
                 latencies.append(latency_ms)
+                duration = float(measurement.get("duration_ms", 0.0))
+                attribution = (
+                    duration / duration_total
+                    if duration_total > 0
+                    else 1.0 / len(measurements)
+                )
                 rows.append(
                     {
                         **common,
@@ -234,6 +284,35 @@ def _run_event_stream(
                         "lost_reason": "",
                         "latency_ms": latency_ms,
                         "engine_duration_ms": measurement["duration_ms"],
+                        "process_cpu_ms": (
+                            float(response.get("process_cpu_ms", 0.0))
+                            * attribution
+                        ),
+                        "current_rss_kib": float(
+                            response.get("current_rss_kib", 0.0)
+                        ),
+                        "peak_rss_kib": float(
+                            response.get("peak_rss_kib", 0.0)
+                        ),
+                        "disk_read_bytes": (
+                            float(response.get("disk_read_bytes", 0.0))
+                            * attribution
+                        ),
+                        "disk_write_bytes": (
+                            float(response.get("disk_write_bytes", 0.0))
+                            * attribution
+                        ),
+                        "request_bytes": (
+                            float(response.get("request_bytes", 0.0))
+                            * attribution
+                        ),
+                        "response_bytes": (
+                            float(response.get("response_bytes", 0.0))
+                            * attribution
+                        ),
+                        "resource_attribution": (
+                            "batch-duration-proportional;rss-observed"
+                        ),
                         "role": endpoint.role,
                         "endpoint": endpoint.url,
                     }
@@ -247,7 +326,7 @@ def _run_event_stream(
                 remaining = [
                     (
                         index,
-                        specs[index % len(specs)],
+                        scheduled_spec(index),
                         started
                         + int((index / profile.events_per_second) * 1e9),
                     )
@@ -287,7 +366,7 @@ def _run_event_stream(
             items = [
                 (
                     index,
-                    specs[index % len(specs)],
+                    scheduled_spec(index),
                     started
                     + int((index / profile.events_per_second) * 1e9),
                 )
@@ -305,7 +384,7 @@ def _run_event_stream(
                     query_ids,
                     min(
                         load_config.request_timeout_seconds,
-                        load_config.point_timeout_seconds,
+                        point_budget,
                     ),
                 )
                 in_flight[future] = (endpoint, items)
@@ -332,8 +411,8 @@ def _run_event_stream(
         executor.shutdown(wait=False, cancel_futures=True)
 
     elapsed_ms = (perf_counter_ns() - started) / 1_000_000
-    precision = tp / (tp + fp) if tp + fp else 0.0
-    recall = tp / (tp + fn) if tp + fn else 0.0
+    precision = tp / (tp + fp) if tp + fp else ""
+    recall = tp / (tp + fn) if tp + fn else ""
     summary = {
         "events_offered": offered,
         "events_processed": processed,
@@ -350,15 +429,19 @@ def _run_event_stream(
         "alert_false_positive": fp,
         "alert_true_negative": tn,
         "alert_false_negative": fn,
+        "alerts_evaluated": alerts_evaluated,
+        "alert_evaluation_coverage_percent": (
+            alerts_evaluated / processed * 100 if processed else 0.0
+        ),
         "alert_precision": precision,
         "alert_accuracy": (
-            (tp + tn) / processed if processed else 0.0
+            (tp + tn) / alerts_evaluated if alerts_evaluated else ""
         ),
         "alert_recall": recall,
         "alert_f1": (
             2 * precision * recall / (precision + recall)
-            if precision + recall
-            else 0.0
+            if precision != "" and recall != "" and precision + recall
+            else ""
         ),
         "timed_out": lost > 0 and perf_counter_ns() >= deadline,
     }
@@ -438,18 +521,40 @@ def run_load_benchmark(
     output_root: Path,
     endpoint_urls: list[str] | None = None,
 ) -> Path:
-    if architecture not in {"docker", "physical"}:
-        raise ValueError("Load benchmark target must be docker or physical")
-    all_endpoints = discover_load_endpoints(endpoint_urls or [])
-    runtime = None
-    specs = _alert_specs(benchmark_config)
+    if architecture not in {"local", "docker", "physical"}:
+        raise ValueError(
+            "Load benchmark target must be local, docker or physical"
+        )
+    if architecture == "local":
+        from .node import NodeRuntime
+
+        runtime = NodeRuntime(
+            benchmark_config.root, "monolith", tier="cloud"
+        )
+        all_endpoints = [
+            Endpoint(
+                "local://monolith",
+                "monolith",
+                tier="cloud",
+                authority=True,
+                categories=tuple(benchmark_config.category_order),
+            )
+        ]
+    else:
+        runtime = None
+        all_endpoints = discover_load_endpoints(endpoint_urls or [])
+    specs = _workload_specs(benchmark_config)
     summary_rows: list[dict[str, Any]] = []
     event_rows: list[dict[str, Any]] = []
     node_rows: list[dict[str, Any]] = []
+    stopped_dimensions: dict[tuple[str, str], str] = {}
 
     for profile_index, profile in enumerate(load_config.profiles, start=1):
         requested_nodes = profile.node_count
-        effective_nodes = requested_nodes
+        # The monolithic control always has one execution node.  The requested
+        # profile value remains in the record, while comparisons use the
+        # effective node_count and therefore never present it as a 5-node run.
+        effective_nodes = 1 if architecture == "local" else requested_nodes
         if effective_nodes > len(all_endpoints):
             raise ValueError(
                 f"{architecture} exposes {len(all_endpoints)} nodes but "
@@ -473,6 +578,32 @@ def run_load_benchmark(
                     "requested_node_count": requested_nodes,
                     "node_count": effective_nodes,
                 }
+                stop_key = (reasoner, profile.dimension)
+                if (
+                    profile.dimension != "node_count"
+                    and stop_key in stopped_dimensions
+                ):
+                    summary_rows.append(
+                        {
+                            **common,
+                            "status": "skipped_after_timeout",
+                            "error": stopped_dimensions[stop_key],
+                            "events_offered": profile.offered_events,
+                            "events_processed": "",
+                            "events_lost": "",
+                            "timed_out": False,
+                            "timeout_phase": "early-stop",
+                            "timeout_seconds": load_config.point_timeout_seconds,
+                        }
+                    )
+                    print(
+                        "[load] "
+                        f"architecture={architecture} profile={profile.name} "
+                        f"dimension={profile.dimension} reasoner={reasoner} "
+                        "status=skipped_after_timeout",
+                        flush=True,
+                    )
+                    continue
                 print(
                     "[load] "
                     f"architecture={architecture} profile={profile.name} "
@@ -488,18 +619,20 @@ def run_load_benchmark(
                 prepared: dict[str, dict[str, Any]] = {}
                 prepare_wall_ms = 0.0
                 prepare_error = ""
+                prepare_timeout = min(
+                    load_config.request_timeout_seconds,
+                    load_config.point_timeout_seconds,
+                )
                 payload = _prepare_payload(
                     profile,
                     reasoner,
                     load_config.seed,
-                    load_config.request_timeout_seconds,
+                    prepare_timeout,
                 )
                 try:
                     if runtime is not None:
                         started = perf_counter_ns()
-                        with _local_timeout(
-                            load_config.request_timeout_seconds
-                        ):
+                        with _local_timeout(prepare_timeout):
                             prepared[endpoints[0].url] = runtime.prepare(
                                 **payload
                             )
@@ -512,7 +645,7 @@ def run_load_benchmark(
                             "/prepare",
                             {endpoint.url: payload for endpoint in endpoints},
                             phase="load-prepare",
-                            timeout=load_config.request_timeout_seconds,
+                            timeout=prepare_timeout,
                             retries=0,
                         )
                 except Exception as error:
@@ -552,7 +685,10 @@ def run_load_benchmark(
                         }
                     )
                     for event_id in range(offered):
-                        spec = specs[event_id % len(specs)]
+                        query_offset = (
+                            (repetition - 1) * offered
+                        ) % len(specs)
+                        spec = specs[(query_offset + event_id) % len(specs)]
                         event_rows.append(
                             {
                                 **common,
@@ -585,6 +721,11 @@ def run_load_benchmark(
                         f"error={prepare_error}",
                         flush=True,
                     )
+                    if (
+                        failure_status == "prepare_timeout"
+                        and profile.dimension != "node_count"
+                    ):
+                        stopped_dimensions[stop_key] = prepare_error
                     continue
 
                 if runtime is not None:
@@ -616,6 +757,14 @@ def run_load_benchmark(
                             retries=0,
                         )
 
+                elapsed_before_stream = (
+                    perf_counter_ns() - pipeline_started
+                ) / 1_000_000_000
+                remaining_point_budget = (
+                    load_config.point_timeout_seconds - elapsed_before_stream
+                )
+                if remaining_point_budget <= 0:
+                    remaining_point_budget = 0.001
                 stream_summary, events, role_metrics = _run_event_stream(
                     profile,
                     load_config,
@@ -623,6 +772,7 @@ def run_load_benchmark(
                     endpoints,
                     invoke,
                     common,
+                    point_timeout_seconds=remaining_point_budget,
                 )
                 event_rows.extend(events)
 
@@ -687,6 +837,14 @@ def run_load_benchmark(
                         else "completed"
                     )
                 )
+                if (
+                    status in {"workload_timeout", "recovery_timeout"}
+                    and profile.dimension != "node_count"
+                ):
+                    stopped_dimensions[stop_key] = (
+                        recovery_error
+                        or f"{profile.name} exceeded the configured point budget"
+                    )
                 summary_rows.append(
                     {
                         **common,
@@ -891,7 +1049,10 @@ def run_load_benchmark(
             for endpoint in all_endpoints
         ],
         "reasoners": list(benchmark_config.reasoners),
-        "alert_query_ids": [spec.id for spec in specs],
+        "query_ids": [spec.id for spec in specs],
+        "query_count": len(specs),
+        "alert_query_ids": [spec.id for spec in specs if _is_alert(spec)],
+        "alert_query_count": sum(_is_alert(spec) for spec in specs),
         "event_definition": "one scheduled SPARQL alert evaluation",
         "event_loss_definition": (
             "queue-capacity rejection, request/phase timeout or worker error"

@@ -12,14 +12,17 @@ After editing the topology, the complete workflow is:
 continuum-bench doctor --physical
 continuum-bench topology validate --name physical
 continuum-bench validate
+continuum-bench preflight
 continuum-bench physical authorize --ssh-user pi
 continuum-bench physical stop --ssh-user pi
 continuum-bench physical deploy --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
 
-continuum-smoke-cumulative --ssh-user pi
-continuum-smoke-scalability --ssh-user pi
+continuum-smoke-physical-cumulative --ssh-user pi
+continuum-smoke-physical-scalability --ssh-user pi
+continuum-smoke-physical-load
+continuum-smoke-physical-experiments
 
 continuum-bench physical all --layout sharded --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
@@ -89,14 +92,19 @@ to 32-bit Raspberry Pi workers and synchronizes the required project files.
 ## Smoke tests
 
 ```bash
-continuum-smoke-cumulative --ssh-user pi
-continuum-smoke-scalability --ssh-user pi
-continuum-smoke-cumulative --layout replicated --ssh-user pi
-continuum-smoke-scalability --layout replicated --ssh-user pi
+continuum-smoke-physical-cumulative --ssh-user pi
+continuum-smoke-physical-scalability --ssh-user pi
+continuum-smoke-physical-load
+continuum-smoke-physical-experiments
+continuum-smoke-physical-cumulative --layout replicated --ssh-user pi
+continuum-smoke-physical-scalability --layout replicated --ssh-user pi
 ```
 
-Smokes verify SSH/HTTP availability, partition transfer, bounded execution and
-result serialization. They are not performance evidence.
+The monitoring smokes accept `--ssh-user` because they load the physical
+inventory through the physical command. Load and experiment smokes use the
+already-running endpoints from the topology and therefore need no SSH option.
+Every smoke fails on timeout, skipped/incomplete result, semantic-reference
+failure or event loss. They are not performance evidence.
 
 ## Normal monitoring benchmarks
 
@@ -147,7 +155,7 @@ Static topology coordinates anchor the infrastructure. Deterministic client
 mobility is generated independently by the study module.
 
 ```bash
-continuum-bench study trace --target physical --topology-name physical \
+continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
 continuum-bench study category-cost \
   --events outputs/load/physical/event-runs.csv \
@@ -183,7 +191,9 @@ outputs/study/physical-cost/category-cost/
 The summaries include popularity, attributed request equivalents, completion
 rate, p50/p90/p95/p99 latency, mean engine time, structural complexity, total
 latency impact and any CPU, memory, disk or network fields present in the load
-events. A query linked to multiple policies contributes `1/N` to each policy,
+events. CPU, disk and HTTP bytes are attributed from each batch in proportion
+to query duration; RSS is reported as a mean/maximum stock measurement. A
+query linked to multiple policies contributes `1/N` to each policy,
 preventing duplicated total cost.
 
 ## Shutdown and troubleshooting
@@ -195,7 +205,10 @@ continuum-bench physical stop --ssh-user pi
 
 On timeout, inspect the affected worker's runtime log, memory pressure and
 network connectivity. The coordinator records the point as censored and does
-not wait indefinitely. Re-run `deploy` after code or dependency changes.
+not wait indefinitely. A scalability/cumulative timeout skips only larger
+points for the same reasoner; the remaining reasoners continue. Load and
+reasoning-hardware profiles also stop monotonically per reasoner/dimension.
+Re-run `deploy` after code or dependency changes.
 
 Balanced replicated queries use interleaved HTTP batches so the expensive
 prefix produced by LPT scheduling is distributed across rounds. After updating

@@ -16,7 +16,6 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from continuum_bench.environment import (  # noqa: E402
-    physical_checks,
     project_checks,
     require_checks,
     runtime_checks,
@@ -104,8 +103,6 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     worker = args.profile == "worker"
     checks = runtime_checks(worker=worker) + project_checks(ROOT)
-    if not worker:
-        checks.extend(physical_checks())
     try:
         require_checks(checks)
         destination = args.venv or ROOT / (".venv-node" if worker else ".venv")
@@ -150,6 +147,10 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Worker: PYTHONPATH=src {python} -m continuum_bench.node --help")
         else:
             print(f"Validation: {python} -m continuum_bench validate")
+            print(
+                "Optional targets: run 'continuum-bench doctor --docker' or "
+                "'continuum-bench doctor --physical' before those suites."
+            )
         return 0
     except (RuntimeError, OSError, ValueError) as error:
         print(f"[bootstrap] ERROR: {error}", file=sys.stderr)

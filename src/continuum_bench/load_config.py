@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from pathlib import Path
 import tomllib
 
@@ -110,6 +111,33 @@ def load_load_config(path: str | Path) -> LoadBenchmarkConfig:
         config.recovery_timeout_seconds,
     ) <= 0:
         raise ValueError("All load timeouts must be > 0")
+    if not all(
+        math.isfinite(value)
+        for value in (
+            config.request_timeout_seconds,
+            config.point_timeout_seconds,
+            config.recovery_timeout_seconds,
+        )
+    ):
+        raise ValueError("All load timeouts must be finite")
+    dimension_fields = {
+        "events_per_second": "events_per_second",
+        "users": "users",
+        "target_triples": "target_triples",
+        "rule_count": "rule_count",
+        "node_count": "node_count",
+    }
+    for dimension, field in dimension_fields.items():
+        values = [
+            getattr(profile, field)
+            for profile in profiles
+            if profile.dimension == dimension
+        ]
+        if values and values != sorted(set(values)):
+            raise ValueError(
+                f"Load profiles for {dimension} must be unique and "
+                "strictly increasing; timeout early-stop assumes monotonic load"
+            )
     return config
 
 

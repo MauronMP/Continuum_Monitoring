@@ -1,6 +1,6 @@
 # Policy-category cost and mobility study
 
-This module extends both Docker and physical monitoring benchmarks with a
+This module extends local, Docker and physical monitoring benchmarks with a
 configuration-driven study layer. Its purpose is to keep policy-category cost analysis,
 query-complexity characterization, ontology placement, mobility and network
 conditions explicit and reproducible.
@@ -44,11 +44,16 @@ inputs.
 ## Generated datasets
 
 ```bash
-.venv/bin/continuum-bench study trace
+.venv/bin/continuum-bench study trace --target local \
+  --output-dir outputs/study/local
 
 # Generate the same study trace against the local five-node Docker topology
-.venv/bin/continuum-bench study trace --target docker --topology-name docker \
+.venv/bin/continuum-bench study trace --target docker \
   --output-dir outputs/study/docker
+
+# Generate it against the physical topology
+.venv/bin/continuum-bench study trace --target physical \
+  --output-dir outputs/study/physical
 ```
 
 creates:
@@ -70,15 +75,26 @@ After running a physical load benchmark, aggregate request-level observations:
   --events outputs/load/physical/event-runs.csv
 ```
 
-Use `outputs/load/docker/event-runs.csv` for the Docker target and write each
+Use `outputs/load/local/event-runs.csv` or
+`outputs/load/docker/event-runs.csv` for the other targets and write each
 analysis to a separate output directory. The trace generator does not execute
 the scheduled requests: `execution_mode` and `concurrency` describe a
 replayable workload contract, while measured timing and resource values must
 come from load/benchmark event rows.
 
-The command produces category, policy and query summaries with popularity,
+The load event stream rotates through all 115 catalog queries; consequently,
+the command can produce category, policy and query summaries for all 16
+configured categories. It reports popularity,
 completion rate, latency percentiles, mean execution time, structural
 complexity and accumulated latency impact.
+
+For a completed microbatch, query CPU, disk and HTTP-body bytes are attributed
+in proportion to measured query duration. Batch RSS is an observed stock: the
+analysis reports its mean and maximum but never adds memory samples as if they
+were consumable work. The attribution method is persisted in each event row.
+Queries linked to multiple policies contribute `1/N` request and resource
+equivalents to each policy; policy popularity and completion rates therefore
+remain normalized instead of double-counting multi-policy queries.
 
 The analysis intentionally preserves independent metrics. It does not collapse
 latency, CPU, memory, network and energy into a single scalar score. Composite
