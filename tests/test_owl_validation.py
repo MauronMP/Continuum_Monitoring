@@ -151,3 +151,30 @@ def test_command_reasoner_timeout_is_bounded_and_reported(root):
     assert result["timeout_seconds"] == 0.1
     assert "started" in result["detail"]
     assert time.perf_counter() - started < 3
+
+
+def test_command_reasoner_accepts_konclude_native_consistency_wording(root):
+    result = owl_validation._run_command(
+        root,
+        root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+        "konclude-fixture",
+        {
+            "command": [
+                "{python}",
+                "-c",
+                (
+                    "print(\"Ontology '/tmp/ontology.owl.xml' "
+                    "is consistent.\")"
+                ),
+            ],
+            "consistent_pattern": (
+                r"(?i)ontology(?:\s+['\"][^'\"]+['\"])?"
+                r"\s+is\s+consistent\b"
+            ),
+            "inconsistent_pattern": r"(?i)\bis\s+inconsistent\b",
+        },
+        2,
+    )
+
+    assert result["status"] == "completed"
+    assert result["consistent"] is True

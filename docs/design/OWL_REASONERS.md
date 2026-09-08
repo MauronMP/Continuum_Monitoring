@@ -84,6 +84,11 @@ trees on one Java classpath can mix incompatible OWLAPI versions and fail in
 classpath is supplied automatically; Protégé is no longer required for
 command-line HermiT validation.
 
+The isolated JFact profile overrides its legacy transitive Guice dependency
+with Guice 5.1.0. JFact 5.0.3 otherwise selects Guice/CGLIB code that cannot
+initialize on Java 17. This compatibility dependency affects only the external
+JFact validation process; it is not deployed to benchmark nodes.
+
 ## Konclude execution
 
 `tools/owl/run_konclude.py` provides a stable adapter:
@@ -170,6 +175,13 @@ continuum-bench doctor --owl
 - HermiT `OWLManager`/injector failure: rerun the current installer. It replaces
   the former combined classpath with isolated reasoner classpaths and executes
   a factory self-test before reporting success.
+- JFact `ExceptionInInitializerError` in Guice/CGLIB: rerun the current
+  installer so that its isolated profile selects the pinned Java-17-compatible
+  Guice runtime.
+- Konclude exits with code 0 and prints `Ontology '...' is consistent`: this is
+  a successful result and is recognized by the adapter. Older configurations
+  accepted only the shorter `Ontology consistent` spelling; rerun with the
+  current `configs/owl-reasoners.toml`.
 - Timeout: a timeout means consistency is unknown, not inconsistent. The
   validator terminates the wrapper and its child process at the configured
   limit. Set `timeout_seconds` under an individual reasoner in

@@ -71,6 +71,15 @@ def install_java_reasoners() -> dict[str, str]:
             raise RuntimeError(
                 f"Maven produced an empty {name} validation classpath"
             )
+        if name == "jfact":
+            jar_names = {
+                Path(entry).name for entry in classpath.split(os.pathsep)
+            }
+            if "guice-5.1.0.jar" not in jar_names:
+                raise RuntimeError(
+                    "JFact classpath did not select the pinned "
+                    "Java-17-compatible guice-5.1.0.jar"
+                )
         classpaths[name] = classpath
 
     # Openllet's profile supplies a complete, known-working OWLAPI runtime for
@@ -167,7 +176,9 @@ def verify_konclude(konclude: str, classpaths: dict[str, str]) -> None:
         ) from error
     output = completed.stdout + "\n" + completed.stderr
     reports_consistent = re.search(
-        r"(?i)ontology\s+consistent|consistent\s*[:=]\s*true", output
+        r"(?i)ontology(?:\s+['\"][^'\"]+['\"])?\s+is\s+consistent\b"
+        r"|ontology\s+consistent\b|consistent\s*[:=]\s*true",
+        output,
     )
     if completed.returncode != 0 or not reports_consistent:
         raise RuntimeError(

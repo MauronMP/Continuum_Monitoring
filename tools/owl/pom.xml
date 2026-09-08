@@ -53,6 +53,16 @@
           <artifactId>jfact</artifactId>
           <version>5.0.3</version>
         </dependency>
+        <!--
+          JFact 5.0.3 transitively selects Guice 4.1.0, whose bundled CGLIB
+          initializer is incompatible with Java 17. Guice 5.1.0 is the first
+          release with explicit Java 17 class-definition support.
+        -->
+        <dependency>
+          <groupId>com.google.inject</groupId>
+          <artifactId>guice</artifactId>
+          <version>5.1.0</version>
+        </dependency>
       </dependencies>
     </profile>
   </profiles>

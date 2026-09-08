@@ -19,5 +19,5 @@ classpath_env = "CONTINUUM_JFACT_CLASSPATH"
 kind = "command"
 timeout_seconds = 180
 command = ["{python}", "{root}/tools/owl/run_konclude.py", "consistency", "-w", "AUTO", "-i", "{ontology}"]
-consistent_pattern = "(?i)ontology\\s+consistent|consistent\\s*[:=]\\s*true"
-inconsistent_pattern = "(?i)ontology\\s+inconsistent|consistent\\s*[:=]\\s*false"
+consistent_pattern = "(?i)ontology(?:\\s+['\"][^'\"]+['\"])?\\s+is\\s+consistent\\b|ontology\\s+consistent\\b|consistent\\s*[:=]\\s*true"
+inconsistent_pattern = "(?i)ontology(?:\\s+['\"][^'\"]+['\"])?\\s+is\\s+inconsistent\\b|ontology\\s+inconsistent\\b|consistent\\s*[:=]\\s*false"
