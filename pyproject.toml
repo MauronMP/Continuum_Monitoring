@@ -24,14 +24,10 @@ diagrams = ["reportlab>=4.4,<5"]
 continuum-bench = "continuum_bench.cli:main"
 continuum-smoke-cumulative = "continuum_bench.monitoring.smoke:main_cumulative"
 continuum-smoke-scalability = "continuum_bench.monitoring.smoke:main_scalability"
-continuum-smoke-local-cumulative = "continuum_bench.monitoring.smoke:main_local_cumulative"
-continuum-smoke-local-scalability = "continuum_bench.monitoring.smoke:main_local_scalability"
 continuum-smoke-physical-cumulative = "continuum_bench.monitoring.smoke:main_cumulative"
 continuum-smoke-physical-scalability = "continuum_bench.monitoring.smoke:main_scalability"
 continuum-smoke-physical-load = "continuum_bench.monitoring.smoke:main_physical_load"
-continuum-smoke-local-load = "continuum_bench.monitoring.smoke:main_local_load"
 continuum-smoke-physical-experiments = "continuum_bench.monitoring.smoke:main_physical_experiments"
-continuum-smoke-local-experiments = "continuum_bench.monitoring.smoke:main_local_experiments"
 continuum-smoke-engines = "continuum_bench.monitoring.smoke:main_engines"
 
 [tool.setuptools.packages.find]

@@ -61,21 +61,6 @@ def _metadata(
 ) -> dict[str, Any]:
     endpoint_hardware = []
     for endpoint in endpoints:
-        if endpoint.url.startswith("local://"):
-            endpoint_hardware.append(
-                {
-                    "url": endpoint.url,
-                    "role": endpoint.role,
-                    "tier": endpoint.tier,
-                    "python_version": platform.python_version(),
-                    "platform": platform.platform(),
-                    "machine": platform.machine(),
-                    "cpu_count": os.cpu_count() or 0,
-                    "pointer_bits": struct.calcsize("P") * 8,
-                    "total_memory_kib": 0,
-                }
-            )
-            continue
         try:
             health = _request(
                 endpoint.url,
@@ -144,27 +129,14 @@ def _save_metadata(path: Path, value: dict[str, Any]) -> None:
     )
 
 
-def _target_runtime(
+def _target_endpoints(
     config: BenchmarkConfig,
     target: str,
     endpoint_urls: list[str] | None,
-) -> tuple[object | None, list[Endpoint]]:
-    if target == "local":
-        from ..node import NodeRuntime
-
-        runtime = NodeRuntime(config.root, "monolith", tier="cloud")
-        return runtime, [
-            Endpoint(
-                "local://monolith",
-                "monolith",
-                tier="cloud",
-                authority=True,
-                categories=tuple(config.category_order),
-            )
-        ]
+) -> list[Endpoint]:
     if target not in {"physical"}:
-        raise ValueError("Experiment target must be local or physical")
-    return None, discover(endpoint_urls or [])
+        raise ValueError("Experiment target must be physical")
+    return discover(endpoint_urls or [])
 
 
 def _phase_payload(
@@ -193,28 +165,22 @@ def _phase_payload(
 
 
 def _prepare_one(
-    runtime: object | None,
     endpoint: Endpoint,
     payload: dict[str, Any],
     timeout: float,
 ) -> tuple[float, dict[str, Any]]:
     started = perf_counter_ns()
-    if runtime is not None:
-        with _local_timeout(timeout):
-            result = runtime.prepare(**payload)
-    else:
-        result = _request(
-            endpoint.url,
-            "/prepare",
-            payload,
-            timeout=timeout,
-            retries=0,
-        )
+    result = _request(
+        endpoint.url,
+        "/prepare",
+        payload,
+        timeout=timeout,
+        retries=0,
+    )
     return (perf_counter_ns() - started) / 1_000_000, result
 
 
 def _execute_one(
-    runtime: object | None,
     endpoint: Endpoint,
     query_ids: list[str],
     timeout: float,
@@ -222,36 +188,25 @@ def _execute_one(
     include_result_keys: bool = False,
 ) -> tuple[float, dict[str, Any]]:
     started = perf_counter_ns()
-    if runtime is not None:
-        with _local_timeout(timeout):
-            result = runtime.execute(
-                query_ids,
-                include_result_keys=include_result_keys,
-            )
-    else:
-        result = _request(
-            endpoint.url,
-            "/queries",
-            {
-                "query_ids": query_ids,
-                "include_result_keys": include_result_keys,
-                "phase_timeout_seconds": max(timeout - 1.0, 0.1),
-            },
-            timeout=timeout,
-            retries=0,
-        )
+    result = _request(
+        endpoint.url,
+        "/queries",
+        {
+            "query_ids": query_ids,
+            "include_result_keys": include_result_keys,
+            "phase_timeout_seconds": max(timeout - 1.0, 0.1),
+        },
+        timeout=timeout,
+        retries=0,
+    )
     return (perf_counter_ns() - started) / 1_000_000, result
 
 
 def _replicated_prepare(
-    runtime: object | None,
     endpoints: list[Endpoint],
     payload: dict[str, Any],
     timeout: float,
 ) -> tuple[float, dict[str, dict[str, Any]]]:
-    if runtime is not None:
-        wall, result = _prepare_one(runtime, endpoints[0], payload, timeout)
-        return wall, {endpoints[0].url: result}
     return _parallel(
         endpoints,
         "/prepare",
@@ -263,22 +218,12 @@ def _replicated_prepare(
 
 
 def _execute_query_assignment(
-    runtime: object | None,
     endpoints: list[Endpoint],
     assignment: dict[str, list[str]],
     timeout: float,
     *,
     include_result_keys: bool = False,
 ) -> tuple[float, dict[str, dict[str, Any]]]:
-    if runtime is not None:
-        wall, result = _execute_one(
-            runtime,
-            endpoints[0],
-            assignment[endpoints[0].url],
-            timeout,
-            include_result_keys=include_result_keys,
-        )
-        return wall, {endpoints[0].url: result}
     payloads = {
         endpoint.url: {
             "query_ids": assignment[endpoint.url],
@@ -299,7 +244,6 @@ def _execute_query_assignment(
 
 
 def _calibrate_query_costs(
-    runtime: object | None,
     endpoints: list[Endpoint],
     specs: list[QuerySpec],
     timeout: float,
@@ -317,7 +261,6 @@ def _calibrate_query_costs(
     for _ in range(max(rounds, 1)):
         assignment = {endpoint.url: query_ids for endpoint in endpoints}
         _, responses = _execute_query_assignment(
-            runtime,
             endpoints,
             assignment,
             timeout,
@@ -400,12 +343,12 @@ def run_scale_out(
 ) -> Path:
     """Measure query scale-out after an explicitly excluded prepare phase."""
 
-    runtime, all_endpoints = _target_runtime(config, target, endpoint_urls)
+    all_endpoints = _target_endpoints(config, target, endpoint_urls)
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     summary_rows: list[dict[str, Any]] = []
     query_rows: list[dict[str, Any]] = []
     node_counts = (
-        (1,) if target == "local" else workload.scale_out_node_counts
+        workload.scale_out_node_counts
     )
     timeout = workload.request_timeout_seconds
     point_timeout = workload.point_timeout_seconds
@@ -453,7 +396,6 @@ def run_scale_out(
                 point_started = monotonic()
                 try:
                     prepare_wall_ms, prepared = _replicated_prepare(
-                        runtime,
                         endpoints,
                         payload,
                         min(timeout, remaining_seconds(point_started, point_timeout)),
@@ -492,7 +434,6 @@ def run_scale_out(
                 try:
                     query_costs, calibration_consistent = (
                         _calibrate_query_costs(
-                            runtime,
                             endpoints,
                             specs,
                             min(
@@ -541,7 +482,6 @@ def run_scale_out(
                             rotation=query_round - 1,
                         )
                         query_wall_ms, responses = _execute_query_assignment(
-                            runtime,
                             endpoints,
                             assignment,
                             min(
@@ -710,7 +650,7 @@ def run_reasoning_hardware(
 ) -> Path:
     """Measure each hardware endpoint independently, never as a cluster."""
 
-    runtime, endpoints = _target_runtime(config, target, endpoint_urls)
+    endpoints = _target_endpoints(config, target, endpoint_urls)
     rows: list[dict[str, Any]] = []
     timeout = min(
         workload.request_timeout_seconds,
@@ -769,7 +709,7 @@ def run_reasoning_hardware(
                         continue
                     try:
                         wall_ms, result = _prepare_one(
-                            runtime, endpoint, payload, timeout
+                            endpoint, payload, timeout
                         )
                     except Exception as error:
                         status = failure_status(error)
@@ -854,7 +794,7 @@ def run_distributed_ontology(
 ) -> Path:
     """Compare one logical graph with an elastic authority partition."""
 
-    runtime, endpoints = _target_runtime(config, target, endpoint_urls)
+    endpoints = _target_endpoints(config, target, endpoint_urls)
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     summary_rows: list[dict[str, Any]] = []
     query_rows: list[dict[str, Any]] = []
@@ -902,72 +842,45 @@ def run_distributed_ontology(
                         workload,
                         reasoner=reasoner,
                         users=users,
-                        mode=("replicated" if runtime is not None else "partitioned"),
+                        mode=("partitioned"),
                     )
-                    if runtime is not None:
-                        prepare_wall_ms, prepared = _replicated_prepare(
-                            runtime,
-                            endpoints,
-                            payload,
-                            min(
-                                timeout,
-                                remaining_seconds(point_started, point_timeout),
-                            ),
-                        )
-                        assignment = {
-                            endpoints[0].url: list(specs)
-                        }
-                        query_wall_ms, responses = _execute_query_assignment(
-                            runtime,
-                            endpoints,
-                            {
-                                endpoints[0].url: [spec.id for spec in specs]
-                            },
-                            min(
-                                timeout,
-                                remaining_seconds(point_started, point_timeout),
-                            ),
-                            # Point-level budget includes preparation.
-                            include_result_keys=True,
-                        )
-                    else:
-                        prepare_wall_ms, prepared = _parallel(
-                            endpoints,
-                            "/prepare",
-                            {
-                                endpoint.url: payload for endpoint in endpoints
-                            },
-                            phase="experiment-partitioned-prepare",
-                            timeout=min(
-                                timeout,
-                                remaining_seconds(point_started, point_timeout),
-                            ),
-                            retries=0,
-                        )
-                        assignment = sharded_assignment(specs, endpoints)
-                        query_wall_ms, responses = _parallel(
-                            endpoints,
-                            "/queries",
-                            {
-                                url: {
-                                    "query_ids": [
-                                        spec.id for spec in assigned
-                                    ],
-                                    "include_result_keys": True,
-                                    "phase_timeout_seconds": max(
-                                        timeout - 1.0, 0.1
-                                    ),
-                                }
-                                for url, assigned in assignment.items()
-                                if assigned
-                            },
-                            phase="experiment-federated-queries",
-                            timeout=min(
-                                timeout,
-                                remaining_seconds(point_started, point_timeout),
-                            ),
-                            retries=0,
-                        )
+                    prepare_wall_ms, prepared = _parallel(
+                        endpoints,
+                        "/prepare",
+                        {
+                            endpoint.url: payload for endpoint in endpoints
+                        },
+                        phase="experiment-partitioned-prepare",
+                        timeout=min(
+                            timeout,
+                            remaining_seconds(point_started, point_timeout),
+                        ),
+                        retries=0,
+                    )
+                    assignment = sharded_assignment(specs, endpoints)
+                    query_wall_ms, responses = _parallel(
+                        endpoints,
+                        "/queries",
+                        {
+                            url: {
+                                "query_ids": [
+                                    spec.id for spec in assigned
+                                ],
+                                "include_result_keys": True,
+                                "phase_timeout_seconds": max(
+                                    timeout - 1.0, 0.1
+                                ),
+                            }
+                            for url, assigned in assignment.items()
+                            if assigned
+                        },
+                        phase="experiment-federated-queries",
+                        timeout=min(
+                            timeout,
+                            remaining_seconds(point_started, point_timeout),
+                        ),
+                        retries=0,
+                    )
                     merged, raw = _merge_responses(
                         specs, endpoints, responses, common
                     )
@@ -1074,26 +987,18 @@ def run_distributed_ontology(
     metadata.update(
         {
             "layout": (
-                "canonical-single-node"
-                if target == "local"
-                else "authority-and-privacy-partitioned"
+                "authority-and-privacy-partitioned"
             ),
             "logical_dataset_is_equal_to_reference_graph": True,
             "distributed_reasoning": (
-                "single-process canonical materialisation"
-                if target == "local"
-                else (
-                    "local materialisation per fragment plus federated "
+                "local materialisation per fragment plus federated "
                     "query merge"
-                )
             ),
             "validation": (
                 "exact order-independent result bag against canonical reference graph"
             ),
             "ontology_placement_manifest": (
-                "not-applicable-single-node-control"
-                if target == "local"
-                else str(config.root / "configs/ontology-placement.toml")
+                str(config.root / "configs/ontology-placement.toml")
             ),
             "users": list(workload.distributed_users),
         }

@@ -100,7 +100,6 @@ def project_checks(root: Path) -> list[Check]:
         "pyproject.toml",
         "configs/benchmark.toml",
         "configs/owl-reasoners.toml",
-        "configs/topologies/monolith/topology.toml",
         "configs/topologies/physical/topology.toml",
         "engine-service/pom.xml",
         "queries/catalog.csv",
@@ -131,7 +130,7 @@ def project_checks(root: Path) -> list[Check]:
             from .topology import load_topology_manifest
 
             details = []
-            for architecture in ("monolith", "physical"):
+            for architecture in ("physical",):
                 manifest = load_topology_manifest(
                     root
                     / f"configs/topologies/{architecture}/topology.toml"
@@ -148,7 +147,7 @@ def project_checks(root: Path) -> list[Check]:
                     "error",
                     str(error),
                     (
-                        "Fix configs/topologies/{monolith,physical}/*.toml and run "
+                        "Fix configs/topologies/physical/*.toml and run "
                         "'continuum-bench topology validate'."
                     ),
                 )

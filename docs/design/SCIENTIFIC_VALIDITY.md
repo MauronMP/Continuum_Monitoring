@@ -1,7 +1,7 @@
 # Scientific validity and limitations
 
 This repository provides a reproducible validation and performance
-infrastructure for a modular monitoring ontology on a native monolith and
+infrastructure for a modular monitoring ontology on an elastic
 physical nodes. It is not an ontology standard or formal certification.
 Passing the suite supports only the structural, functional and performance
 claims that are explicitly tested.

@@ -19,7 +19,7 @@ REASONER_LABELS = {
     "owlrl": "OWL RL",
     "rdfs_owlrl": "RDFS + OWL RL",
 }
-ARCHITECTURES = ("local", "physical")
+ARCHITECTURES = ("physical",)
 
 
 def _rows(root: Path, experiment: str) -> list[dict[str, str]]:

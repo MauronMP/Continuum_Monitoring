@@ -12,7 +12,6 @@ the same bounded workload can be measured without hiding failures.
 
 | Objective | Implementation | Status |
 |---|---|---|
-| Native one-node control | `continuum-bench local` and the monolith topology | Implemented |
 | Elastic physical continuum | SSH deployment from per-tier TOML files | Implemented |
 | Cumulative category workload | Adds catalog categories and runs all accumulated queries | Implemented |
 | Synthetic scalability | Increases users and ABox volume with bounded right-censoring | Implemented |
@@ -22,7 +21,7 @@ the same bounded workload can be measured without hiding failures.
 | Independent RDF products | RDFLib, Apache Jena, Eclipse RDF4J and Oxigraph | Implemented in an isolated product matrix |
 | OWL 2 DL validation | HermiT, Openllet, JFact and Konclude | Implemented as a separate consistency gate |
 | Policy/category/query cost | Event attribution, including fractional attribution | Implemented |
-| Native architecture figures | Matched local and physical observations | Implemented |
+| Physical figures | Resource and workload observations from continuum nodes | Implemented |
 
 ## Critical findings corrected
 
@@ -41,9 +40,6 @@ the same bounded workload can be measured without hiding failures.
 5. Old smokes could return zero without examining their result tables. Every
    smoke now writes to `outputs/smoke`, checks the expected summaries and rejects
    timeout, error, loss or semantic-validation rows.
-6. A prior cleanup removed the native monolith runner and the independent
-   semantic-product matrix. Both have been restored as explicit, separately
-   documented execution paths.
 7. Custom elastic node identifiers could trigger eager tier inference despite a
    configured tier. Node startup now honours the declared tier first.
 9. The duplicate flat physical inventory was removed. The layered topology is
@@ -211,3 +207,20 @@ Shared mode aliases the distributed-data/shared-schema treatment. Workers execut
 queries serially; client concurrency measures queueing pressure. Cross-host
 coordinator scheduling remains external. These boundaries are explicit in the
 architecture guide and are not reported as completed future functionality.
+
+
+## Physical-only execution acceptance
+
+The execution surface now contains only the continuum topology. Cumulative and
+scalability execution, load generation, separated experiments and study traces
+all use physical nodes. The retired execution module, configuration inventory,
+console scripts, tests and comparison-ratio plots have been removed. Native
+ontology consistency checks and canonical result validation remain semantic
+acceptance checks, outside measured experiment execution.
+
+The current software suite passes 227 tests; one optional Graphviz renderer test
+is skipped. The physical load smoke completes six points without lost events.
+Load plots render successfully using the physical results alone. The cleanup
+was synchronized to all four remote workers and file absence was checked over
+SSH. Evidence is stored in `outputs/audit/physical-only-tests.xml` and
+`outputs/audit/physical-only-load`.

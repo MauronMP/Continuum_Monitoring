@@ -1,4 +1,0 @@
-[layer]
-tier = "iot"
-
-# Intentionally empty for the single-node reference architecture.

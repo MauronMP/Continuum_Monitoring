@@ -120,7 +120,6 @@ reasoner is missing, times out, reports inconsistency or cannot complete.
 
 ```bash
 continuum-bench doctor --physical --owl
-continuum-bench topology validate --name monolith
 continuum-bench topology validate --name physical
 continuum-bench validate
 continuum-bench preflight

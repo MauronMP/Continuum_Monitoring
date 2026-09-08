@@ -408,16 +408,9 @@ def _validate_topology(topology: Topology) -> None:
             f"Topology {topology.name!r} requires at least one authority node "
             "for privacy-aware partitioning"
         )
-    if topology.kind == "monolith":
-        if len(nodes) != 1 or not nodes[0].local:
-            raise ValueError(
-                f"Monolith topology {topology.name!r} must contain exactly "
-                "one local node"
-            )
-        return
     if topology.kind != "physical":
         raise ValueError(
-            f"Topology {topology.name!r}: kind must be monolith or physical"
+            f"Topology {topology.name!r}: kind must be physical"
         )
     if not any(node.local for node in nodes):
         raise ValueError(

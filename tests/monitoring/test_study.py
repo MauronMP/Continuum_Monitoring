@@ -66,20 +66,6 @@ def test_generate_study_trace_is_reproducible(config, tmp_path):
 
 
 
-def test_generate_study_trace_can_target_local_control(config, tmp_path):
-    study = load_study_config(config.root / "configs/policy-cost-study.toml")
-
-    outputs = generate_study_trace(
-        config,
-        study,
-        tmp_path / "local",
-        target="local",
-    )
-
-    metadata = Path(outputs[-1]).read_text(encoding="utf-8")
-    assert '"target": "local"' in metadata
-    assert '"topology_name": "monolith"' in metadata
-    assert '"node_count": 1' in metadata
 
 
 def test_category_cost_analysis_joins_query_metadata(config, tmp_path):

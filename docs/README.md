@@ -6,7 +6,6 @@ Start here:
 
 - [User Guide](USER_GUIDE.md): shared concepts, validation and result
   interpretation.
-- [Monolith Guide](design/MONOLITH_GUIDE.md): native one-node control campaign.
 - [Physical Continuum Guide](design/PHYSICAL_CONTINUUM.md): SSH deployment and
   complete physical-worker campaign.
 - [Architecture](design/ARCHITECTURE.md): module and infrastructure boundaries.

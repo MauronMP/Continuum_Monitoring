@@ -1,13 +1,12 @@
 # Architecture
 
-The project is an infrastructure-neutral monitoring benchmark with a native
-monolith control plus a physical deployment adapter.
+The project separates reusable domain concepts from monitoring experiments
+executed through the physical continuum deployment adapter.
 
 | Boundary | Package or path | Responsibility |
 | --- | --- | --- |
 | Core domain | `src/continuum_bench/core` | Nodes, resource capacity, geographic position, dynamic metrics and reasoner descriptors. |
 | Semantic assets | `ontology`, `queries`, `docs/reference` | Modular ontology, SHACL shapes, SPARQL catalog, policies and requirements. |
-| Native control | `src/continuum_bench/monitoring/benchmark.py` | One-process cumulative and scalability baseline without HTTP overhead. |
 | Monitoring module | `src/continuum_bench/monitoring` | Shared cumulative/scalability orchestration for distributed targets. |
 | Study module | `src/continuum_bench/monitoring/study` | Reproducible workload traces, mobility models, link estimates, SPARQL feature extraction and category-cost aggregation. |
 | Worker runtime | `src/continuum_bench/node.py` | Identical HTTP worker executed on physical nodes. |

@@ -15,8 +15,12 @@ def test_scale_out_timeout_skips_repetitions_but_continues_reasoners(
     workload = replace(
         load_experiment_config(config.root / "configs/experiments-smoke.toml"),
         repetitions=3,
+        scale_out_node_counts=(1,),
     )
     selected_config = replace(config, reasoners=("rdfs", "owlrl"))
+    from continuum_bench.distributed import Endpoint
+    monkeypatch.setattr(experiments, "discover", lambda *_: [Endpoint("http://worker:8391", "cloud")])
+    monkeypatch.setattr(experiments, "_metadata", lambda *args: {})
     calls = []
 
     def timeout(*args, **kwargs):
@@ -28,7 +32,7 @@ def test_scale_out_timeout_skips_repetitions_but_continues_reasoners(
     output = experiments.run_scale_out(
         selected_config,
         workload,
-        "local",
+        "physical",
         tmp_path,
     )
 

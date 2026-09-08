@@ -1,15 +1,14 @@
 # Modular physical monitoring
 
-The distributed deployment is physical. The native single-process runner remains
-an optional control measurement; it is not an infrastructure deployment target.
-The default campaign evaluates actual HTTP workers on the physical continuum.
+All benchmark execution targets physical HTTP workers in the continuum.
+Canonical graph computations on the coordinator only validate result semantics;
+they are excluded from benchmark performance measurements.
 
 ## Repository structure
 
 ```text
 configs/
   topologies/physical/       Physical inventory and per-tier resources
-  topologies/monolith/       Optional native reference inventory
   campaign-smoke.toml        Ten-axis acceptance campaign
   campaign.toml              Repeated configurable campaign
   benchmark.toml             Canonical ontology monitoring
@@ -27,7 +26,6 @@ src/continuum_bench/
     campaign_results.py     Versioned structured evidence sink
     provenance.py           Source snapshot and dependency evidence
     normalize.py            Canonical envelope for retained scientific suites
-    benchmark.py            Single-process scientific reference
     distributed.py          HTTP transport and common distributed execution
     physical.py             Calibrated replica execution
     sharded.py              Authority-aware canonical ontology execution

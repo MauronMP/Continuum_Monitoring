@@ -1,6 +1,6 @@
 # Policy-category cost and mobility study
 
-This module extends local and physical monitoring benchmarks with a
+This module extends physical continuum monitoring benchmarks with a
 configuration-driven study layer. Its purpose is to keep policy-category cost analysis,
 query-complexity characterization, ontology placement, mobility and network
 conditions explicit and reproducible.
@@ -44,8 +44,6 @@ inputs.
 ## Generated datasets
 
 ```bash
-.venv/bin/continuum-bench study trace --target local \
-  --output-dir outputs/study/local
 
 .venv/bin/continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
@@ -74,7 +72,6 @@ After running a physical load benchmark, aggregate request-level observations:
   --events outputs/load/physical/event-runs.csv
 ```
 
-Use `outputs/load/local/event-runs.csv` or
 `outputs/load/physical/event-runs.csv` for the other targets and write each
 analysis to a separate output directory. The trace generator does not execute
 the scheduled requests: `execution_mode` and `concurrency` describe a

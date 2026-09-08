@@ -124,7 +124,7 @@ def test_event_stream_measures_latency_throughput_loss_and_alert_accuracy(
         profile,
         _config(tmp_path),
         specs,
-        [Endpoint("local://cloud", "cloud")],
+        [Endpoint("http://worker:8391", "cloud")],
         invoke,
         {"architecture": "physical"},
     )
@@ -187,7 +187,7 @@ def test_event_stream_records_queue_loss(tmp_path):
         profile,
         workload,
         specs,
-        [Endpoint("local://cloud", "cloud")],
+        [Endpoint("http://worker:8391", "cloud")],
         slow_invoke,
         {},
     )
@@ -222,7 +222,7 @@ def test_point_timeout_returns_without_waiting_for_running_worker(tmp_path):
         profile,
         workload,
         [_spec("POS", "true")],
-        [Endpoint("local://cloud", "cloud")],
+        [Endpoint("http://worker:8391", "cloud")],
         blocked_worker,
         {},
     )

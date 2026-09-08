@@ -15,7 +15,7 @@ def _parser() -> argparse.ArgumentParser:
         prog="continuum-bench",
         description=(
             "Validate and benchmark the policy-aware monitoring ontology on "
-            "native local and physical continuum infrastructures."
+            "physical continuum infrastructure."
         ),
     )
     parser.add_argument(
@@ -107,14 +107,7 @@ def _parser() -> argparse.ArgumentParser:
     topology.add_argument("action", choices=("validate", "show"))
     topology.add_argument("--name", default="physical")
 
-    local = subparsers.add_parser(
-        "local",
-        help="Run the single-process monolithic reference benchmark",
-    )
-    local.add_argument(
-        "action", choices=("cumulative", "scalability", "all")
-    )
-    local.add_argument("--output-dir", default="outputs/local")
+
 
     fragments = subparsers.add_parser(
         "fragments",
@@ -162,7 +155,7 @@ def _parser() -> argparse.ArgumentParser:
         help="Run or plot the distributed load benchmark",
     )
     load.add_argument(
-        "target", choices=("local", "physical", "plot")
+        "target", choices=("physical", "plot")
     )
     load.add_argument(
         "--load-config",
@@ -188,7 +181,7 @@ def _parser() -> argparse.ArgumentParser:
     experiment = subparsers.add_parser(
         "experiment",
         help=(
-            "Run local/physical scale-out, hardware reasoning or "
+            "Run physical scale-out, hardware reasoning or "
             "distributed-ontology experiments"
         ),
     )
@@ -200,7 +193,7 @@ def _parser() -> argparse.ArgumentParser:
     def add_experiment_arguments(command_parser: argparse.ArgumentParser) -> None:
         command_parser.add_argument(
             "target",
-            choices=("local", "physical"),
+            choices=("physical",),
             nargs="?",
             default="physical",
         )
@@ -258,7 +251,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     study.add_argument(
         "--target",
-        choices=("local", "physical"),
+        choices=("physical",),
         default="physical",
         help="Execution topology used to generate the trace",
     )
@@ -279,7 +272,7 @@ def _manifest_path(config, override: str | None) -> Path:
 def _target_manifest_path(config, override: str | None, target: str) -> Path:
     if override:
         return _manifest_path(config, override)
-    if target in {"monolith", "physical"}:
+    if target in {"physical"}:
         return config.root / f"configs/topologies/{target}/topology.toml"
     return _manifest_path(config, None)
 
@@ -461,20 +454,6 @@ def _dispatch(args) -> int:
         print(json.dumps(selected.public(), indent=2, ensure_ascii=False))
         return 0
 
-    if args.command == "local":
-        from .benchmark import run_cumulative, run_scalability
-
-        output = Path(args.output_dir)
-        if not output.is_absolute():
-            output = config.root / output
-        local_config = replace(config, output_dir=output)
-        outputs: dict[str, str] = {}
-        if args.action in {"cumulative", "all"}:
-            outputs["cumulative"] = str(run_cumulative(local_config))
-        if args.action in {"scalability", "all"}:
-            outputs["scalability"] = str(run_scalability(local_config))
-        print(json.dumps(outputs, indent=2, ensure_ascii=False))
-        return 0
 
     if args.command == "fragments":
         from .monitoring import export_physical_fragments
@@ -551,9 +530,8 @@ def _dispatch(args) -> int:
 
         validate_load_workload(config, workload)
         endpoints = None
-        if args.target != "local":
-            topology = _target_topology(config, args, args.target)
-            endpoints = topology.endpoints()
+        topology = _target_topology(config, args, args.target)
+        endpoints = topology.endpoints()
         output = run_load_benchmark(
             config,
             workload,
@@ -617,9 +595,8 @@ def _dispatch(args) -> int:
         if args.reasoner:
             config = replace(config, reasoners=tuple(args.reasoner))
         endpoints = None
-        if args.target != "local":
-            topology = _target_topology(config, args, args.target)
-            endpoints = topology.endpoints()
+        topology = _target_topology(config, args, args.target)
+        endpoints = topology.endpoints()
         selected = (
             EXPERIMENTS
             if args.experiment_name == "all"
@@ -700,7 +677,7 @@ def main(argv: list[str] | None = None) -> int:
     lease = physical_lease(load_config(args.config).root) if physical_work else nullcontext()
     with lease:
         status = _dispatch(args)
-        if args.command in {"physical", "local", "load", "experiment", "engines"} and hasattr(args, "output_dir"):
+        if args.command in {"physical", "load", "experiment", "engines"} and hasattr(args, "output_dir"):
             from .monitoring.normalize import normalize_completed_outputs
             config = load_config(args.config)
             normalize_completed_outputs(config, config.resolve(Path(args.output_dir)), started_ns)

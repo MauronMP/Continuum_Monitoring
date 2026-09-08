@@ -10,7 +10,6 @@ Target-specific preparation is documented separately in the
 
 ```bash
 continuum-bench doctor --physical --owl
-continuum-bench topology validate --name monolith
 continuum-bench topology validate --name physical
 continuum-bench validate
 continuum-bench preflight
@@ -23,26 +22,6 @@ git diff --check
 For a release in an environment where all external reasoners are installed,
 replace `owl-validate` with `owl-validate --require-all`.
 
-## B. Complete monolith suite
-
-```bash
-continuum-smoke-local-cumulative
-continuum-smoke-local-scalability
-continuum-smoke-local-load
-continuum-smoke-local-experiments
-
-continuum-bench local all
-continuum-bench load local
-continuum-bench experiment all local
-continuum-bench study trace --target local \
-  --output-dir outputs/study/local
-continuum-bench study category-cost \
-  --events outputs/load/local/event-runs.csv \
-  --output-dir outputs/study/local-cost
-```
-
-The monolith provides the native one-node baseline used by architecture
-comparisons. See the [monolith guide](MONOLITH_GUIDE.md).
 
 ## D. Complete physical suite
 
@@ -102,8 +81,6 @@ summaries, so all four names are guaranteed to appear in a valid figure.
 ## F. Individual monitoring blocks
 
 ```bash
-continuum-bench local cumulative
-continuum-bench local scalability
 continuum-bench physical cumulative --layout sharded --ssh-user pi
 continuum-bench physical scalability --layout sharded --ssh-user pi
 ```
@@ -120,15 +97,12 @@ continuum-bench load physical --dimension rule_count
 continuum-bench load physical --dimension node_count
 ```
 
-Replace `physical` with `local`, or select one named configuration with
+Select one named configuration with
 `--profile <profile-name>`.
 
 ## H. Individual scientific experiments
 
 ```bash
-continuum-bench experiment scale-out local
-continuum-bench experiment reasoning-hardware local
-continuum-bench experiment distributed-ontology local
 
 
 continuum-bench experiment scale-out physical

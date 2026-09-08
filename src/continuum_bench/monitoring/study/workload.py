@@ -34,9 +34,9 @@ def generate_study_trace(
     """Generate reproducible request, mobility and query-feature datasets."""
 
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
-    if target not in {"local", "physical"}:
-        raise ValueError("Study target must be local or physical")
-    topology_key = "monolith" if target == "local" else target
+    if target not in {"physical"}:
+        raise ValueError("Study target must be physical")
+    topology_key = target
     selected_name = topology_name or topology_key
     topology_path = (
         config.root / f"configs/topologies/{topology_key}/topology.toml"

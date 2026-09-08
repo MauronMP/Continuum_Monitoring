@@ -125,30 +125,6 @@ def _run_monitoring(target: str, suite: str) -> int:
     )
 
 
-def _run_local_monitoring(suite: str) -> int:
-    root = _project_root()
-    arguments = list(sys.argv[1:])
-    default_output = "outputs/smoke/local-monitoring"
-    output = _option(arguments, "--output-dir", default_output)
-    status = main(
-        [
-            "--config",
-            str(root / f"configs/smoke-{suite}.toml"),
-            "local",
-            suite,
-            "--output-dir",
-            default_output,
-            *arguments,
-        ]
-    )
-    if status:
-        return status
-    output_root = Path(output)
-    if not output_root.is_absolute():
-        output_root = root / output_root
-    return _require_completed_summaries(
-        [output_root / suite / "summary.csv"]
-    )
 
 
 
@@ -237,12 +213,8 @@ def main_scalability() -> int:
 
 
 
-def main_local_cumulative() -> int:
-    return _run_local_monitoring("cumulative")
 
 
-def main_local_scalability() -> int:
-    return _run_local_monitoring("scalability")
 
 
 def main_physical_load() -> int:
@@ -251,8 +223,6 @@ def main_physical_load() -> int:
 
 
 
-def main_local_load() -> int:
-    return _run_load("local")
 
 
 def main_physical_experiments() -> int:
@@ -261,8 +231,6 @@ def main_physical_experiments() -> int:
 
 
 
-def main_local_experiments() -> int:
-    return _run_experiments("local")
 
 
 def main_engines() -> int:

@@ -3,8 +3,6 @@
 This page contains the workflow shared by every execution target. Operational
 instructions are intentionally separated:
 
-- [Monolith guide](design/MONOLITH_GUIDE.md): native one-process control,
-  smokes, benchmarks, load and experiments.
 - [Physical continuum guide](design/PHYSICAL_CONTINUUM.md): coordinator,
   Raspberry Pi workers, SSH deployment, smokes and physical campaigns.
 - [Command reference](design/COMMAND_REFERENCE.md): copy-and-run commands for
@@ -27,7 +25,6 @@ Physical deployment requires SSH/rsync on the coordinator and Python 3.11+, `ven
 ## Common acceptance checks
 
 ```bash
-continuum-bench topology validate --name monolith
 continuum-bench topology validate --name physical
 continuum-bench validate
 continuum-bench preflight
@@ -48,10 +45,9 @@ continuum-bench owl-validate --require-all
 
 ## Elastic configuration
 
-Both native targets have independent manifests and tier files:
+The physical continuum has one manifest and per-tier inventory files:
 
 ```text
-configs/topologies/monolith/{topology.toml,nodes/*.toml}
 configs/topologies/physical/{topology.toml,nodes/*.toml}
 ```
 
@@ -73,20 +69,17 @@ Choose the smallest family that answers the research question:
 - Study commands generate reproducible workload/mobility traces and aggregate
   category, policy and query costs from measured event data.
 
-`local all`, `physical all` run cumulative plus scalability
-only. There is no literal `load all` subcommand: unfiltered `load local`,
-`load physical` or `load physical` means all configured load profiles.
-`experiment all <target>` runs the three
-separated scientific experiments, not the normal or load benchmarks.
+`physical all` runs cumulative and scalability suites. `load physical` runs
+all configured load profiles, and `experiment all physical` runs the three
+separate scientific experiments.
 
 ## Results and interpretation
 
 Results are written under `outputs/` with metadata describing target,
 topology, layout, reasoner, profile, repetitions and budgets. Timeouts are
 right-censored observations: they remain visible in coverage reporting and are
-not converted into zero latency. Architecture ratios use only matched,
-completed rows; Physical speedups use the matching monolith row as
-their baseline.
+not converted into zero latency. Compare completed physical observations with
+matching workloads and disclose node counts and placement layouts.
 
 RDFLib, Jena, RDF4J and Oxigraph are exercised without naming each engine:
 

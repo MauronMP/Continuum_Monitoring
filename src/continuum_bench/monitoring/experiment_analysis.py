@@ -1,4 +1,4 @@
-"""Cross-architecture analysis for monitoring experiments."""
+"""Analysis of monitoring experiments on physical continuum nodes."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from ..result_contract import require_release_metadata
 
 
 EXPERIMENTS = ("scale-out", "reasoning-hardware", "distributed-ontology")
-ARCHITECTURES = ("local", "physical")
+ARCHITECTURES = ("physical",)
 
 
 def _read_csv(path: Path) -> list[dict[str, str]]:

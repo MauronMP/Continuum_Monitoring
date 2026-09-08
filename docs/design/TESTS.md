@@ -25,7 +25,6 @@ selected by omitting filters:
 
 ```bash
 continuum-bench load physical
-continuum-bench load local
 ```
 
 By contrast, `continuum-bench experiment all physical` and `continuum-bench
@@ -65,14 +64,6 @@ structural validation.
 
 ## Smoke tests
 
-Local:
-
-```bash
-continuum-smoke-local-cumulative
-continuum-smoke-local-scalability
-continuum-smoke-local-load
-continuum-smoke-local-experiments
-```
 
 
 Physical:
@@ -112,8 +103,6 @@ It checks already-running native RDFLib, Jena, RDF4J and Oxigraph services.
 Run cumulative and scalability independently:
 
 ```bash
-continuum-bench local cumulative
-continuum-bench local scalability
 continuum-bench physical cumulative --layout sharded --ssh-user pi
 continuum-bench physical scalability --layout sharded --ssh-user pi
 ```
@@ -131,7 +120,6 @@ not include load, experiments, studies, unit tests or OWL validation.
 ## Load campaign
 
 ```bash
-continuum-bench load local
 continuum-bench load physical
 ```
 
@@ -143,10 +131,6 @@ right-censored outcomes instead of blocking the suite indefinitely.
 ## Three separated experiments
 
 ```bash
-continuum-bench experiment scale-out local
-continuum-bench experiment reasoning-hardware local
-continuum-bench experiment distributed-ontology local
-continuum-bench experiment all local
 
 continuum-bench experiment all physical
 
@@ -164,15 +148,11 @@ continuum-bench experiment all physical
 ## Study and figures
 
 ```bash
-continuum-bench study trace --target local \
-  --output-dir outputs/study/local
 continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
 continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
 continuum-bench study category-cost \
-  --events outputs/load/local/event-runs.csv \
-  --output-dir outputs/study/local-cost
 continuum-bench study category-cost \
   --events outputs/load/physical/event-runs.csv \
   --output-dir outputs/study/physical-cost

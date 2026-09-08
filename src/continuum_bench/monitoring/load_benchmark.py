@@ -521,28 +521,11 @@ def run_load_benchmark(
     output_root: Path,
     endpoint_urls: list[str] | None = None,
 ) -> Path:
-    if architecture not in {"local", "physical"}:
+    if architecture not in {"physical"}:
         raise ValueError(
-            "Load benchmark target must be local or physical"
+            "Load benchmark target must be physical"
         )
-    if architecture == "local":
-        from ..node import NodeRuntime
-
-        runtime = NodeRuntime(
-            benchmark_config.root, "monolith", tier="cloud"
-        )
-        all_endpoints = [
-            Endpoint(
-                "local://monolith",
-                "monolith",
-                tier="cloud",
-                authority=True,
-                categories=tuple(benchmark_config.category_order),
-            )
-        ]
-    else:
-        runtime = None
-        all_endpoints = discover_load_endpoints(endpoint_urls or [])
+    all_endpoints = discover_load_endpoints(endpoint_urls or [])
     specs = _workload_specs(benchmark_config)
     summary_rows: list[dict[str, Any]] = []
     event_rows: list[dict[str, Any]] = []
@@ -551,10 +534,7 @@ def run_load_benchmark(
 
     for profile_index, profile in enumerate(load_config.profiles, start=1):
         requested_nodes = profile.node_count
-        # The monolithic control always has one execution node.  The requested
-        # profile value remains in the record, while comparisons use the
-        # effective node_count and therefore never present it as a 5-node run.
-        effective_nodes = 1 if architecture == "local" else requested_nodes
+        effective_nodes = requested_nodes
         if effective_nodes > len(all_endpoints):
             raise ValueError(
                 f"{architecture} exposes {len(all_endpoints)} nodes but "
@@ -630,24 +610,14 @@ def run_load_benchmark(
                     prepare_timeout,
                 )
                 try:
-                    if runtime is not None:
-                        started = perf_counter_ns()
-                        with _local_timeout(prepare_timeout):
-                            prepared[endpoints[0].url] = runtime.prepare(
-                                **payload
-                            )
-                        prepare_wall_ms = (
-                            perf_counter_ns() - started
-                        ) / 1_000_000
-                    else:
-                        prepare_wall_ms, prepared = _parallel(
-                            endpoints,
-                            "/prepare",
-                            {endpoint.url: payload for endpoint in endpoints},
-                            phase="load-prepare",
-                            timeout=prepare_timeout,
-                            retries=0,
-                        )
+                    prepare_wall_ms, prepared = _parallel(
+                        endpoints,
+                        "/prepare",
+                        {endpoint.url: payload for endpoint in endpoints},
+                        phase="load-prepare",
+                        timeout=prepare_timeout,
+                        retries=0,
+                    )
                 except Exception as error:
                     prepare_error = f"{type(error).__name__}: {error}"
 
@@ -728,34 +698,26 @@ def run_load_benchmark(
                         stopped_dimensions[stop_key] = prepare_error
                     continue
 
-                if runtime is not None:
-                    def invoke(
-                        endpoint: Endpoint,
-                        query_ids: list[str],
-                        timeout: float,
-                    ) -> dict[str, Any]:
-                        return runtime.execute(query_ids)
-                else:
-                    def invoke(
-                        endpoint: Endpoint,
-                        query_ids: list[str],
-                        timeout: float,
-                    ) -> dict[str, Any]:
-                        return _request(
-                            endpoint.url,
-                            "/queries",
-                            # Keep the server-side budget just below urllib's
-                            # socket deadline so the worker remains reusable.
-                            {
-                                "query_ids": query_ids,
-                                "phase_timeout_seconds": max(
-                                    timeout - 1.0,
-                                    0.1,
-                                ),
-                            },
-                            timeout=timeout,
-                            retries=0,
-                        )
+                def invoke(
+                    endpoint: Endpoint,
+                    query_ids: list[str],
+                    timeout: float,
+                ) -> dict[str, Any]:
+                    return _request(
+                        endpoint.url,
+                        "/queries",
+                        # Keep the server-side budget just below urllib's
+                        # socket deadline so the worker remains reusable.
+                        {
+                            "query_ids": query_ids,
+                            "phase_timeout_seconds": max(
+                                timeout - 1.0,
+                                0.1,
+                            ),
+                        },
+                        timeout=timeout,
+                        retries=0,
+                    )
 
                 elapsed_before_stream = (
                     perf_counter_ns() - pipeline_started
@@ -780,33 +742,23 @@ def run_load_benchmark(
                 recovered: dict[str, dict[str, Any]] = {}
                 recovery_error = ""
                 try:
-                    if runtime is not None:
-                        started = perf_counter_ns()
-                        with _local_timeout(
-                            load_config.recovery_timeout_seconds
-                        ):
-                            recovered[endpoints[0].url] = runtime.recover()
-                        recovery_wall_ms = (
-                            perf_counter_ns() - started
-                        ) / 1_000_000
-                    else:
-                        recovery_wall_ms, recovered = _parallel(
-                            endpoints,
-                            "/recover",
-                            {
-                                endpoint.url: {
-                                    "phase_timeout_seconds": max(
-                                        load_config.recovery_timeout_seconds
-                                        - 1.0,
-                                        0.1,
-                                    )
-                                }
-                                for endpoint in endpoints
-                            },
-                            phase="load-recovery",
-                            timeout=load_config.recovery_timeout_seconds,
-                            retries=0,
-                        )
+                    recovery_wall_ms, recovered = _parallel(
+                        endpoints,
+                        "/recover",
+                        {
+                            endpoint.url: {
+                                "phase_timeout_seconds": max(
+                                    load_config.recovery_timeout_seconds
+                                    - 1.0,
+                                    0.1,
+                                )
+                            }
+                            for endpoint in endpoints
+                        },
+                        phase="load-recovery",
+                        timeout=load_config.recovery_timeout_seconds,
+                        retries=0,
+                    )
                 except Exception as error:
                     recovery_error = f"{type(error).__name__}: {error}"
 

@@ -33,10 +33,9 @@ DIMENSION_X = {
     "node_count": ("node_count", "Active nodes"),
 }
 LOAD_ARCHITECTURE_LABELS = {
-    "local": "Monolithic host",
     "physical": "Physical continuum",
 }
-ARCHITECTURES = ("local", "physical")
+ARCHITECTURES = ("physical",)
 DISTRIBUTED_ARCHITECTURES = ("physical",)
 
 
@@ -194,197 +193,8 @@ def _save(fig, path: Path) -> list[Path]:
     return outputs
 
 
-def _architecture_ratios(
-    rows: list[dict[str, Any]],
-) -> list[dict[str, Any]]:
-    """Return distributed/local ratios for matched completed workloads."""
-
-    lookup = {
-        (
-            row["architecture"],
-            row["dimension"],
-            row["profile"],
-            row["reasoner"],
-        ): row
-        for row in rows
-        if row.get("comparison_eligible")
-    }
-    x_fields = {
-        dimension: field for dimension, (field, _) in DIMENSION_X.items()
-    }
-
-    def ratio(numerator: Any, denominator: Any) -> float | str:
-        if numerator in {"", None} or denominator in {"", None}:
-            return ""
-        denominator_value = float(denominator)
-        return (
-            ""
-            if denominator_value == 0
-            else float(numerator) / denominator_value
-        )
-
-    output: list[dict[str, Any]] = []
-    for architecture in DISTRIBUTED_ARCHITECTURES:
-        baseline_architecture = "local"
-        for row in rows:
-            if row["architecture"] != architecture:
-                continue
-            baseline = lookup.get(
-                (
-                    baseline_architecture,
-                    row["dimension"],
-                    row["profile"],
-                    row["reasoner"],
-                )
-            )
-            if baseline is None or not row.get("comparison_eligible"):
-                continue
-            node_ratio = ratio(
-                row["node_count_median"], baseline["node_count_median"]
-            )
-            throughput_gain = ratio(
-                row["events_processed_per_second_median"],
-                baseline["events_processed_per_second_median"],
-            )
-            efficiency = (
-                ""
-                if throughput_gain == "" or node_ratio in {"", 0}
-                else float(throughput_gain) / float(node_ratio) * 100
-            )
-            x_field = x_fields[row["dimension"]]
-            output.append(
-                {
-                    "architecture": architecture,
-                    "baseline_architecture": baseline_architecture,
-                    "dimension": row["dimension"],
-                    "profile": row["profile"],
-                    "reasoner": row["reasoner"],
-                    "independent_value": row[f"{x_field}_median"],
-                    "latency_speedup": ratio(
-                        baseline["latency_p95_ms_median"],
-                        row["latency_p95_ms_median"],
-                    ),
-                    "throughput_gain": throughput_gain,
-                    "inference_speedup": ratio(
-                        baseline["inference_wall_ms_median"],
-                        row["inference_wall_ms_median"],
-                    ),
-                    "recovery_speedup": ratio(
-                        baseline["recovery_wall_ms_median"],
-                        row["recovery_wall_ms_median"],
-                    ),
-                    "scale_out_efficiency_percent": efficiency,
-                    "loss_delta_percentage_points": (
-                        float(row["event_loss_percent_median"])
-                        - float(baseline["event_loss_percent_median"])
-                        if row["event_loss_percent_median"] != ""
-                        and baseline["event_loss_percent_median"] != ""
-                        else ""
-                    ),
-                }
-            )
-    return output
 
 
-def _plot_ratio_comparison(
-    rows: list[dict[str, Any]],
-    output_root: Path,
-    colors: dict[str, Any],
-    markers: dict[str, str],
-) -> list[Path]:
-    outputs: list[Path] = []
-    styles = {"rdfs": "-", "owlrl": "--", "rdfs_owlrl": ":"}
-    metrics = (
-        ("latency_speedup", "p95 latency speedup (×)"),
-        ("throughput_gain", "Throughput gain (×)"),
-        ("inference_speedup", "Inference speedup (×)"),
-        ("recovery_speedup", "Recovery speedup (×)"),
-        ("scale_out_efficiency_percent", "Scale-out efficiency (%)"),
-        (
-            "loss_delta_percentage_points",
-            "Loss difference (p.p.)",
-        ),
-    )
-    for dimension, (_, xlabel) in DIMENSION_X.items():
-        selected_dimension = [
-            row for row in rows if row["dimension"] == dimension
-        ]
-        if not selected_dimension:
-            continue
-        figure, axes = plt.subplots(2, 3, figsize=(13.0, 7.6))
-        for axis, (field, ylabel) in zip(
-            axes.flat,
-            metrics,
-            strict=True,
-        ):
-            for architecture in DISTRIBUTED_ARCHITECTURES:
-                for reasoner in REASONER_LABELS:
-                    selected = [
-                        row
-                        for row in selected_dimension
-                        if row["architecture"] == architecture
-                        and row["reasoner"] == reasoner
-                        and row[field] != ""
-                    ]
-                    selected.sort(
-                        key=lambda row: float(row["independent_value"])
-                    )
-                    if not selected:
-                        continue
-                    axis.plot(
-                        [
-                            float(row["independent_value"])
-                            for row in selected
-                        ],
-                        [float(row[field]) for row in selected],
-                        color=colors[architecture],
-                        marker=markers[reasoner],
-                        linestyle=styles[reasoner],
-                        linewidth=1.4,
-                        label=(
-                            f"{LOAD_ARCHITECTURE_LABELS[architecture]} · "
-                            f"{REASONER_LABELS[reasoner]}"
-                        ),
-                    )
-            reference = {
-                "loss_delta_percentage_points": 0,
-                "scale_out_efficiency_percent": 100,
-            }.get(field, 1)
-            axis.axhline(
-                reference,
-                color="black",
-                linewidth=0.7,
-                alpha=0.5,
-            )
-            _style(axis, xlabel, ylabel)
-        _factorized_legend(figure, colors, markers)
-        if dimension in {
-            "events_per_second",
-            "users",
-            "target_triples",
-        }:
-            for axis in axes.flat:
-                axis.set_xscale("log")
-        ratio_axis_rows = [
-            {
-                "dimension": dimension,
-                f"{DIMENSION_X[dimension][0]}_median": row[
-                    "independent_value"
-                ],
-            }
-            for row in selected_dimension
-        ]
-        _format_dimension_x(axes, dimension, ratio_axis_rows)
-        figure.tight_layout(rect=(0, 0, 1, 0.91))
-        outputs.extend(
-            _save(
-                figure,
-                output_root
-                / "figures"
-                / f"load-{dimension}-architecture-ratios",
-            )
-        )
-    return outputs
 
 
 def _style(axis, xlabel: str, ylabel: str) -> None:
@@ -905,7 +715,6 @@ def plot_load_comparison(
             if old_figure.is_file():
                 old_figure.unlink()
     for old_table in (
-        output_root / "data" / "load-architecture-ratios.csv",
         output_root / "data" / "load-data-quality.csv",
         output_root / "data" / "load-reference-summary.csv",
     ):
@@ -929,7 +738,6 @@ def plot_load_comparison(
     outputs: list[Path] = [data_path]
     colors_raw = plt.rcParams["axes.prop_cycle"].by_key()["color"]
     colors = {
-        "local": colors_raw[0],
         "physical": colors_raw[2],
     }
     markers = {"rdfs": "o", "owlrl": "s", "rdfs_owlrl": "^"}
@@ -962,17 +770,6 @@ def plot_load_comparison(
             )
         )
 
-    ratios = _architecture_ratios(aggregate)
-    if ratios:
-        ratio_path = (
-            output_root / "data" / "load-architecture-ratios.csv"
-        )
-        write_dict_rows(
-            ratio_path,
-            ratios,
-            empty_message="No load architecture ratios",
-        )
-        outputs.append(ratio_path)
 
     for dimension, (x_field, xlabel) in DIMENSION_X.items():
         series = _series(aggregate, dimension, x_field)
@@ -1118,15 +915,6 @@ def plot_load_comparison(
             _save(
                 resources,
                 output_root / "figures" / f"load-{dimension}-resources",
-            )
-        )
-    if ratios:
-        outputs.extend(
-            _plot_ratio_comparison(
-                ratios,
-                output_root,
-                colors,
-                markers,
             )
         )
     return outputs

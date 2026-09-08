@@ -1,6 +1,6 @@
 # Benchmarks
 
-The monitoring module provides equivalent contracts for the native monolith and
+The monitoring module provides reproducible contracts for
 physical continuum targets.
 
 `physical all` runs only the cumulative and scalability suites. Load, separated experiments,
@@ -34,17 +34,10 @@ metrics but are excluded from the confusion matrix.
 The deterministic schedule interleaves categories and rotates its start between
 repetitions, preventing a short low-rate profile from measuring only the first
 catalog category.
-The three non-confounded experiments separately measure replicated query
-scale-out, reasoning by node hardware and authority-partitioned ontology
-execution. Both targets emit the same schemas; the monolith fixes the
-effective node count to one and supplies the control observation.
-
-The reporting layer pairs only rows with identical dimension, profile and
-reasoner. It reports the node-count ratio explicitly when computing scale-out
-efficiency, plus p95-latency and inference speedups,
-throughput gain, recovery speedup, event-loss difference and scale-out
-efficiency in both comparison directions. Incomplete or censored pairs remain
-in the coverage table but are excluded from ratio claims.
+The three experiments separately measure replicated query scale-out,
+reasoning by physical node hardware and authority-partitioned ontology execution.
+Reports include only physical observations and retain incomplete points in
+coverage tables. Layout comparisons require matched workloads and node counts.
 
 ## Layouts
 

@@ -1,7 +1,7 @@
 # Continuum Monitoring Ontology Benchmark
 
 Reproducible evaluation of a modular, policy-aware monitoring ontology across
-a native monolith and an elastic physical continuum. All targets use the same ontology, SPARQL catalog, generators,
+an elastic physical continuum. Its nodes use the same ontology, SPARQL catalog, generators,
 reasoners, time budgets and scientific result contracts.
 
 ## Modular physical campaigns
@@ -23,11 +23,10 @@ continuum-bench campaign --campaign-config configs/campaign.toml
 | `src/continuum_bench/core` | Infrastructure-neutral domain model. |
 | `src/continuum_bench/monitoring` | Shared cumulative/scalability orchestration. |
 | `src/continuum_bench/monitoring/study` | Workload, mobility and policy-cost studies. |
-| `configs/topologies/monolith` | Single-process reference split by tier. |
 | `configs/topologies/physical` | Elastic physical nodes split by tier. |
 | `ontology`, `queries` | Modular semantic model and categorized SPARQL battery. |
 
-The native reference and physical workers share the same benchmark implementation.
+Physical workers share the same benchmark implementation.
 
 ## Install
 
@@ -53,17 +52,6 @@ Install their pinned validation runtime automatically with:
 python3 tools/install_owl_reasoners.py
 ```
 
-## Native monolith
-
-```bash
-continuum-smoke-local-cumulative
-continuum-smoke-local-scalability
-continuum-smoke-local-load
-continuum-smoke-local-experiments
-continuum-bench local all
-continuum-bench load local
-continuum-bench experiment all local
-```
 
 ## Physical continuum
 
@@ -83,7 +71,7 @@ continuum-bench experiment all physical
 continuum-bench physical stop --ssh-user pi
 ```
 
-`physical all` likewise covers cumulative and scalability only. See the
+`physical all` covers cumulative and scalability only. See the
 command reference for the ordered complete suite.
 
 ## Independent semantic products
@@ -114,7 +102,6 @@ The plot command requires all four products in each selected summary and writes
 Timeouts are stored as right-censored observations. Results go to `outputs/`.
 See [the user guide](docs/USER_GUIDE.md),
 [installation](docs/design/INSTALLATION.md),
-[monolith guide](docs/design/MONOLITH_GUIDE.md),
 [physical continuum guide](docs/design/PHYSICAL_CONTINUUM.md),
 [command reference](docs/design/COMMAND_REFERENCE.md),
 [tests](docs/design/TESTS.md) and [architecture](docs/design/ARCHITECTURE.md).
