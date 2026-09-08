@@ -120,6 +120,12 @@ def _prepare(
     )
     if timeout <= transport.worker_timeout_margin_seconds:
         raise PhaseBudgetTimeout("no time remains for partitioned prepare")
+    print(
+        f"[distributed-budget] phase=partitioned-prepare "
+        f"nodes={len(endpoints)} request_limit_s={timeout:.1f} "
+        f"worker_limit_s={timeout - transport.worker_timeout_margin_seconds:.1f}",
+        flush=True,
+    )
     return _parallel(
         endpoints,
         "/prepare",
@@ -197,7 +203,12 @@ def _query(
         print(
             "[distributed-batch] phase=partitioned-queries "
             f"batch={batch_index + 1}/{batch_rounds} "
-            f"nodes={','.join(descriptions)} status=running",
+            f"nodes={','.join(descriptions)} "
+            f"point_remaining_s={remaining:.1f} "
+            f"request_limit_s={request_timeout:.1f} "
+            "worker_limit_s="
+            f"{request_timeout - transport.worker_timeout_margin_seconds:.1f} "
+            "status=running",
             flush=True,
         )
         batch_wall_ms, responses = _parallel(
@@ -959,6 +970,17 @@ def run_sharded_cumulative(
         json.dumps(metadata, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
+    completed = sum(row.get("status") == "completed" for row in summaries)
+    censored = sum(row.get("status") == "timeout" for row in summaries)
+    skipped = sum(
+        row.get("status") == "skipped_after_timeout" for row in summaries
+    )
+    print(
+        f"[{target}-sharded-cumulative] status=completed "
+        f"completed_points={completed} timeout_points={censored} "
+        f"skipped_points={skipped} output={output}",
+        flush=True,
+    )
     return output
 
 
@@ -1019,6 +1041,14 @@ def run_sharded_scalability(
                 }
                 if reasoner in stopped_reasoners:
                     stop_reason = stopped_reasoners[reasoner]
+                    print(
+                        f"[{target}-sharded-scalability] "
+                        f"block={block}/{len(config.scale_users)} users={users} "
+                        f"reasoner={reasoner} repetition={repetition}/"
+                        f"{config.repetitions} phase=early-stop "
+                        "status=skipped_after_timeout",
+                        flush=True,
+                    )
                     row = _censored_summary(
                         common,
                         len(endpoints),
@@ -1172,6 +1202,17 @@ def run_sharded_scalability(
     (output / "metadata.json").write_text(
         json.dumps(metadata, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
+    )
+    completed = sum(row.get("status") == "completed" for row in summaries)
+    censored = sum(row.get("status") == "timeout" for row in summaries)
+    skipped = sum(
+        row.get("status") == "skipped_after_timeout" for row in summaries
+    )
+    print(
+        f"[{target}-sharded-scalability] status=completed "
+        f"completed_points={completed} timeout_points={censored} "
+        f"skipped_points={skipped} output={output}",
+        flush=True,
     )
     return output
 

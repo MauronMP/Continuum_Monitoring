@@ -36,6 +36,7 @@ def test_distributed_scalability_timeout_continues_other_reasoners(
     runner,
     module,
     extra,
+    capsys,
 ):
     selected = replace(
         config,
@@ -77,3 +78,6 @@ def test_distributed_scalability_timeout_continues_other_reasoners(
         ("25", "rdfs", "skipped_after_timeout"),
         ("25", "owlrl", "skipped_after_timeout"),
     ]
+    console = capsys.readouterr().out
+    assert "status=skipped_after_timeout" in console
+    assert "status=completed completed_points=0 timeout_points=2" in console

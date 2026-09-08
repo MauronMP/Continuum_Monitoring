@@ -84,10 +84,12 @@ trees on one Java classpath can mix incompatible OWLAPI versions and fail in
 classpath is supplied automatically; Protégé is no longer required for
 command-line HermiT validation.
 
-The isolated JFact profile overrides its legacy transitive Guice dependency
-with Guice 5.1.0. JFact 5.0.3 otherwise selects Guice/CGLIB code that cannot
-initialize on Java 17. This compatibility dependency affects only the external
-JFact validation process; it is not deployed to benchmark nodes.
+The isolated JFact profile overrides its legacy transitive injection stack with
+Guice 5.1.0 and Guava 30.1-jre. JFact 5.0.3 otherwise can select
+Guice/CGLIB and Guava 20 code that cannot initialize on Java 17. The installer
+checks both resolved JAR names before executing the JFact smoke. These
+compatibility dependencies affect only the external JFact validation process;
+they are not deployed to benchmark nodes.
 
 ## Konclude execution
 

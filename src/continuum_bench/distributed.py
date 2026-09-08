@@ -261,10 +261,11 @@ def _parallel(
             except Exception as error:
                 hint = _payload_hint(payloads[endpoint.url])
                 detail = f";{hint}" if hint else ""
+                status = failure_status(error)
                 print(
                     "[distributed-node] "
                     f"phase={phase_name} role={endpoint.role} "
-                    f"endpoint={endpoint.url} status=failed "
+                    f"endpoint={endpoint.url} status={status} "
                     f"elapsed_ms={endpoint_ms:.2f} "
                     f"error={type(error).__name__}: {error}{hint}",
                     flush=True,
@@ -385,6 +386,12 @@ def _prepare(
         }
         for endpoint in endpoints
     }
+    print(
+        f"[distributed-budget] phase=prepare nodes={len(endpoints)} "
+        f"request_limit_s={timeout:.1f} "
+        f"worker_limit_s={timeout - transport.worker_timeout_margin_seconds:.1f}",
+        flush=True,
+    )
     return _parallel(
         endpoints,
         "/prepare",
@@ -521,6 +528,10 @@ def _query(
         print(
             f"[distributed-batch] phase={phase} "
             f"batch={index + 1}/{rounds} nodes={','.join(labels)} "
+            f"point_remaining_s={remaining:.1f} "
+            f"request_limit_s={request_timeout:.1f} "
+            "worker_limit_s="
+            f"{request_timeout - transport.worker_timeout_margin_seconds:.1f} "
             "status=running",
             flush=True,
         )

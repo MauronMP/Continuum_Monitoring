@@ -86,7 +86,7 @@ def test_request_retries_a_transient_disconnect(monkeypatch):
     ]
 
 
-def test_parallel_timeout_reports_the_exact_query_batch(monkeypatch):
+def test_parallel_timeout_reports_the_exact_query_batch(monkeypatch, capsys):
     endpoint = Endpoint("http://edge3", "edge3")
 
     def fail(*args, **kwargs):
@@ -103,6 +103,9 @@ def test_parallel_timeout_reports_the_exact_query_batch(monkeypatch):
             timeout=1,
             retries=0,
         )
+    output = capsys.readouterr().out
+    assert "status=timeout" in output
+    assert "status=failed" not in output
 
 
 def test_http_application_error_preserves_worker_response(monkeypatch):

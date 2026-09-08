@@ -699,6 +699,17 @@ def run_physical_cumulative(
         json.dumps(metadata, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
+    completed = sum(row.get("status") == "completed" for row in summaries)
+    censored = sum(row.get("status") == "timeout" for row in summaries)
+    skipped = sum(
+        row.get("status") == "skipped_after_timeout" for row in summaries
+    )
+    print(
+        f"[{target}-cumulative] status=completed "
+        f"completed_points={completed} timeout_points={censored} "
+        f"skipped_points={skipped} output={output}",
+        flush=True,
+    )
     return output
 
 
@@ -735,6 +746,13 @@ def run_physical_scalability(
         for reasoner in config.reasoners:
             if reasoner in stopped_reasoners:
                 stop_reason = stopped_reasoners[reasoner]
+                print(
+                    f"[{target}-scalability] block={block}/"
+                    f"{len(config.scale_users)} users={users} "
+                    f"reasoner={reasoner} phase=early-stop "
+                    "status=skipped_after_timeout",
+                    flush=True,
+                )
                 for repetition in range(1, config.repetitions + 1):
                     common = {
                         "reasoner": reasoner,
@@ -943,7 +961,9 @@ def run_physical_scalability(
                     print(
                         f"[{target}-scalability] block={block} users={users} "
                         f"reasoner={reasoner} phase={phase} status={status} "
-                        f"limit_s={config.limits.point_timeout_seconds:g}",
+                        f"limit_s={config.limits.point_timeout_seconds:g}; "
+                        "suite continues and larger points for this reasoner "
+                        "will be recorded as skipped_after_timeout",
                         flush=True,
                     )
                     continue
@@ -1015,5 +1035,16 @@ def run_physical_scalability(
     (output / "metadata.json").write_text(
         json.dumps(metadata, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
+    )
+    completed = sum(row.get("status") == "completed" for row in summaries)
+    censored = sum(row.get("status") == "timeout" for row in summaries)
+    skipped = sum(
+        row.get("status") == "skipped_after_timeout" for row in summaries
+    )
+    print(
+        f"[{target}-scalability] status=completed "
+        f"completed_points={completed} timeout_points={censored} "
+        f"skipped_points={skipped} output={output}",
+        flush=True,
     )
     return output

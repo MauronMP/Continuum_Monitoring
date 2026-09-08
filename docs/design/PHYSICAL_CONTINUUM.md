@@ -210,6 +210,22 @@ points for the same reasoner; the remaining reasoners continue. Load and
 reasoning-hardware profiles also stop monotonically per reasoner/dimension.
 Re-run `deploy` after code or dependency changes.
 
+An HTTP 408 whose body says `worker phase exceeded Ns` is a bounded benchmark
+observation, not a crashed worker. The worker deliberately interrupts inference
+or a query batch just before the coordinator's request deadline. The console
+uses `status=timeout`, records the point as right-censored, prints every larger
+point as `skipped_after_timeout`, continues with other reasoners, and ends with
+counts for completed, timed-out and skipped points.
+
+In replicated placement every node materializes the complete graph. Its
+preparation wall time is therefore bounded by the slowest active Raspberry Pi;
+adding replicas accelerates parallel query service but cannot accelerate that
+duplicated inference. Use `--layout sharded` to evaluate distributed ontology
+placement. A repeatable `rdfs_owlrl` preparation timeout at the same user block
+is the measured saturation frontier for that hardware/profile combination; it
+must not be relabeled as a successful exact timing or hidden by an unbounded
+timeout.
+
 Balanced replicated queries use interleaved HTTP batches so the expensive
 prefix produced by LPT scheduling is distributed across rounds. After updating
 this code, stop, deploy and restart every worker before repeating a campaign.

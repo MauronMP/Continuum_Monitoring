@@ -20,6 +20,8 @@ def test_reasoner_pom_isolates_java_dependency_trees(root):
     )[0]
     assert "<artifactId>guice</artifactId>" in jfact_profile
     assert "<version>5.1.0</version>" in jfact_profile
+    assert "<artifactId>guava</artifactId>" in jfact_profile
+    assert "<version>30.1-jre</version>" in jfact_profile
 
 
 def test_konclude_wrapper_rejects_help_only_invocation(root):

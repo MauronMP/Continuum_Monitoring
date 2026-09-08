@@ -75,10 +75,12 @@ def install_java_reasoners() -> dict[str, str]:
             jar_names = {
                 Path(entry).name for entry in classpath.split(os.pathsep)
             }
-            if "guice-5.1.0.jar" not in jar_names:
+            required = {"guice-5.1.0.jar", "guava-30.1-jre.jar"}
+            missing = sorted(required - jar_names)
+            if missing:
                 raise RuntimeError(
-                    "JFact classpath did not select the pinned "
-                    "Java-17-compatible guice-5.1.0.jar"
+                    "JFact classpath did not select its pinned Java-17 "
+                    f"compatibility dependencies: missing={missing}"
                 )
         classpaths[name] = classpath
 
