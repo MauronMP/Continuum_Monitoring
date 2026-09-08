@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Trazar fallo de nodo, delegación temporal y fallback/degradación.
+# Purpose: Evaluate scenario S4: failure, delegation and degradation using the declared query contract.
 # Requirements: RF-17, RF-20, RF-62, RF-65
 # Policies: P-ADAPT-02, P-AUD-01, P-AUD-05
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

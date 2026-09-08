@@ -1,6 +1,6 @@
 # Policy-category cost and mobility study
 
-This module extends local, Docker and physical monitoring benchmarks with a
+This module extends local and physical monitoring benchmarks with a
 configuration-driven study layer. Its purpose is to keep policy-category cost analysis,
 query-complexity characterization, ontology placement, mobility and network
 conditions explicit and reproducible.
@@ -13,14 +13,14 @@ with benchmark outputs.
 
 | Concern | Module |
 | --- | --- |
-| Study configuration | `continuum_bench.study.config` |
-| Request and mobility records | `continuum_bench.study.models` |
-| SPARQL structural features | `continuum_bench.study.sparql` |
-| Mobility strategies | `continuum_bench.study.mobility` |
-| Distance-aware link estimates | `continuum_bench.study.network` |
-| Placement and locality estimates | `continuum_bench.study.placement` |
-| Trace generation | `continuum_bench.study.workload` |
-| Category/policy/query aggregation | `continuum_bench.study.analysis` |
+| Study configuration | `continuum_bench.monitoring.study.config` |
+| Request and mobility records | `continuum_bench.monitoring.study.models` |
+| SPARQL structural features | `continuum_bench.monitoring.study.sparql` |
+| Mobility strategies | `continuum_bench.monitoring.study.mobility` |
+| Distance-aware link estimates | `continuum_bench.monitoring.study.network` |
+| Placement and locality estimates | `continuum_bench.monitoring.study.placement` |
+| Trace generation | `continuum_bench.monitoring.study.workload` |
+| Category/policy/query aggregation | `continuum_bench.monitoring.study.analysis` |
 
 ## Configuration
 
@@ -37,7 +37,7 @@ so offered arrivals do not slow down merely because a previous request is
 slow; the generated trace is still a schedule and must be replayed by an
 execution adapter for measured request-level timings.
 
-The same seed produces the same request sequence and mobility trajectory, so
+The same seed produces the same request sequence and static positions, so
 different placement or scheduling strategies can be compared with equivalent
 inputs.
 
@@ -47,9 +47,8 @@ inputs.
 .venv/bin/continuum-bench study trace --target local \
   --output-dir outputs/study/local
 
-# Generate the same study trace against the local five-node Docker topology
-.venv/bin/continuum-bench study trace --target docker \
-  --output-dir outputs/study/docker
+.venv/bin/continuum-bench study trace --target physical \
+  --output-dir outputs/study/physical
 
 # Generate it against the physical topology
 .venv/bin/continuum-bench study trace --target physical \
@@ -63,7 +62,7 @@ creates:
 | `request-trace.csv` | One row per generated request, including category, policy, query, client, placement, routing, estimated network cost and locality. |
 | `mobility-trace.csv` | One row per mobility sample, including position, speed, direction, association, connectivity and handover state. |
 | `query-features.csv` | One row per SPARQL query with structural features such as triple patterns, basic graph patterns, joins, filters, OPTIONAL, UNION, aggregation and a query-shape label. |
-| `connectivity-events.csv` | Edge-association changes produced by the simulated trajectory; an empty file with headers is valid when no handover occurs. |
+| `connectivity-events.csv` | Reserved connectivity-event format; static traces contain headers and no handovers. |
 | `metadata.json` | Study ID, seed, topology, placement, scheduler, mobility and network configuration. |
 
 ## Category-cost aggregation
@@ -76,7 +75,7 @@ After running a physical load benchmark, aggregate request-level observations:
 ```
 
 Use `outputs/load/local/event-runs.csv` or
-`outputs/load/docker/event-runs.csv` for the other targets and write each
+`outputs/load/physical/event-runs.csv` for the other targets and write each
 analysis to a separate output directory. The trace generator does not execute
 the scheduled requests: `execution_mode` and `concurrency` describe a
 replayable workload contract, while measured timing and resource values must
@@ -106,3 +105,5 @@ The study distinguishes frequently requested categories, expensive categories,
 categories with high total impact because they are both frequent and costly,
 and categories whose cost is explained by SPARQL structure rather than semantic
 theme alone.
+
+Only static positions are implemented. Dynamic mobility models require a future plugin.

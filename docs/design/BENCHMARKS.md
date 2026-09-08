@@ -1,10 +1,9 @@
 # Benchmarks
 
-The monitoring module provides equivalent contracts for the native monolith,
-Docker and physical continuum targets.
+The monitoring module provides equivalent contracts for the native monolith and
+physical continuum targets.
 
-Command scope is deliberately explicit: `local all`, `docker all` and
-`physical all` run only the cumulative and scalability suites. Load, separated experiments,
+`physical all` runs only the cumulative and scalability suites. Load, separated experiments,
 study artefacts and semantic acceptance are independent blocks documented in
 the [command reference](COMMAND_REFERENCE.md).
 
@@ -37,7 +36,7 @@ repetitions, preventing a short low-rate profile from measuring only the first
 catalog category.
 The three non-confounded experiments separately measure replicated query
 scale-out, reasoning by node hardware and authority-partitioned ontology
-execution. All three targets emit the same schemas; the monolith fixes the
+execution. Both targets emit the same schemas; the monolith fixes the
 effective node count to one and supplies the control observation.
 
 The reporting layer pairs only rows with identical dimension, profile and
@@ -78,7 +77,7 @@ adjacent costly catalog queries are not concentrated in one HTTP request.
 Default full-run ceilings are: monitoring request/phase/point = 60/60/90 s;
 load request/point/recovery = 45/60/45 s; experiment request/point = 45/60 s.
 Monitoring and experiment smokes use request/point = 30/45 s, while load
-smokes use request/point/recovery = 15/20/20 s.
+smokes use request/point/recovery = 45/90/45 s.
 
 Timeout rows retain the configured budget and completion state. They are not
 encoded as zero latency, excluded silently or interpreted as successful fast

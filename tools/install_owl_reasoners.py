@@ -2,8 +2,7 @@
 """Install the reproducible coordinator-side OWL validation runtime.
 
 Java reasoners are resolved from the pinned Maven POM. Konclude uses an
-already-installed native binary when present; otherwise its official Docker
-image is pulled. No validator is installed on physical workers.
+installed native binary.
 """
 
 from __future__ import annotations
@@ -29,7 +28,6 @@ CLASSPATH_FILES = {
 # compatibility with installations made before reasoner isolation.
 CLASSPATH_FILE = RUNTIME / "owl-validation.classpath"
 ENV_FILE = RUNTIME / "owl-reasoners.env"
-KONCLUDE_IMAGE = "konclude/konclude"
 
 
 def _run(command: list[str]) -> None:
@@ -75,7 +73,7 @@ def install_java_reasoners() -> dict[str, str]:
             jar_names = {
                 Path(entry).name for entry in classpath.split(os.pathsep)
             }
-            required = {"guice-5.1.0.jar", "guava-30.1-jre.jar"}
+            required = {"guice-5.1.0.jar", "guice-assistedinject-5.1.0.jar", "guava-30.1-jre.jar"}
             missing = sorted(required - jar_names)
             if missing:
                 raise RuntimeError(
@@ -124,30 +122,23 @@ def verify_java_reasoners(classpaths: dict[str, str]) -> None:
             )
 
 
-def install_konclude(*, pull_image: bool) -> str:
+def install_konclude(*, required: bool) -> str:
     configured = os.environ.get("CONTINUUM_KONCLUDE_EXECUTABLE", "")
     native = configured or shutil.which("Konclude")
     if native:
         return f"native:{native}"
-    if not pull_image:
+    if not required:
         return "not-installed"
-    docker = _require(
-        "docker",
-        "Install Docker or provide CONTINUUM_KONCLUDE_EXECUTABLE.",
-    )
-    _run([docker, "info"])
-    _run([docker, "pull", KONCLUDE_IMAGE])
-    return f"docker:{KONCLUDE_IMAGE}"
 
+    raise RuntimeError("Install native Konclude or set CONTINUUM_KONCLUDE_EXECUTABLE")
 
 def verify_konclude(konclude: str, classpaths: dict[str, str]) -> None:
-    """Exercise the actual native/container backend, not its help command."""
+    """Exercise the actual native backend, not its help command."""
 
     if konclude == "not-installed":
         return
     environment = os.environ.copy()
     environment["CONTINUUM_OWL_CLASSPATH"] = classpaths["openllet"]
-    environment["CONTINUUM_KONCLUDE_IMAGE"] = KONCLUDE_IMAGE
     if konclude.startswith("native:"):
         environment["CONTINUUM_KONCLUDE_EXECUTABLE"] = konclude.removeprefix(
             "native:"
@@ -196,7 +187,6 @@ def write_environment(classpaths: dict[str, str], konclude: str) -> None:
         f"export CONTINUUM_HERMIT_CLASSPATH={shlex.quote(classpaths['hermit'])}",
         f"export CONTINUUM_OPENLLET_CLASSPATH={shlex.quote(classpaths['openllet'])}",
         f"export CONTINUUM_JFACT_CLASSPATH={shlex.quote(classpaths['jfact'])}",
-        f"export CONTINUUM_KONCLUDE_IMAGE={shlex.quote(KONCLUDE_IMAGE)}",
     ]
     if konclude.startswith("native:"):
         lines.append(
@@ -209,16 +199,16 @@ def write_environment(classpaths: dict[str, str], konclude: str) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--skip-konclude-image",
+        "--skip-konclude",
         action="store_true",
-        help="Prepare Java reasoners but do not pull the Konclude Docker image",
+        help="Prepare Java reasoners without requiring native Konclude",
     )
     args = parser.parse_args(argv)
     try:
         classpaths = install_java_reasoners()
         verify_java_reasoners(classpaths)
         konclude = install_konclude(
-            pull_image=not args.skip_konclude_image
+            required=not args.skip_konclude
         )
         verify_konclude(konclude, classpaths)
         write_environment(classpaths, konclude)

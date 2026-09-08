@@ -13,13 +13,10 @@ authority = false
 [nodes.resources]
 cpu_cores = 4
 cpu_architecture = "armv7l-32bit"
-ram = "2g"
+ram = "8g"
 storage_mib = 32768
 processing_capacity = 0.45
 network_mbps = 100
 
 [nodes.location]
-latitude = 0.0
-longitude = 0.0
-altitude_m = 0.0
 region = "physical-lab"

@@ -13,7 +13,6 @@ the same bounded workload can be measured without hiding failures.
 | Objective | Implementation | Status |
 |---|---|---|
 | Native one-node control | `continuum-bench local` and the monolith topology | Implemented |
-| Elastic local continuum | Generated Compose topology from per-tier TOML files | Implemented |
 | Elastic physical continuum | SSH deployment from per-tier TOML files | Implemented |
 | Cumulative category workload | Adds catalog categories and runs all accumulated queries | Implemented |
 | Synthetic scalability | Increases users and ABox volume with bounded right-censoring | Implemented |
@@ -23,7 +22,7 @@ the same bounded workload can be measured without hiding failures.
 | Independent RDF products | RDFLib, Apache Jena, Eclipse RDF4J and Oxigraph | Implemented in an isolated product matrix |
 | OWL 2 DL validation | HermiT, Openllet, JFact and Konclude | Implemented as a separate consistency gate |
 | Policy/category/query cost | Event attribution, including fractional attribution | Implemented |
-| Three-architecture figures | Matched local, Docker and physical observations | Implemented |
+| Native architecture figures | Matched local and physical observations | Implemented |
 
 ## Critical findings corrected
 
@@ -47,8 +46,6 @@ the same bounded workload can be measured without hiding failures.
    documented execution paths.
 7. Custom elastic node identifiers could trigger eager tier inference despite a
    configured tier. Node startup now honours the declared tier first.
-8. CI used removed command-line flags and a static Compose file. The workflow now
-   validates configurations and exercises the generated topology commands.
 9. The duplicate flat physical inventory was removed. The layered topology is
    canonical, while the backward-compatible loader remains covered by a unit
    test.
@@ -64,7 +61,6 @@ the same bounded workload can be measured without hiding failures.
     and experiment reports include explicit completion/timeout/failure
     coverage.
 13. The coordinator bootstrap unnecessarily required physical SSH tooling for
-    local-only and Docker installations. Base installation is now independent;
     `doctor --physical` owns the optional SSH/rsync gate.
 
 ## Bounded-execution policy
@@ -75,8 +71,7 @@ the same bounded workload can be measured without hiding failures.
 | Load benchmark | 45 s | 60 s | 45 s |
 | Research experiments | 45 s | 60 s | Not applicable |
 | Monitoring/experiment smoke | 30 s | 45 s | Not applicable |
-| Load smoke | 15 s | 20 s | 20 s |
-| Semantic-product Compose | 120 s startup | Per-query profile limit | 600 s image-build limit |
+| Load smoke | 45 s | 90 s | 45 s |
 
 A deadline creates a right-censored observation, not a fabricated latency.
 Reports retain the timeout/error status and exclude incomplete rows from speedup
@@ -101,8 +96,8 @@ artifacts and must not be opened in Protégé as replacements for that source.
 
 ## Repository hygiene
 
-- Generated measurements, plots, runtime state, caches and rendered Compose
-  files are ignored by Git.
+- Generated results, local configuration, environments, caches, IDE settings,
+  logs and build artifacts are ignored by Git.
 - Existing `outputs/` data are deliberately preserved because they may contain
   the user's experiment evidence; cleanup never deletes measurements silently.
 - Credentials are not stored in topology files. SSH keys or an external secret
@@ -141,3 +136,78 @@ acceptance-profile/campaign evidence. Direct query metadata covers 102 of 116
 requirements and 69 of 79 policies; uncovered IDs require other evidence or
 future competency queries. Neither limitation is converted into a green claim
 by the benchmark harness.
+
+## September 2026 implementation audit
+
+The implemented architecture, repository tree, ports, installation commands and
+reproduction contracts are described in [Modular physical monitoring](MODULAR_MONITORING.md).
+
+Additional corrections verified during this audit:
+
+- Benchmark implementations now live in `monitoring`; root-level compatibility
+  aliases preserve existing imports. The reusable core has no monitoring imports.
+- Physical-only deployment replaces the removed container build files, topology,
+  commands, CI job and native-reasoner container fallback.
+- `EXT-Q26` binds its small type set before the user identifier join. Exact result
+  bags remain equal across the three portable reasoning profiles.
+- Native JFact uses matching Guice and AssistedInject versions. Explicit HermiT
+  runtime selection takes precedence over ambient configuration.
+- Unknown geographic coordinates are omitted from generated TOML. A round-trip
+  regression prevents the previous invalid `null` values.
+- Managed worker shutdown verifies process ownership, handles stale PID files,
+  and recovers the live worker PID from verified health metadata.
+- A coordinator lease prevents overlapping physical runs from resetting workers.
+- Load smoke budgets now accommodate measured Raspberry Pi preparation times of
+  approximately 23 seconds; the old 14-second worker budget was insufficient.
+- Ten-axis campaigns inject infrastructure, reasoners, metrics and result sinks.
+  They validate complete result bags against a bounded independent reference and
+  preserve input configuration, source archives and dependency provenance.
+- Query coverage is validated before execution: requests must cover query count.
+  Timeouts, setup failures and unobserved requests remain explicit result states.
+- Mobility implementation is static only; future models have an extension port.
+
+### Observed acceptance evidence
+
+Evidence is machine-local under `outputs/` and deliberately ignored by Git.
+
+| Validation | Observed result | Evidence |
+|---|---|---|
+| Fresh coordinator installation | Dependencies installed; pip check passed | `work/clean-venv` |
+| Clean-environment software suite | 226 passed; 2 optional renderer tests skipped | `outputs/audit/pytest.xml` |
+| Final CLI/campaign/result regression subset | 16 passed | Infrastructure, monitoring and reporting tests |
+| Resource capacity adapter regression | 5 passed | `tests/infrastructure/test_topology.py` |
+| Ontology validation and profile preflight | Both passed, scientific warnings retained | `continuum-bench validate` and `preflight` |
+| Native OWL consistency | HermiT, Openllet, JFact and Konclude available and consistent | `outputs/validation/owl-reasoners.json` |
+| Physical sharded scalability smoke | 6 completed, 0 timeouts | `outputs/audit/monitoring/sharded/scalability` |
+| Physical replicated scalability smoke | 6 completed, 0 timeouts | `outputs/audit/monitoring/replicated/scalability` |
+| Physical sharded scalability, 500 users | All 3 reasoning profiles completed, 0 timeouts | `outputs/audit/scalability-500/sharded/scalability` |
+| Physical event-load smoke | 6 completed, no lost events; acceptance passed | `outputs/audit/load` |
+| Ten-axis physical campaign | 126 points, 0 failed | `outputs/audit/final-campaign/20260908T164004Z-967d25df` |
+
+These are functional acceptance measurements, not a statistically powered
+performance study. The larger repeated campaign configuration is provided but
+has not been certified across its entire saturation range.
+
+### Outstanding machine and scientific limits
+
+The physical SSH account cannot access the system container socket and cannot
+run `sudo` without an interactive password on the Raspberry Pi workers. Project
+container support has been removed, but removal of root-owned legacy containers
+has not been verified. An administrator must inspect those services and remove
+only the legacy project instances. This is an operating-system privilege limit,
+not an automatic approval-review rejection.
+
+Configured resource capacities and processing scores are inventory declarations;
+observed process architecture, CPU and memory are recorded separately. Storage
+and network capacity are not calibrated hardware measurements. Location remains
+unknown until supplied by the operator. Measurements taken with other host
+activity are functional evidence and must be repeated on controlled hosts for
+performance claims.
+
+External OWL 2 DL tools currently validate consistency rather than implementing
+the physical graph-materialization port. Synthetic campaign policies complement
+the canonical policy workload; they do not prove coverage of every real policy.
+Shared mode aliases the distributed-data/shared-schema treatment. Workers execute
+queries serially; client concurrency measures queueing pressure. Cross-host
+coordinator scheduling remains external. These boundaries are explicit in the
+architecture guide and are not reported as completed future functionality.

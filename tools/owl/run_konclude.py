@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run native or containerized Konclude after deterministic OWL/XML conversion."""
+"""Run native Konclude after deterministic OWL/XML conversion."""
 
 from __future__ import annotations
 
@@ -12,7 +12,6 @@ import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_IMAGE = "konclude/konclude"
 SUPPORTED_COMMANDS = {
     "classification",
     "consistency",
@@ -87,30 +86,7 @@ def main(argv: list[str] | None = None) -> int:
                     flush=True,
                 )
                 return subprocess.run([native, *arguments], check=False).returncode
-            docker = shutil.which("docker")
-            if not docker:
-                raise ValueError(
-                    "Neither a native Konclude executable nor Docker is available"
-                )
-            arguments[input_index] = "/data/ontology.owl.xml"
-            image = os.environ.get("CONTINUUM_KONCLUDE_IMAGE", DEFAULT_IMAGE)
-            command = [
-                docker,
-                "run",
-                "--rm",
-                "--network=none",
-                "--volume",
-                f"{temporary}:/data:ro",
-                image,
-                *arguments,
-            ]
-            print(
-                f"[konclude-wrapper] phase=reasoning backend=docker "
-                f"operation={arguments[0]}",
-                file=sys.stderr,
-                flush=True,
-            )
-            return subprocess.run(command, check=False).returncode
+            raise ValueError("Install native Konclude or set CONTINUUM_KONCLUDE_EXECUTABLE")
     except (OSError, ValueError) as error:
         print(f"Konclude wrapper failed: {error}", file=sys.stderr)
         return 2

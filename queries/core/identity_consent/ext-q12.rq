@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Inspeccionar contratos efectivos, rangos, propósitos, políticas y vigencia.
+# Purpose: Evaluate semantic contract report using the declared query contract.
 # Requirements: RF-33, RF-34
 # Policies: P-CONS-02, P-CONS-03
-# Current v3.0.0 result: 28 filas
+# Current v3.0.0 result: 28 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

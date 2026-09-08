@@ -1,15 +1,12 @@
 # Documentation
 
-The documentation covers the shared benchmark and its monolithic, Docker and
-physical continuum deployments.
+Guides for native reference benchmarks and physical continuum deployments.
 
 Start here:
 
 - [User Guide](USER_GUIDE.md): shared concepts, validation and result
   interpretation.
 - [Monolith Guide](design/MONOLITH_GUIDE.md): native one-node control campaign.
-- [Docker Compose Guide](design/DOCKER_COMPOSE_GUIDE.md): local container
-  installation, lifecycle and complete Docker campaign.
 - [Physical Continuum Guide](design/PHYSICAL_CONTINUUM.md): SSH deployment and
   complete physical-worker campaign.
 - [Architecture](design/ARCHITECTURE.md): module and infrastructure boundaries.
@@ -21,7 +18,7 @@ Start here:
   and Konclude consistency validation and installation contracts.
 - [Tests](design/TESTS.md): validation and reproducibility commands.
 - [Command Reference](design/COMMAND_REFERENCE.md): ordered full-suite and
-  per-block commands for all three targets.
+  per-block commands for both native targets.
 - [Elastic Topology](design/ELASTIC_TOPOLOGY.md): how to add nodes by layer.
 
 Reference documents:

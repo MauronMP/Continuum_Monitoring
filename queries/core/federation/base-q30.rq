@@ -1,5 +1,5 @@
 # Type: ASK
-# Purpose: Confirmar existencia de aprendizaje federado global.
+# Purpose: Evaluate aSK: a federated learning session includes cloud using the declared query contract.
 # Requirements: RF-22
 # Policies: P-FL-01
 # Current v3.0.0 result: true

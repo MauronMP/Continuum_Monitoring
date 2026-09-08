@@ -4,15 +4,13 @@ Run these commands from the repository root after activating `.venv`. Commands
 are grouped so that each block can be repeated independently.
 
 Target-specific preparation is documented separately in the
-[Docker Compose guide](DOCKER_COMPOSE_GUIDE.md) and the
 [physical continuum guide](PHYSICAL_CONTINUUM.md).
 
 ## A. Repository acceptance block
 
 ```bash
-continuum-bench doctor --docker --physical --owl
+continuum-bench doctor --physical --owl
 continuum-bench topology validate --name monolith
-continuum-bench topology validate --name docker
 continuum-bench topology validate --name physical
 continuum-bench validate
 continuum-bench preflight
@@ -45,38 +43,6 @@ continuum-bench study category-cost \
 
 The monolith provides the native one-node baseline used by architecture
 comparisons. See the [monolith guide](MONOLITH_GUIDE.md).
-
-## C. Complete Docker suite
-
-```bash
-continuum-bench docker render
-continuum-bench docker up
-continuum-bench docker status
-
-continuum-smoke-docker-cumulative
-continuum-smoke-docker-scalability
-continuum-smoke-docker-load
-continuum-smoke-docker-experiments
-
-continuum-bench docker all --layout sharded --keep-running
-continuum-bench docker all --layout replicated --keep-running
-continuum-bench load docker
-continuum-bench experiment all docker
-
-continuum-bench study trace --target docker \
-  --output-dir outputs/study/docker
-continuum-bench study category-cost \
-  --events outputs/load/docker/event-runs.csv \
-  --output-dir outputs/study/docker-cost
-
-continuum-bench load plot
-continuum-bench experiment plot all
-continuum-bench experiment analyze
-continuum-bench docker down
-```
-
-The stack must remain running for load and experiment blocks. `--keep-running`
-prevents a benchmark-owned stack from being stopped between blocks.
 
 ## D. Complete physical suite
 
@@ -127,7 +93,8 @@ continuum-bench engines plot --plot-suite cumulative
 continuum-bench engines plot --plot-suite scalability
 ```
 
-Every engine command runs RDFLib, Jena, RDF4J and Oxigraph automatically. It
+Start the native RDFLib, Jena, RDF4J and Oxigraph services first. Each engine
+command discovers these services and runs the selected benchmark. It
 is distinct from `owl-validate`, which runs HermiT, Openllet, JFact and
 Konclude as OWL consistency validators. `engines plot` refuses partial product
 summaries, so all four names are guaranteed to appear in a valid figure.
@@ -137,8 +104,6 @@ summaries, so all four names are guaranteed to appear in a valid figure.
 ```bash
 continuum-bench local cumulative
 continuum-bench local scalability
-continuum-bench docker cumulative --layout sharded
-continuum-bench docker scalability --layout sharded
 continuum-bench physical cumulative --layout sharded --ssh-user pi
 continuum-bench physical scalability --layout sharded --ssh-user pi
 ```
@@ -148,14 +113,14 @@ Replace `sharded` with `replicated` for the replication baseline.
 ## G. Individual load dimensions
 
 ```bash
-continuum-bench load docker --dimension events_per_second
-continuum-bench load docker --dimension users
-continuum-bench load docker --dimension target_triples
-continuum-bench load docker --dimension rule_count
-continuum-bench load docker --dimension node_count
+continuum-bench load physical --dimension events_per_second
+continuum-bench load physical --dimension users
+continuum-bench load physical --dimension target_triples
+continuum-bench load physical --dimension rule_count
+continuum-bench load physical --dimension node_count
 ```
 
-Replace `docker` with `local` or `physical`, or select one named configuration with
+Replace `physical` with `local`, or select one named configuration with
 `--profile <profile-name>`.
 
 ## H. Individual scientific experiments
@@ -165,9 +130,6 @@ continuum-bench experiment scale-out local
 continuum-bench experiment reasoning-hardware local
 continuum-bench experiment distributed-ontology local
 
-continuum-bench experiment scale-out docker
-continuum-bench experiment reasoning-hardware docker
-continuum-bench experiment distributed-ontology docker
 
 continuum-bench experiment scale-out physical
 continuum-bench experiment reasoning-hardware physical
@@ -180,8 +142,8 @@ Global options precede the subcommand:
 
 ```bash
 continuum-bench --config configs/benchmark.toml validate
-continuum-bench --topology-file configs/topologies/docker/topology.toml \
-  topology validate --name docker
+continuum-bench --topology-file configs/topologies/physical/topology.toml \
+  topology validate --name physical
 ```
 
 Subcommand-specific options follow their subcommand. Use `continuum-bench
@@ -198,6 +160,5 @@ No single `all` command executes every family. A complete evaluation comprises:
 5. the RDFLib/Jena/RDF4J/Oxigraph product matrix;
 6. trace/cost artefacts and plots.
 
-Docker and physical runs are not duplicates: they apply the same workload
-contracts to different infrastructures. Sharded and replicated runs are also
-distinct experimental treatments and should use different output metadata.
+Sharded and replicated runs are distinct experimental treatments and use
+different output metadata.

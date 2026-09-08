@@ -1,8 +1,8 @@
 # Type: review
-# Purpose: Listar requisitos que no tienen política ni mecanismo explícito; los requisitos puramente estructurales pueden ser válidos y deben trazarse a ontología/consulta en la matriz documental.
+# Purpose: Evaluate review: requirements without explicit policies or mechanisms using the declared query contract.
 # Requirements: RV-04
 # Policies: P-VAL-06
-# Current v3.0.0 result: 6 filas
+# Current v3.0.0 result: 6 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

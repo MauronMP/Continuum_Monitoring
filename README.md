@@ -1,9 +1,20 @@
 # Continuum Monitoring Ontology Benchmark
 
 Reproducible evaluation of a modular, policy-aware monitoring ontology across
-a native monolith, an elastic local Docker continuum and a real physical
-continuum. All targets use the same ontology, SPARQL catalog, generators,
+a native monolith and an elastic physical continuum. All targets use the same ontology, SPARQL catalog, generators,
 reasoners, time budgets and scientific result contracts.
+
+## Modular physical campaigns
+
+See [the complete architecture and reproduction guide](docs/design/MODULAR_MONITORING.md)
+for the domain ports, ten scalability axes, physical resource model, reasoner
+choices, structured evidence and testing boundaries.
+
+```bash
+continuum-bench campaign --validate-only
+continuum-bench campaign
+continuum-bench campaign --campaign-config configs/campaign.toml
+```
 
 ## Structure
 
@@ -11,22 +22,19 @@ reasoners, time budgets and scientific result contracts.
 | --- | --- |
 | `src/continuum_bench/core` | Infrastructure-neutral domain model. |
 | `src/continuum_bench/monitoring` | Shared cumulative/scalability orchestration. |
-| `src/continuum_bench/study` | Workload, mobility and policy-cost studies. |
+| `src/continuum_bench/monitoring/study` | Workload, mobility and policy-cost studies. |
 | `configs/topologies/monolith` | Single-process reference split by tier. |
-| `configs/topologies/docker` | Elastic Docker nodes split by tier. |
 | `configs/topologies/physical` | Elastic physical nodes split by tier. |
 | `ontology`, `queries` | Modular semantic model and categorized SPARQL battery. |
 
-Local, Docker and physical deployments are infrastructure adapters, not separate
-benchmark implementations. Docker is therefore a reproducible staging target
-for the physical campaign.
+The native reference and physical workers share the same benchmark implementation.
 
 ## Install
 
-Requires Python 3.11+, Git and either Docker with Compose v2 or OpenSSH/rsync.
+Requires Python 3.11+, Git and OpenSSH/rsync.
 
 ```bash
-git clone <repository-url> Continuum_Monitoring
+git clone https://github.com/MauronMP/Continuum_Monitoring.git
 cd Continuum_Monitoring
 python3 tools/bootstrap.py --profile coordinator
 . .venv/bin/activate
@@ -57,40 +65,6 @@ continuum-bench load local
 continuum-bench experiment all local
 ```
 
-## Local Docker continuum
-
-The default topology is one cloud, one fog and three edge containers. Add or
-remove `[[nodes]]` in `configs/topologies/docker/nodes/*.toml`; Compose is
-generated from those files.
-
-```bash
-continuum-bench doctor --docker
-continuum-bench docker render
-continuum-bench docker up
-continuum-bench docker status
-
-continuum-bench docker all --layout sharded --keep-running
-continuum-bench docker all --layout replicated --keep-running
-continuum-bench load docker
-continuum-bench experiment all docker
-
-continuum-bench load plot
-continuum-bench experiment analyze
-continuum-bench docker down
-```
-
-Smoke tests:
-
-```bash
-continuum-smoke-docker-cumulative
-continuum-smoke-docker-scalability
-continuum-smoke-docker-load
-continuum-smoke-docker-experiments
-```
-
-`docker all` covers cumulative and scalability only. The load, experiment,
-study and acceptance blocks are separate by design.
-
 ## Physical continuum
 
 ```bash
@@ -120,7 +94,8 @@ continuum-bench engines all
 continuum-bench engines plot
 ```
 
-This command automatically executes RDFLib, Jena, RDF4J and Oxigraph; engine
+Start the four native engine services before this command. It executes
+RDFLib, Jena, RDF4J and Oxigraph; engine
 names do not need to be passed manually. HermiT, Openllet, JFact and Konclude
 remain separate OWL 2 DL consistency validators invoked by `owl-validate`.
 The plot command requires all four products in each selected summary and writes
@@ -140,7 +115,6 @@ Timeouts are stored as right-censored observations. Results go to `outputs/`.
 See [the user guide](docs/USER_GUIDE.md),
 [installation](docs/design/INSTALLATION.md),
 [monolith guide](docs/design/MONOLITH_GUIDE.md),
-[Docker Compose guide](docs/design/DOCKER_COMPOSE_GUIDE.md),
 [physical continuum guide](docs/design/PHYSICAL_CONTINUUM.md),
 [command reference](docs/design/COMMAND_REFERENCE.md),
 [tests](docs/design/TESTS.md) and [architecture](docs/design/ARCHITECTURE.md).

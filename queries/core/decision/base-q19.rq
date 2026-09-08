@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Listar nodos con disponibilidad, comunicación, carga, capacidad y trust compatibles con selección.
+# Purpose: Evaluate operationally eligible candidates using the declared query contract.
 # Requirements: RF-18, RF-47, RF-48
 # Policies: P-NODE-02, P-NODE-05
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

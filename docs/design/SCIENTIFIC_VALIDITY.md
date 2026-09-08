@@ -1,9 +1,8 @@
 # Scientific validity and limitations
 
 This repository provides a reproducible validation and performance
-infrastructure for a modular monitoring ontology on a native monolith, local
-containers and real continuum nodes. It is
-not an ontology standard, accreditation procedure or formal certification.
+infrastructure for a modular monitoring ontology on a native monolith and
+physical nodes. It is not an ontology standard or formal certification.
 Passing the suite supports only the structural, functional and performance
 claims that are explicitly tested.
 

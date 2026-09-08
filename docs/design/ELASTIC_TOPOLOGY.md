@@ -1,7 +1,7 @@
-# Elastic Docker and Physical Topologies
+# Elastic physical topologies
 
-To add a node, choose `configs/topologies/docker` or
-`configs/topologies/physical`, edit its tier file and add `[[nodes]]`.
+To add a node, edit its tier file under `configs/topologies/physical/nodes`
+and add `[[nodes]]`.
 
 Example edge node:
 
@@ -35,7 +35,6 @@ Rules:
 - Endpoints must be unique.
 - At least one cloud node must exist.
 - At least one authority node must exist for privacy-aware partitioning.
-- Docker host ports must be unique and all endpoints local.
 - Physical requires a local coordinator and safe dedicated remote paths.
 
 Validate after every change:
@@ -44,8 +43,7 @@ Validate after every change:
 .venv/bin/continuum-bench topology validate
 .venv/bin/continuum-bench topology show
 .venv/bin/continuum-bench --topology-file \
-  configs/topologies/docker/topology.toml topology validate --name docker
+  configs/topologies/physical/topology.toml topology validate --name physical
 ```
 
-Docker Compose is generated dynamically, so node-count changes require no YAML
-or Python edits. Physical deployment iterates the same node model over SSH.
+Physical deployment reads the node manifest and deploys workers over SSH.

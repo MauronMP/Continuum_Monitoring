@@ -15,7 +15,7 @@ def _parser() -> argparse.ArgumentParser:
         prog="continuum-bench",
         description=(
             "Validate and benchmark the policy-aware monitoring ontology on "
-            "local Docker and physical continuum infrastructures."
+            "native local and physical continuum infrastructures."
         ),
     )
     parser.add_argument(
@@ -25,16 +25,22 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--topology-file",
-        help="Elastic Docker or physical topology manifest override",
+        help="Physical topology manifest override",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    campaign = subparsers.add_parser("campaign", help="Run configurable physical scalability and policy-cost axes")
+    campaign.add_argument("--campaign-config", default="configs/campaign-smoke.toml")
+    campaign.add_argument("--output-dir", default="outputs/campaigns")
+    campaign.add_argument("--axis", action="append")
+    campaign.add_argument("--topology-name", default="physical")
+    campaign.add_argument("--validate-only", action="store_true")
 
     doctor = subparsers.add_parser(
         "doctor",
         help="Read-only installation and SSH diagnostics",
     )
     doctor.add_argument("--physical", action="store_true")
-    doctor.add_argument("--docker", action="store_true")
     doctor.add_argument("--owl", action="store_true")
     doctor.add_argument("--json", action="store_true")
 
@@ -78,8 +84,8 @@ def _parser() -> argparse.ArgumentParser:
     engines.add_argument(
         "--endpoints",
         help=(
-            "Optional comma-separated engine URLs; omit to manage the pinned "
-            "Docker engine stack automatically"
+            "Comma-separated native engine URLs; defaults to the four "
+            "local native service ports"
         ),
     )
     engines.add_argument("--warmups", type=int, default=1)
@@ -109,29 +115,6 @@ def _parser() -> argparse.ArgumentParser:
         "action", choices=("cumulative", "scalability", "all")
     )
     local.add_argument("--output-dir", default="outputs/local")
-
-    docker = subparsers.add_parser(
-        "docker",
-        help="Manage or benchmark an elastic local Docker continuum",
-    )
-    docker.add_argument(
-        "action",
-        choices=(
-            "render", "up", "status", "logs", "down",
-            "cumulative", "scalability", "all",
-        ),
-    )
-    docker.add_argument("--topology-name", default="docker")
-    docker.add_argument("--output-dir", default="outputs/docker")
-    docker.add_argument(
-        "--layout", choices=("replicated", "sharded"), default="sharded"
-    )
-    docker.add_argument("--skip-result-validation", action="store_true")
-    docker.add_argument(
-        "--keep-running",
-        action="store_true",
-        help="Do not stop containers after a benchmark command that started them",
-    )
 
     fragments = subparsers.add_parser(
         "fragments",
@@ -179,7 +162,7 @@ def _parser() -> argparse.ArgumentParser:
         help="Run or plot the distributed load benchmark",
     )
     load.add_argument(
-        "target", choices=("local", "docker", "physical", "plot")
+        "target", choices=("local", "physical", "plot")
     )
     load.add_argument(
         "--load-config",
@@ -205,7 +188,7 @@ def _parser() -> argparse.ArgumentParser:
     experiment = subparsers.add_parser(
         "experiment",
         help=(
-            "Run local/Docker/physical scale-out, hardware reasoning or "
+            "Run local/physical scale-out, hardware reasoning or "
             "distributed-ontology experiments"
         ),
     )
@@ -217,7 +200,7 @@ def _parser() -> argparse.ArgumentParser:
     def add_experiment_arguments(command_parser: argparse.ArgumentParser) -> None:
         command_parser.add_argument(
             "target",
-            choices=("local", "docker", "physical"),
+            choices=("local", "physical"),
             nargs="?",
             default="physical",
         )
@@ -275,7 +258,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     study.add_argument(
         "--target",
-        choices=("local", "docker", "physical"),
+        choices=("local", "physical"),
         default="physical",
         help="Execution topology used to generate the trace",
     )
@@ -296,7 +279,7 @@ def _manifest_path(config, override: str | None) -> Path:
 def _target_manifest_path(config, override: str | None, target: str) -> Path:
     if override:
         return _manifest_path(config, override)
-    if target in {"monolith", "docker", "physical"}:
+    if target in {"monolith", "physical"}:
         return config.root / f"configs/topologies/{target}/topology.toml"
     return _manifest_path(config, None)
 
@@ -326,8 +309,7 @@ def _open_paths(paths: list[Path]) -> None:
             webbrowser.open(path.resolve().as_uri())
 
 
-def main(argv: list[str] | None = None) -> int:
-    args = _parser().parse_args(argv)
+def _dispatch(args) -> int:
     if args.command == "doctor":
         from .environment import main as doctor_main
 
@@ -335,8 +317,6 @@ def main(argv: list[str] | None = None) -> int:
         options = ["--root", str(config_path.parents[1])]
         if args.physical:
             options.append("--physical")
-        if args.docker:
-            options.append("--docker")
         if args.owl:
             options.append("--owl")
         if args.json:
@@ -344,6 +324,26 @@ def main(argv: list[str] | None = None) -> int:
         return doctor_main(options)
 
     config = load_config(args.config)
+
+    if args.command == "campaign":
+        from .monitoring.campaign_config import load_campaign
+        from .monitoring.campaign import run_campaign
+        from .monitoring.campaign_infrastructure import PhysicalInfrastructure
+        campaign = load_campaign(config.resolve(Path(args.campaign_config)))
+        if args.axis:
+            missing = set(args.axis) - {axis.name for axis in campaign.axes}
+            if missing:
+                raise ValueError(f"Unknown campaign axes: {sorted(missing)}")
+            campaign = replace(campaign, axes=tuple(a for a in campaign.axes if a.name in args.axis))
+        topology = _target_topology(config, args, "physical")
+        if max(w.physical_nodes for _, _, w in campaign.points()) > len(topology.active_nodes):
+            raise ValueError("Campaign requests more physical nodes than configured")
+        if args.validate_only:
+            print(json.dumps(campaign.public(), indent=2))
+            return 0
+        directory, failures = run_campaign(campaign, PhysicalInfrastructure(topology), config.resolve(Path(args.output_dir)))
+        print(json.dumps({"output": str(directory), "failed_points": failures}, indent=2))
+        return 1 if failures else 0
 
     if args.command == "validate":
         report = validate_project(config)
@@ -475,46 +475,6 @@ def main(argv: list[str] | None = None) -> int:
             outputs["scalability"] = str(run_scalability(local_config))
         print(json.dumps(outputs, indent=2, ensure_ascii=False))
         return 0
-
-    if args.command == "docker":
-        from .docker_cluster import manage, render, wait_ready
-        from .monitoring import run_distributed_monitoring_suite
-
-        topology = _target_topology(config, args, "docker")
-        if topology.kind != "docker":
-            raise ValueError(f"Topology {topology.name!r} is not Docker")
-        if args.action == "render":
-            path = render(config.root, topology)
-            print(json.dumps({"compose_file": str(path)}, indent=2))
-            return 0
-        if args.action in {"up", "status", "logs", "down"}:
-            status = manage(config.root, topology, args.action)
-            if args.action == "up" and status == 0:
-                wait_ready(topology)
-            return status
-
-        owned = False
-        try:
-            try:
-                wait_ready(topology, timeout_seconds=3.0)
-            except RuntimeError:
-                if manage(config.root, topology, "up") != 0:
-                    raise RuntimeError("Docker Compose could not start the workers")
-                owned = True
-                wait_ready(topology)
-            outputs = run_distributed_monitoring_suite(
-                config,
-                topology,
-                config.root / args.output_dir,
-                suite=args.action,
-                layout=args.layout,
-                validate_results=not args.skip_result_validation,
-            )
-            print(json.dumps(outputs, indent=2, ensure_ascii=False))
-            return 0
-        finally:
-            if owned and not args.keep_running:
-                manage(config.root, topology, "down")
 
     if args.command == "fragments":
         from .monitoring import export_physical_fragments
@@ -723,6 +683,28 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     raise AssertionError(f"Unhandled command: {args.command}")
+
+
+
+def main(argv: list[str] | None = None) -> int:
+    import time
+    started_ns = time.time_ns()
+    args = _parser().parse_args(argv)
+    physical_work = (
+        args.command == "campaign" and not args.validate_only
+        or args.command == "physical" and args.action not in {"status", "authorize"}
+        or args.command in {"load", "experiment"} and getattr(args, "target", None) == "physical"
+    )
+    from contextlib import nullcontext
+    from .monitoring.lease import physical_lease
+    lease = physical_lease(load_config(args.config).root) if physical_work else nullcontext()
+    with lease:
+        status = _dispatch(args)
+        if args.command in {"physical", "local", "load", "experiment", "engines"} and hasattr(args, "output_dir"):
+            from .monitoring.normalize import normalize_completed_outputs
+            config = load_config(args.config)
+            normalize_completed_outputs(config, config.resolve(Path(args.output_dir)), started_ns)
+        return status
 
 
 if __name__ == "__main__":

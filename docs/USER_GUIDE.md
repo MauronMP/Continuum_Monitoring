@@ -5,8 +5,6 @@ instructions are intentionally separated:
 
 - [Monolith guide](design/MONOLITH_GUIDE.md): native one-process control,
   smokes, benchmarks, load and experiments.
-- [Docker Compose guide](design/DOCKER_COMPOSE_GUIDE.md): local elastic
-  containers, lifecycle, smokes, benchmarks, load and experiments.
 - [Physical continuum guide](design/PHYSICAL_CONTINUUM.md): coordinator,
   Raspberry Pi workers, SSH deployment, smokes and physical campaigns.
 - [Command reference](design/COMMAND_REFERENCE.md): copy-and-run commands for
@@ -17,21 +15,19 @@ instructions are intentionally separated:
 Follow the [complete installation guide](design/INSTALLATION.md), then run:
 
 ```bash
-git clone <repository-url> Continuum_Monitoring
+git clone https://github.com/MauronMP/Continuum_Monitoring.git
 cd Continuum_Monitoring
 python3 tools/bootstrap.py --profile coordinator
 . .venv/bin/activate
 ```
 
-Docker requires Docker Engine/Desktop and Compose v2. Physical execution
-requires SSH/rsync on the coordinator and Python 3.11+, `venv`, `rsync`,
+Physical deployment requires SSH/rsync on the coordinator and Python 3.11+, `venv`, `rsync`,
 `procps` and SSH on every worker.
 
 ## Common acceptance checks
 
 ```bash
 continuum-bench topology validate --name monolith
-continuum-bench topology validate --name docker
 continuum-bench topology validate --name physical
 continuum-bench validate
 continuum-bench preflight
@@ -52,18 +48,16 @@ continuum-bench owl-validate --require-all
 
 ## Elastic configuration
 
-All three targets have independent manifests and tier files:
+Both native targets have independent manifests and tier files:
 
 ```text
 configs/topologies/monolith/{topology.toml,nodes/*.toml}
-configs/topologies/docker/{topology.toml,nodes/*.toml}
 configs/topologies/physical/{topology.toml,nodes/*.toml}
 ```
 
 Add a `[[nodes]]` table to `cloud.toml`, `fog.toml`, `mist.toml`, `edge.toml`
-or `iot.toml`. IDs, hosts, endpoints and ports must be unique. The runner reads
-the enabled nodes dynamically; Python and Compose source files do not need to
-be rewritten.
+or `iot.toml`. Node IDs and endpoints must be unique. Different hosts may use
+the same port. The runner reads the configured nodes without code changes.
 
 ## Test-family selection
 
@@ -79,9 +73,9 @@ Choose the smallest family that answers the research question:
 - Study commands generate reproducible workload/mobility traces and aggregate
   category, policy and query costs from measured event data.
 
-`local all`, `docker all` and `physical all` run cumulative plus scalability
+`local all`, `physical all` run cumulative plus scalability
 only. There is no literal `load all` subcommand: unfiltered `load local`,
-`load docker` or `load physical` means all configured load profiles.
+`load physical` or `load physical` means all configured load profiles.
 `experiment all <target>` runs the three
 separated scientific experiments, not the normal or load benchmarks.
 
@@ -91,7 +85,7 @@ Results are written under `outputs/` with metadata describing target,
 topology, layout, reasoner, profile, repetitions and budgets. Timeouts are
 right-censored observations: they remain visible in coverage reporting and are
 not converted into zero latency. Architecture ratios use only matched,
-completed rows; Docker and physical speedups use the matching monolith row as
+completed rows; Physical speedups use the matching monolith row as
 their baseline.
 
 RDFLib, Jena, RDF4J and Oxigraph are exercised without naming each engine:
@@ -115,10 +109,9 @@ event data.
 ## Troubleshooting entry points
 
 ```bash
-continuum-bench doctor --docker
+continuum-bench doctor
 continuum-bench doctor --physical
 continuum-bench doctor --owl
-continuum-bench docker logs
 continuum-bench physical status --ssh-user pi
 ```
 

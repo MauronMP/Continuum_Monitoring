@@ -1,8 +1,8 @@
 # Type: violation
-# Purpose: Detectar EvaluationState sin usuario, propósito, zona, contrato, autorización, método, tres pesos, tier, justificación, instante o acción.
+# Purpose: Evaluate violation: evaluation without minimum decision fields using the declared query contract.
 # Requirements: RF-54, RF-66, RNF-28
 # Policies: P-AUD-06
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

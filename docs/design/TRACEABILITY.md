@@ -20,12 +20,11 @@
 | Cumulative/scalability | `continuum_bench.monitoring` shared suites |
 | Multidimensional load | `continuum_bench.load_benchmark` |
 | Policy cost and mobility study | `continuum_bench.study` |
-| Local/Docker/physical experiments | `continuum_bench.experiments` |
+| Local/physical experiments | `continuum_bench.experiments` |
 | Reasoner profiles | `continuum_bench.reasoners` |
-| Elastic topologies | `configs/topologies/monolith`, `configs/topologies/docker`, `configs/topologies/physical` |
+| Elastic topologies | `configs/topologies/monolith`, `configs/topologies/physical` |
 | Independent semantic products | `continuum_bench.engines`, `engine-service` |
 | External OWL consistency | `continuum_bench.owl_validation`, `tools/owl` |
-| Docker lifecycle | `continuum_bench.docker_cluster` |
 | Physical lifecycle | `continuum_bench.physical_cluster` |
 | Result equivalence | canonical digest and `result-validation.csv` |
 | Publication figures | load, experiment and engine reporting modules |

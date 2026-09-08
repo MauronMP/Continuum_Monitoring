@@ -1,25 +1,37 @@
-.DS_Store
+# Machine-local configuration and secrets
+.env
+.env.*
+!.env.example
+*.local.toml
+configs/local/
+.runtime/
+runtime/
+# Environments, packaging, caches and build products
+.venv*/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.cache/
 .pytest_cache/
 .ruff_cache/
-__pycache__/
-*.egg-info/
-*.py[cod]
-.venv/
-.venv-node/
-.cache/
-.runtime/
-.env
+.mypy_cache/
+.coverage*
+htmlcov/
 build/
 dist/
+target/
+*.class
+# Benchmark outputs and scratch files
+outputs/
+work/
 tmp/
-runtime/
 *.log
 *.pid
-outputs/**/*.csv
-outputs/**/*.json
-outputs/**/*.png
-outputs/**/*.pdf
-outputs/**/*.svg
-outputs/**/*.log
-outputs/**/runtime/
-outputs/fragments/
+# Editors and operating systems
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

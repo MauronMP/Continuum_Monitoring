@@ -97,7 +97,7 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help=(
             "Install pinned HermiT/Openllet/JFact dependencies and prepare "
-            "the Konclude Docker backend (coordinator only)"
+            "native Konclude (coordinator only)"
         ),
     )
     args = parser.parse_args(argv)
@@ -148,7 +148,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print(f"Validation: {python} -m continuum_bench validate")
             print(
-                "Optional targets: run 'continuum-bench doctor --docker' or "
+                "Physical deployment: run "
                 "'continuum-bench doctor --physical' before those suites."
             )
         return 0

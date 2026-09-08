@@ -1,8 +1,8 @@
 # Type: dashboard
-# Purpose: Comprobar que los requisitos revisados están representados en la ontología.
+# Purpose: Evaluate functional, non-functional and validation requirement coverage using the declared query contract.
 # Requirements: RV-04, RF-68
 # Policies: P-VAL-06
-# Current v3.0.0 result: 3 filas
+# Current v3.0.0 result: 3 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

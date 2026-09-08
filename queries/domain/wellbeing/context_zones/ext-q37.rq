@@ -1,8 +1,8 @@
 # Type: violation
-# Purpose: Detectar tier Edge/Fog/Cloud seleccionado o TransferEvent externo asociado a evaluación/usuario en RestrictedZone.
+# Purpose: Evaluate violation: external processing or transfer in restricted areas using the declared query contract.
 # Requirements: RF-42, RF-43, RF-60
 # Policies: P-ZONE-01, P-GOV-03
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

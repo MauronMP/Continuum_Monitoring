@@ -1,8 +1,8 @@
 # Type: inventory
-# Purpose: Verificar versión de ontología y artefactos versionados asociados.
+# Purpose: Evaluate version and release artifact inventory using the declared query contract.
 # Requirements: RF-68, RNF-39, RV-01, RV-03
 # Policies: P-VAL-01, P-VAL-04
-# Current v3.0.0 result: 6 filas
+# Current v3.0.0 result: 6 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

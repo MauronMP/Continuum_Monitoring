@@ -24,12 +24,11 @@ There is no literal `continuum-bench load all` command. The complete matrix is
 selected by omitting filters:
 
 ```bash
-continuum-bench load docker
 continuum-bench load physical
 continuum-bench load local
 ```
 
-By contrast, `continuum-bench experiment all docker` and `continuum-bench
+By contrast, `continuum-bench experiment all physical` and `continuum-bench
 experiment all physical` are real aggregate commands and execute the three
 experiment families sequentially.
 
@@ -75,16 +74,6 @@ continuum-smoke-local-load
 continuum-smoke-local-experiments
 ```
 
-Docker:
-
-```bash
-continuum-smoke-docker-cumulative
-continuum-smoke-docker-scalability
-continuum-smoke-docker-load
-continuum-smoke-docker-experiments
-continuum-smoke-docker-cumulative --layout replicated
-continuum-smoke-docker-scalability --layout replicated
-```
 
 Physical:
 
@@ -116,7 +105,7 @@ continuum-smoke-engines
 continuum-bench engines plot
 ```
 
-It starts and checks RDFLib, Jena, RDF4J and Oxigraph automatically.
+It checks already-running native RDFLib, Jena, RDF4J and Oxigraph services.
 
 ## Monitoring benchmarks
 
@@ -125,8 +114,6 @@ Run cumulative and scalability independently:
 ```bash
 continuum-bench local cumulative
 continuum-bench local scalability
-continuum-bench docker cumulative --layout sharded
-continuum-bench docker scalability --layout sharded
 continuum-bench physical cumulative --layout sharded --ssh-user pi
 continuum-bench physical scalability --layout sharded --ssh-user pi
 ```
@@ -134,20 +121,17 @@ continuum-bench physical scalability --layout sharded --ssh-user pi
 Or run both with `all`:
 
 ```bash
-continuum-bench docker all --layout sharded
-continuum-bench docker all --layout replicated
 continuum-bench physical all --layout sharded --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 ```
 
-`docker all` and `physical all` mean cumulative plus scalability only. They do
+`physical all` mean cumulative plus scalability only. They do
 not include load, experiments, studies, unit tests or OWL validation.
 
 ## Load campaign
 
 ```bash
 continuum-bench load local
-continuum-bench load docker
 continuum-bench load physical
 ```
 
@@ -164,10 +148,7 @@ continuum-bench experiment reasoning-hardware local
 continuum-bench experiment distributed-ontology local
 continuum-bench experiment all local
 
-continuum-bench experiment scale-out docker
-continuum-bench experiment reasoning-hardware docker
-continuum-bench experiment distributed-ontology docker
-continuum-bench experiment all docker
+continuum-bench experiment all physical
 
 continuum-bench experiment scale-out physical
 continuum-bench experiment reasoning-hardware physical
@@ -185,16 +166,16 @@ continuum-bench experiment all physical
 ```bash
 continuum-bench study trace --target local \
   --output-dir outputs/study/local
-continuum-bench study trace --target docker \
-  --output-dir outputs/study/docker
+continuum-bench study trace --target physical \
+  --output-dir outputs/study/physical
 continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
 continuum-bench study category-cost \
   --events outputs/load/local/event-runs.csv \
   --output-dir outputs/study/local-cost
 continuum-bench study category-cost \
-  --events outputs/load/docker/event-runs.csv \
-  --output-dir outputs/study/docker-cost
+  --events outputs/load/physical/event-runs.csv \
+  --output-dir outputs/study/physical-cost
 continuum-bench study category-cost \
   --events outputs/load/physical/event-runs.csv \
   --output-dir outputs/study/physical-cost

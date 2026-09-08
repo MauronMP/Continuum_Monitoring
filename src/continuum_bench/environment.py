@@ -100,12 +100,8 @@ def project_checks(root: Path) -> list[Check]:
         "pyproject.toml",
         "configs/benchmark.toml",
         "configs/owl-reasoners.toml",
-        "configs/topologies/docker/topology.toml",
         "configs/topologies/monolith/topology.toml",
         "configs/topologies/physical/topology.toml",
-        "docker/Dockerfile",
-        "docker-compose.engines.yml",
-        "docker/engines/Dockerfile",
         "engine-service/pom.xml",
         "queries/catalog.csv",
         "queries/execution-plan.toml",
@@ -135,7 +131,7 @@ def project_checks(root: Path) -> list[Check]:
             from .topology import load_topology_manifest
 
             details = []
-            for architecture in ("monolith", "docker", "physical"):
+            for architecture in ("monolith", "physical"):
                 manifest = load_topology_manifest(
                     root
                     / f"configs/topologies/{architecture}/topology.toml"
@@ -152,7 +148,7 @@ def project_checks(root: Path) -> list[Check]:
                     "error",
                     str(error),
                     (
-                        "Fix configs/topologies/{monolith,docker,physical}/*.toml and run "
+                        "Fix configs/topologies/{monolith,physical}/*.toml and run "
                         "'continuum-bench topology validate'."
                     ),
                 )
@@ -168,64 +164,13 @@ def physical_checks() -> list[Check]:
             shutil.which(name) or "not installed",
             (
                 "Install openssh-client, ssh-copy-id and rsync on the "
-                "coordinator. Raspberry Pi workers do not need Java or Docker."
+                "coordinator. Raspberry Pi workers do not need Java."
             ),
         )
         for name in ("ssh", "ssh-copy-id", "rsync")
     ]
 
 
-def docker_checks() -> list[Check]:
-    docker = shutil.which("docker")
-    if not docker:
-        return [Check(
-            "docker", "error", "not installed",
-            "Install Docker Engine/Desktop with the Compose v2 plugin.",
-        )]
-    import subprocess
-
-    try:
-        result = subprocess.run(
-            [docker, "compose", "version"],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=15,
-        )
-        detail = (result.stdout or result.stderr).strip()
-        compose_check = Check(
-            "docker-compose",
-            "ok" if result.returncode == 0 else "error",
-            detail or "unavailable",
-            "Install or enable the Docker Compose v2 plugin.",
-        )
-        if result.returncode:
-            return [compose_check]
-        daemon = subprocess.run(
-            [docker, "info", "--format", "{{.ServerVersion}}"],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=15,
-        )
-        daemon_detail = (daemon.stdout or daemon.stderr).strip()
-        return [
-            compose_check,
-            Check(
-                "docker-daemon",
-                "ok" if daemon.returncode == 0 else "error",
-                daemon_detail or "unavailable",
-                (
-                    "Start Docker Engine/Desktop and verify that "
-                    "'docker info' succeeds for the current user."
-                ),
-            ),
-        ]
-    except (OSError, subprocess.TimeoutExpired) as error:
-        return [Check(
-            "docker-compose", "error", str(error),
-            "Start Docker and verify that 'docker compose version' works.",
-        )]
 
 
 def owl_reasoner_checks() -> list[Check]:
@@ -290,7 +235,6 @@ def main(argv: list[str] | None = None) -> int:
         "--root", type=Path, default=Path(__file__).resolve().parents[2]
     )
     parser.add_argument("--physical", action="store_true")
-    parser.add_argument("--docker", action="store_true")
     parser.add_argument("--owl", action="store_true")
     parser.add_argument("--worker", action="store_true")
     parser.add_argument("--json", action="store_true")
@@ -298,8 +242,6 @@ def main(argv: list[str] | None = None) -> int:
     checks = runtime_checks(worker=args.worker) + project_checks(args.root.resolve())
     if args.physical:
         checks.extend(physical_checks())
-    if args.docker:
-        checks.extend(docker_checks())
     if args.owl:
         checks.extend(owl_reasoner_checks())
     if args.json:

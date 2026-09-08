@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Inspeccionar evaluaciones urbanas junto con consentimiento efectivo y tier.
+# Purpose: Evaluate conditional urban processing report using the declared query contract.
 # Requirements: RF-42
 # Policies: P-ZONE-03, P-CONS-04
-# Current v3.0.0 result: 5 filas
+# Current v3.0.0 result: 5 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

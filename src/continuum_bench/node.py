@@ -510,7 +510,19 @@ class Handler(BaseHTTPRequestHandler):
             with _worker_timeout(
                 float(payload.get("phase_timeout_seconds", 0))
             ):
-                if self.path == "/prepare":
+                if self.path.startswith("/campaign/"):
+                    from .monitoring.campaign_runtime import CampaignRuntime
+                    runtime = self.server.runtime
+                    if not hasattr(runtime, "campaign"):
+                        runtime.campaign = CampaignRuntime()
+                    if self.path == "/campaign/prepare":
+                        result = runtime.campaign.prepare(payload)
+                    elif self.path == "/campaign/query":
+                        result = runtime.campaign.execute(payload)
+                    else:
+                        self._json(404, {"error": "not found"})
+                        return
+                elif self.path == "/prepare":
                     result = self.server.runtime.prepare(
                         reasoner=str(payload["reasoner"]),
                         users=int(payload.get("users", 0)),

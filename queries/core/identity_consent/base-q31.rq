@@ -1,8 +1,8 @@
 # Type: dashboard
-# Purpose: Agregar usuarios por rango de consentimiento activo.
+# Purpose: Evaluate user counts by active consent range using the declared query contract.
 # Requirements: RF-32, RF-68
 # Policies: P-CONS-01
-# Current v3.0.0 result: 3 filas
+# Current v3.0.0 result: 3 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

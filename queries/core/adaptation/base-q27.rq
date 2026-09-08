@@ -1,5 +1,5 @@
 # Type: ASK
-# Purpose: Comprobación rápida de existencia de degradación de modelo/servicio.
+# Purpose: Evaluate aSK: a degradation event exists using the declared query contract.
 # Requirements: RF-20
 # Policies: P-ADAPT-06
 # Current v3.0.0 result: true

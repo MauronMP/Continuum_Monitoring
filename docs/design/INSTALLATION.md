@@ -1,8 +1,6 @@
 # Installation and environment preparation
 
-This guide starts from a clean clone. Run every command from the repository
-root. The coordinator can execute the native monolith, the elastic Docker
-continuum and the physical continuum. Raspberry Pi workers do not need Docker.
+This guide starts from a clean clone. Run every command from the repository root.
 
 ## 1. Coordinator prerequisites
 
@@ -31,7 +29,7 @@ python3 -c "import platform; print(platform.machine())"
 ## 2. Clone and bootstrap
 
 ```bash
-git clone <repository-url> Continuum_Monitoring
+git clone https://github.com/MauronMP/Continuum_Monitoring.git
 cd Continuum_Monitoring
 python3 tools/bootstrap.py --profile coordinator
 . .venv/bin/activate
@@ -39,7 +37,7 @@ continuum-bench --help
 ```
 
 `tools/bootstrap.py` creates `.venv`, upgrades the packaging tools and installs
-the project with its test dependencies. It does not require Docker, SSH/rsync
+the project with its test dependencies. It does not require SSH/rsync
 or Java unless that optional target is used. Add the optional `diagrams` extra only
 when regenerating the ontology atlas. The equivalent manual
 installation is:
@@ -53,35 +51,6 @@ python -m pip install -e ".[dev,diagrams]"
 
 Do not copy a virtual environment between machines or architectures; run the
 bootstrap again after cloning.
-
-## 3. Docker target
-
-Install Docker Engine or Docker Desktop and the Compose v2 plugin. The command
-`docker compose` (with a space) must work for the same user that runs the
-benchmark. On Linux, follow Docker's post-installation instructions if access
-to the daemon otherwise requires `sudo`.
-
-```bash
-docker --version
-docker compose version
-docker info
-continuum-bench doctor --docker
-```
-
-The default five-container topology reserves one CPU and 1 GiB per node.
-Allocate at least 5 GiB to Docker, or reduce resource limits in
-`configs/topologies/docker/nodes/*.toml`.
-
-The independent product-engine suite creates four additional, short-lived
-containers (RDFLib, Jena, RDF4J and Oxigraph). It builds pinned Python and Java
-21 images automatically:
-
-```bash
-continuum-smoke-engines
-continuum-bench engines all
-```
-
-No host Maven installation is needed for these four product containers.
 
 ## 4. Physical workers
 
@@ -122,17 +91,17 @@ The portable benchmark materializers (`rdfs`, `owlrl`, `rdfs_owlrl`) are Python
 dependencies. HermiT, Openllet, JFact and Konclude are separate ontology
 consistency validators and are not silently substituted when unavailable.
 
-Install Java 17, Maven and Docker, then use the project installer:
+Install Java 17, Maven and native Konclude, then use the project installer:
 
 ```bash
-sudo apt-get install -y openjdk-17-jre-headless maven
+sudo apt-get install -y openjdk-17-jre-headless maven konclude
 python3 tools/install_owl_reasoners.py
 ```
 
 The installer resolves pinned HermiT, Openllet and JFact dependencies into
 separate classpaths, preventing incompatible transitive OWLAPI libraries from
 being mixed. It then self-tests all three Java factories and executes a real
-Konclude consistency smoke through the native or containerized backend. Turtle
+Konclude consistency smoke through the native backend. Turtle
 is converted to OWL/XML before Konclude. The same operation can be requested
 during initial setup with
 `python3 tools/bootstrap.py --profile coordinator --with-owl-reasoners`.
@@ -150,20 +119,14 @@ reasoner is missing, times out, reports inconsistency or cannot complete.
 ## 6. Installation verification
 
 ```bash
-continuum-bench doctor --docker --physical --owl
+continuum-bench doctor --physical --owl
 continuum-bench topology validate --name monolith
-continuum-bench topology validate --name docker
 continuum-bench topology validate --name physical
 continuum-bench validate
 continuum-bench preflight
 python -m pytest
 python3 tools/check_documentation.py
 ```
-
-The Docker doctor checks both the Compose v2 client and access to the running
-daemon. If `docker-compose` is healthy but `docker-daemon` fails, start Docker
-Engine/Desktop and ensure the current user can run `docker info` without
-`sudo` before starting a smoke.
 
 `continuum-bench validate` checks parsing, SHACL, query contracts and portable
 materialization. It does not prove OWL 2 DL consistency; that is the purpose of

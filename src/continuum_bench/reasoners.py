@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from itertools import combinations
 from time import perf_counter_ns
 from typing import Type
+from .core.contracts import Reasoner, ReasoningResult
 
 from owlrl import (
     DeductiveClosure,
@@ -50,16 +51,7 @@ class DatatypeAwareRDFSSemantics(RDFS_Semantics):
                 self.store_triple((subject, predicate, left))
 
 
-@dataclass(frozen=True)
-class ReasoningMeasurement:
-    graph: Graph
-    duration_ms: float
-    input_triples: int
-    output_triples: int
-
-    @property
-    def inferred_triples(self) -> int:
-        return self.output_triples - self.input_triples
+ReasoningMeasurement = ReasoningResult
 
 
 @dataclass(frozen=True)
@@ -173,7 +165,7 @@ REASONER_ENGINES: dict[str, ReasonerEngine] = {
 
 
 def available_reasoners() -> tuple[str, ...]:
-    return tuple(_PROFILES)
+    return tuple(_BACKENDS)
 
 
 def reasoner_catalog() -> tuple[ReasonerEngine, ...]:
@@ -182,7 +174,7 @@ def reasoner_catalog() -> tuple[ReasonerEngine, ...]:
     return tuple(REASONER_ENGINES.values())
 
 
-def materialize(source: Graph, reasoner: str) -> ReasoningMeasurement:
+def _materialize_owlrl(source: Graph, reasoner: str) -> ReasoningMeasurement:
     try:
         semantics = _PROFILES[reasoner]
     except KeyError as error:
@@ -208,3 +200,32 @@ def materialize(source: Graph, reasoner: str) -> ReasoningMeasurement:
         input_triples=input_triples,
         output_triples=len(graph),
     )
+
+
+@dataclass(frozen=True)
+class OwlrlReasoner:
+    name: str
+
+    def materialize(self, source: Graph) -> ReasoningResult:
+        return _materialize_owlrl(source, self.name)
+
+
+_BACKENDS: dict[str, Reasoner] = {name: OwlrlReasoner(name) for name in _PROFILES}
+
+
+def register_reasoner(backend: Reasoner, *, replace: bool = False) -> None:
+    """Register a materialization backend without modifying experiment logic."""
+    if not backend.name or (backend.name in _BACKENDS and not replace):
+        raise ValueError(f"Duplicate or empty reasoner name: {backend.name!r}")
+    _BACKENDS[backend.name] = backend
+
+
+def get_reasoner(name: str) -> Reasoner:
+    try:
+        return _BACKENDS[name]
+    except KeyError as error:
+        raise ValueError(f"Unknown reasoner {name!r}; choose from {sorted(_BACKENDS)}") from error
+
+
+def materialize(source: Graph, reasoner: str) -> ReasoningMeasurement:
+    return get_reasoner(reasoner).materialize(source)

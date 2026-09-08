@@ -1,0 +1,53 @@
+[campaign]
+name = "physical-scalability"
+reasoners = ["rdfs", "owlrl", "rdfs_owlrl"]
+modes = ["replicated", "distributed"]
+policy_categories = ["identity_consent", "security_identity", "policy_governance"]
+repetitions = 3
+warmup = 3
+seed = 2026
+request_timeout_seconds = 30
+point_timeout_seconds = 90
+
+[workload]
+physical_nodes = 1
+iot_devices = 2
+users = 2
+requests = 32
+policies = 2
+individuals = 2
+requirements = 2
+query_count = 2
+query_complexity = 1
+concurrency = 1
+
+[[axes]]
+name = "physical_nodes"
+values = [1, 2, 5]
+[[axes]]
+name = "iot_devices"
+values = [2, 10, 25]
+[[axes]]
+name = "users"
+values = [2, 10, 25]
+[[axes]]
+name = "requests"
+values = [4, 20, 100]
+[[axes]]
+name = "policies"
+values = [2, 10, 25]
+[[axes]]
+name = "individuals"
+values = [2, 10, 25]
+[[axes]]
+name = "requirements"
+values = [2, 10, 25]
+[[axes]]
+name = "query_count"
+values = [2, 10, 25]
+[[axes]]
+name = "query_complexity"
+values = [1, 2, 4]
+[[axes]]
+name = "concurrency"
+values = [1, 2, 4]

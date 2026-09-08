@@ -1,7 +1,6 @@
 # Physical continuum user guide
 
-This guide contains only the workflow for a coordinator and elastic physical
-workers. Docker is not required on Raspberry Pi nodes.
+This guide covers a coordinator and an elastic set of physical worker nodes.
 
 ## Complete physical suite: copy-and-run order
 

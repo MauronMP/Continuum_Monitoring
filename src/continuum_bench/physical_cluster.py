@@ -502,6 +502,13 @@ def start_cluster(
             )
             continue
         if node.local:
+            detail = current[node.role].get("detail", {})
+            if (detail.get("service") == "continuum-benchmark-node"
+                    and detail.get("node_id") == node.role
+                    and isinstance(detail.get("pid"), int)):
+                # Recover ownership after a failed startup overwrote the PID file.
+                # _safe_local_stop independently verifies the process command.
+                (_runtime_dir(root) / f"{node.role}.pid").write_text(f"{detail['pid']}\n")
             _safe_local_stop(root, node.role)
             _local_start(root, inventory, node)
         else:
@@ -542,6 +549,9 @@ def _safe_local_stop(root: Path, role: str) -> None:
         capture_output=True,
         text=True,
     ).stdout
+    if not command.strip():
+        pid_path.unlink(missing_ok=True)
+        return
     if (
         "continuum_bench.node" not in command
         or f"--node-id {role}" not in command
@@ -549,6 +559,9 @@ def _safe_local_stop(root: Path, role: str) -> None:
         raise RuntimeError(
             f"Refusing to stop PID {pid}: it is not the expected {role} worker"
         )
+    tokens = shlex.split(command)
+    if str(root) not in tokens:
+        raise RuntimeError(f"Refusing to stop PID {pid}: worker belongs to another project")
     os.kill(pid, signal.SIGTERM)
     deadline = time.monotonic() + 5.0
     while True:

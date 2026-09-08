@@ -1,5 +1,5 @@
 # Type: ASK
-# Purpose: Comprobación rápida de saturación.
+# Purpose: Evaluate aSK: a saturated node exists using the declared query contract.
 # Requirements: RF-05, RF-29
 # Policies: P-NODE-01
 # Current v3.0.0 result: true

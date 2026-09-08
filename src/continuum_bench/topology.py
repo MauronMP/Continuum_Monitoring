@@ -19,7 +19,7 @@ from typing import Any, Iterable
 from urllib.parse import urlsplit
 
 
-TIERS = ("cloud", "fog", "mist", "edge", "iot")
+from .core.contracts import TIERS
 TIER_ORDER = {tier: index for index, tier in enumerate(TIERS)}
 NODE_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_-]{0,63}$")
 
@@ -120,12 +120,25 @@ class TopologyNode:
     longitude: float | None = None
     altitude_m: float | None = None
     region: str = ""
-    container_port: int = 8080
 
     @property
     def role(self) -> str:
         """Legacy name retained in CSVs and lifecycle code."""
         return self.node_id
+
+    def to_domain(self):
+        from .core import PhysicalContinuumNode, NodeCapacity, GeographicPosition
+        match = re.fullmatch(r"([1-9][0-9]*)([kmgt]?)(?:i?b)?", self.memory.lower())
+        if match is None:
+            raise ValueError(f"Invalid node memory capacity: {self.memory!r}")
+        amount, unit = int(match[1]), match[2]
+        ram_mib = amount * {"k": 1/1024, "m": 1, "g": 1024, "t": 1024*1024, "": 1/(1024*1024)}[unit]
+        return PhysicalContinuumNode(
+            self.node_id, self.tier, self.endpoint, self.host,
+            NodeCapacity(self.cpus, ram_mib, self.cpu_architecture, self.storage_mib,
+                         self.processing_capacity, self.network_mbps),
+            GeographicPosition(self.latitude, self.longitude, self.altitude_m, self.region),
+            self.authority, self.categories, self.device_type, self.local)
 
     def public(self) -> dict[str, Any]:
         value = asdict(self)
@@ -142,11 +155,6 @@ class Topology:
     ssh_user: str = ""
     remote_dir: str = ""
     remote_python: str = ""
-    compose_project: str = "continuum-benchmark"
-    image: str = "continuum-benchmark-node:latest"
-    dockerfile: str = "docker/Dockerfile"
-    network: str = "continuum"
-    bind_host: str = "127.0.0.1"
     source_path: Path | None = None
     project_root: Path | None = None
     remote_dir_template: str = ""
@@ -198,7 +206,6 @@ class Topology:
                         "altitude_m": node.altitude_m,
                         "region": node.region,
                     },
-                    "container_port": node.container_port,
                 }
                 for node in ordered_nodes(self.active_nodes)
             ],
@@ -289,8 +296,7 @@ def _parse_node(raw: dict[str, Any], topology_name: str) -> TopologyNode:
             "a path, query or fragment"
         )
     port = int(raw.get("port", parsed.port or 8080))
-    container_port = int(raw.get("container_port", 8080))
-    if not 1 <= port <= 65535 or not 1 <= container_port <= 65535:
+    if not 1 <= port <= 65535:
         raise ValueError(
             f"Topology {topology_name} node {node_id}: ports must be in [1, 65535]"
         )
@@ -375,7 +381,6 @@ def _parse_node(raw: dict[str, Any], topology_name: str) -> TopologyNode:
         longitude=longitude,
         altitude_m=altitude_m,
         region=str(location.get("region", "")).strip(),
-        container_port=container_port,
     )
 
 
@@ -410,26 +415,9 @@ def _validate_topology(topology: Topology) -> None:
                 "one local node"
             )
         return
-    if topology.kind == "docker":
-        host_ports = [node.port for node in nodes]
-        if len(host_ports) != len(set(host_ports)):
-            raise ValueError(
-                f"Docker topology {topology.name!r} has duplicate host ports: "
-                f"{host_ports}"
-            )
-        if not all(node.local for node in nodes):
-            raise ValueError(
-                f"Docker topology {topology.name!r} must expose local endpoints"
-            )
-        if not all((topology.image, topology.dockerfile, topology.network)):
-            raise ValueError(
-                f"Docker topology {topology.name!r} requires image, dockerfile "
-                "and network"
-            )
-        return
     if topology.kind != "physical":
         raise ValueError(
-            f"Topology {topology.name!r}: kind must be monolith, docker or physical"
+            f"Topology {topology.name!r}: kind must be monolith or physical"
         )
     if not any(node.local for node in nodes):
         raise ValueError(
@@ -561,15 +549,6 @@ def _topology_from_settings(
         ssh_user=ssh_user,
         remote_dir=_as_path(root, remote_dir_template, ssh_user),
         remote_python=_as_path(root, remote_python_template, ssh_user),
-        compose_project=str(
-            settings.get("compose_project", f"continuum-{name}")
-        ).strip(),
-        image=str(
-            settings.get("image", "continuum-benchmark-node:latest")
-        ).strip(),
-        dockerfile=str(settings.get("dockerfile", "docker/Dockerfile")).strip(),
-        network=str(settings.get("network", "continuum")).strip(),
-        bind_host=str(settings.get("bind_host", "127.0.0.1")).strip(),
         source_path=source_path,
         project_root=root,
         remote_dir_template=remote_dir_template,
@@ -693,11 +672,6 @@ def render_flat_topology(topology: Topology, output: Path) -> Path:
         "ssh_user": topology.ssh_user,
         "remote_dir": topology.remote_dir,
         "remote_python": topology.remote_python,
-        "compose_project": topology.compose_project,
-        "image": topology.image,
-        "dockerfile": topology.dockerfile,
-        "network": topology.network,
-        "bind_host": topology.bind_host,
     }
     for key, value in settings.items():
         if value:
@@ -712,7 +686,6 @@ def render_flat_topology(topology: Topology, output: Path) -> Path:
                 f"endpoint = {json.dumps(node.endpoint)}",
                 f"host = {json.dumps(node.host)}",
                 f"port = {node.port}",
-                f"container_port = {node.container_port}",
                 f"local = {str(node.local).lower()}",
                 f"authority = {str(node.authority).lower()}",
                 f"enabled = {str(node.enabled).lower()}",
@@ -730,9 +703,9 @@ def render_flat_topology(topology: Topology, output: Path) -> Path:
                 f"network_mbps = {node.network_mbps}",
                 "",
                 f"[{table}.nodes.location]",
-                f"latitude = {json.dumps(node.latitude)}",
-                f"longitude = {json.dumps(node.longitude)}",
-                f"altitude_m = {json.dumps(node.altitude_m)}",
+                *(f"{key} = {value}" for key, value in (
+                    ("latitude", node.latitude), ("longitude", node.longitude),
+                    ("altitude_m", node.altitude_m)) if value is not None),
                 f"region = {json.dumps(node.region)}",
             ]
         )
@@ -745,97 +718,3 @@ def ordered_nodes(nodes: Iterable[TopologyNode]) -> tuple[TopologyNode, ...]:
     return tuple(
         sorted(nodes, key=lambda node: (TIER_ORDER[node.tier], node.node_id))
     )
-
-
-def render_docker_compose(
-    topology: Topology,
-    output: Path,
-    *,
-    root: Path,
-) -> Path:
-    """Render Compose from the active nodes in an elastic Docker topology."""
-    if topology.kind != "docker":
-        raise ValueError(f"Topology {topology.name!r} is not a Docker topology")
-    lines = [
-        "# Generated file. Edit configs/topologies/docker/nodes/*.toml.",
-        f"name: {json.dumps(topology.compose_project)}",
-        "",
-        "x-node: &node",
-        f"  image: {json.dumps(topology.image)}",
-        "  pull_policy: never",
-        "  init: true",
-        '  restart: "no"',
-        "  networks:",
-        f"    - {topology.network}",
-        "",
-        "services:",
-    ]
-    for index, node in enumerate(ordered_nodes(topology.active_nodes)):
-        lines.extend([f"  {node.node_id}:", "    <<: *node"])
-        if index == 0:
-            lines.extend([
-                "    build:",
-                f"      context: {json.dumps(str(root))}",
-                f"      dockerfile: {json.dumps(topology.dockerfile)}",
-            ])
-        lines.extend([
-            f"    hostname: {json.dumps(node.node_id)}",
-            f"    cpus: {json.dumps(str(node.cpus))}",
-            f"    mem_limit: {json.dumps(node.memory)}",
-            "    environment:",
-            f"      CONTINUUM_NODE_ID: {json.dumps(node.node_id)}",
-            f"      CONTINUUM_TIER: {json.dumps(node.tier)}",
-            f"      CONTINUUM_TOPOLOGY_NAME: {json.dumps(topology.name)}",
-            "      CONTINUUM_TOPOLOGY_FILE: /app/configs/topologies/docker/topology.toml",
-            "    ports:",
-            f"      - {json.dumps(f'{topology.bind_host}:{node.port}:{node.container_port}')}",
-            "",
-        ])
-    lines.extend([
-        "networks:",
-        f"  {topology.network}:",
-        "    driver: bridge",
-    ])
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return output
-
-
-def docker_compose_command(
-    topology: Topology, compose_file: Path, action: str
-) -> list[str]:
-    base = [
-        "docker", "compose", "-p", topology.compose_project,
-        "-f", str(compose_file),
-    ]
-    actions = {
-        "up": ["up", "-d", "--build", "--remove-orphans"],
-        "status": ["ps"],
-        "logs": ["logs", "--tail", "100"],
-        "down": ["down", "--remove-orphans"],
-    }
-    try:
-        return [*base, *actions[action]]
-    except KeyError as error:
-        raise ValueError(f"Unsupported Docker action {action!r}") from error
-
-
-def run_docker_topology(
-    topology: Topology, compose_file: Path, action: str, *, root: Path
-) -> int:
-    render_docker_compose(topology, compose_file, root=root)
-    environment = os.environ.copy()
-    desktop_helpers = Path(
-        "/Applications/Docker.app/Contents/Resources/bin"
-    )
-    if desktop_helpers.is_dir():
-        environment["PATH"] = (
-            f"{desktop_helpers}{os.pathsep}{environment.get('PATH', '')}"
-        )
-    result = subprocess.run(
-        docker_compose_command(topology, compose_file, action),
-        cwd=root,
-        env=environment,
-        check=False,
-    )
-    return int(result.returncode)

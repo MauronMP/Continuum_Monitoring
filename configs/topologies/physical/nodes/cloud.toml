@@ -11,15 +11,12 @@ port = 8391
 authority = false
 
 [nodes.resources]
-cpu_cores = 4
-cpu_architecture = "arm64"
-ram = "8g"
+cpu_cores = 10
+cpu_architecture = "x86_64"
+ram = "31g"
 storage_mib = 262144
 processing_capacity = 1.0
 network_mbps = 1000
 
 [nodes.location]
-latitude = 0.0
-longitude = 0.0
-altitude_m = 0.0
 region = "local-lab"

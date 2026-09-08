@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Inspeccionar contexto rural, conectividad y acciones de retención/sincronización cuando existan.
+# Purpose: Evaluate scenario S7: rural areas and retention using the declared query contract.
 # Requirements: RF-08, RF-27, RF-31
 # Policies: P-ZONE-02, P-DATA-07
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

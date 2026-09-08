@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Mostrar trazabilidad individual de requisitos a políticas y mecanismos.
+# Purpose: Evaluate requirement, policy and mechanism traceability using the declared query contract.
 # Requirements: RV-04, RNF-39
 # Policies: P-VAL-06
-# Current v3.0.0 result: 1089 filas
+# Current v3.0.0 result: 1089 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

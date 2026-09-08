@@ -1,8 +1,8 @@
 # Type: violation
-# Purpose: Detectar TransferEvent con dato sensible sin mecanismo que declare protectsInTransit=true.
+# Purpose: Evaluate violation: sensitive transfer without encryption in transit using the declared query contract.
 # Requirements: RNF-15
 # Policies: P-DATA-03
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

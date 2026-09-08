@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Listar DegradationEvent y causa explícita.
+# Purpose: Evaluate degradation report using the declared query contract.
 # Requirements: RF-20
 # Policies: P-ADAPT-02, P-ADAPT-03, P-ADAPT-06
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

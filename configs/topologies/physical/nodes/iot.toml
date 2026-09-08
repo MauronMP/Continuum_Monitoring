@@ -21,7 +21,4 @@ tier = "iot"
 # network_mbps = 10
 #
 # [nodes.location]
-# latitude = 0.0
-# longitude = 0.0
-# altitude_m = 0.0
 # region = "physical-lab"

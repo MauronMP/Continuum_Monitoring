@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Listar estados de nodo y TrustAssessment separado de los pesos AHP.
+# Purpose: Evaluate node state and reproducible trust report using the declared query contract.
 # Requirements: RF-45, RF-49, RNF-32
 # Policies: P-NODE-03, P-NODE-04
-# Current v3.0.0 result: 7 filas
+# Current v3.0.0 result: 7 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

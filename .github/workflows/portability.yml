@@ -33,35 +33,3 @@ jobs:
         with:
           name: setup-${{ matrix.os }}-${{ matrix.python }}
           path: outputs/runtime/setup/
-
-  docker:
-    runs-on: ubuntu-24.04
-    # Individual gates are bounded below; the job ceiling must exceed their
-    # combined worst case plus image-build and setup time.
-    timeout-minutes: 75
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-      - run: python tools/bootstrap.py
-      - run: .venv/bin/continuum-bench doctor --docker
-      - run: .venv/bin/continuum-smoke-docker-cumulative
-        timeout-minutes: 10
-      - run: .venv/bin/continuum-smoke-docker-scalability
-        timeout-minutes: 10
-      - run: .venv/bin/continuum-smoke-docker-load
-        timeout-minutes: 10
-      - run: .venv/bin/continuum-smoke-docker-experiments
-        timeout-minutes: 15
-      - run: .venv/bin/continuum-smoke-engines
-        timeout-minutes: 15
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: docker-smokes
-          path: outputs/
-      - if: always()
-        run: |
-          .venv/bin/continuum-bench docker down || true
-          docker compose -f docker-compose.engines.yml down || true

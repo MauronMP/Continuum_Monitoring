@@ -1,8 +1,8 @@
 # Type: violation
-# Purpose: Comparar delegationDepth con D_delegation_max únicamente cuando el perfil esté configurado.
+# Purpose: Evaluate violation: delegation depth exceeds the profile using the declared query contract.
 # Requirements: RNF-14
 # Policies: P-AUD-04, P-OPS-01
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

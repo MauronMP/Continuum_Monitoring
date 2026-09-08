@@ -1,8 +1,8 @@
 # Type: inventory
-# Purpose: Listar la infraestructura del continuum incluyendo nodos Mist, Edge, Fog y Cloud.
+# Purpose: Evaluate compute nodes, types and elasticity using the declared query contract.
 # Requirements: RF-02, RF-05, RF-70
 # Policies: P-OPS-02, P-OPS-03
-# Current v3.0.0 result: 8 filas
+# Current v3.0.0 result: 8 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

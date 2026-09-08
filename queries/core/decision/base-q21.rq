@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Resumir decisiones MAPE-K, tier, rentabilidad y acción resultante.
+# Purpose: Evaluate evaluation states and executed actions using the declared query contract.
 # Requirements: RF-14, RF-15, RF-66
 # Policies: P-AUD-06, P-MODEL-05
-# Current v3.0.0 result: 11 filas
+# Current v3.0.0 result: 11 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

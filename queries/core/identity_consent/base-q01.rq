@@ -1,8 +1,8 @@
 # Type: inventory
-# Purpose: Inventariar usuarios y su rango de consentimiento activo sin recurrir al consentimiento binario heredado.
+# Purpose: Evaluate users, active consent and external identifiers using the declared query contract.
 # Requirements: RF-01, RF-32, RF-61, RF-70
 # Policies: P-CONS-01, P-DATA-02
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

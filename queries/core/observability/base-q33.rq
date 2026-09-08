@@ -1,8 +1,8 @@
 # Type: dashboard
-# Purpose: Calcular uso medio de recursos por tipo de nodo en estados instrumentados.
+# Purpose: Evaluate mean resource usage by node type using the declared query contract.
 # Requirements: RF-29, RNF-27
 # Policies: P-OPS-05
-# Current v3.0.0 result: 5 filas
+# Current v3.0.0 result: 5 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

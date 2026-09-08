@@ -106,7 +106,7 @@ figures merely to assign a nominal DPI.
 ## Regenerate
 
 Run from the repository root. Viewing the committed figures requires no Python,
-Graphviz, Java, Docker or reasoners. Regeneration needs the project's Python
+Graphviz, Java or reasoners. Regeneration needs the project's Python
 environment plus Graphviz; ReportLab is optional and only needed for the atlas.
 
 ```bash

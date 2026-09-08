@@ -1,28 +1,13 @@
 # SPARQL QUERY BATTERY — SMARTCITY CONTINUUM v3.0.0
-# Compatible con RDF/OWL/Turtle y SPARQL 1.1. Entorno de referencia: Apache Jena Fuseki.
-# Alineada con RF-01–RF-72, RNF-01–RNF-39, RV-01–RV-05, POLICIES-REV-01 y smartcity_continuum_v3.0.0.ttl.
-#
-# Familias:
-#   BASE-Q01–BASE-Q35 : inventario, operación, escenarios y agregados de continuidad.
-#   EXT-Q01–EXT-Q80   : validación v3 de trazabilidad, consentimiento, seguridad, zonas,
-#                       trust, decisión, adaptación, FL, auditoría y reproducibilidad.
-#
-# IMPORTANTE: una consulta violation_* con 0 filas solo es evidencia de cumplimiento
-# después de superar las precondiciones de EXT-Q01, EXT-Q02, EXT-Q05, EXT-Q76 y EXT-Q77.
-# Cada consulta es independiente; este fichero es un catálogo y no se ejecuta como una única sentencia SPARQL.
+# RDF/OWL and SPARQL 1.1 reference queries.
+# Zero violation rows support compliance only when validation prerequisites pass.
 
-
-# ==============================================================================
-# BASE — Operación, estructura y escenarios
-# ==============================================================================
-
-
-# START QUERY BASE-Q01: Usuarios, consentimiento activo e identificador externo
+# START QUERY BASE-Q01: Users, active consent and external identifiers
 # Type: inventory
-# Purpose: Inventariar usuarios y su rango de consentimiento activo sin recurrir al consentimiento binario heredado.
+# Purpose: Evaluate users, active consent and external identifiers using the declared query contract.
 # Requirements: RF-01, RF-32, RF-61, RF-70
 # Policies: P-CONS-01, P-DATA-02
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -46,15 +31,15 @@ SELECT ?user ?name ?activeRange ?identifier ?identifierType WHERE {
   }
 }
 ORDER BY ?user
-# END QUERY BASE-Q01: Usuarios, consentimiento activo e identificador externo
+# END QUERY BASE-Q01: Users, active consent and external identifiers
 
 
-# START QUERY BASE-Q02: Nodos computacionales, tipo y elasticidad
+# START QUERY BASE-Q02: Compute nodes, types and elasticity
 # Type: inventory
-# Purpose: Listar la infraestructura del continuum incluyendo nodos Mist, Edge, Fog y Cloud.
+# Purpose: Evaluate compute nodes, types and elasticity using the declared query contract.
 # Requirements: RF-02, RF-05, RF-70
 # Policies: P-OPS-02, P-OPS-03
-# Current v3.0.0 result: 8 filas
+# Current v3.0.0 result: 8 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -74,15 +59,15 @@ SELECT DISTINCT ?node ?nodeType ?elasticity WHERE {
   OPTIONAL { ?node :hasElasticity ?elasticity }
 }
 ORDER BY ?node ?nodeType
-# END QUERY BASE-Q02: Nodos computacionales, tipo y elasticidad
+# END QUERY BASE-Q02: Compute nodes, types and elasticity
 
 
-# START QUERY BASE-Q03: Wearables asociados a usuarios
+# START QUERY BASE-Q03: Wearables associated with users
 # Type: inventory
-# Purpose: Comprobar la asociación usuario-dispositivo vestible.
+# Purpose: Evaluate wearables associated with users using the declared query contract.
 # Requirements: RF-01, RF-70
 # Policies: P-INT-02
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -102,15 +87,15 @@ SELECT ?user ?wearable ?wearableType WHERE {
   FILTER(?wearableType != :Wearable)
 }
 ORDER BY ?user ?wearable
-# END QUERY BASE-Q03: Wearables asociados a usuarios
+# END QUERY BASE-Q03: Wearables associated with users
 
 
-# START QUERY BASE-Q04: Modelos, tier, versión, host y linaje
+# START QUERY BASE-Q04: Models, tiers, versions, hosts and lineage
 # Type: inventory
-# Purpose: Inspeccionar distribución y ciclo de vida de modelos.
+# Purpose: Evaluate models, tiers, versions, hosts and lineage using the declared query contract.
 # Requirements: RF-11, RF-12, RF-13, RF-24, RF-70
 # Policies: P-FL-08, P-MODEL-01
-# Current v3.0.0 result: 7 filas
+# Current v3.0.0 result: 7 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -132,15 +117,15 @@ SELECT ?model ?tier ?version ?updated ?host ?supersedes WHERE {
   OPTIONAL { ?model :supersedesModel ?supersedes }
 }
 ORDER BY ?model
-# END QUERY BASE-Q04: Modelos, tier, versión, host y linaje
+# END QUERY BASE-Q04: Models, tiers, versions, hosts and lineage
 
 
-# START QUERY BASE-Q05: Sensores fisiológicos y dispositivo host
+# START QUERY BASE-Q05: Physiological sensors and host devices
 # Type: inventory
-# Purpose: Validar la instrumentación fisiológica y la reutilización SOSA/SAREF.
+# Purpose: Evaluate physiological sensors and host devices using the declared query contract.
 # Requirements: RF-06, RNF-25, RF-70
 # Policies: P-INT-01
-# Current v3.0.0 result: 5 filas
+# Current v3.0.0 result: 5 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -160,15 +145,15 @@ SELECT DISTINCT ?sensor ?sensorType ?device WHERE {
   OPTIONAL { ?device saref:consistsOf ?sensor }
 }
 ORDER BY ?device ?sensor
-# END QUERY BASE-Q05: Sensores fisiológicos y dispositivo host
+# END QUERY BASE-Q05: Physiological sensors and host devices
 
 
-# START QUERY BASE-Q06: Roles y permisos RBAC
+# START QUERY BASE-Q06: RBAC roles and permissions
 # Type: inventory
-# Purpose: Inspeccionar roles, permisos y restricciones de consentimiento vinculadas al acceso.
+# Purpose: Evaluate rBAC roles and permissions using the declared query contract.
 # Requirements: RF-37, RF-70
 # Policies: P-CONS-05
-# Current v3.0.0 result: 10 filas
+# Current v3.0.0 result: 10 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -187,15 +172,15 @@ SELECT ?role ?permission ?requiredRange WHERE {
   OPTIONAL { ?permission :requiresConsentRange ?requiredRange }
 }
 ORDER BY ?role ?permission
-# END QUERY BASE-Q06: Roles y permisos RBAC
+# END QUERY BASE-Q06: RBAC roles and permissions
 
 
-# START QUERY BASE-Q07: Estados de nodo y métricas operativas
+# START QUERY BASE-Q07: Node states and operational metrics
 # Type: report
-# Purpose: Obtener carga, disponibilidad, comunicación, capacidad residual, recursos y trust actual asociado al estado.
+# Purpose: Evaluate node states and operational metrics using the declared query contract.
 # Requirements: RF-05, RF-29, RF-45, RF-70
 # Policies: P-NODE-01, P-NODE-03, P-OPS-05
-# Current v3.0.0 result: 7 filas
+# Current v3.0.0 result: 7 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -221,15 +206,15 @@ SELECT ?node ?state ?workload ?availability ?communication ?residual ?resourceUs
   OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
 }
 ORDER BY ?node ?state
-# END QUERY BASE-Q07: Estados de nodo y métricas operativas
+# END QUERY BASE-Q07: Node states and operational metrics
 
 
-# START QUERY BASE-Q08: Nodos saturados, no disponibles o desconectados
+# START QUERY BASE-Q08: Saturated, unavailable or disconnected nodes
 # Type: report
-# Purpose: Detectar estados no elegibles o críticos para selección/migración.
+# Purpose: Evaluate saturated, unavailable or disconnected nodes using the declared query contract.
 # Requirements: RF-17, RF-47, RNF-12
 # Policies: P-NODE-01, P-NODE-02
-# Current v3.0.0 result: 2 filas
+# Current v3.0.0 result: 2 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -257,15 +242,15 @@ SELECT ?node ?state ?workload ?availability ?communication ?operational WHERE {
   )
 }
 ORDER BY ?node
-# END QUERY BASE-Q08: Nodos saturados, no disponibles o desconectados
+# END QUERY BASE-Q08: Saturated, unavailable or disconnected nodes
 
 
-# START QUERY BASE-Q09: Estados de usuario, movilidad y estrés
+# START QUERY BASE-Q09: User states, mobility and stress
 # Type: report
-# Purpose: Monitorizar el contexto humano y sus estados temporales.
+# Purpose: Evaluate user states, mobility and stress using the declared query contract.
 # Requirements: RF-03, RF-30, RNF-35
 # Policies: P-GOV-05, P-OPS-05
-# Current v3.0.0 result: 6 filas
+# Current v3.0.0 result: 6 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -288,15 +273,15 @@ SELECT ?user ?state ?mobility ?stress ?personStatus ?from ?to WHERE {
   OPTIONAL { ?state :validTo ?to }
 }
 ORDER BY ?user ?from
-# END QUERY BASE-Q09: Estados de usuario, movilidad y estrés
+# END QUERY BASE-Q09: User states, mobility and stress
 
 
-# START QUERY BASE-Q10: Estado de dispositivos y puerta de transmisión
+# START QUERY BASE-Q10: Device states and transmission eligibility
 # Type: report
-# Purpose: Inspeccionar batería, conectividad y disponibilidad de datos parametrizados.
+# Purpose: Evaluate device states and transmission eligibility using the declared query contract.
 # Requirements: RF-04, RF-26, RF-27
 # Policies: P-DATA-04, P-DATA-06, P-DATA-07
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -320,15 +305,15 @@ SELECT ?user ?device ?state ?battery ?connection ?dataReady ?from ?to WHERE {
   OPTIONAL { ?state :validTo ?to }
 }
 ORDER BY ?user ?device ?from
-# END QUERY BASE-Q10: Estado de dispositivos y puerta de transmisión
+# END QUERY BASE-Q10: Device states and transmission eligibility
 
 
-# START QUERY BASE-Q11: Escenario S1 — operación normal
+# START QUERY BASE-Q11: Scenario S1: normal operation
 # Type: report
-# Purpose: Validar la línea base de operación normal con evaluación y selección de modelo.
+# Purpose: Evaluate scenario S1: normal operation using the declared query contract.
 # Requirements: RF-31, RF-72
 # Policies: P-VAL-07
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -348,15 +333,15 @@ SELECT ?evaluation ?node ?tier ?action ?profitability WHERE {
   OPTIONAL { ?evaluation :resultedInAction ?action }
   OPTIONAL { ?evaluation :hasProfitability ?profitability }
 }
-# END QUERY BASE-Q11: Escenario S1 — operación normal
+# END QUERY BASE-Q11: Scenario S1: normal operation
 
 
-# START QUERY BASE-Q12: Escenario S2 — saturación y candidato Fog
+# START QUERY BASE-Q12: Scenario S2: saturation and fog candidates
 # Type: report
-# Purpose: Validar saturación Edge y disponibilidad de alternativa sin asumir automáticamente una migración.
+# Purpose: Evaluate scenario S2: saturation and fog candidates using the declared query contract.
 # Requirements: RF-17, RF-31
 # Policies: P-ADAPT-01, P-NODE-02
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -375,15 +360,15 @@ SELECT ?edgeState ?edgeTrust ?fogState ?fogTrust WHERE {
   ?fogState a :NodeState ; :partOfScenario :S2 ; :hasAvailability :Available .
   OPTIONAL { ?fogState :hasTrustAssessment/:hasTrustScore ?fogTrust }
 }
-# END QUERY BASE-Q12: Escenario S2 — saturación y candidato Fog
+# END QUERY BASE-Q12: Scenario S2: saturation and fog candidates
 
 
-# START QUERY BASE-Q13: Escenario S3 — migración Edge → Fog
+# START QUERY BASE-Q13: Scenario S3: edge-to-fog migration
 # Type: report
-# Purpose: Validar que S3 se representa mediante MigrationEvent y no implica por sí mismo una sesión FL.
+# Purpose: Evaluate scenario S3: edge-to-fog migration using the declared query contract.
 # Requirements: RF-16, RF-17, RF-31
 # Policies: P-ADAPT-05, P-ADAPT-06
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -405,15 +390,15 @@ SELECT ?migration ?origin ?target ?service ?evaluation ?from ?to WHERE {
   OPTIONAL { ?migration :validFrom ?from }
   OPTIONAL { ?migration :validTo ?to }
 }
-# END QUERY BASE-Q13: Escenario S3 — migración Edge → Fog
+# END QUERY BASE-Q13: Scenario S3: edge-to-fog migration
 
 
-# START QUERY BASE-Q14: Escenario S4 — fallo, delegación y degradación
+# START QUERY BASE-Q14: Scenario S4: failure, delegation and degradation
 # Type: report
-# Purpose: Trazar fallo de nodo, delegación temporal y fallback/degradación.
+# Purpose: Evaluate scenario S4: failure, delegation and degradation using the declared query contract.
 # Requirements: RF-17, RF-20, RF-62, RF-65
 # Policies: P-ADAPT-02, P-AUD-01, P-AUD-05
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -432,15 +417,15 @@ SELECT ?failedState ?symptom ?delegation ?target ?degradation ?evaluation WHERE 
   OPTIONAL { ?delegation a :DelegationEvent ; :partOfScenario :S4 ; :actionTargetNode ?target }
   OPTIONAL { ?degradation a :DegradationEvent ; :partOfScenario :S4 }
 }
-# END QUERY BASE-Q14: Escenario S4 — fallo, delegación y degradación
+# END QUERY BASE-Q14: Scenario S4: failure, delegation and degradation
 
 
-# START QUERY BASE-Q15: Escenario S5 — consentimiento local
+# START QUERY BASE-Q15: Scenario S5: local consent
 # Type: report
-# Purpose: Comprobar operación local autorizada para un usuario con RangeLocalOnly.
+# Purpose: Evaluate scenario S5: local consent using the declared query contract.
 # Requirements: RF-32, RF-36, RF-38
 # Policies: P-CONS-01, P-CONS-04, P-MODEL-06
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -459,15 +444,15 @@ SELECT ?user ?activeRange ?authorization ?effectiveRange ?tier ?action WHERE {
   ?authorization :hasEffectiveConsentRange ?effectiveRange .
   OPTIONAL { ?evaluation :resultedInAction ?action }
 }
-# END QUERY BASE-Q15: Escenario S5 — consentimiento local
+# END QUERY BASE-Q15: Scenario S5: local consent
 
 
-# START QUERY BASE-Q16: Escenario S6 — aprendizaje federado protegido
+# START QUERY BASE-Q16: Scenario S6: protected federated learning
 # Type: report
-# Purpose: Trazar sesiones FL ascendentes/descendentes, payload y privacidad.
+# Purpose: Evaluate scenario S6: protected federated learning using the declared query contract.
 # Requirements: RF-21, RF-22, RF-25, RF-56, RF-58
 # Policies: P-FL-01, P-FL-03, P-FL-05, P-FL-07
-# Current v3.0.0 result: 3 filas
+# Current v3.0.0 result: 3 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -491,15 +476,15 @@ SELECT ?session ?payload ?model ?budget ?noise ?privacy ?personal ?individualize
   OPTIONAL { ?session :containsIndividualizedGradients ?individualized }
 }
 ORDER BY ?session ?privacy
-# END QUERY BASE-Q16: Escenario S6 — aprendizaje federado protegido
+# END QUERY BASE-Q16: Scenario S6: protected federated learning
 
 
-# START QUERY BASE-Q17: Escenario S7 — zona rural y retención
+# START QUERY BASE-Q17: Scenario S7: rural areas and retention
 # Type: report
-# Purpose: Inspeccionar contexto rural, conectividad y acciones de retención/sincronización cuando existan.
+# Purpose: Evaluate scenario S7: rural areas and retention using the declared query contract.
 # Requirements: RF-08, RF-27, RF-31
 # Policies: P-ZONE-02, P-DATA-07
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -519,15 +504,15 @@ SELECT ?user ?zone ?deviceState ?connection ?retention ?sync WHERE {
   OPTIONAL { ?retention a :RetentionEvent ; :partOfScenario :S7 }
   OPTIONAL { ?sync a :SynchronizationEvent ; :partOfScenario :S7 }
 }
-# END QUERY BASE-Q17: Escenario S7 — zona rural y retención
+# END QUERY BASE-Q17: Scenario S7: rural areas and retention
 
 
-# START QUERY BASE-Q18: Escenario S8 — zona restringida y confinamiento local
+# START QUERY BASE-Q18: Scenario S8: restricted areas and local confinement
 # Type: report
-# Purpose: Validar que el escenario restringido usa LocalModelTier y no Edge/Fog/Cloud para el procesamiento protegido.
+# Purpose: Evaluate scenario S8: restricted areas and local confinement using the declared query contract.
 # Requirements: RF-42, RF-43, RF-60
 # Policies: P-ZONE-01, P-DATA-01
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -544,15 +529,15 @@ SELECT ?user ?zone ?evaluation ?tier ?action WHERE {
   ?evaluation a :EvaluationState ; :partOfScenario :S8 ; :evaluationUser ?user ; :evaluationZone ?zone ; :selectedModelTier ?tier .
   OPTIONAL { ?evaluation :resultedInAction ?action }
 }
-# END QUERY BASE-Q18: Escenario S8 — zona restringida y confinamiento local
+# END QUERY BASE-Q18: Scenario S8: restricted areas and local confinement
 
 
-# START QUERY BASE-Q19: Candidatos operativamente elegibles
+# START QUERY BASE-Q19: Operationally eligible candidates
 # Type: report
-# Purpose: Listar nodos con disponibilidad, comunicación, carga, capacidad y trust compatibles con selección.
+# Purpose: Evaluate operationally eligible candidates using the declared query contract.
 # Requirements: RF-18, RF-47, RF-48
 # Policies: P-NODE-02, P-NODE-05
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -573,15 +558,15 @@ SELECT ?node ?state ?workload ?availability ?communication ?residual ?trust WHER
   OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
 }
 ORDER BY DESC(?trust) ?node
-# END QUERY BASE-Q19: Candidatos operativamente elegibles
+# END QUERY BASE-Q19: Operationally eligible candidates
 
 
-# START QUERY BASE-Q20: Perfil semántico completo del usuario
+# START QUERY BASE-Q20: Complete user semantic profile
 # Type: report
-# Purpose: Obtener usuario, dispositivos, zona, contrato, consentimiento y registro activo.
+# Purpose: Evaluate complete user semantic profile using the declared query contract.
 # Requirements: RF-02, RF-33, RF-34, RF-70
 # Policies: P-CONS-02, P-CONS-03
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -605,15 +590,15 @@ SELECT ?user ?name ?zone ?wearable ?mobile ?activeRange ?consentRecord ?contract
   OPTIONAL { ?user :hasSemanticContract ?contract }
 }
 ORDER BY ?user
-# END QUERY BASE-Q20: Perfil semántico completo del usuario
+# END QUERY BASE-Q20: Complete user semantic profile
 
 
-# START QUERY BASE-Q21: Resumen de EvaluationState y acción ejecutada
+# START QUERY BASE-Q21: Evaluation states and executed actions
 # Type: report
-# Purpose: Resumir decisiones MAPE-K, tier, rentabilidad y acción resultante.
+# Purpose: Evaluate evaluation states and executed actions using the declared query contract.
 # Requirements: RF-14, RF-15, RF-66
 # Policies: P-AUD-06, P-MODEL-05
-# Current v3.0.0 result: 11 filas
+# Current v3.0.0 result: 11 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -638,15 +623,15 @@ SELECT ?evaluation ?scenario ?user ?node ?method ?tier ?profitability ?action ?f
   OPTIONAL { ?evaluation :validFrom ?from }
 }
 ORDER BY ?from ?evaluation
-# END QUERY BASE-Q21: Resumen de EvaluationState y acción ejecutada
+# END QUERY BASE-Q21: Evaluation states and executed actions
 
 
-# START QUERY BASE-Q22: Modelos y eventos de degradación
+# START QUERY BASE-Q22: Models and degradation events
 # Type: report
-# Purpose: Inspeccionar causas de degradación y acciones registradas.
+# Purpose: Evaluate models and degradation events using the declared query contract.
 # Requirements: RF-20, RF-24
 # Policies: P-ADAPT-06, P-FL-08
-# Current v3.0.0 result: 3 filas
+# Current v3.0.0 result: 3 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -665,15 +650,15 @@ SELECT ?model ?cause ?event ?service ?scenario WHERE {
   { ?event a :DegradationEvent . OPTIONAL { ?event :affectsModel ?model } OPTIONAL { ?event :affectsService ?service } OPTIONAL { ?event :hasDegradationCause ?cause } OPTIONAL { ?event :partOfScenario ?scenario } }
 }
 ORDER BY ?scenario ?model ?event
-# END QUERY BASE-Q22: Modelos y eventos de degradación
+# END QUERY BASE-Q22: Models and degradation events
 
 
-# START QUERY BASE-Q23: Relaciones usuario–nodo y distancia
+# START QUERY BASE-Q23: User-node relationships and distance
 # Type: report
-# Purpose: Inspeccionar asignación contextual entre usuarios y nodos.
+# Purpose: Evaluate user-node relationships and distance using the declared query contract.
 # Requirements: RF-02, RF-03, RF-18
 # Policies: P-NODE-02
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -694,15 +679,15 @@ SELECT ?relation ?user ?node ?distance ?preferred ?from ?to WHERE {
   OPTIONAL { ?relation :validTo ?to }
 }
 ORDER BY ?user ?from
-# END QUERY BASE-Q23: Relaciones usuario–nodo y distancia
+# END QUERY BASE-Q23: User-node relationships and distance
 
 
-# START QUERY BASE-Q24: Cadena de aprendizaje federado
+# START QUERY BASE-Q24: Federated learning chain
 # Type: report
-# Purpose: Trazar sesiones FL, nodos, payload, modelo, datos y presupuesto.
+# Purpose: Evaluate federated learning chain using the declared query contract.
 # Requirements: RF-21, RF-22, RF-25, RF-59
 # Policies: P-FL-02, P-FL-04, P-FL-07
-# Current v3.0.0 result: 5 filas
+# Current v3.0.0 result: 5 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -727,15 +712,15 @@ SELECT ?session ?scenario ?node ?payload ?model ?data ?budgetAccount ?budget ?no
   OPTIONAL { ?session :noiseLevel ?noise }
 }
 ORDER BY ?session ?node
-# END QUERY BASE-Q24: Cadena de aprendizaje federado
+# END QUERY BASE-Q24: Federated learning chain
 
 
-# START QUERY BASE-Q25: Usuarios autorizados para FL global
+# START QUERY BASE-Q25: Users authorized for global federated learning
 # Type: report
-# Purpose: Identificar usuarios cuya autorización efectiva permite RangeGlobalAgg para propósito federado global.
+# Purpose: Evaluate users authorized for global federated learning using the declared query contract.
 # Requirements: RF-21, RF-32, RF-36
 # Policies: P-CONS-04, P-FL-02
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -753,12 +738,12 @@ SELECT DISTINCT ?user ?authorization ?effectiveRange ?contract WHERE {
   ?evaluation a :EvaluationState ; :hasAuthorizationDecision ?authorization ; :evaluationUser ?user ; :evaluationPurpose :PurposeGlobalFederatedLearning .
 }
 ORDER BY ?user
-# END QUERY BASE-Q25: Usuarios autorizados para FL global
+# END QUERY BASE-Q25: Users authorized for global federated learning
 
 
-# START QUERY BASE-Q26: ASK — existe algún nodo saturado
+# START QUERY BASE-Q26: ASK: a saturated node exists
 # Type: ASK
-# Purpose: Comprobación rápida de saturación.
+# Purpose: Evaluate aSK: a saturated node exists using the declared query contract.
 # Requirements: RF-05, RF-29
 # Policies: P-NODE-01
 # Current v3.0.0 result: true
@@ -775,12 +760,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 ASK { ?state a :NodeState ; :hasWorkload :SaturatedWorkload . }
-# END QUERY BASE-Q26: ASK — existe algún nodo saturado
+# END QUERY BASE-Q26: ASK: a saturated node exists
 
 
-# START QUERY BASE-Q27: ASK — existe degradación registrada
+# START QUERY BASE-Q27: ASK: a degradation event exists
 # Type: ASK
-# Purpose: Comprobación rápida de existencia de degradación de modelo/servicio.
+# Purpose: Evaluate aSK: a degradation event exists using the declared query contract.
 # Requirements: RF-20
 # Policies: P-ADAPT-06
 # Current v3.0.0 result: true
@@ -797,12 +782,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 ASK { { ?event a :DegradationEvent } UNION { ?model a :AIModel ; :hasDegradationCause ?cause } }
-# END QUERY BASE-Q27: ASK — existe degradación registrada
+# END QUERY BASE-Q27: ASK: a degradation event exists
 
 
-# START QUERY BASE-Q28: ASK — existe transferencia externa que viole confinamiento o identidad
+# START QUERY BASE-Q28: ASK: an external transfer violates confinement or identity
 # Type: ASK
-# Purpose: Detectar de forma rápida una transferencia externa de observación cruda o con identificador directo/no seguro.
+# Purpose: Evaluate aSK: an external transfer violates confinement or identity using the declared query contract.
 # Requirements: RF-36, RF-60, RF-61
 # Policies: P-CONS-04, P-DATA-04
 # Current v3.0.0 result: false
@@ -828,12 +813,12 @@ ASK {
   UNION
   { FILTER NOT EXISTS { ?transfer :usesIdentifier ?safe . ?safe a ?safeType . FILTER(?safeType IN (:PseudonymousIdentifier,:AnonymousIdentifier)) } }
 }
-# END QUERY BASE-Q28: ASK — existe transferencia externa que viole confinamiento o identidad
+# END QUERY BASE-Q28: ASK: an external transfer violates confinement or identity
 
 
-# START QUERY BASE-Q29: ASK — existe capacidad elástica en Fog o Cloud
+# START QUERY BASE-Q29: ASK: fog or cloud elastic capacity exists
 # Type: ASK
-# Purpose: Comprobar que la elasticidad se modela como capacidad del nodo y no como propiedad fija exclusiva de Cloud.
+# Purpose: Evaluate aSK: fog or cloud elastic capacity exists using the declared query contract.
 # Requirements: RNF-07
 # Policies: P-OPS-02
 # Current v3.0.0 result: true
@@ -853,12 +838,12 @@ ASK {
   ?node :hasElasticity true ; a ?type .
   FILTER(?type IN (:FogNode, :CloudNode))
 }
-# END QUERY BASE-Q29: ASK — existe capacidad elástica en Fog o Cloud
+# END QUERY BASE-Q29: ASK: fog or cloud elastic capacity exists
 
 
-# START QUERY BASE-Q30: ASK — existe sesión FL con Cloud
+# START QUERY BASE-Q30: ASK: a federated learning session includes cloud
 # Type: ASK
-# Purpose: Confirmar existencia de aprendizaje federado global.
+# Purpose: Evaluate aSK: a federated learning session includes cloud using the declared query contract.
 # Requirements: RF-22
 # Policies: P-FL-01
 # Current v3.0.0 result: true
@@ -875,15 +860,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 ASK { ?session a :FederatedLearningSession ; :involvedNode ?cloud . ?cloud a :CloudNode . }
-# END QUERY BASE-Q30: ASK — existe sesión FL con Cloud
+# END QUERY BASE-Q30: ASK: a federated learning session includes cloud
 
 
-# START QUERY BASE-Q31: Conteo de usuarios por rango activo
+# START QUERY BASE-Q31: User counts by active consent range
 # Type: dashboard
-# Purpose: Agregar usuarios por rango de consentimiento activo.
+# Purpose: Evaluate user counts by active consent range using the declared query contract.
 # Requirements: RF-32, RF-68
 # Policies: P-CONS-01
-# Current v3.0.0 result: 3 filas
+# Current v3.0.0 result: 3 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -901,15 +886,15 @@ SELECT ?range (COUNT(DISTINCT ?user) AS ?users) WHERE {
 }
 GROUP BY ?range
 ORDER BY ?range
-# END QUERY BASE-Q31: Conteo de usuarios por rango activo
+# END QUERY BASE-Q31: User counts by active consent range
 
 
-# START QUERY BASE-Q32: Conteo de modelos por tier
+# START QUERY BASE-Q32: Model counts by tier
 # Type: dashboard
-# Purpose: Resumir distribución de modelos por tier.
+# Purpose: Evaluate model counts by tier using the declared query contract.
 # Requirements: RF-13, RF-68
 # Policies: P-MODEL-01
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -927,15 +912,15 @@ SELECT ?tier (COUNT(DISTINCT ?model) AS ?models) WHERE {
 }
 GROUP BY ?tier
 ORDER BY ?tier
-# END QUERY BASE-Q32: Conteo de modelos por tier
+# END QUERY BASE-Q32: Model counts by tier
 
 
-# START QUERY BASE-Q33: Uso medio de recursos por tipo de nodo
+# START QUERY BASE-Q33: Mean resource usage by node type
 # Type: dashboard
-# Purpose: Calcular uso medio de recursos por tipo de nodo en estados instrumentados.
+# Purpose: Evaluate mean resource usage by node type using the declared query contract.
 # Requirements: RF-29, RNF-27
 # Policies: P-OPS-05
-# Current v3.0.0 result: 5 filas
+# Current v3.0.0 result: 5 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -955,15 +940,15 @@ SELECT ?nodeType (AVG(?usage) AS ?avgUsage) (COUNT(?state) AS ?samples) WHERE {
 }
 GROUP BY ?nodeType
 ORDER BY ?nodeType
-# END QUERY BASE-Q33: Uso medio de recursos por tipo de nodo
+# END QUERY BASE-Q33: Mean resource usage by node type
 
 
-# START QUERY BASE-Q34: Nodos que cubren zonas restringidas
+# START QUERY BASE-Q34: Nodes covering restricted areas
 # Type: report
-# Purpose: Inventariar infraestructura geográficamente asociada a RestrictedZone sin asumir que esté autorizada para procesar datos protegidos.
+# Purpose: Evaluate nodes covering restricted areas using the declared query contract.
 # Requirements: RF-42, RF-43
 # Policies: P-ZONE-01
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -981,15 +966,15 @@ SELECT ?node ?zone WHERE {
   ?node :coversArea ?zone .
 }
 ORDER BY ?zone ?node
-# END QUERY BASE-Q34: Nodos que cubren zonas restringidas
+# END QUERY BASE-Q34: Nodes covering restricted areas
 
 
-# START QUERY BASE-Q35: Cadena de fallo → evaluación → acción
+# START QUERY BASE-Q35: Failure, evaluation and action chain
 # Type: report
-# Purpose: Reconstruir decisiones asociadas a síntomas/fallos y su acción adaptativa final.
+# Purpose: Evaluate failure, evaluation and action chain using the declared query contract.
 # Requirements: RF-20, RF-65, RF-67
 # Policies: P-AUD-05, P-AUD-07
-# Current v3.0.0 result: 86 filas
+# Current v3.0.0 result: 86 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1010,20 +995,20 @@ SELECT ?evaluation ?scenario ?symptom ?node ?policy ?action ?actionType WHERE {
   OPTIONAL { ?action a ?actionType . FILTER(?actionType != owl:NamedIndividual) }
 }
 ORDER BY ?scenario ?evaluation ?policy
-# END QUERY BASE-Q35: Cadena de fallo → evaluación → acción
+# END QUERY BASE-Q35: Failure, evaluation and action chain
 
 
 # ==============================================================================
-# EXT v3 — Inventario, artefactos y trazabilidad
+# EXT v3 — Inventory, artifacts and traceability
 # ==============================================================================
 
 
-# START QUERY EXT-Q01: Inventario de versión y artefactos v3
+# START QUERY EXT-Q01: Version and release artifact inventory
 # Type: inventory
-# Purpose: Verificar versión de ontología y artefactos versionados asociados.
+# Purpose: Evaluate version and release artifact inventory using the declared query contract.
 # Requirements: RF-68, RNF-39, RV-01, RV-03
 # Policies: P-VAL-01, P-VAL-04
-# Current v3.0.0 result: 6 filas
+# Current v3.0.0 result: 6 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1052,15 +1037,15 @@ SELECT ?ontology ?versionInfo ?versionIRI ?artifact ?artifactType ?identifier ?a
   }
 }
 ORDER BY ?artifactType ?artifact
-# END QUERY EXT-Q01: Inventario de versión y artefactos v3
+# END QUERY EXT-Q01: Version and release artifact inventory
 
 
-# START QUERY EXT-Q02: Cobertura de requisitos RF/RNF/RV
+# START QUERY EXT-Q02: Functional, non-functional and validation requirement coverage
 # Type: dashboard
-# Purpose: Comprobar que los requisitos revisados están representados en la ontología.
+# Purpose: Evaluate functional, non-functional and validation requirement coverage using the declared query contract.
 # Requirements: RV-04, RF-68
 # Policies: P-VAL-06
-# Current v3.0.0 result: 3 filas
+# Current v3.0.0 result: 3 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1081,15 +1066,15 @@ SELECT ?requirementType (COUNT(DISTINCT ?r) AS ?count) WHERE {
 }
 GROUP BY ?requirementType
 ORDER BY ?requirementType
-# END QUERY EXT-Q02: Cobertura de requisitos RF/RNF/RV
+# END QUERY EXT-Q02: Functional, non-functional and validation requirement coverage
 
 
-# START QUERY EXT-Q03: Inventario completo de políticas
+# START QUERY EXT-Q03: Complete policy inventory
 # Type: inventory
-# Purpose: Listar las 79 políticas v3 con categoría, tipo y versión.
+# Purpose: Evaluate complete policy inventory using the declared query contract.
 # Requirements: RF-39, RF-40, RF-70
 # Policies: P-GOV-01, P-GOV-04
-# Current v3.0.0 result: 79 filas
+# Current v3.0.0 result: 79 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1110,15 +1095,15 @@ SELECT ?policy ?id ?category ?type ?version ?statement WHERE {
   OPTIONAL { ?policy :hasPolicyStatement ?statement }
 }
 ORDER BY ?id
-# END QUERY EXT-Q03: Inventario completo de políticas
+# END QUERY EXT-Q03: Complete policy inventory
 
 
-# START QUERY EXT-Q04: Inventario completo de mecanismos
+# START QUERY EXT-Q04: Complete mechanism inventory
 # Type: inventory
-# Purpose: Listar los 55 mecanismos y las políticas que soportan.
+# Purpose: Evaluate complete mechanism inventory using the declared query contract.
 # Requirements: RV-04
 # Policies: P-VAL-06
-# Current v3.0.0 result: 55 filas
+# Current v3.0.0 result: 55 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1138,15 +1123,15 @@ SELECT ?mechanism ?id ?description (GROUP_CONCAT(DISTINCT STR(?policy); separato
 }
 GROUP BY ?mechanism ?id ?description
 ORDER BY ?id
-# END QUERY EXT-Q04: Inventario completo de mecanismos
+# END QUERY EXT-Q04: Complete mechanism inventory
 
 
-# START QUERY EXT-Q05: Inventario de escenarios S1–S17
+# START QUERY EXT-Q05: Scenario S1-S17 inventory
 # Type: inventory
-# Purpose: Verificar el artefacto versionado de escenarios y su cobertura.
+# Purpose: Evaluate scenario S1-S17 inventory using the declared query contract.
 # Requirements: RF-31, RF-72, RV-03
 # Policies: P-VAL-07
-# Current v3.0.0 result: 17 filas
+# Current v3.0.0 result: 17 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1169,15 +1154,15 @@ SELECT ?scenario ?id ?artifact
 }
 GROUP BY ?scenario ?id ?artifact
 ORDER BY ?id
-# END QUERY EXT-Q05: Inventario de escenarios S1–S17
+# END QUERY EXT-Q05: Scenario S1-S17 inventory
 
 
-# START QUERY EXT-Q06: Categorías de política
+# START QUERY EXT-Q06: Policy categories
 # Type: inventory
-# Purpose: Inventariar las 12 categorías de gobernanza.
+# Purpose: Evaluate policy categories using the declared query contract.
 # Requirements: RF-39, RF-40
 # Policies: P-GOV-01
-# Current v3.0.0 result: 12 filas
+# Current v3.0.0 result: 12 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1196,15 +1181,15 @@ SELECT ?category ?code ?label WHERE {
   OPTIONAL { ?category rdfs:label ?label }
 }
 ORDER BY ?code
-# END QUERY EXT-Q06: Categorías de política
+# END QUERY EXT-Q06: Policy categories
 
 
-# START QUERY EXT-Q07: Relaciones entre categorías de políticas
+# START QUERY EXT-Q07: Relationships between policy categories
 # Type: report
-# Purpose: Inspeccionar la taxonomía de compatibilidad/conflicto y la estrategia de resolución cuando exista.
+# Purpose: Evaluate relationships between policy categories using the declared query contract.
 # Requirements: RNF-22, RV-04
 # Policies: P-GOV-03
-# Current v3.0.0 result: 67 filas
+# Current v3.0.0 result: 67 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1223,15 +1208,15 @@ SELECT ?relation ?source ?target ?relationType ?code ?strategy WHERE {
   OPTIONAL { ?relation :usesResolutionStrategy ?strategy }
 }
 ORDER BY ?source ?target
-# END QUERY EXT-Q07: Relaciones entre categorías de políticas
+# END QUERY EXT-Q07: Relationships between policy categories
 
 
-# START QUERY EXT-Q08: Trazabilidad requisito → política → mecanismo
+# START QUERY EXT-Q08: Requirement, policy and mechanism traceability
 # Type: report
-# Purpose: Mostrar trazabilidad individual de requisitos a políticas y mecanismos.
+# Purpose: Evaluate requirement, policy and mechanism traceability using the declared query contract.
 # Requirements: RV-04, RNF-39
 # Policies: P-VAL-06
-# Current v3.0.0 result: 1089 filas
+# Current v3.0.0 result: 1089 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1253,15 +1238,15 @@ SELECT ?requirement ?rid ?rtype ?policy ?mechanism WHERE {
   OPTIONAL { ?requirement :tracedToMechanism ?mechanism }
 }
 ORDER BY ?rid ?policy ?mechanism
-# END QUERY EXT-Q08: Trazabilidad requisito → política → mecanismo
+# END QUERY EXT-Q08: Requirement, policy and mechanism traceability
 
 
-# START QUERY EXT-Q09: Revisión — requisito sin política ni mecanismo explícito
+# START QUERY EXT-Q09: Review: requirements without explicit policies or mechanisms
 # Type: review
-# Purpose: Listar requisitos que no tienen política ni mecanismo explícito; los requisitos puramente estructurales pueden ser válidos y deben trazarse a ontología/consulta en la matriz documental.
+# Purpose: Evaluate review: requirements without explicit policies or mechanisms using the declared query contract.
 # Requirements: RV-04
 # Policies: P-VAL-06
-# Current v3.0.0 result: 6 filas
+# Current v3.0.0 result: 6 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1280,15 +1265,15 @@ SELECT ?requirement ?rid WHERE {
   FILTER NOT EXISTS { ?requirement :tracedToMechanism ?m }
 }
 ORDER BY ?rid
-# END QUERY EXT-Q09: Revisión — requisito sin política ni mecanismo explícito
+# END QUERY EXT-Q09: Review: requirements without explicit policies or mechanisms
 
 
-# START QUERY EXT-Q10: Incumplimiento — política o mecanismo incompleto
+# START QUERY EXT-Q10: Violation: incomplete policies or mechanisms
 # Type: violation
-# Purpose: Detectar políticas/mecanismos sin metadatos mínimos para gobernanza reproducible.
+# Purpose: Evaluate violation: incomplete policies or mechanisms using the declared query contract.
 # Requirements: RF-39, RF-40, RNF-20
 # Policies: P-GOV-01, P-GOV-04
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1326,20 +1311,19 @@ SELECT ?resource ?kind ?missing WHERE {
   }
 }
 ORDER BY ?kind ?resource ?missing
-# END QUERY EXT-Q10: Incumplimiento — política o mecanismo incompleto
+# END QUERY EXT-Q10: Violation: incomplete policies or mechanisms
 
 
 # ==============================================================================
-# EXT v3 — Consentimiento, contratos y autorización efectiva
 # ==============================================================================
 
 
-# START QUERY EXT-Q11: Reporte de ConsentRecord
+# START QUERY EXT-Q11: Consent record report
 # Type: report
-# Purpose: Inspeccionar consentimiento independiente del contrato: sujeto, rango, propósito, categorías y vigencia.
+# Purpose: Evaluate consent record report using the declared query contract.
 # Requirements: RF-32, RF-35
 # Policies: P-CONS-01, P-CONS-04
-# Current v3.0.0 result: 25 filas
+# Current v3.0.0 result: 25 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1360,15 +1344,15 @@ SELECT ?record ?user ?range ?purpose ?dataCategory ?from ?to WHERE {
   OPTIONAL { ?record :validTo ?to }
 }
 ORDER BY ?user ?record ?purpose ?dataCategory
-# END QUERY EXT-Q11: Reporte de ConsentRecord
+# END QUERY EXT-Q11: Consent record report
 
 
-# START QUERY EXT-Q12: Reporte de contratos semánticos
+# START QUERY EXT-Q12: Semantic contract report
 # Type: report
-# Purpose: Inspeccionar contratos efectivos, rangos, propósitos, políticas y vigencia.
+# Purpose: Evaluate semantic contract report using the declared query contract.
 # Requirements: RF-33, RF-34
 # Policies: P-CONS-02, P-CONS-03
-# Current v3.0.0 result: 28 filas
+# Current v3.0.0 result: 28 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1389,15 +1373,15 @@ SELECT ?contract ?user ?range ?purpose ?policy ?from ?to WHERE {
   OPTIONAL { ?contract :validTo ?to }
 }
 ORDER BY ?user ?contract ?purpose ?policy
-# END QUERY EXT-Q12: Reporte de contratos semánticos
+# END QUERY EXT-Q12: Semantic contract report
 
 
-# START QUERY EXT-Q13: Incumplimiento — ConsentRecord incompleto
+# START QUERY EXT-Q13: Violation: incomplete consent records
 # Type: violation
-# Purpose: Detectar registros de consentimiento sin sujeto, rango, propósito, categorías autorizadas o validFrom.
+# Purpose: Evaluate violation: incomplete consent records using the declared query contract.
 # Requirements: RF-32, RF-35
 # Policies: P-CONS-01
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1422,15 +1406,15 @@ SELECT ?record ?missing WHERE {
   FILTER NOT EXISTS { ?record ?prop ?v }
 }
 ORDER BY ?record ?missing
-# END QUERY EXT-Q13: Incumplimiento — ConsentRecord incompleto
+# END QUERY EXT-Q13: Violation: incomplete consent records
 
 
-# START QUERY EXT-Q14: Incumplimiento — contrato semántico incompleto
+# START QUERY EXT-Q14: Violation: incomplete semantic contracts
 # Type: violation
-# Purpose: Detectar contratos sin sujeto, rango, propósito, política o inicio de vigencia.
+# Purpose: Evaluate violation: incomplete semantic contracts using the declared query contract.
 # Requirements: RF-33, RF-34
 # Policies: P-CONS-02, P-CONS-03
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1455,15 +1439,15 @@ SELECT ?contract ?missing WHERE {
   FILTER NOT EXISTS { ?contract ?prop ?v }
 }
 ORDER BY ?contract ?missing
-# END QUERY EXT-Q14: Incumplimiento — contrato semántico incompleto
+# END QUERY EXT-Q14: Violation: incomplete semantic contracts
 
 
-# START QUERY EXT-Q15: Incumplimiento — contratos solapados para usuario y propósito
+# START QUERY EXT-Q15: Violation: overlapping contracts for a user and purpose
 # Type: violation
-# Purpose: Detectar dos contratos del mismo usuario y propósito con intervalos de vigencia solapados.
+# Purpose: Evaluate violation: overlapping contracts for a user and purpose using the declared query contract.
 # Requirements: RF-33, RNF-22
 # Policies: P-CONS-02
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1485,15 +1469,15 @@ SELECT DISTINCT ?user ?purpose ?c1 ?c2 WHERE {
   FILTER((!BOUND(?t1) || ?f2 < ?t1) && (!BOUND(?t2) || ?f1 < ?t2))
 }
 ORDER BY ?user ?purpose
-# END QUERY EXT-Q15: Incumplimiento — contratos solapados para usuario y propósito
+# END QUERY EXT-Q15: Violation: overlapping contracts for a user and purpose
 
 
-# START QUERY EXT-Q16: Incumplimiento — rango activo no respaldado por ConsentRecord
+# START QUERY EXT-Q16: Violation: active consent range without a supporting record
 # Type: violation
-# Purpose: Comprobar que el rango activo del usuario coincide con al menos un ConsentRecord vigente asociado.
+# Purpose: Evaluate violation: active consent range without a supporting record using the declared query contract.
 # Requirements: RF-35
 # Policies: P-CONS-01, P-CONS-04
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1514,15 +1498,15 @@ SELECT ?user ?activeRange WHERE {
   }
 }
 ORDER BY ?user
-# END QUERY EXT-Q16: Incumplimiento — rango activo no respaldado por ConsentRecord
+# END QUERY EXT-Q16: Violation: active consent range without a supporting record
 
 
-# START QUERY EXT-Q17: Reporte de autorizaciones efectivas
+# START QUERY EXT-Q17: Effective authorization report
 # Type: report
-# Purpose: Mostrar autorización efectiva utilizada por cada evaluación.
+# Purpose: Evaluate effective authorization report using the declared query contract.
 # Requirements: RF-35, RF-36, RF-66
 # Policies: P-CONS-04, P-GOV-03
-# Current v3.0.0 result: 8 filas
+# Current v3.0.0 result: 8 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1546,15 +1530,15 @@ SELECT ?evaluation ?authorization ?outcome ?effectiveRange ?record ?contract ?zo
   OPTIONAL { ?authorization :validFrom ?from }
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q17: Reporte de autorizaciones efectivas
+# END QUERY EXT-Q17: Effective authorization report
 
 
-# START QUERY EXT-Q18: Incumplimiento — autorización efectiva incompleta
+# START QUERY EXT-Q18: Violation: incomplete effective authorization
 # Type: violation
-# Purpose: Detectar AuthorizationDecision sin outcome, rango efectivo, consentimiento, contrato, zona o validFrom.
+# Purpose: Evaluate violation: incomplete effective authorization using the declared query contract.
 # Requirements: RF-35, RF-36
 # Policies: P-CONS-04
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1580,15 +1564,15 @@ SELECT ?authorization ?missing WHERE {
   FILTER NOT EXISTS { ?authorization ?prop ?v }
 }
 ORDER BY ?authorization ?missing
-# END QUERY EXT-Q18: Incumplimiento — autorización efectiva incompleta
+# END QUERY EXT-Q18: Violation: incomplete effective authorization
 
 
-# START QUERY EXT-Q19: Incumplimiento — autorización efectiva excede consentimiento o contrato
+# START QUERY EXT-Q19: Violation: authorization exceeds consent or contract
 # Type: violation
-# Purpose: Comparar niveles de rango mediante orden explícito Denied=0, Local=1, Community=2, Global=3.
+# Purpose: Evaluate violation: authorization exceeds consent or contract using the declared query contract.
 # Requirements: RF-35, RF-36
 # Policies: P-CONS-04, P-GOV-03
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1608,15 +1592,15 @@ SELECT ?authorization ?effective ?consentRange ?contractRange WHERE {
   ?authorization a :AuthorizationDecision ; :hasEffectiveConsentRange ?effective ; :basedOnConsentRecord/:hasConsentRange ?consentRange ; :basedOnContract/:hasConsentRange ?contractRange .
   FILTER(?eLevel > ?cLevel || ?eLevel > ?kLevel)
 }
-# END QUERY EXT-Q19: Incumplimiento — autorización efectiva excede consentimiento o contrato
+# END QUERY EXT-Q19: Violation: authorization exceeds consent or contract
 
 
-# START QUERY EXT-Q20: Incumplimiento — EvaluationState sin autorización concedida
+# START QUERY EXT-Q20: Violation: evaluation without granted authorization
 # Type: violation
-# Purpose: Detectar decisiones relevantes sin AuthorizationDecision concedida.
+# Purpose: Evaluate violation: evaluation without granted authorization using the declared query contract.
 # Requirements: RF-36, RF-66, RNF-28
 # Policies: P-CONS-04, P-AUD-06
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1634,15 +1618,15 @@ SELECT ?evaluation WHERE {
   FILTER NOT EXISTS { ?evaluation :hasAuthorizationDecision/:hasAuthorizationOutcome :AuthorizationGranted }
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q20: Incumplimiento — EvaluationState sin autorización concedida
+# END QUERY EXT-Q20: Violation: evaluation without granted authorization
 
 
-# START QUERY EXT-Q21: Inventario de rangos mínimos requeridos
+# START QUERY EXT-Q21: Required minimum consent range inventory
 # Type: inventory
-# Purpose: Listar recursos que declaran requiresConsentRange para preparar validaciones de autorización.
+# Purpose: Evaluate required minimum consent range inventory using the declared query contract.
 # Requirements: RF-37
 # Policies: P-CONS-05
-# Current v3.0.0 result: 11 filas
+# Current v3.0.0 result: 11 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1660,20 +1644,19 @@ SELECT ?resource ?type ?requiredRange WHERE {
   OPTIONAL { ?resource a ?type . FILTER(?type != owl:NamedIndividual) }
 }
 ORDER BY ?resource ?type
-# END QUERY EXT-Q21: Inventario de rangos mínimos requeridos
+# END QUERY EXT-Q21: Required minimum consent range inventory
 
 
 # ==============================================================================
-# EXT v3 — Datos, identidad, seguridad y transmisión
 # ==============================================================================
 
 
-# START QUERY EXT-Q22: Incumplimiento — observación fisiológica cruda fuera del ámbito local
+# START QUERY EXT-Q22: Violation: raw physiological observations outside local scope
 # Type: violation
-# Purpose: Detectar observaciones crudas enviadas a Edge/Fog/Cloud mediante sentToNode o TransferEvent.
+# Purpose: Evaluate violation: raw physiological observations outside local scope using the declared query contract.
 # Requirements: RF-10, RF-60, RNF-17
 # Policies: P-DATA-01, P-ZONE-01
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1700,15 +1683,15 @@ SELECT DISTINCT ?raw ?destination ?via WHERE {
   ?destination a ?destType .
 }
 ORDER BY ?raw
-# END QUERY EXT-Q22: Incumplimiento — observación fisiológica cruda fuera del ámbito local
+# END QUERY EXT-Q22: Violation: raw physiological observations outside local scope
 
 
-# START QUERY EXT-Q23: Reporte de transferencias externas de datos
+# START QUERY EXT-Q23: External data transfer report
 # Type: report
-# Purpose: Inspeccionar datos, categoría, sensibilidad, origen, destino, identificador y seguridad de cada transferencia.
+# Purpose: Evaluate external data transfer report using the declared query contract.
 # Requirements: RF-09, RF-27, RF-61
 # Policies: P-DATA-02, P-DATA-03, P-DATA-10
-# Current v3.0.0 result: 3 filas
+# Current v3.0.0 result: 3 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1731,15 +1714,15 @@ SELECT ?transfer ?data ?category ?sensitivity ?criticality ?source ?destination 
   OPTIONAL { ?transfer :validFrom ?from }
 }
 ORDER BY ?from ?transfer
-# END QUERY EXT-Q23: Reporte de transferencias externas de datos
+# END QUERY EXT-Q23: External data transfer report
 
 
-# START QUERY EXT-Q24: Reporte de contexto de datos
+# START QUERY EXT-Q24: Data context report
 # Type: report
-# Purpose: Mostrar el contexto operativo persistido con cada dato parametrizado.
+# Purpose: Evaluate data context report using the declared query contract.
 # Requirements: RF-09, RF-30
 # Policies: P-DATA-10
-# Current v3.0.0 result: 2 filas
+# Current v3.0.0 result: 2 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1764,15 +1747,15 @@ SELECT ?data ?context ?deviceState ?nodeState ?processingLevel ?purpose ?zone ?f
   OPTIONAL { ?context :migrationNote ?note }
 }
 ORDER BY ?data
-# END QUERY EXT-Q24: Reporte de contexto de datos
+# END QUERY EXT-Q24: Data context report
 
 
-# START QUERY EXT-Q25: Incumplimiento — DataContext incompleto
+# START QUERY EXT-Q25: Violation: incomplete data context
 # Type: violation
-# Purpose: Detectar datos parametrizados transmitidos sin contexto mínimo.
+# Purpose: Evaluate violation: incomplete data context using the declared query contract.
 # Requirements: RF-09
 # Policies: P-DATA-10
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1814,15 +1797,15 @@ SELECT ?data ?context ?missing WHERE {
   }
 }
 ORDER BY ?data ?missing
-# END QUERY EXT-Q25: Incumplimiento — DataContext incompleto
+# END QUERY EXT-Q25: Violation: incomplete data context
 
 
-# START QUERY EXT-Q26: Inventario de identificadores
+# START QUERY EXT-Q26: Identifier inventory
 # Type: inventory
-# Purpose: Listar identificadores por tipo y scope.
+# Purpose: Evaluate identifier inventory using the declared query contract.
 # Requirements: RF-61, RNF-19
 # Policies: P-DATA-02
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1836,24 +1819,24 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?identifier ?identifierType ?scope ?value WHERE {
-  ?user a :User ; :hasIdentifier ?identifier .
   VALUES ?identifierType {
     :PseudonymousIdentifier :AnonymousIdentifier :DirectIdentifier
   }
+  ?user a :User ; :hasIdentifier ?identifier .
   ?identifier a ?identifierType .
   OPTIONAL { ?identifier :identifierScope ?scope }
   OPTIONAL { ?identifier :identifierValue ?value }
 }
 ORDER BY ?user ?identifier
-# END QUERY EXT-Q26: Inventario de identificadores
+# END QUERY EXT-Q26: Identifier inventory
 
 
-# START QUERY EXT-Q27: Incumplimiento — transferencia externa sin identificador seguro
+# START QUERY EXT-Q27: Violation: external transfer without a safe identifier
 # Type: violation
-# Purpose: Detectar transferencias a Edge/Fog/Cloud sin pseudónimo o identificador anónimo.
+# Purpose: Evaluate violation: external transfer without a safe identifier using the declared query contract.
 # Requirements: RF-61, RNF-17
 # Policies: P-DATA-02
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1874,15 +1857,15 @@ SELECT ?transfer ?destination ?identifier WHERE {
   FILTER(!BOUND(?identifier) || NOT EXISTS { ?identifier a ?safeType . FILTER(?safeType IN (:PseudonymousIdentifier,:AnonymousIdentifier)) })
 }
 ORDER BY ?transfer
-# END QUERY EXT-Q27: Incumplimiento — transferencia externa sin identificador seguro
+# END QUERY EXT-Q27: Violation: external transfer without a safe identifier
 
 
-# START QUERY EXT-Q28: Incumplimiento — identificador directo en flujo externo
+# START QUERY EXT-Q28: Violation: direct identifiers in external flows
 # Type: violation
-# Purpose: Detectar cualquier uso explícito de DirectIdentifier en transferencias externas.
+# Purpose: Evaluate violation: direct identifiers in external flows using the declared query contract.
 # Requirements: RF-61, RNF-17
 # Policies: P-DATA-02
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1901,15 +1884,15 @@ SELECT ?transfer ?identifier ?destination WHERE {
   ?destination a ?destType .
   FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
 }
-# END QUERY EXT-Q28: Incumplimiento — identificador directo en flujo externo
+# END QUERY EXT-Q28: Violation: direct identifiers in external flows
 
 
-# START QUERY EXT-Q29: Reporte de línea base de cifrado
+# START QUERY EXT-Q29: Encryption baseline report
 # Type: report
-# Purpose: Inspeccionar mecanismos de cifrado y sus garantías declaradas.
+# Purpose: Evaluate encryption baseline report using the declared query contract.
 # Requirements: RNF-15
 # Policies: P-DATA-03
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1929,15 +1912,15 @@ SELECT ?mechanism ?version ?inTransit ?atRest WHERE {
   OPTIONAL { ?mechanism :protectsAtRest ?atRest }
 }
 ORDER BY ?mechanism
-# END QUERY EXT-Q29: Reporte de línea base de cifrado
+# END QUERY EXT-Q29: Encryption baseline report
 
 
-# START QUERY EXT-Q30: Incumplimiento — transferencia sensible sin cifrado en tránsito
+# START QUERY EXT-Q30: Violation: sensitive transfer without encryption in transit
 # Type: violation
-# Purpose: Detectar TransferEvent con dato sensible sin mecanismo que declare protectsInTransit=true.
+# Purpose: Evaluate violation: sensitive transfer without encryption in transit using the declared query contract.
 # Requirements: RNF-15
 # Policies: P-DATA-03
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1955,15 +1938,15 @@ SELECT ?transfer ?data WHERE {
   ?data :hasDataSensitivity :SensitiveData .
   FILTER NOT EXISTS { ?transfer :appliedSecurityMechanism ?m . ?m :protectsInTransit true }
 }
-# END QUERY EXT-Q30: Incumplimiento — transferencia sensible sin cifrado en tránsito
+# END QUERY EXT-Q30: Violation: sensitive transfer without encryption in transit
 
 
-# START QUERY EXT-Q31: Reporte de buffers y retención
+# START QUERY EXT-Q31: Buffer and retention report
 # Type: report
-# Purpose: Inspeccionar registros de buffer/retención cuando existan, incluyendo temporalidad y seguridad.
+# Purpose: Evaluate buffer and retention report using the declared query contract.
 # Requirements: RF-08, RNF-12
 # Policies: P-DATA-05, P-DATA-07
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -1985,15 +1968,15 @@ SELECT ?record ?type ?data ?from ?to ?security WHERE {
   OPTIONAL { ?record :appliedSecurityMechanism ?security }
 }
 ORDER BY ?record
-# END QUERY EXT-Q31: Reporte de buffers y retención
+# END QUERY EXT-Q31: Buffer and retention report
 
 
-# START QUERY EXT-Q32: Incumplimiento — buffer sensible sin protección en reposo
+# START QUERY EXT-Q32: Violation: sensitive buffer without protection at rest
 # Type: violation
-# Purpose: Detectar buffers de datos sensibles sin mecanismo protectsAtRest=true.
+# Purpose: Evaluate violation: sensitive buffer without protection at rest using the declared query contract.
 # Requirements: RNF-15, RNF-12
 # Policies: P-DATA-03, P-DATA-05
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2011,15 +1994,15 @@ SELECT ?buffer ?data WHERE {
   ?data :hasDataSensitivity :SensitiveData .
   FILTER NOT EXISTS { ?buffer :appliedSecurityMechanism ?m . ?m :protectsAtRest true }
 }
-# END QUERY EXT-Q32: Incumplimiento — buffer sensible sin protección en reposo
+# END QUERY EXT-Q32: Violation: sensitive buffer without protection at rest
 
 
-# START QUERY EXT-Q33: Reporte de replicación y sincronización
+# START QUERY EXT-Q33: Replication and synchronization report
 # Type: report
-# Purpose: Inspeccionar eventos de replicación/sincronización y su control de duplicados.
+# Purpose: Evaluate replication and synchronization report using the declared query contract.
 # Requirements: RF-19, RNF-13
 # Policies: P-DATA-08
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2043,15 +2026,15 @@ SELECT ?event ?type ?source ?target ?replica ?version ?idempotencyKey ?from WHER
   OPTIONAL { ?event :validFrom ?from }
 }
 ORDER BY ?event
-# END QUERY EXT-Q33: Reporte de replicación y sincronización
+# END QUERY EXT-Q33: Replication and synchronization report
 
 
-# START QUERY EXT-Q34: Incumplimiento — replicación sin versión o idempotencia
+# START QUERY EXT-Q34: Violation: replication without versioning or idempotency
 # Type: violation
-# Purpose: Detectar ReplicationEvent/SynchronizationEvent incompleto para reejecución segura.
+# Purpose: Evaluate violation: replication without versioning or idempotency using the declared query contract.
 # Requirements: RF-19, RNF-13
 # Policies: P-DATA-08
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2071,15 +2054,15 @@ SELECT ?event ?missing WHERE {
   FILTER NOT EXISTS { ?event ?prop ?v }
 }
 ORDER BY ?event ?missing
-# END QUERY EXT-Q34: Incumplimiento — replicación sin versión o idempotencia
+# END QUERY EXT-Q34: Violation: replication without versioning or idempotency
 
 
-# START QUERY EXT-Q35: Reporte de criticidad y prioridad de datos
+# START QUERY EXT-Q35: Data criticality and priority report
 # Type: report
-# Purpose: Comprobar criticidad genérica independiente del nivel de estrés.
+# Purpose: Evaluate data criticality and priority report using the declared query contract.
 # Requirements: RF-28
 # Policies: P-DATA-09
-# Current v3.0.0 result: 6 filas
+# Current v3.0.0 result: 6 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2098,7 +2081,7 @@ SELECT ?data ?category ?criticality ?redundant WHERE {
   OPTIONAL { ?data :isRedundant ?redundant }
 }
 ORDER BY ?criticality ?data
-# END QUERY EXT-Q35: Reporte de criticidad y prioridad de datos
+# END QUERY EXT-Q35: Data criticality and priority report
 
 
 # ==============================================================================
@@ -2106,12 +2089,12 @@ ORDER BY ?criticality ?data
 # ==============================================================================
 
 
-# START QUERY EXT-Q36: Reporte de zona restringida
+# START QUERY EXT-Q36: Restricted area report
 # Type: report
-# Purpose: Mostrar usuarios, evaluaciones y tiers asociados a RestrictedZone.
+# Purpose: Evaluate restricted area report using the declared query contract.
 # Requirements: RF-42, RF-43
 # Policies: P-ZONE-01
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2130,15 +2113,15 @@ SELECT ?zone ?user ?evaluation ?tier ?action WHERE {
   OPTIONAL { ?evaluation a :EvaluationState ; :evaluationZone ?zone ; :selectedModelTier ?tier . OPTIONAL { ?evaluation :resultedInAction ?action } }
 }
 ORDER BY ?zone ?user ?evaluation
-# END QUERY EXT-Q36: Reporte de zona restringida
+# END QUERY EXT-Q36: Restricted area report
 
 
-# START QUERY EXT-Q37: Incumplimiento — procesamiento/transferencia externa en RestrictedZone
+# START QUERY EXT-Q37: Violation: external processing or transfer in restricted areas
 # Type: violation
-# Purpose: Detectar tier Edge/Fog/Cloud seleccionado o TransferEvent externo asociado a evaluación/usuario en RestrictedZone.
+# Purpose: Evaluate violation: external processing or transfer in restricted areas using the declared query contract.
 # Requirements: RF-42, RF-43, RF-60
 # Policies: P-ZONE-01, P-GOV-03
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2168,15 +2151,15 @@ SELECT DISTINCT ?subject ?violationType ?destinationOrTier WHERE {
   }
 }
 ORDER BY ?subject
-# END QUERY EXT-Q37: Incumplimiento — procesamiento/transferencia externa en RestrictedZone
+# END QUERY EXT-Q37: Violation: external processing or transfer in restricted areas
 
 
-# START QUERY EXT-Q38: Reporte de zona rural y ventanas de transmisión
+# START QUERY EXT-Q38: Rural area and transmission window report
 # Type: review
-# Purpose: Revisar usuarios rurales, conectividad y eventos de retención/sincronización; la ausencia de eventos no implica por sí sola incumplimiento si no había datos pendientes.
+# Purpose: Evaluate rural area and transmission window report using the declared query contract.
 # Requirements: RF-08, RF-27
 # Policies: P-ZONE-02, P-DATA-07
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2196,15 +2179,15 @@ SELECT ?user ?zone ?device ?state ?connection ?retention ?sync WHERE {
   OPTIONAL { ?sync a :SynchronizationEvent ; :partOfScenario ?scenario2 . FILTER(?scenario2 = :S7) }
 }
 ORDER BY ?user ?device
-# END QUERY EXT-Q38: Reporte de zona rural y ventanas de transmisión
+# END QUERY EXT-Q38: Rural area and transmission window report
 
 
-# START QUERY EXT-Q39: Reporte de procesamiento urbano condicionado
+# START QUERY EXT-Q39: Conditional urban processing report
 # Type: report
-# Purpose: Inspeccionar evaluaciones urbanas junto con consentimiento efectivo y tier.
+# Purpose: Evaluate conditional urban processing report using the declared query contract.
 # Requirements: RF-42
 # Policies: P-ZONE-03, P-CONS-04
-# Current v3.0.0 result: 5 filas
+# Current v3.0.0 result: 5 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2224,15 +2207,15 @@ SELECT ?evaluation ?zone ?authorization ?effectiveRange ?tier ?node WHERE {
   OPTIONAL { ?evaluation :evaluatesNode ?node }
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q39: Reporte de procesamiento urbano condicionado
+# END QUERY EXT-Q39: Conditional urban processing report
 
 
-# START QUERY EXT-Q40: Reporte de NodeState y trust reproducible
+# START QUERY EXT-Q40: Node state and reproducible trust report
 # Type: report
-# Purpose: Listar estados de nodo y TrustAssessment separado de los pesos AHP.
+# Purpose: Evaluate node state and reproducible trust report using the declared query contract.
 # Requirements: RF-45, RF-49, RNF-32
 # Policies: P-NODE-03, P-NODE-04
-# Current v3.0.0 result: 7 filas
+# Current v3.0.0 result: 7 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2257,15 +2240,15 @@ SELECT ?node ?state ?trustAssessment ?score ?ruleVersion ?windowStart ?windowEnd
   }
 }
 ORDER BY ?node ?state
-# END QUERY EXT-Q40: Reporte de NodeState y trust reproducible
+# END QUERY EXT-Q40: Node state and reproducible trust report
 
 
-# START QUERY EXT-Q41: Incumplimiento — NodeState sin campos de elegibilidad
+# START QUERY EXT-Q41: Violation: node state without eligibility fields
 # Type: violation
-# Purpose: Detectar estados de nodo sin disponibilidad, workload, comunicación, capacidad residual u operational status.
+# Purpose: Evaluate violation: node state without eligibility fields using the declared query contract.
 # Requirements: RF-05, RF-47
 # Policies: P-NODE-01, P-NODE-02
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2290,15 +2273,15 @@ SELECT ?state ?missing WHERE {
   FILTER NOT EXISTS { ?state ?prop ?v }
 }
 ORDER BY ?state ?missing
-# END QUERY EXT-Q41: Incumplimiento — NodeState sin campos de elegibilidad
+# END QUERY EXT-Q41: Violation: node state without eligibility fields
 
 
-# START QUERY EXT-Q42: Candidatos elegibles ordenados por trust
+# START QUERY EXT-Q42: Eligible candidates ranked by trust
 # Type: report
-# Purpose: Aplicar primero filtros duros y después exponer score de confianza para ordenación externa.
+# Purpose: Evaluate eligible candidates ranked by trust using the declared query contract.
 # Requirements: RF-47, RF-48
 # Policies: P-NODE-02, P-NODE-05, P-MODEL-03
-# Current v3.0.0 result: 4 filas
+# Current v3.0.0 result: 4 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2319,15 +2302,15 @@ SELECT ?node ?state ?trust WHERE {
   ?state :hasTrustAssessment/:hasTrustScore ?trust .
 }
 ORDER BY DESC(?trust) ?node
-# END QUERY EXT-Q42: Candidatos elegibles ordenados por trust
+# END QUERY EXT-Q42: Eligible candidates ranked by trust
 
 
-# START QUERY EXT-Q43: Revisión — TrustAssessment no plenamente reproducible
+# START QUERY EXT-Q43: Review: trust assessment is not fully reproducible
 # Type: review
-# Purpose: Señalar trust histórico sin versión, ventana o evidencia suficiente. Los datos migrados pueden aparecer aquí hasta ser re-medidos.
+# Purpose: Evaluate review: trust assessment is not fully reproducible using the declared query contract.
 # Requirements: RF-49, RNF-32
 # Policies: P-NODE-03
-# Current v3.0.0 result: 7 filas
+# Current v3.0.0 result: 7 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2351,15 +2334,15 @@ SELECT ?assessment ?state ?score ?ruleVersion ?windowStart ?windowEnd ?evidence 
   FILTER(!BOUND(?score) || !BOUND(?ruleVersion) || !BOUND(?windowStart) || !BOUND(?windowEnd) || !BOUND(?evidence))
 }
 ORDER BY ?assessment
-# END QUERY EXT-Q43: Revisión — TrustAssessment no plenamente reproducible
+# END QUERY EXT-Q43: Review: trust assessment is not fully reproducible
 
 
-# START QUERY EXT-Q44: Reporte de confianza externa usada en evaluación
+# START QUERY EXT-Q44: External trust used in evaluation
 # Type: report
-# Purpose: Mostrar hasTrustWeight/TrustAssessment como criterio externo, separado de los tres pesos AHP.
+# Purpose: Evaluate external trust used in evaluation using the declared query contract.
 # Requirements: RF-46, RF-55
 # Policies: P-MODEL-03, P-NODE-05
-# Current v3.0.0 result: 10 filas
+# Current v3.0.0 result: 10 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2381,15 +2364,15 @@ SELECT ?evaluation ?latencyWeight ?privacyWeight ?qualityWeight ?externalTrustWe
   OPTIONAL { ?evaluation :evaluatesNode/:hasNodeState/:hasTrustAssessment/:hasTrustScore ?nodeTrust }
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q44: Reporte de confianza externa usada en evaluación
+# END QUERY EXT-Q44: External trust used in evaluation
 
 
-# START QUERY EXT-Q45: Incumplimiento — destino adaptativo explícitamente no elegible
+# START QUERY EXT-Q45: Violation: explicitly ineligible adaptive destination
 # Type: violation
-# Purpose: Detectar MigrationEvent/DelegationEvent cuando existe un snapshot del destino en el mismo escenario y dicho snapshot demuestra inelegibilidad dura o menor trust que el origen comparable.
+# Purpose: Evaluate violation: explicitly ineligible adaptive destination using the declared query contract.
 # Requirements: RF-18, RF-48
 # Policies: P-ADAPT-04, P-ADAPT-07
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2419,15 +2402,15 @@ SELECT DISTINCT ?action ?scenario ?origin ?target ?reason WHERE {
   }
 }
 ORDER BY ?action ?reason
-# END QUERY EXT-Q45: Incumplimiento — destino adaptativo explícitamente no elegible
+# END QUERY EXT-Q45: Violation: explicitly ineligible adaptive destination
 
 
-# START QUERY EXT-Q46: Reporte completo de decisiones de modelo
+# START QUERY EXT-Q46: Complete model decision report
 # Type: report
-# Purpose: Mostrar usuario, método, pesos, tier, justificación, trust externo y acción.
+# Purpose: Evaluate complete model decision report using the declared query contract.
 # Requirements: RF-15, RF-51, RF-66
 # Policies: P-MODEL-01, P-MODEL-05, P-AUD-06
-# Current v3.0.0 result: 11 filas
+# Current v3.0.0 result: 11 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2453,15 +2436,15 @@ SELECT ?evaluation ?user ?method ?latency ?privacy ?quality ?trustExternal ?tier
   OPTIONAL { ?evaluation :resultedInAction ?action }
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q46: Reporte completo de decisiones de modelo
+# END QUERY EXT-Q46: Complete model decision report
 
 
-# START QUERY EXT-Q47: Incumplimiento — evaluación sin campos de decisión mínimos
+# START QUERY EXT-Q47: Violation: evaluation without minimum decision fields
 # Type: violation
-# Purpose: Detectar EvaluationState sin usuario, propósito, zona, contrato, autorización, método, tres pesos, tier, justificación, instante o acción.
+# Purpose: Evaluate violation: evaluation without minimum decision fields using the declared query contract.
 # Requirements: RF-54, RF-66, RNF-28
 # Policies: P-AUD-06
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2494,15 +2477,15 @@ SELECT ?evaluation ?missing WHERE {
   FILTER NOT EXISTS { ?evaluation ?prop ?v }
 }
 ORDER BY ?evaluation ?missing
-# END QUERY EXT-Q47: Incumplimiento — evaluación sin campos de decisión mínimos
+# END QUERY EXT-Q47: Violation: evaluation without minimum decision fields
 
 
-# START QUERY EXT-Q48: Incumplimiento — pesos multicriterio no normalizados
+# START QUERY EXT-Q48: Violation: unnormalized multicriteria weights
 # Type: violation
-# Purpose: Comprobar que latencia+privacidad+calidad=1 con tolerancia; trust se excluye.
+# Purpose: Evaluate violation: unnormalized multicriteria weights using the declared query contract.
 # Requirements: RF-50, RF-55, RNF-34
 # Policies: P-MODEL-02, P-MODEL-03
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2520,15 +2503,15 @@ SELECT ?evaluation ?latency ?privacy ?quality ((?latency + ?privacy + ?quality) 
   FILTER(ABS((?latency + ?privacy + ?quality) - 1.0) > 0.000001)
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q48: Incumplimiento — pesos multicriterio no normalizados
+# END QUERY EXT-Q48: Violation: unnormalized multicriteria weights
 
 
-# START QUERY EXT-Q49: Reporte de método y consistencia
+# START QUERY EXT-Q49: Decision method and consistency report
 # Type: report
-# Purpose: Distinguir AHP real de weighted multicriteria y exponer ratio/umbral cuando aplica.
+# Purpose: Evaluate decision method and consistency report using the declared query contract.
 # Requirements: RF-55, RNF-33, RNF-34
 # Policies: P-MODEL-04
-# Current v3.0.0 result: 8 filas
+# Current v3.0.0 result: 8 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2552,15 +2535,15 @@ SELECT ?evaluation ?method ?ratio ?threshold ?pairwiseCount WHERE {
   }
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q49: Reporte de método y consistencia
+# END QUERY EXT-Q49: Decision method and consistency report
 
 
-# START QUERY EXT-Q50: Incumplimiento — evaluación AHP sin consistencia válida
+# START QUERY EXT-Q50: Violation: AHP evaluation without valid consistency
 # Type: violation
-# Purpose: Para AHPDecisionMethod exigir comparaciones, ratio, umbral y ratio≤umbral.
+# Purpose: Evaluate violation: AHP evaluation without valid consistency using the declared query contract.
 # Requirements: RF-55, RNF-34
 # Policies: P-MODEL-04
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2584,15 +2567,15 @@ SELECT ?evaluation ?ratio ?threshold ?pairwiseCount WHERE {
   }
   FILTER(!BOUND(?ratio) || !BOUND(?threshold) || ?pairwiseCount = 0 || ?ratio > ?threshold)
 }
-# END QUERY EXT-Q50: Incumplimiento — evaluación AHP sin consistencia válida
+# END QUERY EXT-Q50: Violation: AHP evaluation without valid consistency
 
 
-# START QUERY EXT-Q51: Reporte de alternativas por evaluación
+# START QUERY EXT-Q51: Alternatives by evaluation
 # Type: report
-# Purpose: Mostrar cada tier candidato, elegibilidad, score y razón.
+# Purpose: Evaluate alternatives by evaluation using the declared query contract.
 # Requirements: RF-51, RNF-29
 # Policies: P-MODEL-05
-# Current v3.0.0 result: 32 filas
+# Current v3.0.0 result: 32 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2614,15 +2597,15 @@ SELECT ?evaluation ?alternative ?tier ?eligible ?score ?reason ?selected WHERE {
   BIND(EXISTS { ?evaluation :selectedAlternative ?alternative } AS ?selected)
 }
 ORDER BY ?evaluation ?tier
-# END QUERY EXT-Q51: Reporte de alternativas por evaluación
+# END QUERY EXT-Q51: Alternatives by evaluation
 
 
-# START QUERY EXT-Q52: Revisión — alternativas pendientes de recalcular
+# START QUERY EXT-Q52: Review: alternatives pending recalculation
 # Type: review
-# Purpose: Identificar alternativas migradas sin score/elegibilidad completos.
+# Purpose: Evaluate review: alternatives pending recalculation using the declared query contract.
 # Requirements: RF-51, RNF-29, RNF-33
 # Policies: P-MODEL-05
-# Current v3.0.0 result: 32 filas
+# Current v3.0.0 result: 32 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2644,15 +2627,15 @@ SELECT ?evaluation ?alternative ?tier ?eligible ?score ?reason WHERE {
   FILTER(!BOUND(?eligible) || !BOUND(?score))
 }
 ORDER BY ?evaluation ?tier
-# END QUERY EXT-Q52: Revisión — alternativas pendientes de recalcular
+# END QUERY EXT-Q52: Review: alternatives pending recalculation
 
 
-# START QUERY EXT-Q53: Incumplimiento — alternativa seleccionada inválida
+# START QUERY EXT-Q53: Violation: invalid selected alternative
 # Type: violation
-# Purpose: Detectar selectedAlternative ausente, no elegible o cuyo tier no coincide con selectedModelTier.
+# Purpose: Evaluate violation: invalid selected alternative using the declared query contract.
 # Requirements: RF-51, RF-54
 # Policies: P-MODEL-05
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2672,15 +2655,15 @@ SELECT ?evaluation ?selected ?selectedTier ?alternativeTier ?eligible ?reason WH
   FILTER(?reason != "")
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q53: Incumplimiento — alternativa seleccionada inválida
+# END QUERY EXT-Q53: Violation: invalid selected alternative
 
 
-# START QUERY EXT-Q54: Reporte de calidad observada de modelo
+# START QUERY EXT-Q54: Observed model quality report
 # Type: report
-# Purpose: Separar evidencia de calidad/predicción de hasModelQualityWeight.
+# Purpose: Evaluate observed model quality report using the declared query contract.
 # Requirements: RF-14, RF-29, RNF-27
 # Policies: P-MODEL-08, P-OPS-05
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2705,15 +2688,15 @@ SELECT ?subject ?observedQuality ?predictionConfidence ?estimatedError ?feedback
   FILTER(BOUND(?observedQuality) || BOUND(?predictionConfidence) || BOUND(?estimatedError) || BOUND(?feedback))
 }
 ORDER BY ?subject
-# END QUERY EXT-Q54: Reporte de calidad observada de modelo
+# END QUERY EXT-Q54: Observed model quality report
 
 
-# START QUERY EXT-Q55: Revisión — evidencia de calidad insuficiente
+# START QUERY EXT-Q55: Review: insufficient quality evidence
 # Type: review
-# Purpose: Señalar evaluaciones que ponderan calidad pero no enlazan evidencia observada suficiente; puede reflejar datos heredados pendientes.
+# Purpose: Evaluate review: insufficient quality evidence using the declared query contract.
 # Requirements: RF-14, RF-54
 # Policies: P-MODEL-08
-# Current v3.0.0 result: 8 filas
+# Current v3.0.0 result: 8 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2733,15 +2716,15 @@ SELECT ?evaluation ?qualityWeight WHERE {
   FILTER NOT EXISTS { ?evaluation :estimatedPredictionError ?e }
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q55: Revisión — evidencia de calidad insuficiente
+# END QUERY EXT-Q55: Review: insufficient quality evidence
 
 
-# START QUERY EXT-Q56: Incumplimiento — Cloud seleccionado sin condiciones suficientes
+# START QUERY EXT-Q56: Violation: cloud selected without sufficient conditions
 # Type: violation
-# Purpose: Detectar CloudModelTier cuando rango efectivo no sea global, zona sea restringida o autorización no esté concedida.
+# Purpose: Evaluate violation: cloud selected without sufficient conditions using the declared query contract.
 # Requirements: RF-53
 # Policies: P-MODEL-07, P-ZONE-01, P-CONS-04
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2762,15 +2745,15 @@ SELECT ?evaluation ?effectiveRange ?zone ?outcome ?reason WHERE {
   FILTER(?reason != "")
 }
 ORDER BY ?evaluation
-# END QUERY EXT-Q56: Incumplimiento — Cloud seleccionado sin condiciones suficientes
+# END QUERY EXT-Q56: Violation: cloud selected without sufficient conditions
 
 
-# START QUERY EXT-Q57: Reporte de versionado y linaje de modelos
+# START QUERY EXT-Q57: Model versioning and lineage report
 # Type: report
-# Purpose: Inspeccionar versión, fecha, modelo previo y estado de linaje.
+# Purpose: Evaluate model versioning and lineage report using the declared query contract.
 # Requirements: RF-24
 # Policies: P-FL-08
-# Current v3.0.0 result: 7 filas
+# Current v3.0.0 result: 7 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2791,15 +2774,15 @@ SELECT ?model ?version ?updated ?supersedes ?lineageStatus WHERE {
   OPTIONAL { ?model :modelLineageStatus ?lineageStatus }
 }
 ORDER BY ?model
-# END QUERY EXT-Q57: Reporte de versionado y linaje de modelos
+# END QUERY EXT-Q57: Model versioning and lineage report
 
 
-# START QUERY EXT-Q58: Revisión — preparación de rollback
+# START QUERY EXT-Q58: Review: rollback readiness
 # Type: review
-# Purpose: Listar RollbackEvent y modelos sin linaje suficiente para rollback reproducible.
+# Purpose: Evaluate review: rollback readiness using the declared query contract.
 # Requirements: RF-24
 # Policies: P-FL-08
-# Current v3.0.0 result: 7 filas
+# Current v3.0.0 result: 7 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2818,20 +2801,19 @@ SELECT ?subject ?kind ?target ?status WHERE {
   { ?subject a :AIModel . FILTER NOT EXISTS { ?subject :supersedesModel ?prev } BIND("model-without-predecessor" AS ?kind) OPTIONAL { ?subject :modelLineageStatus ?status } }
 }
 ORDER BY ?kind ?subject
-# END QUERY EXT-Q58: Revisión — preparación de rollback
+# END QUERY EXT-Q58: Review: rollback readiness
 
 
 # ==============================================================================
-# EXT v3 — Adaptación, FL y delegación
 # ==============================================================================
 
 
-# START QUERY EXT-Q59: Reporte de acciones adaptativas
+# START QUERY EXT-Q59: Adaptive action report
 # Type: report
-# Purpose: Listar acciones de adaptación y evaluación que las autorizó.
+# Purpose: Evaluate adaptive action report using the declared query contract.
 # Requirements: RF-16, RF-17, RF-20, RF-66
 # Policies: P-ADAPT-06, P-AUD-06
-# Current v3.0.0 result: 11 filas
+# Current v3.0.0 result: 11 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2857,15 +2839,15 @@ SELECT ?action ?actionType ?scenario ?evaluation ?origin ?target ?service ?model
   OPTIONAL { ?action :validTo ?to }
 }
 ORDER BY ?scenario ?action
-# END QUERY EXT-Q59: Reporte de acciones adaptativas
+# END QUERY EXT-Q59: Adaptive action report
 
 
-# START QUERY EXT-Q60: Reporte específico de migraciones
+# START QUERY EXT-Q60: Migration report
 # Type: report
-# Purpose: Inspeccionar MigrationEvent independiente de FL.
+# Purpose: Evaluate migration report using the declared query contract.
 # Requirements: RF-16, RF-17
 # Policies: P-ADAPT-05
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2891,15 +2873,15 @@ SELECT ?migration ?scenario ?origin ?target ?evaluation ?service ?cost ?time ?fr
   OPTIONAL { ?migration :validTo ?to }
 }
 ORDER BY ?migration
-# END QUERY EXT-Q60: Reporte específico de migraciones
+# END QUERY EXT-Q60: Migration report
 
 
-# START QUERY EXT-Q61: Incumplimiento — migración/delegación confundida con sesión FL
+# START QUERY EXT-Q61: Violation: migration or delegation confused with federated learning
 # Type: violation
-# Purpose: Detectar un mismo individuo tipado simultáneamente como MigrationEvent/DelegationEvent y FederatedLearningSession.
+# Purpose: Evaluate violation: migration or delegation confused with federated learning using the declared query contract.
 # Requirements: RF-16, RF-22
 # Policies: P-ADAPT-05
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2916,15 +2898,15 @@ SELECT ?resource WHERE {
   VALUES ?adaptType { :MigrationEvent :DelegationEvent :OffloadingEvent }
   ?resource a :FederatedLearningSession ; a ?adaptType .
 }
-# END QUERY EXT-Q61: Incumplimiento — migración/delegación confundida con sesión FL
+# END QUERY EXT-Q61: Violation: migration or delegation confused with federated learning
 
 
-# START QUERY EXT-Q62: Reporte de degradaciones
+# START QUERY EXT-Q62: Degradation report
 # Type: report
-# Purpose: Listar DegradationEvent y causa explícita.
+# Purpose: Evaluate degradation report using the declared query contract.
 # Requirements: RF-20
 # Policies: P-ADAPT-02, P-ADAPT-03, P-ADAPT-06
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2948,15 +2930,15 @@ SELECT ?event ?scenario ?cause ?service ?model ?evaluation ?from ?to WHERE {
   OPTIONAL { ?event :validTo ?to }
 }
 ORDER BY ?event
-# END QUERY EXT-Q62: Reporte de degradaciones
+# END QUERY EXT-Q62: Degradation report
 
 
-# START QUERY EXT-Q63: Reporte de delegaciones temporales
+# START QUERY EXT-Q63: Temporary delegation report
 # Type: report
-# Purpose: Mostrar origen, destino, disparador, recuperación, profundidad, expiración planificada y cierre real.
+# Purpose: Evaluate temporary delegation report using the declared query contract.
 # Requirements: RF-62, RF-63, RF-64
 # Policies: P-AUD-01, P-AUD-02, P-AUD-03
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -2981,15 +2963,15 @@ SELECT ?delegation ?origin ?target ?triggerState ?recovery ?depth ?plannedExpiry
   OPTIONAL { ?delegation :validTo ?to }
 }
 ORDER BY ?delegation
-# END QUERY EXT-Q63: Reporte de delegaciones temporales
+# END QUERY EXT-Q63: Temporary delegation report
 
 
-# START QUERY EXT-Q64: Incumplimiento — delegación incompleta
+# START QUERY EXT-Q64: Violation: incomplete delegation
 # Type: violation
-# Purpose: Exigir origen, destino, causa/estado disparador, validFrom y condición de recuperación; validTo puede faltar mientras esté activa.
+# Purpose: Evaluate violation: incomplete delegation using the declared query contract.
 # Requirements: RF-63
 # Policies: P-AUD-02
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3015,15 +2997,15 @@ SELECT ?delegation ?missing WHERE {
   FILTER NOT EXISTS { ?delegation ?prop ?v }
 }
 ORDER BY ?delegation ?missing
-# END QUERY EXT-Q64: Incumplimiento — delegación incompleta
+# END QUERY EXT-Q64: Violation: incomplete delegation
 
 
-# START QUERY EXT-Q65: Incumplimiento — profundidad de delegación excede perfil
+# START QUERY EXT-Q65: Violation: delegation depth exceeds the profile
 # Type: violation
-# Purpose: Comparar delegationDepth con D_delegation_max únicamente cuando el perfil esté configurado.
+# Purpose: Evaluate violation: delegation depth exceeds the profile using the declared query contract.
 # Requirements: RNF-14
 # Policies: P-AUD-04, P-OPS-01
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3041,15 +3023,15 @@ SELECT ?delegation ?depth ?maxDepth ?profile WHERE {
   ?profile a :AcceptanceProfile ; :D_delegation_max ?maxDepth .
   FILTER(?depth > ?maxDepth)
 }
-# END QUERY EXT-Q65: Incumplimiento — profundidad de delegación excede perfil
+# END QUERY EXT-Q65: Violation: delegation depth exceeds the profile
 
 
-# START QUERY EXT-Q66: Reporte de sesiones FL y payload
+# START QUERY EXT-Q66: Federated learning session and payload report
 # Type: report
-# Purpose: Distinguir flujo ascendente de gradientes y descendente de parámetros mejorados.
+# Purpose: Evaluate federated learning session and payload report using the declared query contract.
 # Requirements: RF-21, RF-22, RF-23, RF-25
 # Policies: P-FL-01, P-FL-06, P-FL-07
-# Current v3.0.0 result: 2 filas
+# Current v3.0.0 result: 2 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3074,15 +3056,15 @@ SELECT ?session ?payload ?purpose ?requiredRange ?model ?data ?personal ?individ
   OPTIONAL { ?session :containsPersistentIdentifier ?persistent }
 }
 ORDER BY ?session
-# END QUERY EXT-Q66: Reporte de sesiones FL y payload
+# END QUERY EXT-Q66: Federated learning session and payload report
 
 
-# START QUERY EXT-Q67: Incumplimiento — sesión FL ascendente no autorizada
+# START QUERY EXT-Q67: Violation: unauthorized upstream federated learning session
 # Type: violation
-# Purpose: Para payload de gradientes exigir RangeGlobalAgg, propósito global y ausencia de datos personales/identificador persistente.
+# Purpose: Evaluate violation: unauthorized upstream federated learning session using the declared query contract.
 # Requirements: RF-21, RF-56
 # Policies: P-FL-02, P-FL-03
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3103,15 +3085,15 @@ SELECT ?session ?range ?purpose ?personal ?persistent WHERE {
   OPTIONAL { ?session :containsPersistentIdentifier ?persistent }
   FILTER(!BOUND(?range) || ?range != :RangeGlobalAgg || !BOUND(?purpose) || ?purpose != :PurposeGlobalFederatedLearning || (BOUND(?personal) && ?personal = true) || (BOUND(?persistent) && ?persistent = true))
 }
-# END QUERY EXT-Q67: Incumplimiento — sesión FL ascendente no autorizada
+# END QUERY EXT-Q67: Violation: unauthorized upstream federated learning session
 
 
-# START QUERY EXT-Q68: Incumplimiento — gradiente sin anonimización, ruido o mecanismo de privacidad
+# START QUERY EXT-Q68: Violation: gradient without anonymization, noise or privacy mechanism
 # Type: violation
-# Purpose: Validar protección fuerte de cada ModelGradientUpdate saliente.
+# Purpose: Evaluate violation: gradient without anonymization, noise or privacy mechanism using the declared query contract.
 # Requirements: RF-57, RF-58, RNF-16, RNF-19
 # Policies: P-FL-03, P-FL-05
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3130,15 +3112,15 @@ SELECT ?gradient ?noiseApplied ?anonApplied WHERE {
   OPTIONAL { ?gradient :hasAnonymizationApplied ?anonApplied }
   FILTER(!BOUND(?noiseApplied) || ?noiseApplied != true || !BOUND(?anonApplied) || ?anonApplied != true || NOT EXISTS { ?gradient :hasPrivacyMechanism ?m })
 }
-# END QUERY EXT-Q68: Incumplimiento — gradiente sin anonimización, ruido o mecanismo de privacidad
+# END QUERY EXT-Q68: Violation: gradient without anonymization, noise or privacy mechanism
 
 
-# START QUERY EXT-Q69: Privacidad diferencial y contabilidad epsilon
+# START QUERY EXT-Q69: Differential privacy and epsilon accounting
 # Type: report
-# Purpose: Auditar presupuesto por sesión, propósito y contrato, incluyendo cuenta acumulada cuando esté disponible.
+# Purpose: Evaluate differential privacy and epsilon accounting using the declared query contract.
 # Requirements: RF-56, RF-59, RNF-18
 # Policies: P-FL-04
-# Current v3.0.0 result: 2 filas
+# Current v3.0.0 result: 2 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3165,20 +3147,19 @@ SELECT ?session ?budget ?noise ?account ?contract ?purpose ?maximum ?consumed ?r
   }
 }
 ORDER BY ?session
-# END QUERY EXT-Q69: Privacidad diferencial y contabilidad epsilon
+# END QUERY EXT-Q69: Differential privacy and epsilon accounting
 
 
 # ==============================================================================
-# EXT v3 — Auditoría, temporalidad, aceptación y validación
 # ==============================================================================
 
 
-# START QUERY EXT-Q70: Cadena completa de auditoría semántica
+# START QUERY EXT-Q70: Complete semantic audit chain
 # Type: report
-# Purpose: Reconstruir usuario→contrato→consentimiento efectivo→propósito→zona→política→nodo→alternativa→trust→tier→acción.
+# Purpose: Evaluate complete semantic audit chain using the declared query contract.
 # Requirements: RF-67, RNF-30
 # Policies: P-AUD-07
-# Current v3.0.0 result: 204 filas
+# Current v3.0.0 result: 204 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3198,15 +3179,15 @@ SELECT ?evaluation ?user ?contract ?effectiveRange ?purpose ?zone ?policy ?node 
   OPTIONAL { ?evaluation :hasDecisionAlternative ?alternative . ?alternative :alternativeModelTier ?altTier . OPTIONAL { ?alternative :hasAHPScore ?altScore } }
 }
 ORDER BY ?evaluation ?policy ?altTier
-# END QUERY EXT-Q70: Cadena completa de auditoría semántica
+# END QUERY EXT-Q70: Complete semantic audit chain
 
 
-# START QUERY EXT-Q71: Incumplimiento — ticket de auditoría incompleto
+# START QUERY EXT-Q71: Violation: incomplete audit ticket
 # Type: violation
-# Purpose: Aplicar contenido mínimo de P-AUD-06, incluyendo alternativas y políticas.
+# Purpose: Evaluate violation: incomplete audit ticket using the declared query contract.
 # Requirements: RF-54, RF-66, RNF-28, RNF-29
 # Policies: P-AUD-06
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3242,15 +3223,15 @@ SELECT ?evaluation ?missing WHERE {
   }
 }
 ORDER BY ?evaluation ?missing
-# END QUERY EXT-Q71: Incumplimiento — ticket de auditoría incompleto
+# END QUERY EXT-Q71: Violation: incomplete audit ticket
 
 
-# START QUERY EXT-Q72: Incumplimiento — acción sin justificación de evaluación/política
+# START QUERY EXT-Q72: Violation: action without evaluation or policy justification
 # Type: violation
-# Purpose: Detectar acciones adaptativas no autorizadas por EvaluationState o evaluaciones sin política aplicada.
+# Purpose: Evaluate violation: action without evaluation or policy justification using the declared query contract.
 # Requirements: RF-65, RF-66
 # Policies: P-AUD-05
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3277,15 +3258,15 @@ SELECT ?subject ?reason WHERE {
   }
 }
 ORDER BY ?subject
-# END QUERY EXT-Q72: Incumplimiento — acción sin justificación de evaluación/política
+# END QUERY EXT-Q72: Violation: action without evaluation or policy justification
 
 
-# START QUERY EXT-Q73: Reporte de entidades temporales
+# START QUERY EXT-Q73: Temporal entity report
 # Type: report
-# Purpose: Inspeccionar validFrom/validTo y diferenciar cierre real de plannedExpiry.
+# Purpose: Evaluate temporal entity report using the declared query contract.
 # Requirements: RNF-35, RNF-36
 # Policies: P-GOV-05, P-AUD-02
-# Current v3.0.0 result: 79 filas
+# Current v3.0.0 result: 79 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3307,15 +3288,15 @@ SELECT ?entity ?type ?from ?to ?plannedExpiry WHERE {
   OPTIONAL { ?entity :plannedExpiry ?plannedExpiry }
 }
 ORDER BY ?entity ?type
-# END QUERY EXT-Q73: Reporte de entidades temporales
+# END QUERY EXT-Q73: Temporal entity report
 
 
-# START QUERY EXT-Q74: Incumplimiento — entidad temporal sin validFrom o intervalo inválido
+# START QUERY EXT-Q74: Violation: missing validFrom or invalid temporal interval
 # Type: violation
-# Purpose: Detectar temporal entities sin inicio o con validTo anterior a validFrom.
+# Purpose: Evaluate violation: missing validFrom or invalid temporal interval using the declared query contract.
 # Requirements: RNF-36
 # Policies: P-GOV-05
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3336,15 +3317,15 @@ SELECT ?entity ?from ?to ?reason WHERE {
   FILTER(?reason != "")
 }
 ORDER BY ?entity
-# END QUERY EXT-Q74: Incumplimiento — entidad temporal sin validFrom o intervalo inválido
+# END QUERY EXT-Q74: Violation: missing validFrom or invalid temporal interval
 
 
-# START QUERY EXT-Q75: Inventario de shapes SHACL v3
+# START QUERY EXT-Q75: SHACL shape inventory
 # Type: inventory
-# Purpose: Listar shapes y severidades disponibles para validación estructural.
+# Purpose: Evaluate sHACL shape inventory using the declared query contract.
 # Requirements: RF-71, RV-01
 # Policies: P-VAL-03
-# Current v3.0.0 result: 74 filas
+# Current v3.0.0 result: 74 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3363,15 +3344,15 @@ SELECT ?shape ?targetClass ?path ?minCount ?maxCount ?severity ?message WHERE {
   OPTIONAL { ?shape sh:property ?ps . OPTIONAL { ?ps sh:path ?path } OPTIONAL { ?ps sh:minCount ?minCount } OPTIONAL { ?ps sh:maxCount ?maxCount } OPTIONAL { ?ps sh:severity ?severity } OPTIONAL { ?ps sh:message ?message } }
 }
 ORDER BY ?shape ?path
-# END QUERY EXT-Q75: Inventario de shapes SHACL v3
+# END QUERY EXT-Q75: SHACL shape inventory
 
 
-# START QUERY EXT-Q76: Revisión — perfil de aceptación incompleto
+# START QUERY EXT-Q76: Review: incomplete acceptance profile
 # Type: review
-# Purpose: Comprobar parámetros necesarios para interpretar RNF cuantitativos antes de una campaña de aceptación.
+# Purpose: Evaluate review: incomplete acceptance profile using the declared query contract.
 # Requirements: RNF-01, RNF-02, RNF-04, RNF-05, RNF-06, RNF-08, RNF-09, RNF-14, RNF-21, RNF-34
 # Policies: P-OPS-01, P-VAL-03
-# Current v3.0.0 result: 9 filas
+# Current v3.0.0 result: 9 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3401,15 +3382,15 @@ SELECT ?profile ?missing WHERE {
   FILTER NOT EXISTS { ?profile ?prop ?v }
 }
 ORDER BY ?missing
-# END QUERY EXT-Q76: Revisión — perfil de aceptación incompleto
+# END QUERY EXT-Q76: Review: incomplete acceptance profile
 
 
-# START QUERY EXT-Q77: Revisión — preparación de campaña reproducible
+# START QUERY EXT-Q77: Review: reproducible campaign readiness
 # Type: review
-# Purpose: Verificar artefactos/versiones y ValidationCampaign antes de interpretar consultas de incumplimiento.
+# Purpose: Evaluate review: reproducible campaign readiness using the declared query contract.
 # Requirements: RF-71, RF-72, RNF-39, RV-02, RV-03
 # Policies: P-VAL-03, P-VAL-04, P-VAL-07
-# Current v3.0.0 result: 6 filas
+# Current v3.0.0 result: 6 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3434,15 +3415,15 @@ SELECT ?check ?value WHERE {
   UNION { BIND("validation-campaign" AS ?check) ?a a :ValidationCampaign . BIND(STR(?a) AS ?value) }
 }
 ORDER BY ?check
-# END QUERY EXT-Q77: Revisión — preparación de campaña reproducible
+# END QUERY EXT-Q77: Review: reproducible campaign readiness
 
 
-# START QUERY EXT-Q78: Reporte de resolución de conflictos de políticas
+# START QUERY EXT-Q78: Policy conflict resolution report
 # Type: report
-# Purpose: Listar relaciones no triviales y estrategia de resolución asociada.
+# Purpose: Evaluate policy conflict resolution report using the declared query contract.
 # Requirements: RNF-22
 # Policies: P-GOV-03
-# Current v3.0.0 result: 37 filas
+# Current v3.0.0 result: 37 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3462,15 +3443,15 @@ SELECT ?relation ?source ?target ?type ?code ?strategy WHERE {
   FILTER(?code IN ("GEN","COR","CON","SHD","DEP"))
 }
 ORDER BY ?code ?source ?target
-# END QUERY EXT-Q78: Reporte de resolución de conflictos de políticas
+# END QUERY EXT-Q78: Policy conflict resolution report
 
 
-# START QUERY EXT-Q79: Incumplimiento — relación conflictiva sin estrategia de resolución
+# START QUERY EXT-Q79: Violation: conflicting relationship without resolution strategy
 # Type: violation
-# Purpose: Exigir estrategia explícita para relaciones de conflicto/generalización/shadowing; DEP puede resolverse por orden y se informa aparte.
+# Purpose: Evaluate violation: conflicting relationship without resolution strategy using the declared query contract.
 # Requirements: RNF-22
 # Policies: P-GOV-03
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3490,15 +3471,15 @@ SELECT ?relation ?source ?target ?code WHERE {
   FILTER NOT EXISTS { ?relation :usesResolutionStrategy ?strategy }
 }
 ORDER BY ?code ?source ?target
-# END QUERY EXT-Q79: Incumplimiento — relación conflictiva sin estrategia de resolución
+# END QUERY EXT-Q79: Violation: conflicting relationship without resolution strategy
 
 
-# START QUERY EXT-Q80: Dashboard global v3 de cobertura y deuda de migración
+# START QUERY EXT-Q80: Global coverage and migration debt dashboard
 # Type: dashboard
-# Purpose: Resumir cobertura estructural y elementos pendientes antes de aceptación científica.
+# Purpose: Evaluate global coverage and migration debt dashboard using the declared query contract.
 # Requirements: RF-68, RF-71, RV-01, RV-05
 # Policies: P-VAL-08
-# Current v3.0.0 result: 13 filas
+# Current v3.0.0 result: 13 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -3527,4 +3508,4 @@ SELECT ?metric ?value WHERE {
   UNION { BIND("query_specs_in_ontology" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :QuerySpecification } } }
 }
 ORDER BY ?metric
-# END QUERY EXT-Q80: Dashboard global v3 de cobertura y deuda de migración
+# END QUERY EXT-Q80: Global coverage and migration debt dashboard

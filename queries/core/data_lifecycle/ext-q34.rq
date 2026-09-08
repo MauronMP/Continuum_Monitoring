@@ -1,8 +1,8 @@
 # Type: violation
-# Purpose: Detectar ReplicationEvent/SynchronizationEvent incompleto para reejecución segura.
+# Purpose: Evaluate violation: replication without versioning or idempotency using the declared query contract.
 # Requirements: RF-19, RNF-13
 # Policies: P-DATA-08
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

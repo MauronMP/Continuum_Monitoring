@@ -1,5 +1,5 @@
 # Type: ASK
-# Purpose: Detectar de forma rápida una transferencia externa de observación cruda o con identificador directo/no seguro.
+# Purpose: Evaluate aSK: an external transfer violates confinement or identity using the declared query contract.
 # Requirements: RF-36, RF-60, RF-61
 # Policies: P-CONS-04, P-DATA-04
 # Current v3.0.0 result: false

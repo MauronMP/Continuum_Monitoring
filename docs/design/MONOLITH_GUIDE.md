@@ -1,7 +1,6 @@
 # Native monolith user guide
 
-The monolith is the one-process, one-node control architecture. It uses no
-Docker daemon, SSH transport or HTTP worker. Its source of truth is
+The monolith is the one-process, one-node control architecture. Its manifest is
 `configs/topologies/monolith/topology.toml`; the tier files beneath
 `configs/topologies/monolith/nodes/` keep the same elastic configuration shape
 as the distributed targets, although exactly one local node must remain active.
@@ -36,12 +35,11 @@ continuum-bench experiment all local
 `local all` is shorthand only for cumulative plus scalability. `load local`
 uses every load profile but fixes the effective node count to one. In the
 scale-out experiment, the monolith supplies only the one-node control point;
-Docker and physical runs supply the multi-node points.
+Physical runs supply the multi-node points.
 
 ## Semantic products and OWL validators
 
-The product-engine benchmark is host-local but containerized for version and
-resource reproducibility:
+Start the four native semantic services before running their benchmarks:
 
 ```bash
 continuum-smoke-engines

@@ -272,7 +272,7 @@ def _diagnostic_excerpt(output: str, limit: int = 4000) -> str:
 
 
 def _terminate_process_tree(process: subprocess.Popen[str]) -> None:
-    """Stop a timed-out wrapper and its native/Docker reasoning child."""
+    """Stop a timed-out wrapper and its native reasoning child."""
 
     if process.poll() is not None:
         return

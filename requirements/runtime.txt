@@ -1,4 +1,4 @@
-# Kept in sync with pyproject.toml by tests/test_installation.py.
+# Kept in sync with pyproject.toml by tests/infrastructure/test_installation.py.
 -c constraints.txt
 matplotlib
 numpy

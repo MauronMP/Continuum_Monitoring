@@ -1,8 +1,8 @@
 # Type: violation
-# Purpose: Validar protección fuerte de cada ModelGradientUpdate saliente.
+# Purpose: Evaluate violation: gradient without anonymization, noise or privacy mechanism using the declared query contract.
 # Requirements: RF-57, RF-58, RNF-16, RNF-19
 # Policies: P-FL-03, P-FL-05
-# Current v3.0.0 result: 0 filas
+# Current v3.0.0 result: 0 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

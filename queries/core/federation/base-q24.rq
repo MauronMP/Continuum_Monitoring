@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Trazar sesiones FL, nodos, payload, modelo, datos y presupuesto.
+# Purpose: Evaluate federated learning chain using the declared query contract.
 # Requirements: RF-21, RF-22, RF-25, RF-59
 # Policies: P-FL-02, P-FL-04, P-FL-07
-# Current v3.0.0 result: 5 filas
+# Current v3.0.0 result: 5 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

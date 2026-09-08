@@ -3,9 +3,9 @@ repetitions = 1
 duration_seconds = 0.2
 batch_size = 2
 queue_capacity_events = 20
-request_timeout_seconds = 15
-point_timeout_seconds = 20
-recovery_timeout_seconds = 20
+request_timeout_seconds = 45
+point_timeout_seconds = 90
+recovery_timeout_seconds = 45
 seed = 2026
 
 [[profiles]]

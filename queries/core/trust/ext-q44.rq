@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Mostrar hasTrustWeight/TrustAssessment como criterio externo, separado de los tres pesos AHP.
+# Purpose: Evaluate external trust used in evaluation using the declared query contract.
 # Requirements: RF-46, RF-55
 # Policies: P-MODEL-03, P-NODE-05
-# Current v3.0.0 result: 10 filas
+# Current v3.0.0 result: 10 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

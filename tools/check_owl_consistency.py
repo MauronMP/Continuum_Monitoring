@@ -132,6 +132,8 @@ def main(argv: list[str] | None = None) -> int:
         with tempfile.TemporaryDirectory(prefix="continuum-hermit-") as temp:
             temporary = Path(temp)
             classpath = args.classpath
+            if not classpath and args.protege_home is not None and args.reasoner == "hermit":
+                classpath = protege_classpath(args.protege_home, temporary)
             if not classpath:
                 environment_name = f"CONTINUUM_{args.reasoner.upper()}_CLASSPATH"
                 classpath = os.environ.get(environment_name)

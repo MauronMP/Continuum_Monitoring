@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Validar que S3 se representa mediante MigrationEvent y no implica por sí mismo una sesión FL.
+# Purpose: Evaluate scenario S3: edge-to-fog migration using the declared query contract.
 # Requirements: RF-16, RF-17, RF-31
 # Policies: P-ADAPT-05, P-ADAPT-06
-# Current v3.0.0 result: 1 filas
+# Current v3.0.0 result: 1 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

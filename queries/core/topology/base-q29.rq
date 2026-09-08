@@ -1,5 +1,5 @@
 # Type: ASK
-# Purpose: Comprobar que la elasticidad se modela como capacidad del nodo y no como propiedad fija exclusiva de Cloud.
+# Purpose: Evaluate aSK: fog or cloud elastic capacity exists using the declared query contract.
 # Requirements: RNF-07
 # Policies: P-OPS-02
 # Current v3.0.0 result: true

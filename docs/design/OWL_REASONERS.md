@@ -2,7 +2,7 @@
 
 HermiT, Openllet, JFact and Konclude validate OWL 2 DL consistency on the
 coordinator. They are deliberately separate from timed RDFS/OWL RL benchmark
-materialization and are not installed on Docker/physical workers.
+materialization and are not installed on physical workers.
 
 ## Prerequisites
 
@@ -10,8 +10,7 @@ Ubuntu/Debian:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y openjdk-17-jre-headless maven docker.io docker-compose-plugin
-sudo systemctl enable --now docker
+sudo apt-get install -y openjdk-17-jre-headless maven konclude
 ```
 
 macOS:
@@ -21,7 +20,6 @@ brew install openjdk@17 maven
 export PATH="$(brew --prefix openjdk@17)/bin:$PATH"
 ```
 
-Install/start Docker Desktop when no native Konclude executable is available.
 
 ## One-command project installation
 
@@ -51,7 +49,7 @@ The installer:
 4. writes one isolated classpath per reasoner:
    `.runtime/owl-validation-{hermit,openllet,jfact}.classpath`;
 5. writes `.runtime/owl-validation.classpath` only for OWLAPI format conversion;
-6. uses an existing native Konclude, or pulls `konclude/konclude` with Docker;
+6. locates native Konclude;
 7. runs a real, bounded Konclude consistency smoke (not the help command);
 8. writes the optional shell environment file
    `.runtime/owl-reasoners.env`.
@@ -97,24 +95,15 @@ they are not deployed to benchmark nodes.
 
 1. loads the configured Turtle ontology with OWLAPI;
 2. writes a temporary OWL/XML document, which is Konclude's native format;
-3. invokes `CONTINUUM_KONCLUDE_EXECUTABLE`, a `Konclude` binary on `PATH`, or
-   the pinned Docker image fallback;
-4. mounts only the temporary input directory read-only and disables container
-   networking;
-5. removes the temporary conversion after the process exits.
+3. invokes `CONTINUUM_KONCLUDE_EXECUTABLE` or a `Konclude` binary on `PATH`;
+4. removes the temporary conversion after the process exits.
 
-To use a native binary instead of Docker:
 
 ```bash
 export CONTINUUM_KONCLUDE_EXECUTABLE=/absolute/path/to/Konclude
-python3 tools/install_owl_reasoners.py --skip-konclude-image
+python3 tools/install_owl_reasoners.py --skip-konclude
 ```
 
-To override the container image explicitly:
-
-```bash
-export CONTINUUM_KONCLUDE_IMAGE=konclude/konclude
-```
 
 Run the same consistency operation manually:
 
@@ -161,16 +150,12 @@ Evidence from the combined command is written to
 ```bash
 java -version
 mvn -version
-docker info
-docker image inspect konclude/konclude
 continuum-bench doctor --owl
 ```
 
 - Maven download failure: check DNS/proxy access to Maven Central and rerun the
   installer; Maven reuses its local cache.
-- Docker permission failure on Linux: configure daemon access for the current
-  user, then start a new login session. Do not run the benchmark with `sudo`.
-- Apple Silicon image warning: install a compatible native Konclude binary and
+- On Apple Silicon, install a compatible native Konclude binary and
   set `CONTINUUM_KONCLUDE_EXECUTABLE`.
 - Konclude parse errors: use the project wrapper, not a direct `.ttl` command;
   the wrapper performs OWL/XML conversion.

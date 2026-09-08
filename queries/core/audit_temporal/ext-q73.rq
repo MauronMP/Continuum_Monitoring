@@ -1,8 +1,8 @@
 # Type: report
-# Purpose: Inspeccionar validFrom/validTo y diferenciar cierre real de plannedExpiry.
+# Purpose: Evaluate temporal entity report using the declared query contract.
 # Requirements: RNF-35, RNF-36
 # Policies: P-GOV-05, P-AUD-02
-# Current v3.0.0 result: 79 filas
+# Current v3.0.0 result: 79 rows
 PREFIX : <http://example.org/smartcity#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>

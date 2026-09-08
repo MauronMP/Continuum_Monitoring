@@ -10,7 +10,7 @@ from .topology import NODE_ID_PATTERN, TIERS
 
 
 WORKER_SERVICE = "continuum-benchmark-node"
-WORKER_PROTOCOL_VERSION = "6"
+WORKER_PROTOCOL_VERSION = "7"
 EXPECTED_QUERY_COUNT = 115
 
 

@@ -27,7 +27,7 @@ policy_governance = 1.2
 security_identity = 1.0
 
 [mobility]
-model = "random_waypoint"
+model = "static"
 seed = 2026
 area_width_m = 100.0
 area_height_m = 100.0
