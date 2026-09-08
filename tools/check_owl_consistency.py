@@ -45,7 +45,7 @@ def find_protege(explicit: Path | None) -> Path:
         return candidates[0]
     raise ValueError(
         "Set --protege-home to the extracted Protégé directory, or pass "
-        "--classpath with OWLAPI, HermiT and their dependencies. "
+        "--classpath with OWLAPI, the selected reasoner and its dependencies. "
         "No reasoner is installed automatically."
     )
 
@@ -77,11 +77,23 @@ def parse_report(output: str) -> dict:
     reports = [line[len(REPORT_PREFIX):] for line in output.splitlines()
                if line.startswith(REPORT_PREFIX)]
     if len(reports) != 1:
-        raise ValueError("OWL reasoner did not return exactly one machine-readable report")
+        raise ValueError(
+            "OWL reasoner did not return exactly one machine-readable report"
+        )
     report = json.loads(reports[0])
     if not isinstance(report.get("consistent"), bool):
-        raise ValueError("HermiT report lacks a Boolean consistency result")
+        raise ValueError("OWL reasoner report lacks a Boolean consistency result")
     return report
+
+
+def diagnostic_excerpt(output: str, limit: int = 3000) -> str:
+    """Keep the exception cause and stack-trace tail in bounded diagnostics."""
+
+    if len(output) <= limit:
+        return output
+    separator = "\n... output truncated ...\n"
+    half = (limit - len(separator)) // 2
+    return output[:half] + separator + output[-half:]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -94,7 +106,9 @@ def main(argv: list[str] | None = None) -> int:
         "--reasoner", choices=tuple(OWLAPI_FACTORIES), default="hermit",
         help="OWLAPI reasoner used for consistency checking",
     )
-    parser.add_argument("--classpath", help="Explicit OWLAPI/HermiT dependency classpath")
+    parser.add_argument(
+        "--classpath", help="Explicit isolated OWLAPI/reasoner dependency classpath"
+    )
     parser.add_argument("--java", default="java", help="Java 11+ executable")
     parser.add_argument("--timeout", type=float, default=180.0)
     parser.add_argument("--require-dl-profile", action="store_true",
@@ -109,7 +123,9 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError(f"Ontology file does not exist: {ontology}")
         java = shutil.which(args.java)
         if java is None:
-            raise ValueError("Java 11+ is required for HermiT; use --java /path/to/java")
+            raise ValueError(
+                "Java 11+ is required for OWL validation; use --java /path/to/java"
+            )
         # Hash BEFORE execution so that concurrent editing cannot silently
         # associate the report with different bytes.
         digest = hashlib.sha256(ontology.read_bytes()).hexdigest()
@@ -129,27 +145,41 @@ def main(argv: list[str] | None = None) -> int:
                     f"for {args.reasoner}."
                 )
             log_config = temporary / "logback.xml"
-            log_config.write_text('<configuration><root level="WARN"/></configuration>\n')
+            log_config.write_text(
+                '<configuration><root level="WARN"/></configuration>\n'
+            )
             command = [java, "-Xmx2g", f"-Dlogback.configurationFile={log_config}",
                        "-cp", classpath, str(ROOT / "tools/owl/CheckOntology.java"),
                        str(ontology), OWLAPI_FACTORIES[args.reasoner]]
             started = time.perf_counter()
-            result = subprocess.run(command, text=True, encoding="utf-8", errors="replace",
-                                    capture_output=True, timeout=args.timeout, check=False)
+            result = subprocess.run(
+                command,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                capture_output=True,
+                timeout=args.timeout,
+                check=False,
+            )
             elapsed = time.perf_counter() - started
         try:
             report = parse_report(result.stdout)
         except (ValueError, json.JSONDecodeError) as error:
             raise ValueError(
                 f"{error}; Java exit={result.returncode}\n"
-                f"{result.stdout[-3000:]}\n{result.stderr[-3000:]}"
+                f"{diagnostic_excerpt(result.stdout)}\n"
+                f"{diagnostic_excerpt(result.stderr)}"
             ) from error
         if digest != hashlib.sha256(ontology.read_bytes()).hexdigest():
-            raise ValueError("Ontology changed while HermiT was running; repeat the check")
+            raise ValueError(
+                "Ontology changed while the OWL reasoner was running; repeat the check"
+            )
         report.update(requested_reasoner=args.reasoner,
                       ontology_file=str(ontology), ontology_sha256=digest,
                       elapsed_seconds=elapsed, java_exit_code=result.returncode,
-                      scope="OWLAPI logical axioms; not SHACL or operational compliance")
+                      scope=(
+                          "OWLAPI logical axioms; not SHACL or operational compliance"
+                      ))
         report["ok"] = (result.returncode == 0 and report["consistent"]
                         and not report["unsatisfiable_classes"]
                         and (not args.require_dl_profile or report["owl2_dl_profile"]))
@@ -160,8 +190,11 @@ def main(argv: list[str] | None = None) -> int:
         print(rendered, end="")
         return 0 if report["ok"] else 1
     except subprocess.TimeoutExpired:
-        print(f"{args.reasoner} timed out after {args.timeout:g}s; consistency is unknown.",
-              file=sys.stderr)
+        print(
+            f"{args.reasoner} timed out after {args.timeout:g}s; "
+            "consistency is unknown.",
+            file=sys.stderr,
+        )
         return 2
     except (OSError, ValueError, zipfile.BadZipFile) as error:
         print(f"OWL consistency check failed: {error}", file=sys.stderr)

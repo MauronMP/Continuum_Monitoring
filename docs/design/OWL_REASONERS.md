@@ -46,10 +46,14 @@ continuum-bench owl-validate --require-all
 The installer:
 
 1. verifies Java 17 and Maven;
-2. resolves pinned Maven dependencies from `tools/owl/pom.xml`;
-3. writes `.runtime/owl-validation.classpath`;
-4. uses an existing native Konclude, or pulls `konclude/konclude` with Docker;
-5. writes the optional shell environment file
+2. resolves each pinned Maven profile from `tools/owl/pom.xml` independently;
+3. self-tests each Java factory on `tools/owl/smoke-ontology.ttl`;
+4. writes one isolated classpath per reasoner:
+   `.runtime/owl-validation-{hermit,openllet,jfact}.classpath`;
+5. writes `.runtime/owl-validation.classpath` only for OWLAPI format conversion;
+6. uses an existing native Konclude, or pulls `konclude/konclude` with Docker;
+7. runs a real, bounded Konclude consistency smoke (not the help command);
+8. writes the optional shell environment file
    `.runtime/owl-reasoners.env`.
 
 The Python validator automatically reads the project classpath, so sourcing the
@@ -73,9 +77,12 @@ The Maven runtime contains:
 | Openllet | `com.github.galigator.openllet:openllet-owlapi` | `2.6.5` |
 | JFact | `net.sourceforge.owlapi:jfact` | `5.0.3` |
 
-All are invoked through the same OWLAPI checker but with their own factory.
-The generated classpath is supplied automatically; Protégé is no longer
-required for command-line HermiT validation.
+All are invoked through the same OWLAPI checker but with their own factory and
+isolated dependency graph. This is essential: putting the three dependency
+trees on one Java classpath can mix incompatible OWLAPI versions and fail in
+`OWLManager` before HermiT is instantiated. The generated per-engine
+classpath is supplied automatically; Protégé is no longer required for
+command-line HermiT validation.
 
 ## Konclude execution
 
@@ -101,6 +108,18 @@ To override the container image explicitly:
 ```bash
 export CONTINUUM_KONCLUDE_IMAGE=konclude/konclude
 ```
+
+Run the same consistency operation manually:
+
+```bash
+python3 tools/owl/run_konclude.py consistency -w AUTO \
+  -i ontology/legacy/smartcity_continuum-v3.0.0.ttl
+```
+
+The `consistency` operation is mandatory. Calling the wrapper with only
+`-i ...` merely made older versions of the wrapper display Konclude's help and
+exit successfully; it did **not** validate consistency. The wrapper now rejects
+that ambiguous invocation.
 
 ## Validation commands
 
@@ -148,5 +167,11 @@ continuum-bench doctor --owl
   set `CONTINUUM_KONCLUDE_EXECUTABLE`.
 - Konclude parse errors: use the project wrapper, not a direct `.ttl` command;
   the wrapper performs OWL/XML conversion.
-- Timeout: increase `validation.timeout_seconds` only when a longer logical
-  consistency run is scientifically intended.
+- HermiT `OWLManager`/injector failure: rerun the current installer. It replaces
+  the former combined classpath with isolated reasoner classpaths and executes
+  a factory self-test before reporting success.
+- Timeout: a timeout means consistency is unknown, not inconsistent. The
+  validator terminates the wrapper and its child process at the configured
+  limit. Set `timeout_seconds` under an individual reasoner in
+  `configs/owl-reasoners.toml` only when a longer logical consistency run is
+  scientifically intended.

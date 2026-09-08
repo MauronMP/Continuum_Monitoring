@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import time
 
 from continuum_bench import owl_validation
 
@@ -66,7 +67,7 @@ def test_owlapi_adapter_uses_installed_project_classpath(
 ):
     runtime = root / ".runtime"
     runtime.mkdir(exist_ok=True)
-    classpath_file = runtime / "owl-validation.classpath"
+    classpath_file = runtime / "owl-validation-jfact.classpath"
     previous = classpath_file.read_text() if classpath_file.exists() else None
     classpath_file.write_text("project-runtime.jar\n")
     monkeypatch.delenv("CONTINUUM_JFACT_CLASSPATH", raising=False)
@@ -93,3 +94,60 @@ def test_owlapi_adapter_uses_installed_project_classpath(
             classpath_file.write_text(previous)
 
     assert "project-runtime.jar" in observed["command"]
+
+
+def test_owlapi_adapter_prefers_isolated_reasoner_classpath(
+    tmp_path, monkeypatch
+):
+    ontology = tmp_path / "ontology.ttl"
+    ontology.write_text("<urn:test> a <http://www.w3.org/2002/07/owl#Ontology> .")
+    runtime = tmp_path / ".runtime"
+    runtime.mkdir()
+    (runtime / "owl-validation-hermit.classpath").write_text(
+        "isolated-hermit.jar\n"
+    )
+    (runtime / "owl-validation.classpath").write_text("legacy-combined.jar\n")
+    monkeypatch.setenv("CONTINUUM_HERMIT_CLASSPATH", "stale-env.jar")
+    observed = {}
+
+    def execute(name, command, timeout):
+        observed["command"] = command
+        return {"reasoner": name, "status": "completed", "consistent": True}
+
+    monkeypatch.setattr(owl_validation, "_execute_json", execute)
+    result = owl_validation._run_owlapi(
+        tmp_path,
+        ontology,
+        "hermit",
+        {"classpath_env": "CONTINUUM_HERMIT_CLASSPATH"},
+        10,
+    )
+
+    assert "isolated-hermit.jar" in observed["command"]
+    assert "stale-env.jar" not in observed["command"]
+    assert result["classpath_source"].endswith(
+        ".runtime/owl-validation-hermit.classpath"
+    )
+
+
+def test_command_reasoner_timeout_is_bounded_and_reported(root):
+    started = time.perf_counter()
+    result = owl_validation._run_command(
+        root,
+        root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+        "fixture",
+        {
+            "command": [
+                "{python}",
+                "-c",
+                "import time; print('started', flush=True); time.sleep(10)",
+            ]
+        },
+        0.1,
+    )
+
+    assert result["status"] == "timeout"
+    assert result["consistent"] is None
+    assert result["timeout_seconds"] == 0.1
+    assert "started" in result["detail"]
+    assert time.perf_counter() - started < 3

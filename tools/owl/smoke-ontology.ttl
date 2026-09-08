@@ -1,0 +1,7 @@
+@prefix ex: <urn:continuum:owl-smoke#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<urn:continuum:owl-smoke> a owl:Ontology .
+
+ex:MonitoredEntity a owl:Class .
+ex:fixture a ex:MonitoredEntity .

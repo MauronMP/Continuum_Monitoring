@@ -244,14 +244,15 @@ def owl_reasoner_checks() -> list[Check]:
                 "See docs/design/OWL_REASONERS.md.",
             )
         )
-    shared_classpath = Path(__file__).resolve().parents[2] / (
-        ".runtime/owl-validation.classpath"
-    )
+    project_root = Path(__file__).resolve().parents[2]
     for reasoner in ("HERMIT", "OPENLLET", "JFACT"):
         name = f"CONTINUUM_{reasoner}_CLASSPATH"
         value = os.environ.get(name, "")
-        configured = value or (
-            str(shared_classpath) if shared_classpath.is_file() else ""
+        isolated_classpath = project_root / (
+            f".runtime/owl-validation-{reasoner.lower()}.classpath"
+        )
+        configured = (
+            str(isolated_classpath) if isolated_classpath.is_file() else value
         )
         checks.append(
             Check(

@@ -129,9 +129,12 @@ sudo apt-get install -y openjdk-17-jre-headless maven
 python3 tools/install_owl_reasoners.py
 ```
 
-The installer resolves pinned HermiT, Openllet and JFact dependencies and uses
-a native or containerized Konclude backend. It also converts Turtle to OWL/XML
-before Konclude. The same operation can be requested during initial setup with
+The installer resolves pinned HermiT, Openllet and JFact dependencies into
+separate classpaths, preventing incompatible transitive OWLAPI libraries from
+being mixed. It then self-tests all three Java factories and executes a real
+Konclude consistency smoke through the native or containerized backend. Turtle
+is converted to OWL/XML before Konclude. The same operation can be requested
+during initial setup with
 `python3 tools/bootstrap.py --profile coordinator --with-owl-reasoners`.
 Platform-specific details are in [External OWL reasoners](OWL_REASONERS.md).
 

@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import signal
 import shutil
 import subprocess
 import sys
@@ -58,10 +59,18 @@ def _run_reasoner(
     timeout: float,
 ) -> dict[str, Any]:
     kind = str(definition.get("kind", ""))
+    reasoner_timeout = float(definition.get("timeout_seconds", timeout))
+    if reasoner_timeout <= 0:
+        return {
+            "reasoner": name,
+            "status": "invalid_configuration",
+            "consistent": None,
+            "detail": "reasoner timeout_seconds must be positive",
+        }
     if kind == "owlapi":
-        return _run_owlapi(root, ontology, name, definition, timeout)
+        return _run_owlapi(root, ontology, name, definition, reasoner_timeout)
     if kind == "command":
-        return _run_command(root, ontology, name, definition, timeout)
+        return _run_command(root, ontology, name, definition, reasoner_timeout)
     return {"reasoner": name, "status": "invalid_configuration", "consistent": None}
 
 
@@ -73,16 +82,26 @@ def _run_owlapi(
     timeout: float,
 ) -> dict[str, Any]:
     classpath_env = str(definition.get("classpath_env", ""))
-    classpath = os.environ.get(classpath_env, "") if classpath_env else ""
-    installed_classpath = root / ".runtime/owl-validation.classpath"
-    if not classpath and installed_classpath.is_file():
+    # The per-reasoner file is authoritative. A shared classpath previously
+    # caused OWLAPI version collisions between HermiT, Openllet and JFact.
+    installed_classpath = root / f".runtime/owl-validation-{name}.classpath"
+    classpath = ""
+    classpath_source = ""
+    if installed_classpath.is_file():
         classpath = installed_classpath.read_text(encoding="utf-8").strip()
-    if name != "hermit" and not classpath:
+        classpath_source = str(installed_classpath)
+    elif classpath_env and os.environ.get(classpath_env, ""):
+        classpath = os.environ[classpath_env]
+        classpath_source = classpath_env
+    if not classpath:
         return {
             "reasoner": name,
             "status": "unavailable",
             "consistent": None,
-            "detail": f"Set {classpath_env} to the OWLAPI reasoner classpath.",
+            "detail": (
+                "Run 'python3 tools/install_owl_reasoners.py' or set "
+                f"{classpath_env} to the isolated {name} classpath."
+            ),
         }
     command = [
         sys.executable,
@@ -96,7 +115,9 @@ def _run_owlapi(
     ]
     if classpath:
         command.extend(("--classpath", classpath))
-    return _execute_json(name, command, timeout + 15)
+    result = _execute_json(name, command, timeout + 15)
+    result["classpath_source"] = classpath_source
+    return result
 
 
 def _run_command(
@@ -125,17 +146,33 @@ def _run_command(
         }
     command = [executable, *rendered[1:]]
     started = time.perf_counter()
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=os.name != "nt",
+    )
     try:
-        completed = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            check=False,
-        )
-    except subprocess.TimeoutExpired:
-        return {"reasoner": name, "status": "timeout", "consistent": None}
-    output = completed.stdout + "\n" + completed.stderr
+        stdout, stderr = process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired as error:
+        _terminate_process_tree(process)
+        stdout, stderr = process.communicate()
+        captured = (stdout or "") + "\n" + (stderr or "")
+        if not captured.strip():
+            captured = _timeout_output(error)
+        return {
+            "reasoner": name,
+            "status": "timeout",
+            "consistent": None,
+            "elapsed_seconds": time.perf_counter() - started,
+            "timeout_seconds": timeout,
+            "detail": _diagnostic_excerpt(captured) if captured else (
+                f"Validation exceeded the configured {timeout:g} s limit; "
+                "consistency remains unknown."
+            ),
+        }
+    output = stdout + "\n" + stderr
     inconsistent = re.search(str(definition.get("inconsistent_pattern", "$^")), output)
     consistent = re.search(str(definition.get("consistent_pattern", "$^")), output)
     if inconsistent:
@@ -146,11 +183,15 @@ def _run_command(
         value = None
     return {
         "reasoner": name,
-        "status": "completed" if value is not None else "failed",
+        "status": (
+            "completed"
+            if value is not None and process.returncode == 0
+            else "failed"
+        ),
         "consistent": value,
-        "exit_code": completed.returncode,
+        "exit_code": process.returncode,
         "elapsed_seconds": time.perf_counter() - started,
-        "output_tail": output[-2000:],
+        "output_excerpt": _diagnostic_excerpt(output),
     }
 
 
@@ -164,12 +205,23 @@ def _execute_json(name: str, command: list[str], timeout: float) -> dict[str, An
             timeout=timeout,
             check=False,
         )
-    except subprocess.TimeoutExpired:
-        return {"reasoner": name, "status": "timeout", "consistent": None}
+    except subprocess.TimeoutExpired as error:
+        captured = _timeout_output(error)
+        return {
+            "reasoner": name,
+            "status": "timeout",
+            "consistent": None,
+            "elapsed_seconds": time.perf_counter() - started,
+            "timeout_seconds": timeout,
+            "detail": _diagnostic_excerpt(captured) if captured else (
+                f"Validation exceeded the configured {timeout:g} s limit; "
+                "consistency remains unknown."
+            ),
+        }
     try:
         payload = json.loads(completed.stdout)
     except json.JSONDecodeError:
-        detail = (completed.stderr or completed.stdout)[-2000:]
+        detail = _diagnostic_excerpt(completed.stderr or completed.stdout)
         unavailable = "classpath" in detail.lower() or "protégé" in detail.lower()
         return {
             "reasoner": name,
@@ -189,3 +241,49 @@ def _execute_json(name: str, command: list[str], timeout: float) -> dict[str, An
         ),
         "detail": payload,
     }
+
+
+def _timeout_output(error: subprocess.TimeoutExpired) -> str:
+    stdout = (
+        error.stdout.decode(errors="replace")
+        if isinstance(error.stdout, bytes)
+        else error.stdout
+    )
+    stderr = (
+        error.stderr.decode(errors="replace")
+        if isinstance(error.stderr, bytes)
+        else error.stderr
+    )
+    return (stdout or "") + "\n" + (stderr or "")
+
+
+def _diagnostic_excerpt(output: str, limit: int = 4000) -> str:
+    """Preserve both the causal exception and the bottom of a Java stack trace."""
+
+    normalized = output.strip()
+    if len(normalized) <= limit:
+        return normalized
+    half = (limit - len("\n... output truncated ...\n")) // 2
+    return (
+        normalized[:half]
+        + "\n... output truncated ...\n"
+        + normalized[-half:]
+    )
+
+
+def _terminate_process_tree(process: subprocess.Popen[str]) -> None:
+    """Stop a timed-out wrapper and its native/Docker reasoning child."""
+
+    if process.poll() is not None:
+        return
+    if os.name != "nt":
+        os.killpg(process.pid, signal.SIGTERM)
+    else:  # pragma: no cover - Windows coordinator compatibility
+        process.terminate()
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        if os.name != "nt":
+            os.killpg(process.pid, signal.SIGKILL)
+        else:  # pragma: no cover - Windows coordinator compatibility
+            process.kill()
