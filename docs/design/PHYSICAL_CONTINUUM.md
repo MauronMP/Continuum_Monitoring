@@ -202,7 +202,7 @@ continuum-bench physical status --ssh-user pi
 continuum-bench physical stop --ssh-user pi
 ```
 
-On timeout, inspect the affected worker's runtime log, memory pressure and
+In bounded mode, on timeout, inspect the affected worker's runtime log, memory pressure and
 network connectivity. The coordinator records the point as censored and does
 not wait indefinitely. A scalability/cumulative timeout skips only larger
 points for the same reasoner; the remaining reasoners continue. Load and
@@ -222,9 +222,33 @@ adding replicas accelerates parallel query service but cannot accelerate that
 duplicated inference. Use `--layout sharded` to evaluate distributed ontology
 placement. A repeatable `rdfs_owlrl` preparation timeout at the same user block
 is the measured saturation frontier for that hardware/profile combination; it
-must not be relabeled as a successful exact timing or hidden by an unbounded
-timeout.
+must not be relabeled as a successful exact timing. An explicitly recorded
+unlimited rerun is separate evidence and does not change the earlier timeout.
 
 Balanced replicated queries use interleaved HTTP batches so the expensive
 prefix produced by LPT scheduling is distributed across rounds. After updating
 this code, stop, deploy and restart every worker before repeating a campaign.
+
+## Complete suite and unlimited execution
+
+After deployment, run:
+
+```bash
+continuum-bench --unlimited --repetitions 5 suite --dry-run
+continuum-bench --unlimited --repetitions 5 suite
+```
+
+This includes both physical monitoring layouts, all load profiles, all three
+experiments, the ten-axis campaign, software/semantic checks and PNG reports.
+Worker startup uses the SSH settings in the physical inventory. Each run retains
+its own logs and results below `outputs/suites`. Strict external OWL validation
+requires the four installed validators; the suite does not install dependencies.
+
+Unlimited benchmark preparation, reasoning, queries and recovery can exceed their
+nominal budgets without timeout pruning. Metadata records that those budgets are
+not enforced. Health/startup and external validator limits remain separate.
+Errors and queue loss remain failures. Manual cancellation may require terminating
+the coordinator and restarting a blocked worker. See [Tests](TESTS.md) for new
+regression coverage and smoke verification, and [Command reference](COMMAND_REFERENCE.md)
+for filtered families and standalone commands. [Publication reports](PUBLICATION_REPORTS.md)
+covers category/resource/cost PNGs and explicitly analytical network distances.

@@ -72,7 +72,7 @@ continuum-bench physical stop --ssh-user pi
 ```
 
 `physical all` covers cumulative and scalability only. See the
-command reference for the ordered complete suite.
+[command reference](docs/design/COMMAND_REFERENCE.md) for the ordered complete suite.
 
 ## Independent semantic products
 
@@ -99,7 +99,7 @@ The plot command requires all four products in each selected summary and writes
   authority-partitioned distributed ontology execution.
 - Study: reproducible workload/mobility traces and category/policy/query cost.
 
-Timeouts are stored as right-censored observations. Results go to `outputs/`.
+In bounded mode, timeouts are stored as right-censored observations. Results go to `outputs/`.
 See [the user guide](docs/USER_GUIDE.md),
 [installation](docs/design/INSTALLATION.md),
 [physical continuum guide](docs/design/PHYSICAL_CONTINUUM.md),

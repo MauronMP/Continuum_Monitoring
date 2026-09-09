@@ -15,9 +15,12 @@ Start here:
   reproducible traces, mobility models and category-level cost analysis.
 - [External OWL reasoners](design/OWL_REASONERS.md): HermiT, Openllet, JFact
   and Konclude consistency validation and installation contracts.
-- [Tests](design/TESTS.md): validation and reproducibility commands.
+- [Tests](design/TESTS.md): complete physical suite, ten-axis campaigns, unlimited
+  execution and regression coverage.
+- [Publication reports](design/PUBLICATION_REPORTS.md): PNG figures, cost analysis,
+  data integrity and analytical network scenarios.
 - [Command Reference](design/COMMAND_REFERENCE.md): ordered full-suite and
-  per-block commands for both native targets.
+  per-family commands for the physical continuum.
 - [Elastic Topology](design/ELASTIC_TOPOLOGY.md): how to add nodes by layer.
 
 Reference documents:

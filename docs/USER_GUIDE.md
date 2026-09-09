@@ -73,10 +73,39 @@ Choose the smallest family that answers the research question:
 all configured load profiles, and `experiment all physical` runs the three
 separate scientific experiments.
 
+## Run all physical tests
+
+After authorizing SSH, deploying workers and installing the external OWL validators:
+
+```bash
+continuum-bench --unlimited --repetitions 5 suite --dry-run
+continuum-bench --unlimited --repetitions 5 suite
+```
+
+The suite includes software/semantic checks, both monitoring layouts, load,
+three physical experiments, the ten-axis campaign and PNG reporting. It starts
+already-installed workers and saves each run in a new directory under
+`outputs/suites`. Native engine comparisons and study traces remain separate.
+
+Use `--unlimited` to finish benchmark operations regardless of their configured
+elapsed-time budgets. Use `suite --patient` for finite one-hour budgets instead.
+Neither mode hides incorrect results, queue loss or infrastructure errors.
+Health/startup and external OWL validation retain separate limits. See the
+[test catalogue](design/TESTS.md) for all new regressions, filtered runs, output
+contracts and a real-node smoke that exceeds its nominal budget.
+
+For individual ten-axis runs:
+
+```bash
+continuum-bench campaign --campaign-config configs/campaign.toml --validate-only
+continuum-bench --unlimited campaign --campaign-config configs/campaign.toml
+```
+
 ## Results and interpretation
 
 Results are written under `outputs/` with metadata describing target,
-topology, layout, reasoner, profile, repetitions and budgets. Timeouts are
+topology, layout, reasoner, profile, repetitions and budgets. Unlimited runs
+record their execution policy explicitly. In bounded mode, timeouts are
 right-censored observations: they remain visible in coverage reporting and are
 not converted into zero latency. Compare completed physical observations with
 matching workloads and disclose node counts and placement layouts.
@@ -90,6 +119,7 @@ continuum-bench engines plot
 ```
 
 ```bash
+continuum-bench report
 continuum-bench load plot
 continuum-bench experiment plot all
 continuum-bench experiment analyze
@@ -111,3 +141,6 @@ continuum-bench physical status --ssh-user pi
 For installation failures, see [Installation](design/INSTALLATION.md). For
 methodological limits and scientific interpretation, see
 [Scientific validity](design/SCIENTIFIC_VALIDITY.md).
+
+[Publication reports](design/PUBLICATION_REPORTS.md) explains PNG figures, category
+and policy costs, historical missing measurements and analytical distance scenarios.
