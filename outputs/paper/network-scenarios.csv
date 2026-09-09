@@ -1,0 +1,16 @@
+bandwidth_mbps,base_rtt_ms,kind,model_transport_ms,observed_median_payload_bytes,propagation_speed_km_s,scenario_distance_km
+10,0.2,analytical scenario; not a measured link,0.7009000000000001,626.0,200000,0.01
+10,0.2,analytical scenario; not a measured link,0.7108000000000001,626.0,200000,1
+10,0.2,analytical scenario; not a measured link,0.8008000000000001,626.0,200000,10
+10,0.2,analytical scenario; not a measured link,1.7008,626.0,200000,100
+10,0.2,analytical scenario; not a measured link,5.7008,626.0,200000,500
+100,0.2,analytical scenario; not a measured link,0.25018,626.0,200000,0.01
+100,0.2,analytical scenario; not a measured link,0.26008000000000003,626.0,200000,1
+100,0.2,analytical scenario; not a measured link,0.35008000000000006,626.0,200000,10
+100,0.2,analytical scenario; not a measured link,1.2500799999999999,626.0,200000,100
+100,0.2,analytical scenario; not a measured link,5.2500800000000005,626.0,200000,500
+1000,0.2,analytical scenario; not a measured link,0.205108,626.0,200000,0.01
+1000,0.2,analytical scenario; not a measured link,0.21500800000000003,626.0,200000,1
+1000,0.2,analytical scenario; not a measured link,0.30500800000000006,626.0,200000,10
+1000,0.2,analytical scenario; not a measured link,1.2050079999999999,626.0,200000,100
+1000,0.2,analytical scenario; not a measured link,5.205008,626.0,200000,500

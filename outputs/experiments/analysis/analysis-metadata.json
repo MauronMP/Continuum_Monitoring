@@ -1,0 +1,22 @@
+{
+  "architectures": {
+    "physical": {
+      "scale-out": {
+        "input_rows": 35,
+        "completed_rows": 11,
+        "summary": "/home/dsdservidor/Documentos/Continuum_Monitoring/outputs/experiments/analysis/scale-out-physical-summary.csv"
+      },
+      "reasoning-hardware": {
+        "input_rows": 675,
+        "completed_rows": 126,
+        "summary": "/home/dsdservidor/Documentos/Continuum_Monitoring/outputs/experiments/analysis/reasoning-hardware-physical-summary.csv"
+      },
+      "distributed-ontology": {
+        "input_rows": 54,
+        "completed_rows": 24,
+        "summary": "/home/dsdservidor/Documentos/Continuum_Monitoring/outputs/experiments/analysis/distributed-ontology-physical-summary.csv"
+      }
+    }
+  },
+  "experiments": {}
+}

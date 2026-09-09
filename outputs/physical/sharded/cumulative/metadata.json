@@ -1,0 +1,115 @@
+{
+  "ontology_version": "3.0.0",
+  "ontology_revision": "3.0.0-en-datatypes-v1",
+  "query_contract": "BASE-Q01..BASE-Q35;EXT-Q01..EXT-Q80",
+  "query_count": 115,
+  "policy_artifact": "POLICIES-REV-01",
+  "reasoning_contract": "rdfs-literal-value-space-v1",
+  "runtime_versions": {
+    "continuum-ontology-benchmark": "0.3.1",
+    "rdflib": "7.6.0",
+    "owlrl": "7.6.2",
+    "pyshacl": "0.40.0",
+    "pyoxigraph": "0.5.9",
+    "numpy": "2.5.1",
+    "matplotlib": "3.11.1"
+  },
+  "generated_at": "2026-09-08T20:24:27.793288+00:00",
+  "python": "3.14.4",
+  "platform": "Linux-7.0.0-30-generic-x86_64-desconocido-with-glibc2.43",
+  "suite": "cumulative",
+  "mode": "physical-elastic-authority-sharded",
+  "node_count": 5,
+  "endpoints": [
+    {
+      "url": "http://127.0.0.1:8391",
+      "node_id": "cloud",
+      "role": "cloud",
+      "tier": "cloud",
+      "authority": false
+    },
+    {
+      "url": "http://10.151.73.241:8391",
+      "node_id": "fog",
+      "role": "fog",
+      "tier": "fog",
+      "authority": false
+    },
+    {
+      "url": "http://10.151.73.34:8391",
+      "node_id": "edge1",
+      "role": "edge1",
+      "tier": "edge",
+      "authority": true
+    },
+    {
+      "url": "http://10.151.73.143:8391",
+      "node_id": "edge2",
+      "role": "edge2",
+      "tier": "edge",
+      "authority": true
+    },
+    {
+      "url": "http://10.151.73.173:8391",
+      "node_id": "edge3",
+      "role": "edge3",
+      "tier": "edge",
+      "authority": true
+    }
+  ],
+  "reasoners": [
+    "rdfs",
+    "owlrl",
+    "rdfs_owlrl"
+  ],
+  "repetitions": 3,
+  "seed": 2026,
+  "result_validation": true,
+  "result_validation_level": "exact-order-independent-canonical-result-set; numeric lexical forms and duplicate solution rows are normalized",
+  "timing_excludes_reference_validation": true,
+  "ontology_placement_manifest": "/home/dsdservidor/Documentos/Continuum_Monitoring/configs/ontology-placement.toml",
+  "telemetry": {
+    "process_cpu_ms": "per-process CPU time consumed during phase",
+    "peak_rss_kib": "process lifetime high-water RSS; not incremental phase memory",
+    "request_response_bytes": "HTTP JSON body bytes; excludes transport headers"
+  },
+  "worker_telemetry": {
+    "process_cpu_ms": "per request process CPU time",
+    "peak_rss_kib": "process high-water resident set size",
+    "transport_bytes": "exact JSON HTTP request/response body sizes"
+  },
+  "transport": {
+    "timeout_seconds": 60.0,
+    "retries": 0,
+    "query_batch_size": 4,
+    "worker_timeout_margin_seconds": 2.0,
+    "retry_delay_in_phase_wall_time": true,
+    "retry_counts_in_summary": true,
+    "timeout_scope": "one prepare request or one query batch"
+  },
+  "execution_limits": {
+    "phase_timeout_seconds": 60.0,
+    "point_timeout_seconds": 90.0,
+    "stop_scaling_after_timeout": true,
+    "timeout_semantics": "right-censored; a failed distributed topology is not used for larger scalability points"
+  },
+  "routing": "query source selection from queries/execution-plan.toml, parallel owner execution, deterministic set/ASK merge",
+  "category_order": [
+    "topology",
+    "semantic_schema",
+    "observability",
+    "identity_consent",
+    "data_lifecycle",
+    "security_identity",
+    "context_zones",
+    "trust",
+    "decision",
+    "policy_governance",
+    "adaptation",
+    "delegation",
+    "federation",
+    "audit_temporal",
+    "validation",
+    "wellbeing"
+  ]
+}

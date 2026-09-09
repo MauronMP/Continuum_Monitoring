@@ -1,0 +1,4 @@
+check,dataset,invalid,rows,status
+canonical result equivalence,/home/dsdservidor/Documentos/Continuum_Monitoring/outputs/physical/sharded/scalability/result-validation.csv,0,3795,passed
+canonical result equivalence,/home/dsdservidor/Documentos/Continuum_Monitoring/outputs/physical/sharded/cumulative/result-validation.csv,0,9216,passed
+canonical result equivalence,/home/dsdservidor/Documentos/Continuum_Monitoring/outputs/experiments/physical/distributed-ontology/result-validation.csv,0,2760,passed

@@ -1,0 +1,9 @@
+completed,dataset,failed,rows,skipped,timeout
+144,sharded/cumulative,0,144,0,0
+33,sharded/scalability,0,54,18,3
+144,replicated/cumulative,0,144,0,0
+27,replicated/scalability,0,54,24,3
+0,physical/load,0,207,168,39
+11,scale-out,2,35,16,6
+126,reasoning-hardware,0,675,505,44
+24,distributed-ontology,0,54,27,3

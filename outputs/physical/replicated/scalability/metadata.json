@@ -1,0 +1,90 @@
+{
+  "ontology_version": "3.0.0",
+  "ontology_revision": "3.0.0-en-datatypes-v1",
+  "query_contract": "BASE-Q01..BASE-Q35;EXT-Q01..EXT-Q80",
+  "query_count": 115,
+  "policy_artifact": "POLICIES-REV-01",
+  "reasoning_contract": "rdfs-literal-value-space-v1",
+  "runtime_versions": {
+    "continuum-ontology-benchmark": "0.3.1",
+    "rdflib": "7.6.0",
+    "owlrl": "7.6.2",
+    "pyshacl": "0.40.0",
+    "pyoxigraph": "0.5.9",
+    "numpy": "2.5.1",
+    "matplotlib": "3.11.1"
+  },
+  "generated_at": "2026-09-08T21:14:06.884967+00:00",
+  "python": "3.14.4",
+  "platform": "Linux-7.0.0-30-generic-x86_64-desconocido-with-glibc2.43",
+  "suite": "scalability",
+  "mode": "physical-elastic-adaptive-lpt",
+  "architecture": "physical",
+  "inventory": "/home/dsdservidor/Documentos/Continuum_Monitoring/configs/topologies/physical/topology.toml",
+  "endpoints": [
+    {
+      "url": "http://127.0.0.1:8391",
+      "node_id": "cloud",
+      "tier": "cloud",
+      "authority": false
+    },
+    {
+      "url": "http://10.151.73.241:8391",
+      "node_id": "fog",
+      "tier": "fog",
+      "authority": false
+    },
+    {
+      "url": "http://10.151.73.34:8391",
+      "node_id": "edge1",
+      "tier": "edge",
+      "authority": true
+    },
+    {
+      "url": "http://10.151.73.143:8391",
+      "node_id": "edge2",
+      "tier": "edge",
+      "authority": true
+    },
+    {
+      "url": "http://10.151.73.173:8391",
+      "node_id": "edge3",
+      "tier": "edge",
+      "authority": true
+    }
+  ],
+  "reasoners": [
+    "rdfs",
+    "owlrl",
+    "rdfs_owlrl"
+  ],
+  "repetitions": 3,
+  "seed": 2026,
+  "replica_count": 5,
+  "node_count": 5,
+  "balancing": "one unmeasured stratified calibration sample per reasoner and dataset on every node, category-median estimation for queries outside the sample, reused across repetitions, followed by heterogeneous longest-processing-time greedy scheduling",
+  "calibration_query_limit": 16,
+  "calibration_in_timed_total": false,
+  "calibration_prepare_in_timed_total": false,
+  "calibration_reused_across_repetitions": true,
+  "transport": {
+    "timeout_seconds": 60.0,
+    "retries": 0,
+    "retry_delay_in_phase_wall_time": true,
+    "retry_counts_in_summary_and_node_runs": true
+  },
+  "execution_limits": {
+    "phase_timeout_seconds": 60.0,
+    "point_timeout_seconds": 90.0,
+    "stop_scaling_after_timeout": true,
+    "timeout_semantics": "right-censored with monotone early stop"
+  },
+  "scale_users": [
+    10,
+    100,
+    500,
+    1000,
+    2500,
+    5000
+  ]
+}

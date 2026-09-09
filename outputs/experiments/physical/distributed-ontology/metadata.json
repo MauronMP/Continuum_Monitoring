@@ -1,0 +1,128 @@
+{
+  "ontology_version": "3.0.0",
+  "ontology_revision": "3.0.0-en-datatypes-v1",
+  "query_contract": "BASE-Q01..BASE-Q35;EXT-Q01..EXT-Q80",
+  "query_count": 115,
+  "policy_artifact": "POLICIES-REV-01",
+  "reasoning_contract": "rdfs-literal-value-space-v1",
+  "runtime_versions": {
+    "continuum-ontology-benchmark": "0.3.1",
+    "rdflib": "7.6.0",
+    "owlrl": "7.6.2",
+    "pyshacl": "0.40.0",
+    "pyoxigraph": "0.5.9",
+    "numpy": "2.5.1",
+    "matplotlib": "3.11.1"
+  },
+  "generated_at": "2026-09-08T23:48:41.565717+00:00",
+  "experiment": "distributed-ontology",
+  "architecture": "physical",
+  "python": "3.14.4",
+  "platform": "Linux-7.0.0-30-generic-x86_64-desconocido-with-glibc2.43",
+  "reasoners": [
+    "rdfs",
+    "owlrl",
+    "rdfs_owlrl"
+  ],
+  "repetitions": 3,
+  "request_timeout_seconds": 45.0,
+  "point_timeout_seconds": 60.0,
+  "seed": 2026,
+  "node_count": 5,
+  "endpoints": [
+    {
+      "url": "http://127.0.0.1:8391",
+      "node_id": "cloud",
+      "tier": "cloud",
+      "authority": false
+    },
+    {
+      "url": "http://10.151.73.241:8391",
+      "node_id": "fog",
+      "tier": "fog",
+      "authority": false
+    },
+    {
+      "url": "http://10.151.73.34:8391",
+      "node_id": "edge1",
+      "tier": "edge",
+      "authority": true
+    },
+    {
+      "url": "http://10.151.73.143:8391",
+      "node_id": "edge2",
+      "tier": "edge",
+      "authority": true
+    },
+    {
+      "url": "http://10.151.73.173:8391",
+      "node_id": "edge3",
+      "tier": "edge",
+      "authority": true
+    }
+  ],
+  "endpoint_hardware": [
+    {
+      "node_id": "cloud",
+      "role": "cloud",
+      "tier": "cloud",
+      "authority": false,
+      "python_version": "3.14.4",
+      "platform": "Linux-7.0.0-30-generic-x86_64-desconocido-with-glibc2.43",
+      "machine": "x86_64",
+      "cpu_count": 10,
+      "pointer_bits": 64,
+      "total_memory_kib": 31804480,
+      "url": "http://127.0.0.1:8391"
+    },
+    {
+      "node_id": "fog",
+      "role": "fog",
+      "tier": "fog",
+      "authority": false,
+      "python_version": "3.11.2",
+      "platform": "Linux-6.12.93+rpt-rpi-v8-aarch64-with-glibc2.36",
+      "machine": "aarch64",
+      "cpu_count": 4,
+      "pointer_bits": 32,
+      "total_memory_kib": 8142732,
+      "url": "http://10.151.73.241:8391"
+    },
+    {
+      "url": "http://10.151.73.34:8391",
+      "role": "edge1",
+      "metadata_error": "TimeoutError: timed out"
+    },
+    {
+      "url": "http://10.151.73.143:8391",
+      "role": "edge2",
+      "metadata_error": "TimeoutError: timed out"
+    },
+    {
+      "node_id": "edge3",
+      "role": "edge3",
+      "tier": "edge",
+      "authority": true,
+      "python_version": "3.11.2",
+      "platform": "Linux-6.12.93+rpt-rpi-v8-aarch64-with-glibc2.36",
+      "machine": "aarch64",
+      "cpu_count": 4,
+      "pointer_bits": 32,
+      "total_memory_kib": 8146820,
+      "url": "http://10.151.73.173:8391"
+    }
+  ],
+  "layout": "authority-and-privacy-partitioned",
+  "logical_dataset_is_equal_to_reference_graph": true,
+  "distributed_reasoning": "local materialisation per fragment plus federated query merge",
+  "validation": "exact order-independent result bag against canonical reference graph",
+  "ontology_placement_manifest": "/home/dsdservidor/Documentos/Continuum_Monitoring/configs/ontology-placement.toml",
+  "users": [
+    0,
+    500,
+    1000,
+    2500,
+    5000,
+    10000
+  ]
+}

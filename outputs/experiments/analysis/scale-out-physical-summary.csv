@@ -1,0 +1,3 @@
+reasoner,node_count,samples,queries_per_second_median,latency_p95_ms_median,query_wall_ms_median
+owlrl,1,2,11.762079656332665,,9778.9233085
+rdfs,1,9,12.728448929933073,,9034.879319

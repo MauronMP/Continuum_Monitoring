@@ -1,0 +1,10 @@
+architecture,experiment,reasoner,samples,completed_samples,timeout_samples,skipped_samples,skipped_rate_percent,failed_or_other_samples,completion_rate_percent,timeout_rate_percent,failed_or_other_rate_percent
+physical,distributed-ontology,owlrl,18,9,1,8,44.44444444444444,0,50.0,5.555555555555555,0.0
+physical,distributed-ontology,rdfs,18,9,1,8,44.44444444444444,0,50.0,5.555555555555555,0.0
+physical,distributed-ontology,rdfs_owlrl,18,6,1,11,61.111111111111114,0,33.33333333333333,5.555555555555555,0.0
+physical,reasoning-hardware,owlrl,225,24,15,186,82.66666666666667,0,10.666666666666668,6.666666666666667,0.0
+physical,reasoning-hardware,rdfs,225,90,14,121,53.77777777777778,0,40.0,6.222222222222222,0.0
+physical,reasoning-hardware,rdfs_owlrl,225,12,15,198,88.0,0,5.333333333333334,6.666666666666667,0.0
+physical,scale-out,owlrl,11,2,3,6,54.54545454545454,0,18.181818181818183,27.27272727272727,0.0
+physical,scale-out,rdfs,15,9,0,4,26.666666666666668,2,60.0,0.0,13.333333333333334
+physical,scale-out,rdfs_owlrl,9,0,3,6,66.66666666666666,0,0.0,33.33333333333333,0.0
