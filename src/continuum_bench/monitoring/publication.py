@@ -20,6 +20,8 @@ STATUS = {'completed':'#009E73','timeout':'#E69F00','skipped':'#999999','failed'
 
 def read_csv(path):
     if not path.is_file(): return []
+    # Federated result-key bags can exceed Python's default 128-KiB CSV field limit.
+    csv.field_size_limit(max(csv.field_size_limit(), 64 * 1024 * 1024))
     with path.open(newline='') as handle: return list(csv.DictReader(handle))
 
 
@@ -45,6 +47,16 @@ def write_csv(path, rows):
         writer.writeheader(); writer.writerows(rows)
 
 
+def figure_group(name):
+    if name.startswith(('node-', 'continuum-layer-', 'hardware-')): return 'nodes-and-layers'
+    if name.startswith(('query-', 'expensive-')): return 'queries'
+    if name.startswith(('category-', 'policy-')): return 'categories-and-policies'
+    if name.startswith(('placement-', 'sharded-', 'replicated-', 'physical-scale-', 'distributed-ontology-')): return 'scalability-and-placement'
+    if name.startswith('network-'): return 'network-scenarios'
+    if name.startswith('extended-'): return 'recovery-and-validation'
+    return 'coverage-and-integrity'
+
+
 class Report:
     def __init__(self, root, inputs, output, validation_input=None):
         self.root, self.inputs, self.output = root, inputs, output
@@ -67,7 +79,11 @@ class Report:
         fig.suptitle(title[:1].upper()+title[1:],fontsize=15,fontweight='bold')
         fig.text(.01,.005,caption,fontsize=9,ha='left',va='bottom')
         fig.tight_layout(rect=(0,.09,1,.94))
-        self.figures.extend(str(p) for p in save_png(fig,self.output/name))
+        folder = figure_group(name)
+        paths = save_png(fig, self.output/folder/name)
+        # Remove only this regenerated legacy flat figure; preserve raw evidence.
+        (self.output/(name+'.png')).unlink(missing_ok=True)
+        self.figures.extend(str(p) for p in paths)
 
     def coverage(self,datasets):
         fig,ax=plt.subplots(figsize=(12,max(4,len(datasets)*.55)))
@@ -299,6 +315,8 @@ class Report:
         self.coverage(datasets)
         self.audit(datasets)
         self.policy_costs()
+        from .comparative_reporting import generate_comparisons
+        generate_comparisons(self)
         self.network_scenarios()
         self.validation_load()
         self.findings.append('Nodes are colocated in one room (operator confirmation). Network-distance plots use explicit analytical scenarios; no geographic node positions or mobility trajectories are inferred.')
@@ -309,7 +327,16 @@ class Report:
         write_csv(self.output/'figure-statistics.csv',self.statistics)
         manifest={'figures':self.figures,'sources_sha256':self.sources,'findings':self.findings,'statistics':'median and observed range; no inferred confidence intervals; incomplete rows excluded from completed-performance curves'}
         (self.output/'report.json').write_text(json.dumps(manifest,indent=2)+'\n')
-        (self.output/'README.md').write_text('# Physical results audit\n\n'+'\n\n'.join(self.findings)+'\n')
+        index = '# Physical results audit and figure catalogue\n\n'
+        for group in sorted({Path(p).parent.name for p in self.figures}):
+            index += '## '+group.replace('-', ' ').title()+'\n\n'
+            for path in self.figures:
+                if Path(path).parent.name == group:
+                    relative = Path(path).relative_to(self.output)
+                    index += f'- [{Path(path).stem}]({relative})\n'
+            index += '\n'
+        index += '## Interpretation and limitations\n\n'+'\n\n'.join(self.findings)+'\n'
+        (self.output/'README.md').write_text(index)
         return manifest
 
 

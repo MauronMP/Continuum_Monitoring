@@ -62,3 +62,36 @@ def test_replica_resources_retain_idle_nodes_and_unknown_values():
     assert result['max_sum_node_current_rss_kib']==40
     assert result['max_node_peak_rss_kib']==40
     assert result['disk_read_bytes'] is None
+
+
+def test_comparative_population_requires_completed_coverage_in_every_group():
+    from continuum_bench.monitoring.comparative_reporting import matched_users
+    first = [{'synthetic_users':'10','status':'completed'}, {'synthetic_users':'100','status':'completed'}]
+    second = [{'synthetic_users':'10','status':'timeout'}, {'synthetic_users':'100','status':'completed'}]
+    assert matched_users([first,second]) == 100
+    assert matched_users([first,[]]) is None
+
+
+def test_comparative_statistics_preserve_zero_and_exclude_missing():
+    from continuum_bench.monitoring.comparative_reporting import summarize
+    rows = [{'role':'cloud','duration_ms':'0'}, {'role':'cloud','duration_ms':'10'},
+            {'role':'edge','duration_ms':''}, {'role':'edge','duration_ms':'nan'}]
+    result = summarize(rows,['role'],'duration_ms')
+    assert len(result) == 1
+    assert result[0]['n'] == 2
+    assert result[0]['median'] == 5
+    assert result[0]['total'] == 10
+
+
+def test_figure_groups_keep_query_and_node_panels_distinct():
+    from continuum_bench.monitoring.publication import figure_group
+    assert figure_group('expensive-queries-sharded') == 'queries'
+    assert figure_group('node-category-sharded-rdfs') == 'nodes-and-layers'
+    assert figure_group('placement-scalability-rdfs') == 'scalability-and-placement'
+
+
+def test_publication_reads_large_federated_result_bags(tmp_path):
+    from continuum_bench.monitoring.publication import read_csv
+    path = tmp_path/'node-query-runs.csv'
+    path.write_text('query_id,result_keys\nQ,' + 'a'*200000 + '\n')
+    assert len(read_csv(path)[0]['result_keys']) == 200000

@@ -150,3 +150,45 @@ continuum-bench --timeout-seconds 6 --unlimited --repetitions 1 load physical --
 Regression tests also exercise delayed HTTP responses, worker alarm disabling,
 local timers, future waits, event-stream draining and campaign completion after
 nominal deadlines. This smoke validates timeout behavior, not statistical power.
+
+## Comparative ontology and policy evaluation
+
+`continuum-bench report` also builds matched physical comparisons. Figures are
+organized into `nodes-and-layers/`, `queries/`, `categories-and-policies/`,
+`scalability-and-placement/`, `network-scenarios/`, `recovery-and-validation/`
+and `coverage-and-integrity/`. The generated `README.md` links every figure;
+`report.json` records its path and source hashes. Regenerating a legacy flat PNG
+moves that figure into its group; raw benchmark evidence is unchanged.
+
+Node/category and query rankings select the smallest population with completed
+summary observations across both layouts and all three portable reasoners.
+Only node measurements belonging to those completed repetitions are included.
+Per-node query heatmaps show missing assignments explicitly, not as zero cost.
+Expensive-query scatter plots use a stable category colour, one dot per query
+and reasoner (median), and a segment to p95; rankings use the maximum median
+across reasoners so every panel shows the same query IDs. CSVs retain sample
+counts. Tail estimates with few observations are descriptive only.
+
+`sharded` means shared/authority-partitioned ontology placement with federated
+queries; it is not a shared-memory implementation. Node time is read from actual
+worker records. It is never obtained by dividing a federated duration among
+nodes. Layer totals sum worker query work within each repetition before taking
+the median; Edge combines its physical nodes. Routing and query assignment can
+differ, so these totals do not measure hardware speedup in isolation.
+
+The cumulative and scalability panels overlay both placements separately for
+RDFS, OWL RL and combined RDFS/OWL RL. They retain completed observations only;
+coverage shows why later points may be absent. Category/method comparisons use
+summed node query execution per repetition, including actual partition fan-out.
+New source tables include `node-category-observations.csv`,
+`node-query-observations.csv`, `node-policy-attribution.csv`, `query-ranking.csv`,
+`layer-query-work.csv`, `category-method-work.csv` and `placement-comparison.csv`.
+Policy attribution divides each query's observed work equally across its linked
+policies (1/N); these fractions are not learned policy importance weights.
+
+These observations validate execution costs and semantic result equivalence,
+not causal policy overhead. A matched policies-enabled/disabled intervention is
+still needed for causal claims. Added cumulative categories change both policy
+functionality and the query workload. Historical replica resource omissions,
+incomplete high-load runs, analytical distances and separate recovery validation
+remain explicitly identified rather than filled with synthetic measurements.
