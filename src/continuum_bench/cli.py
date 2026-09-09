@@ -29,6 +29,19 @@ def _parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    parser.add_argument("--timeout-seconds", type=float, help="Override request, phase and point budgets for physical benchmarks")
+    parser.add_argument("--unlimited", action="store_true", help="Disable benchmark deadlines and timeout pruning; preserve configured budgets as metadata")
+    parser.add_argument("--keep-going", action="store_true", help="Attempt later points even after a timeout")
+    parser.add_argument("--repetitions", type=int, help="Override experiment repetitions")
+    report = subparsers.add_parser("report", help="Audit physical evidence and generate scientific PNG figures")
+    report.add_argument("--input-dir", default="outputs")
+    report.add_argument("--validation-dir", help="Optional separate physical-load result directory")
+    report.add_argument("--output-dir", default="outputs/paper")
+    suite = subparsers.add_parser("suite", help="Run all physical test families sequentially with recorded logs")
+    suite.add_argument("--patient", action="store_true", help="Use one-hour budgets and attempt every configured point")
+    suite.add_argument("--output-dir", default="outputs/suites")
+    suite.add_argument("--dry-run", action="store_true")
+    suite.add_argument("--families", nargs="+", choices=("software","validation","monitoring","load","experiments","campaign","report"))
     campaign = subparsers.add_parser("campaign", help="Run configurable physical scalability and policy-cost axes")
     campaign.add_argument("--campaign-config", default="configs/campaign-smoke.toml")
     campaign.add_argument("--output-dir", default="outputs/campaigns")
@@ -318,11 +331,39 @@ def _dispatch(args) -> int:
 
     config = load_config(args.config)
 
+    if args.timeout_seconds is not None:
+        import math
+        if not math.isfinite(args.timeout_seconds) or args.timeout_seconds <= 5:
+            raise ValueError("--timeout-seconds must be finite and greater than 5")
+        config = replace(config, distributed=replace(config.distributed, request_timeout_seconds=args.timeout_seconds),
+                         limits=replace(config.limits, phase_timeout_seconds=args.timeout_seconds, point_timeout_seconds=args.timeout_seconds))
+    if args.keep_going or args.unlimited:
+        config = replace(config, limits=replace(config.limits, stop_scaling_after_timeout=False))
+    if args.repetitions is not None:
+        if args.repetitions < 1: raise ValueError("--repetitions must be positive")
+        config = replace(config, repetitions=args.repetitions)
+    if args.command == "report":
+        from .monitoring.publication import generate_report
+        report = generate_report(config.root, config.resolve(Path(args.input_dir)), config.resolve(Path(args.output_dir)), config.resolve(Path(args.validation_dir)) if args.validation_dir else None)
+        print(json.dumps(report, indent=2))
+        return 0
+    if args.command == "suite":
+        from .monitoring.suite import run_suite
+        result = run_suite(config.root, Path(args.config).resolve(), config.resolve(Path(args.output_dir)),
+                           patient=args.patient, unlimited=args.unlimited, timeout_seconds=args.timeout_seconds, repetitions=args.repetitions,
+                           families=args.families, dry_run=args.dry_run)
+        print(json.dumps(result, indent=2))
+        return int(any(step.get("returncode", 0) != 0 for step in result["steps"]))
+
     if args.command == "campaign":
         from .monitoring.campaign_config import load_campaign
         from .monitoring.campaign import run_campaign
         from .monitoring.campaign_infrastructure import PhysicalInfrastructure
         campaign = load_campaign(config.resolve(Path(args.campaign_config)))
+        if args.timeout_seconds:
+            campaign = replace(campaign, request_timeout_seconds=args.timeout_seconds, point_timeout_seconds=args.timeout_seconds)
+        if args.repetitions:
+            campaign = replace(campaign, repetitions=args.repetitions)
         if args.axis:
             missing = set(args.axis) - {axis.name for axis in campaign.axes}
             if missing:
@@ -528,6 +569,12 @@ def _dispatch(args) -> int:
         )
         from .preflight import validate_load_workload
 
+        if args.timeout_seconds:
+            workload = replace(workload, request_timeout_seconds=args.timeout_seconds, point_timeout_seconds=args.timeout_seconds, recovery_timeout_seconds=args.timeout_seconds)
+        if args.repetitions:
+            workload = replace(workload, repetitions=args.repetitions)
+        if args.keep_going or args.unlimited:
+            workload = replace(workload, stop_after_timeout=False)
         validate_load_workload(config, workload)
         endpoints = None
         topology = _target_topology(config, args, args.target)
@@ -591,6 +638,12 @@ def _dispatch(args) -> int:
         )
         from .preflight import validate_experiment_workload
 
+        if args.timeout_seconds:
+            workload = replace(workload, request_timeout_seconds=args.timeout_seconds, point_timeout_seconds=args.timeout_seconds)
+        if args.repetitions:
+            workload = replace(workload, repetitions=args.repetitions)
+        if args.keep_going or args.unlimited:
+            workload = replace(workload, stop_after_timeout=False)
         validate_experiment_workload(config, workload, experiment_path)
         if args.reasoner:
             config = replace(config, reasoners=tuple(args.reasoner))
@@ -675,7 +728,10 @@ def main(argv: list[str] | None = None) -> int:
     from contextlib import nullcontext
     from .monitoring.lease import physical_lease
     lease = physical_lease(load_config(args.config).root) if physical_work else nullcontext()
-    with lease:
+    from .monitoring.budget import execution_policy
+    with execution_policy(args.unlimited), lease:
+        if args.unlimited:
+            print("[execution-policy] unlimited: benchmark budgets are recorded but not enforced", flush=True)
         status = _dispatch(args)
         if args.command in {"physical", "load", "experiment", "engines"} and hasattr(args, "output_dir"):
             from .monitoring.normalize import normalize_completed_outputs

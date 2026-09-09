@@ -24,5 +24,6 @@ def snapshot(root: Path, output: Path) -> dict:
     for name in ('rdflib','owlrl','pyshacl','pyoxigraph','numpy','matplotlib'):
         try: dependencies[name] = version(name)
         except PackageNotFoundError: dependencies[name] = None
-    return {'git_commit':commit, 'source_sha256':hashes, 'dependency_versions':dependencies,
+    from .budget import execution_metadata
+    return {'execution_policy': execution_metadata(), 'git_commit':commit, 'source_sha256':hashes, 'dependency_versions':dependencies,
             'source_archive':'source.tar.gz'}

@@ -167,7 +167,7 @@ continuum-bench engines plot
 
 Trace generation is deterministic workload preparation, not live semantic
 replay. Cost analysis consumes measured event rows; it does not invent missing
-resource metrics. Figures are generated as 300-DPI PNG, PDF and SVG where
+resource metrics. Figures are generated as 300-DPI PNG where
 supported. Experiment plotting also writes `experiment-data-quality.csv` and a
 stacked coverage figure, keeping completed, censored and failed observations
 visible.

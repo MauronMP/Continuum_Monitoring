@@ -293,3 +293,21 @@ def test_load_reporting_computes_timeout_rate_for_physical_rows():
     )
     assert timeout_aggregate[0]["timeout_rate_percent_median"] == 100
     assert timeout_aggregate[0]["comparison_eligible"] is False
+
+
+def test_unlimited_stream_drains_slow_requests_after_point_budget(tmp_path):
+    from continuum_bench.monitoring.budget import execution_policy
+    profile = LoadProfile(name='slow', dimension='events_per_second',
+                          events_per_second=10, duration_seconds=0.1, users=0,
+                          target_triples=0, rule_count=0, node_count=1)
+    workload = replace(_config(tmp_path), batch_size=1, point_timeout_seconds=0.001)
+    def invoke(endpoint, query_ids, timeout):
+        sleep(0.05)
+        return {'measurements': [{'duration_ms':50, 'result_count':1, 'ask_result':True}]}
+    with execution_policy(True):
+        summary, rows, _ = _run_event_stream(profile, workload, [_spec('POS', 'true')],
+            [Endpoint('http://worker:8391', 'cloud')], invoke, {}, point_timeout_seconds=-1)
+    assert summary['events_processed'] == 1
+    assert summary['events_lost'] == 0
+    assert summary['timed_out'] is False
+    assert len(rows) == 1

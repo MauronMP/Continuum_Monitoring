@@ -35,6 +35,7 @@ class LoadBenchmarkConfig:
     point_timeout_seconds: float
     recovery_timeout_seconds: float
     seed: int
+    stop_after_timeout: bool = True
 
 
 _DIMENSIONS = {
@@ -90,6 +91,7 @@ def load_load_config(path: str | Path) -> LoadBenchmarkConfig:
         path=config_path,
         profiles=profiles,
         repetitions=int(settings["repetitions"]),
+        stop_after_timeout=bool(settings.get("stop_after_timeout", True)),
         batch_size=int(settings["batch_size"]),
         queue_capacity_events=int(settings["queue_capacity_events"]),
         request_timeout_seconds=float(settings["request_timeout_seconds"]),

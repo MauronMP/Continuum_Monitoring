@@ -16,6 +16,36 @@ from typing import Iterator
 from urllib.error import HTTPError, URLError
 
 
+_UNLIMITED = False
+
+
+def unlimited_execution() -> bool:
+    """Process execution policy, shared by coordinator worker threads."""
+    return _UNLIMITED
+
+
+@contextmanager
+def execution_policy(unlimited: bool = False) -> Iterator[None]:
+    """Scope the CLI policy without changing configured acceptance budgets."""
+    global _UNLIMITED
+    previous = _UNLIMITED
+    _UNLIMITED = unlimited
+    try:
+        yield
+    finally:
+        _UNLIMITED = previous
+
+
+def execution_metadata() -> dict:
+    return {"timeout_mode": "unlimited" if _UNLIMITED else "bounded",
+            "configured_budgets_enforced": not _UNLIMITED}
+
+
+def wait_timeout(seconds: float) -> float | None:
+    """Use the blocking API's unbounded sentinel, never floating infinity."""
+    return None if _UNLIMITED else seconds
+
+
 class PhaseBudgetTimeout(TimeoutError):
     """Raised when a benchmark phase exceeds its configured wall budget."""
 
@@ -25,7 +55,8 @@ def local_phase_timeout(seconds: float) -> Iterator[None]:
     """Interrupt a CPU-bound local phase on Unix without leaking SIGALRM."""
 
     if (
-        seconds <= 0
+        unlimited_execution()
+        or seconds <= 0
         or not hasattr(signal, "setitimer")
         or current_thread() is not main_thread()
     ):
@@ -50,6 +81,8 @@ def local_phase_timeout(seconds: float) -> Iterator[None]:
 def remaining_seconds(started: float, total_seconds: float) -> float:
     """Return a strictly positive remainder or raise a budget timeout."""
 
+    if unlimited_execution():
+        return float("inf")
     remaining = total_seconds - (monotonic() - started)
     if remaining <= 0:
         raise PhaseBudgetTimeout(

@@ -146,16 +146,9 @@ def _plot_coverage(axis, rows: list[dict[str, str]]) -> None:
     axis.legend(frameon=False, fontsize=8)
 
 
-def _save(fig, base: Path) -> list[Path]:
-    base.parent.mkdir(parents=True, exist_ok=True)
-    outputs = []
-    for suffix in (".png", ".pdf", ".svg"):
-        path = base.with_suffix(suffix)
-        options = {"dpi": 300} if suffix == ".png" else {}
-        fig.savefig(path, bbox_inches="tight", **options)
-        outputs.append(path)
-    plt.close(fig)
-    return outputs
+def _save(fig, base):
+    from .figure_style import save_png
+    return save_png(fig, base)
 
 
 def _plot_suite(root: Path, suite: str) -> list[Path]:

@@ -1,0 +1,6 @@
+[network]
+# Analytical scenarios, not measured locations or emulated network links.
+distances_km = [0.01, 1, 10, 100, 500]
+bandwidths_mbps = [10, 100, 1000]
+base_rtt_ms = 0.2
+propagation_speed_km_s = 200000

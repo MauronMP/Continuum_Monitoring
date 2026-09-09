@@ -87,7 +87,7 @@ RDFLib, Jena, RDF4J and Oxigraph; engine
 names do not need to be passed manually. HermiT, Openllet, JFact and Konclude
 remain separate OWL 2 DL consistency validators invoked by `owl-validate`.
 The plot command requires all four products in each selected summary and writes
-300-DPI PNG plus vector PDF/SVG figures.
+300-DPI PNG figures.
 
 ## Evaluation families
 
@@ -105,3 +105,17 @@ See [the user guide](docs/USER_GUIDE.md),
 [physical continuum guide](docs/design/PHYSICAL_CONTINUUM.md),
 [command reference](docs/design/COMMAND_REFERENCE.md),
 [tests](docs/design/TESTS.md) and [architecture](docs/design/ARCHITECTURE.md).
+
+For evidence-led figures and extended full-suite execution, see
+[Publication reports](docs/design/PUBLICATION_REPORTS.md).
+
+Run all physical benchmark families without elapsed-time cutoffs (after worker
+installation and SSH setup):
+
+```bash
+. .venv/bin/activate
+continuum-bench --unlimited --repetitions 5 suite
+```
+
+Each suite saves a separate directory, logs, execution policy and PNG reports.
+Configured budgets remain in the evidence but are not enforced in this mode.

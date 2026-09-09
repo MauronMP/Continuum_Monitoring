@@ -31,6 +31,7 @@ class ExperimentConfig:
     scale_out_padding_mode: str
     reasoning_profiles: tuple[ReasoningProfile, ...]
     distributed_users: tuple[int, ...]
+    stop_after_timeout: bool = True
 
 
 def load_experiment_config(path: str | Path) -> ExperimentConfig:
@@ -55,6 +56,7 @@ def load_experiment_config(path: str | Path) -> ExperimentConfig:
     request_timeout = float(settings["request_timeout_seconds"])
     config = ExperimentConfig(
         repetitions=int(settings["repetitions"]),
+        stop_after_timeout=bool(settings.get("stop_after_timeout", True)),
         request_timeout_seconds=request_timeout,
         point_timeout_seconds=float(
             settings.get("point_timeout_seconds", request_timeout)

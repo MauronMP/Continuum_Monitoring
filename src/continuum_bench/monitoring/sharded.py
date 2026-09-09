@@ -40,6 +40,7 @@ from ..queries import (
 )
 from ..reasoners import materialize
 from ..specification import release_identity
+from .budget import execution_metadata, unlimited_execution
 from ..synthetic import add_synthetic_data
 from ..topology import TIER_ORDER, authority_index
 
@@ -118,7 +119,7 @@ def _prepare(
         timeout_seconds or config.limits.point_timeout_seconds,
         transport.request_timeout_seconds,
     )
-    if timeout <= transport.worker_timeout_margin_seconds:
+    if not unlimited_execution() and timeout <= transport.worker_timeout_margin_seconds:
         raise PhaseBudgetTimeout("no time remains for partitioned prepare")
     print(
         f"[distributed-budget] phase=partitioned-prepare "
@@ -176,9 +177,9 @@ def _query(
     }
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
     for batch_index in range(batch_rounds):
-        remaining = point_timeout - (monotonic() - started)
+        remaining = float("inf") if unlimited_execution() else point_timeout - (monotonic() - started)
         request_timeout = min(transport.request_timeout_seconds, remaining)
-        if request_timeout <= transport.worker_timeout_margin_seconds:
+        if not unlimited_execution() and request_timeout <= transport.worker_timeout_margin_seconds:
             raise PhaseBudgetTimeout(
                 "partitioned queries exceeded their "
                 f"{point_timeout:.1f}s point budget"
@@ -598,6 +599,7 @@ def _metadata(
 ) -> dict[str, Any]:
     return {
         **release_identity(),
+        "execution_policy": execution_metadata(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),
         "platform": platform.platform(),
@@ -1231,6 +1233,7 @@ def export_fragments(
     paths = write_fragments(fragments, output_dir)
     manifest = {
         **release_identity(),
+        "execution_policy": execution_metadata(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "synthetic_users": users,
         "node_count": len(fragments.graphs),

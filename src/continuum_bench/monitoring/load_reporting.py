@@ -97,7 +97,7 @@ def _aggregate(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
             row for row in samples if row["status"] == "completed"
         ]
         timeout_count = sum(
-            "timeout" in row["status"] for row in samples
+            "timeout" in row["status"] and not row["status"].startswith("skipped") for row in samples
         )
         item: dict[str, Any] = {
             "architecture": architecture,
@@ -113,6 +113,7 @@ def _aggregate(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
                 (len(samples) - len(completed)) / len(samples) * 100
             ),
             "timeout_samples": timeout_count,
+            "skipped_samples": sum(row["status"].startswith("skipped") for row in samples),
             "timeout_rate_percent_median": timeout_count / len(samples) * 100,
             "failed_samples": sum(
                 "failed" in row["status"] for row in samples
@@ -178,19 +179,9 @@ def _aggregate(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
     )
 
 
-def _save(fig, path: Path) -> list[Path]:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    outputs = []
-    for suffix in (".png", ".pdf", ".svg"):
-        output = path.with_suffix(suffix)
-        fig.savefig(
-            output,
-            dpi=300 if suffix == ".png" else None,
-            bbox_inches="tight",
-        )
-        outputs.append(output)
-    plt.close(fig)
-    return outputs
+def _save(fig, path):
+    from .figure_style import save_png
+    return save_png(fig, path)
 
 
 
@@ -774,6 +765,16 @@ def plot_load_comparison(
     for dimension, (x_field, xlabel) in DIMENSION_X.items():
         series = _series(aggregate, dimension, x_field)
         if not series:
+            continue
+        dimension_rows=[row for row in rows if row.get("dimension")==dimension]
+        if not any(row.get("status")=="completed" for row in dimension_rows):
+            from .publication import Report
+            report=Report(Path.cwd(), result_root, output_root / "figures")
+            report.failure_diagnostics(dimension_rows, f"load-{dimension}-outcomes")
+            outputs.extend(Path(path) for path in report.figures)
+            for obsolete in ("performance", "resources"):
+                for suffix in (".png", ".pdf", ".svg"):
+                    (output_root / "figures" / f"load-{dimension}-{obsolete}{suffix}").unlink(missing_ok=True)
             continue
         performance, axes = plt.subplots(2, 3, figsize=(13.0, 7.6))
         performance_metrics = (

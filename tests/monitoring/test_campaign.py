@@ -86,3 +86,20 @@ def test_campaign_rejects_unexecuted_query_variants(root, tmp_path):
     path.write_text(source.replace('query_count = 2', 'query_count = 100'))
     with pytest.raises(ValueError, match="cover every configured query"):
         load_campaign(path)
+
+
+def test_unlimited_campaign_completes_after_nominal_deadline(campaign):
+    from time import sleep
+    from continuum_bench.monitoring.budget import execution_policy
+    class Slow(MemoryInfrastructure):
+        def call(self, *args):
+            sleep(0.02)
+            return super().call(*args)
+    sink = Sink()
+    config = replace(campaign, point_timeout_seconds=0.001, request_timeout_seconds=0.001,
+                     axes=(Axis('physical_nodes',(1,)),), modes=('replicated',))
+    with execution_policy(True):
+        assert execute_campaign(config, Slow(), sink) == 0
+    assert sink.rows[0]['execution_ms'] > 1
+    assert sink.rows[0]['completed_requests'] == config.baseline.requests
+    assert sink.rows[0]['execution_policy']['timeout_mode'] == 'unlimited'

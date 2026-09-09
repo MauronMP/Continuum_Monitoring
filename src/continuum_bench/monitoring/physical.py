@@ -24,6 +24,7 @@ from .distributed import (
 )
 from ..queries import QuerySpec, by_categories, load_catalog
 from ..specification import release_identity
+from .budget import execution_metadata
 from ..physical_cluster import load_physical_inventory
 from ..topology import Topology
 
@@ -201,6 +202,10 @@ def _node_rows(
                 "status": "completed",
                 "censored": False,
                 "reasoning_ms": prepared[endpoint.url]["reasoning_ms"],
+                "prepare_process_cpu_ms": prepared[endpoint.url].get("process_cpu_ms"),
+                "query_process_cpu_ms": measured.get("process_cpu_ms") if measured else None,
+                "current_rss_kib": (measured or prepared[endpoint.url]).get("current_rss_kib"),
+                "peak_rss_kib": (measured or prepared[endpoint.url]).get("peak_rss_kib"),
                 "generation_ms": prepared[endpoint.url]["generation_ms"],
                 "prepare_transport_attempts": prepared[endpoint.url].get(
                     "_coordinator_attempts", 1
@@ -237,6 +242,7 @@ def _metadata(
     )
     return {
         **release_identity(),
+        "execution_policy": execution_metadata(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),
         "platform": platform.platform(),
@@ -289,6 +295,24 @@ def _metadata(
     }
 
 
+def _resource_summary(prepared, responses):
+    """Collect observed replica resources; missing telemetry is never zero."""
+    phases=[*prepared.values(),*responses.values()]
+    def total(field):
+        values=[item.get(field) for item in phases]
+        return sum(float(v) for v in values) if values and all(v is not None for v in values) else None
+    peaks=[float(item['peak_rss_kib']) for item in phases if item.get('peak_rss_kib') is not None]
+    current={url:item.get('current_rss_kib') for url,item in prepared.items()}
+    before=sum(float(v) for v in current.values()) if current and all(v is not None for v in current.values()) else None
+    current.update({url:item.get('current_rss_kib') for url,item in responses.items()})
+    after=sum(float(v) for v in current.values()) if current and all(v is not None for v in current.values()) else None
+    return {'total_process_cpu_ms':total('process_cpu_ms'),
+            'max_node_peak_rss_kib':max(peaks) if len(peaks)==len(phases) and peaks else None,
+            'max_sum_node_current_rss_kib':max(before,after) if before is not None and after is not None else None,
+            'disk_read_bytes':total('disk_read_bytes'),'disk_write_bytes':total('disk_write_bytes'),
+            'request_bytes':total('request_bytes'),'response_bytes':total('response_bytes')}
+
+
 def _summary(
     common: dict[str, Any],
     query_count: int,
@@ -305,6 +329,7 @@ def _summary(
     )
     return {
         **common,
+        **_resource_summary(prepared, responses),
         "status": "completed",
         "censored": False,
         "query_count": query_count,

@@ -25,6 +25,7 @@ from ..csv_utils import write_dict_rows
 from ..protocol import worker_health_error
 from ..queries import QuerySpec, by_categories, load_catalog
 from ..specification import release_identity
+from .budget import execution_metadata, unlimited_execution
 from ..topology import (
     TIER_ORDER,
     TopologyNode,
@@ -104,6 +105,12 @@ def _request(
     timeout: float = 300.0,
     retries: int = 0,
 ) -> dict[str, Any]:
+    from .budget import unlimited_execution, wait_timeout
+    # Worker protocol uses zero to disable its Unix alarm. Keep health checks
+    # bounded: they diagnose availability, not benchmark execution duration.
+    if payload is not None and unlimited_execution():
+        payload = {**payload, "phase_timeout_seconds": 0}
+        timeout = wait_timeout(timeout)
     data = None if payload is None else json.dumps(payload).encode("utf-8")
     request_url = f"{url.rstrip('/')}{path}"
     for attempt in range(retries + 1):
@@ -332,6 +339,7 @@ def _metadata(
 ) -> dict[str, Any]:
     return {
         **release_identity(),
+        "execution_policy": execution_metadata(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),
         "platform": platform.platform(),
@@ -505,9 +513,9 @@ def _query(
     wall_ms = 0.0
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
     for index in range(rounds):
-        remaining = point_timeout - (monotonic() - started)
+        remaining = float("inf") if unlimited_execution() else point_timeout - (monotonic() - started)
         request_timeout = min(transport.request_timeout_seconds, remaining)
-        if request_timeout <= transport.worker_timeout_margin_seconds:
+        if not unlimited_execution() and request_timeout <= transport.worker_timeout_margin_seconds:
             raise PhaseBudgetTimeout(
                 f"{phase} exceeded its {point_timeout:.1f}s point budget"
             )

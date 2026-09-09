@@ -57,8 +57,9 @@ def _quality_rows(
         groups.items()
     ):
         completed = sum(status == "completed" for status in statuses)
-        timeout = sum("timeout" in status for status in statuses)
-        failed = len(statuses) - completed - timeout
+        timeout = sum("timeout" in status and not status.startswith("skipped") for status in statuses)
+        skipped = sum(status.startswith("skipped") for status in statuses)
+        failed = len(statuses) - completed - timeout - skipped
         output.append(
             {
                 "architecture": architecture,
@@ -67,6 +68,8 @@ def _quality_rows(
                 "samples": len(statuses),
                 "completed_samples": completed,
                 "timeout_samples": timeout,
+                "skipped_samples": skipped,
+                "skipped_rate_percent": skipped / len(statuses) * 100,
                 "failed_or_other_samples": failed,
                 "completion_rate_percent": completed / len(statuses) * 100,
                 "timeout_rate_percent": timeout / len(statuses) * 100,
@@ -76,19 +79,9 @@ def _quality_rows(
     return output
 
 
-def _save(figure: plt.Figure, base: Path) -> list[Path]:
-    base.parent.mkdir(parents=True, exist_ok=True)
-    outputs: list[Path] = []
-    for suffix in (".png", ".pdf", ".svg"):
-        path = base.with_suffix(suffix)
-        figure.savefig(
-            path,
-            dpi=300 if suffix == ".png" else None,
-            bbox_inches="tight",
-        )
-        outputs.append(path)
-    plt.close(figure)
-    return outputs
+def _save(figure, base):
+    from .figure_style import save_png
+    return save_png(figure, base)
 
 
 def _median_groups(
@@ -135,6 +128,9 @@ def plot_scale_out(root: Path) -> list[Path]:
                 )
         axis.set_title(REASONER_LABELS.get(reasoner, reasoner))
         axis.set_xlabel("Active nodes")
+        axis.set_xticks(sorted({int(row["node_count"]) for row in rows}))
+        if len({row["node_count"] for row in rows}) == 1:
+            axis.text(.5,.05,"Only one node count completed",transform=axis.transAxes,ha="center",fontsize=8)
         axis.grid(True, alpha=0.25)
     axes[0][0].set_ylabel("Processed queries/s")
     axes[0][-1].legend(frameon=False)
@@ -164,6 +160,8 @@ def plot_reasoning_hardware(root: Path) -> list[Path]:
             ("architecture", "reasoner", "role", "dimension_value"),
             "reasoning_ms",
         )
+        node_keys=sorted({(row["architecture"],row["role"]) for row in selected})
+        node_colors={key:plt.get_cmap("tab10")(i) for i,key in enumerate(node_keys)}
         for column, reasoner in enumerate(reasoners):
             axis = axes[0][column]
             for architecture, role in sorted(
@@ -182,13 +180,19 @@ def plot_reasoning_hardware(root: Path) -> list[Path]:
                         [item[1] for item in points],
                         marker="o",
                         linewidth=2,
-                        label=f"{architecture}:{role}",
+                        label=f"{role}",
+                        color=node_colors[(architecture,role)],
                     )
             axis.set_title(REASONER_LABELS.get(reasoner, reasoner))
             axis.set_xlabel(dimension.replace("_", " "))
             axis.grid(True, alpha=0.25)
         axes[0][0].set_ylabel("Reasoning time (s)")
-        axes[0][-1].legend(frameon=False, fontsize=8)
+        handles={}
+        for axis in axes[0]:
+            artists,labels=axis.get_legend_handles_labels()
+            handles.update(zip(labels,artists))
+        figure.legend(handles.values(),handles.keys(),loc="lower center",ncol=5,frameon=False,fontsize=9)
+        figure.subplots_adjust(bottom=.22)
         figure.suptitle(f"Reasoning cost by architecture and node: {dimension}", fontweight="bold")
         outputs.extend(_save(figure, root / "figures" / f"architecture-hardware-{dimension}"))
     return outputs
@@ -253,6 +257,7 @@ def plot_experiment_coverage(
     completed = [float(row["completion_rate_percent"]) for row in rows]
     timeout = [float(row["timeout_rate_percent"]) for row in rows]
     failed = [float(row["failed_or_other_rate_percent"]) for row in rows]
+    skipped = [float(row["skipped_rate_percent"]) for row in rows]
     positions = list(range(len(rows)))
     figure, axis = plt.subplots(
         figsize=(10.5, max(3.2, 0.34 * len(rows) + 1.5))
@@ -271,6 +276,8 @@ def plot_experiment_coverage(
             completed, timeout, strict=True
         )
     ]
+    axis.barh(positions, skipped, left=failed_left, color="#999999", label="Skipped (not executed)")
+    failed_left = [a+b for a,b in zip(failed_left, skipped)]
     axis.barh(
         positions,
         failed,
@@ -293,7 +300,7 @@ def plot_experiment_coverage(
     axis.grid(True, axis="x", alpha=0.25)
     axis.legend(
         frameon=False,
-        ncol=3,
+        ncol=4,
         loc="lower center",
         bbox_to_anchor=(0.5, 1.01),
     )

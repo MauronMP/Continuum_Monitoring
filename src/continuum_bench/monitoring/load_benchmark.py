@@ -25,6 +25,10 @@ from .distributed import Endpoint, _parallel, _request, discover
 from .load_config import LoadBenchmarkConfig, LoadProfile
 from ..queries import QuerySpec, load_catalog
 from ..specification import release_identity
+from .budget import execution_metadata
+
+
+from .budget import unlimited_execution
 
 
 class PhaseTimeout(TimeoutError):
@@ -33,7 +37,7 @@ class PhaseTimeout(TimeoutError):
 
 @contextmanager
 def _local_timeout(seconds: float) -> Iterator[None]:
-    if not hasattr(signal, "setitimer"):
+    if unlimited_execution() or not hasattr(signal, "setitimer"):
         yield
         return
     previous_handler = signal.getsignal(signal.SIGALRM)
@@ -161,6 +165,8 @@ def _run_event_stream(
         if point_timeout_seconds is None
         else point_timeout_seconds
     )
+    if unlimited_execution():
+        point_budget = float("inf")
     if point_budget <= 0:
         raise PhaseTimeout("no point budget remains for the event stream")
     query_offset = (
@@ -170,7 +176,7 @@ def _run_event_stream(
     def scheduled_spec(index: int) -> QuerySpec:
         return specs[(query_offset + index) % len(specs)]
 
-    deadline = started + int(point_budget * 1e9)
+    deadline = float("inf") if unlimited_execution() else started + int(point_budget * 1e9)
     event_index = 0
     batch_index = 0
     in_flight: dict[
@@ -560,7 +566,8 @@ def run_load_benchmark(
                 }
                 stop_key = (reasoner, profile.dimension)
                 if (
-                    profile.dimension != "node_count"
+                    load_config.stop_after_timeout
+                    and profile.dimension != "node_count"
                     and stop_key in stopped_dimensions
                 ):
                     summary_rows.append(
@@ -988,6 +995,7 @@ def run_load_benchmark(
     )
     metadata = {
         **release_identity(),
+        "execution_policy": execution_metadata(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "architecture": architecture,
         "topology": {"endpoint_override": list(endpoint_urls or [])},
@@ -1025,6 +1033,7 @@ def run_load_benchmark(
         "timeouts": {
             "request_seconds": load_config.request_timeout_seconds,
             "point_seconds": load_config.point_timeout_seconds,
+            "stop_after_timeout": load_config.stop_after_timeout,
             "recovery_seconds": load_config.recovery_timeout_seconds,
         },
     }

@@ -32,6 +32,7 @@ from .experiment_config import ExperimentConfig, ReasoningProfile
 from .load_benchmark import _local_timeout
 from ..queries import QuerySpec, execute_query_detailed, load_catalog
 from ..specification import release_identity
+from .budget import execution_metadata
 from .sharded import (
     _assignment as sharded_assignment,
     _baseline_counts,
@@ -97,6 +98,7 @@ def _metadata(
         )
     return {
         **release_identity(),
+        "execution_policy": execution_metadata(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "experiment": experiment,
         "architecture": target,
@@ -106,6 +108,7 @@ def _metadata(
         "repetitions": workload.repetitions,
         "request_timeout_seconds": workload.request_timeout_seconds,
         "point_timeout_seconds": workload.point_timeout_seconds,
+        "stop_after_timeout": workload.stop_after_timeout,
         "seed": workload.seed,
         "node_count": len(endpoints),
         "endpoints": [
@@ -369,7 +372,7 @@ def run_scale_out(
                     f"nodes={node_count} reasoner={reasoner} "
                     f"repetition={repetition}/{workload.repetitions}"
                 )
-                if stop_key in stopped_points:
+                if workload.stop_after_timeout and stop_key in stopped_points:
                     summary_rows.append(
                         {
                             "architecture": target,
@@ -692,7 +695,7 @@ def run_reasoning_hardware(
                         "padding_mode": profile.padding_mode,
                     }
                     stop_key = (endpoint.url, reasoner, profile.dimension)
-                    if stop_key in stopped_dimensions:
+                    if workload.stop_after_timeout and stop_key in stopped_dimensions:
                         rows.append(
                             {
                                 **common,
@@ -822,7 +825,7 @@ def run_distributed_ontology(
                     "repetition": repetition,
                     "node_count": len(endpoints),
                 }
-                if reasoner in stopped_reasoners:
+                if workload.stop_after_timeout and reasoner in stopped_reasoners:
                     summary_rows.append(
                         {
                             **common,

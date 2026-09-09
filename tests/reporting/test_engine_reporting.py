@@ -45,7 +45,7 @@ def test_engine_figures_require_and_show_all_products(tmp_path):
 
     outputs = plot_engine_benchmarks(tmp_path, ("cumulative",))
 
-    assert {path.suffix for path in outputs} == {".png", ".pdf", ".svg"}
+    assert {path.suffix for path in outputs} == {".png"}
     assert all(path.stat().st_size > 0 for path in outputs)
 
 

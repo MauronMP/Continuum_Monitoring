@@ -1,5 +1,6 @@
 """Reproducible physical campaigns through infrastructure, reasoner and result ports."""
 from __future__ import annotations
+from .budget import unlimited_execution, wait_timeout, execution_metadata
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -51,8 +52,8 @@ def execute_campaign(config: CampaignConfig, infrastructure: Infrastructure, sin
                 for repetition in range(config.repetitions):
                     token = uuid.uuid4().hex
                     started = time.perf_counter()
-                    deadline = started + config.point_timeout_seconds
-                    common = {'execution_id': token, 'timestamp': datetime.now(timezone.utc).isoformat(),
+                    deadline = float("inf") if unlimited_execution() else started + config.point_timeout_seconds
+                    common = {'execution_policy': execution_metadata(), 'execution_id': token, 'timestamp': datetime.now(timezone.utc).isoformat(),
                               'configuration_id': config.fingerprint, 'axis': axis, 'axis_value': value,
                               'reasoner': reasoner, 'mode': mode, 'repetition': repetition,
                               'seed': config.seed, 'workload': asdict(workload),
@@ -92,14 +93,14 @@ def execute_campaign(config: CampaignConfig, infrastructure: Infrastructure, sin
                             'owner': index if mode != 'replicated' else 0,
                             'owners': len(selected) if mode != 'replicated' else 1,
                         }, remaining()) for index, node in enumerate(selected)]
-                        prepared = [future.result(timeout=remaining()) for future in futures]
+                        prepared = [future.result(timeout=wait_timeout(remaining())) for future in futures]
                         for i in range(config.warmup):
                             run_query(i)
                         query_started = time.perf_counter()
                         # Fixed-size batches bound submitted work and ensure concurrency is an actual limit.
                         for first in range(0, workload.requests, workload.concurrency):
                             futures = [executor.submit(run_query, i) for i in range(first, min(first+workload.concurrency, workload.requests))]
-                            events.extend(f.result(timeout=remaining()) for f in futures)
+                            events.extend(f.result(timeout=wait_timeout(remaining())) for f in futures)
                         query_seconds = time.perf_counter()-query_started
                         if not all(event['valid'] for event in events):
                             status = 'invalid_results'
@@ -133,7 +134,7 @@ def execute_campaign(config: CampaignConfig, infrastructure: Infrastructure, sin
 def run_campaign(config: CampaignConfig, infrastructure: Infrastructure, output: Path) -> tuple[Path, int]:
     run_id = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid.uuid4().hex[:8]
     directory = output/run_id
-    sink = StructuredResults(directory, {'run_id': run_id, 'configuration': config.public(),
+    sink = StructuredResults(directory, {'execution_policy': execution_metadata(), 'run_id': run_id, 'configuration': config.public(),
         'configuration_id': config.fingerprint, 'python': platform.python_version(),
         'platform': platform.platform(), 'workload_kind': 'synthetic policy microbenchmark'})
     from .provenance import snapshot
