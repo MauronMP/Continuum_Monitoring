@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from .campaign_results import SCHEMA_VERSION
 from .budget import execution_metadata
+from .report_profiles import outcome
 
 
 def normalize_completed_outputs(config, output: Path, started_ns: int) -> None:
@@ -24,7 +25,10 @@ def normalize_completed_outputs(config, output: Path, started_ns: int) -> None:
                     'schema_version': SCHEMA_VERSION, 'configuration_id': config_id,
                     'execution_policy': execution_metadata(),
                     'execution_id': f'{started_ns}-{index}',
-                    'status': row.get('status', 'unknown'), 'reasoner': row.get('reasoner'),
+                    'status': row.get('status', 'unknown'), 'outcome': outcome(row),
+                    'reasoner': row.get('reasoner'),
+                    'layout': row.get('layout', metadata.get('layout')),
+                    'profile': row.get('profile'),
                     'configuration': configuration, 'infrastructure': metadata,
                     'source_summary': str(summary), 'measurements': row,
                 }

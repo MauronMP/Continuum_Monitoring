@@ -1,5 +1,7 @@
 # Physical publication reports and extended execution
 
+For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
+
 ## Rebuild figures from recorded evidence
 
 ```bash
@@ -9,7 +11,7 @@ continuum-bench load plot
 continuum-bench experiment plot all
 ```
 
-The report writes 300-DPI PNG figures and CSV source tables under `outputs/paper`.
+The report writes 300-DPI PNG figures and CSV source tables under `outputs/report`.
 `report.json` records input hashes, findings and figure paths. `figure-statistics.csv`
 records each plotted series, sample count, median and observed range. No PDF or SVG
 benchmark figures are generated. Existing equivalents are removed when a figure
@@ -125,10 +127,10 @@ profile required approximately 174 seconds to prepare and 175 seconds to recover
 its complete pipeline can exceed the point budget because recovery is a separate
 phase. This is one validation repetition, not the full extended campaign.
 
-Preserve this evidence separately and add it to the report with:
+Add a separate measured load dataset to the report with:
 
 ```bash
-continuum-bench report --validation-dir outputs/audit/patient-load/physical
+continuum-bench report --validation-dir /path/to/separate/load-results
 ```
 
 The original 207-point dataset remains unchanged. Its incomplete results must
@@ -141,10 +143,10 @@ The physical smoke load was executed with nominal six-second budgets and
 completed, processing 12/12 events without loss. On five nodes, combined
 RDFS/OWL RL preparation and recovery each took approximately 23 seconds.
 These exceeded the recorded budgets without timeout failure or skipped points.
-Evidence is under `outputs/audit/unlimited-load/physical`:
+Write an isolated unlimited smoke run outside the active results root when it must be retained separately:
 
 ```bash
-continuum-bench --timeout-seconds 6 --unlimited --repetitions 1 load physical --load-config configs/load-smoke.toml --output-dir outputs/audit/unlimited-load
+continuum-bench --timeout-seconds 6 --unlimited --repetitions 1 load physical --load-config configs/load-smoke.toml --output-dir /path/to/isolated-load-run
 ```
 
 Regression tests also exercise delayed HTTP responses, worker alarm disabling,

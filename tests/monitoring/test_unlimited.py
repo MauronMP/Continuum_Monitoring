@@ -55,6 +55,6 @@ def test_unlimited_http_disables_worker_alarm_and_socket_deadline():
 def test_unlimited_suite_propagates_policy_to_all_physical_families(root,tmp_path):
     plan=suite_plan(root,root/'configs/benchmark.toml',tmp_path,unlimited=True)
     for step in plan:
-        if step['name']!='software':
+        if step['name'] not in {'software', 'documentation'}:
             assert '--unlimited' in step['command']
             assert '--keep-going' in step['command']

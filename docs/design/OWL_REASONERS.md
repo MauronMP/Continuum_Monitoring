@@ -1,8 +1,11 @@
 # Automated external OWL reasoner installation
 
+For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
+
 HermiT, Openllet, JFact and Konclude validate OWL 2 DL consistency on the
-coordinator. They are deliberately separate from timed RDFS/OWL RL benchmark
-materialization and are not installed on physical workers.
+coordinator and provide materialization backends for physical workers. Install
+the pinned runtime on every participating host. See [the physical reasoning
+contract](PHYSICAL_REASONING.md) for the timed inference comparison and deployment.
 
 ## Prerequisites
 
@@ -10,7 +13,7 @@ Ubuntu/Debian:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y openjdk-17-jre-headless maven konclude
+sudo apt-get install -y openjdk-17-jdk maven konclude
 ```
 
 macOS:
@@ -64,6 +67,19 @@ tool execution:
 
 `.runtime/` is machine-local and ignored by Git. Re-run the installer after
 cloning, changing machines or changing `tools/owl/pom.xml`.
+
+Native benchmark adapters prefer these installed classpath files over inherited
+shell variables. This prevents legacy Protégé/OSGi wildcard exports from
+overriding the isolated runtime and failing with missing embedded dependencies
+such as Caffeine. Running pytest does not require sourcing the environment file.
+An invalid installed classpath fails explicitly rather than falling back.
+
+For an intentional custom runtime, set `CONTINUUM_OWL_CLASSPATH_SOURCE=environment`
+and the corresponding `CONTINUUM_HERMIT_CLASSPATH`,
+`CONTINUUM_OPENLLET_CLASSPATH`, `CONTINUUM_JFACT_CLASSPATH`, or
+`CONTINUUM_OWL_CLASSPATH` (Konclude conversion). Without an installed file,
+the default `auto` mode also accepts the relevant environment variable.
+This selects dependencies only; it never substitutes a different reasoner.
 
 ## Pinned Java reasoners
 

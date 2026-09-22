@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import json
 import os
 from pathlib import Path, PurePosixPath
 import re
 import shlex
 import signal
+import shutil
 import subprocess
 import sys
 import time
@@ -182,6 +183,102 @@ def load_physical_inventory(
     )
 
 
+# Shared with tools/install_owl_reasoners.py. These files contain host-local
+# absolute Maven paths and must never be copied from the coordinator.
+_JAVA_REASONERS = ("hermit", "openllet", "jfact")
+_DL_ASSETS = ("tools/install_owl_reasoners.py", "tools/check_owl_consistency.py", "tools/owl")
+
+
+def remote_reasoner_install_command(inventory: PhysicalInventory) -> str:
+    """Render only; executing this is an explicit online deployment operation."""
+    return (
+        f"cd {shlex.quote(inventory.remote_dir)} || exit 20; "
+        "if test -f .runtime/owl-reasoners.env; then "
+        ". ./.runtime/owl-reasoners.env || exit 22; fi; "
+        f"{shlex.quote(inventory.remote_python)} tools/install_owl_reasoners.py"
+    )
+
+
+def offline_preflight(root: Path, inventory: PhysicalInventory) -> dict[str, Any]:
+    """Inspect local files and declared inventory only; no processes or network.
+
+    Presence checks are not runtime certification. Remote placement remains
+    pending until the actual target passes the installer smoke checks.
+    """
+    root = root.resolve()
+    assets = ("src", "configs", "ontology", "queries", "requirements-node.txt", *_DL_ASSETS)
+    checks = [asdict(item) for item in physical_checks()]
+    checks.append({"name": "python", "status": "ok" if sys.version_info >= (3, 11) else "error",
+                   "detail": sys.version.split()[0]})
+    checks.append({"name": "coordinator-platform",
+                   "status": "ok" if sys.maxsize > 2**32 and (sys.platform.startswith("linux") or sys.platform == "darwin") else "error",
+                   "detail": f"{sys.platform}; requires 64-bit Python"})
+    for asset in assets:
+        checks.append({"name": f"asset:{asset}", "status": "ok" if (root / asset).exists() else "error",
+                       "detail": str(root / asset)})
+    for command in ("java", "mvn"):
+        checks.append({"name": command, "status": "ok" if shutil.which(command) else "error",
+                       "detail": shutil.which(command) or "not installed; Java 17 and Maven required"})
+    for reasoner in _JAVA_REASONERS:
+        path = root / f".runtime/owl-validation-{reasoner}.classpath"
+        value = os.environ.get(f"CONTINUUM_{reasoner.upper()}_CLASSPATH", "")
+        if not value and path.is_file():
+            value = path.read_text(encoding="utf-8").strip()
+        entries = value.split(os.pathsep) if value else []
+        import glob
+        valid = bool(entries) and all(Path(entry).is_absolute() and any(Path(item).is_file() for item in glob.glob(entry)) for entry in entries)
+        checks.append({"name": f"classpath:{reasoner}", "status": "ok" if valid else "error",
+                       "detail": "local files present; execution unverified" if valid else "missing or invalid local classpath"})
+    native = os.environ.get("CONTINUUM_KONCLUDE_EXECUTABLE") or shutil.which("Konclude")
+    native_path = shutil.which(native) if native else None
+    checks.append({"name": "konclude-native", "status": "ok" if native_path else "error",
+                   "detail": native_path or "native Konclude required; no substitute permitted"})
+    declared = {node.node_id: node for node in inventory.topology.nodes} if inventory.topology else {}
+    nodes = []
+    for node in inventory.nodes:
+        metadata = declared.get(node.role)
+        nodes.append({
+            "node_id": node.role, "tier": node.tier, "host": node.host,
+            "endpoint": node.endpoint, "local": node.local,
+            "inventory_source": str(inventory.path),
+            "device_type": metadata.device_type if metadata else None,
+            "cpu_architecture": metadata.cpu_architecture if metadata else None,
+            "cpu_cores": metadata.cpus if metadata else None,
+            "memory": metadata.memory if metadata else None,
+            "network_mbps": metadata.network_mbps if metadata else None,
+            "location": {key: getattr(metadata, key) if metadata else None
+                         for key in ("region", "latitude", "longitude", "altitude_m")},
+            "evidence": "inventory declaration, not measured",
+            "reachability": "not-probed", "runtime_verified": False,
+            "placement_status": "pending-target-validation",
+            "requirements": ["Python >=3.11 with venv and ensurepip", "Java 17 compatible with target OS/ABI",
+                             "Maven", "native Konclude built for target OS/CPU/ABI", "target-local installer smoke checks"],
+        })
+    return {
+        "schema_version": 1, "mode": "offline", "remote_contacted": False,
+        "deployment_ready": False,
+        "local_files_ready": all(item["status"] == "ok" for item in checks),
+        "checks": checks, "nodes": nodes,
+        "remote_dir": inventory.remote_dir, "remote_python": inventory.remote_python,
+        "future_install_command": remote_reasoner_install_command(inventory),
+        "runtime_contract": {
+            "installer": "tools/install_owl_reasoners.py",
+            "classpath_files": [f".runtime/owl-validation-{name}.classpath" for name in _JAVA_REASONERS],
+            "converter_classpath": ".runtime/owl-validation.classpath",
+            "environment": ".runtime/owl-reasoners.env",
+            "copy_coordinator_runtime": False, "fallback_allowed": False,
+        },
+    }
+
+
+def write_offline_manifest(root: Path, inventory: PhysicalInventory, output: Path) -> dict[str, Any]:
+    """Write a local readiness report; never deploy or start any worker."""
+    manifest = offline_preflight(root, inventory)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return manifest
+
+
 def _run(command: list[str]) -> None:
     print(f"[physical-cluster] exec={shlex.join(command)}", flush=True)
     try:
@@ -291,8 +388,10 @@ def _verify_remote_dependencies(inventory: PhysicalInventory) -> None:
 def deploy_cluster(
     root: Path,
     inventory: PhysicalInventory,
+    *,
+    with_dl_reasoners: bool = False,
 ) -> None:
-    """Copy only worker runtime assets and install minimal dependencies."""
+    """Online deployment; optionally install and smoke-test actual DL backends."""
     _verify_key_auth(inventory)
     _verify_remote_dependencies(inventory)
     sources = (
@@ -302,6 +401,8 @@ def deploy_cluster(
         root / "queries",
         root / "requirements-node.txt",
     )
+    if with_dl_reasoners:
+        sources += (root / "tools",)
     for source in sources:
         if not source.exists():
             raise FileNotFoundError(source)
@@ -368,6 +469,8 @@ def deploy_cluster(
             f"{shlex.quote(inventory.remote_dir + '/requirements-node.txt')}"
         )
         _run(_ssh(target, setup))
+        if with_dl_reasoners:
+            _run(_ssh(target, remote_reasoner_install_command(inventory)))
         print(
             f"[physical-cluster] role={node.role} host={node.host} "
             "status=deployed",
@@ -376,7 +479,7 @@ def deploy_cluster(
 
 
 def _runtime_dir(root: Path) -> Path:
-    path = root / "outputs" / "physical" / "runtime"
+    path = root / "outputs" / "runtime" / "physical"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -465,6 +568,8 @@ def _remote_start(
         f"echo \"$existing\" > {shlex.quote(pid_path)}; exit 17; fi; "
         f"rm -f {shlex.quote(pid_path)}; "
         f"cd {shlex.quote(inventory.remote_dir)} || exit 20; "
+        "if test -f .runtime/owl-reasoners.env; then "
+        ". ./.runtime/owl-reasoners.env || exit 22; fi; "
         f"nohup env PYTHONPATH={shlex.quote(inventory.remote_dir + '/src')} "
         f"{shlex.quote(inventory.remote_python)} "
         "-m continuum_bench.node "
@@ -534,7 +639,7 @@ def start_cluster(
         time.sleep(0.5)
     raise TimeoutError(
         "Physical nodes did not become healthy; run 'physical status' "
-        "and inspect outputs/physical/runtime/cloud.log plus remote runtime logs"
+        "and inspect outputs/runtime/physical/cloud.log plus remote runtime logs"
     )
 
 

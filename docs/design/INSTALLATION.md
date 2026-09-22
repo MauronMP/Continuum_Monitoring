@@ -1,5 +1,7 @@
 # Installation and environment preparation
 
+For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
+
 This guide starts from a clean clone. Run every command from the repository root.
 
 ## 1. Coordinator prerequisites
@@ -52,19 +54,19 @@ python -m pip install -e ".[dev,diagrams]"
 Do not copy a virtual environment between machines or architectures; run the
 bootstrap again after cloning.
 
-## 4. Physical workers
+## 3. Physical workers
 
 The coordinator needs an SSH client, `ssh-copy-id` and `rsync`:
 
 ```bash
-sudo apt-get install -y openssh-client rsync
+sudo apt-get install -y openssh-client rsync openjdk-17-jdk maven konclude
 ```
 
 Install the following packages once on every Debian/Raspberry Pi OS worker:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y python3 python3-venv python3-pip openssh-server rsync procps
+sudo apt-get install -y python3 python3-venv python3-pip openssh-server rsync procps openjdk-17-jdk maven konclude
 sudo systemctl enable --now ssh
 ```
 
@@ -76,7 +78,7 @@ it. Configure addresses, ports, architectures and tiers in
 ```bash
 continuum-bench doctor --physical
 continuum-bench physical authorize --ssh-user pi
-continuum-bench physical deploy --ssh-user pi
+continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
 ```
@@ -85,16 +87,17 @@ The deployment creates `.venv-node` remotely with the worker profile. Passwords
 must not be stored in TOML or source control; `authorize` configures key-based
 authentication.
 
-## 5. External OWL 2 DL reasoners
+## 4. External OWL 2 DL reasoners
 
-The portable benchmark materializers (`rdfs`, `owlrl`, `rdfs_owlrl`) are Python
-dependencies. HermiT, Openllet, JFact and Konclude are separate ontology
-consistency validators and are not silently substituted when unavailable.
+RDFS uses Python dependencies. The default physical benchmark also executes
+HermiT, Openllet, JFact and Konclude through their native runtimes. They must be
+installed on each participating host and are never silently substituted when
+unavailable. Consistency validation remains a separate operation.
 
 Install Java 17, Maven and native Konclude, then use the project installer:
 
 ```bash
-sudo apt-get install -y openjdk-17-jre-headless maven konclude
+sudo apt-get install -y openjdk-17-jdk maven konclude
 python3 tools/install_owl_reasoners.py
 ```
 
@@ -116,14 +119,14 @@ continuum-bench owl-validate --require-all
 Use `--require-all` only as the strict release gate: it fails if any configured
 reasoner is missing, times out, reports inconsistency or cannot complete.
 
-## 6. Installation verification
+## 5. Installation verification
 
 ```bash
 continuum-bench doctor --physical --owl
 continuum-bench topology validate --name physical
 continuum-bench validate
 continuum-bench preflight
-python -m pytest
+CONTINUUM_TEST_NATIVE_OWL=1 python -m pytest
 python3 tools/check_documentation.py
 ```
 

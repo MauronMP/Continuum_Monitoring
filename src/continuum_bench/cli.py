@@ -33,18 +33,28 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--unlimited", action="store_true", help="Disable benchmark deadlines and timeout pruning; preserve configured budgets as metadata")
     parser.add_argument("--keep-going", action="store_true", help="Attempt later points even after a timeout")
     parser.add_argument("--repetitions", type=int, help="Override experiment repetitions")
+    parser.add_argument("--timeout-mode", choices=("bounded", "unlimited"), help="Override limits.timeout_mode")
+    for scope in ("request", "phase", "point"):
+        parser.add_argument(f"--{scope}-timeout-seconds", type=float, help=f"Override the {scope} budget independently")
+    parser.add_argument("--skip-after-timeouts", type=int, help="Consecutive timeouts required before configured skip triggers latch")
+    for scope in ("repetitions", "larger-points", "cumulative-stages"):
+        parser.add_argument(f"--skip-{scope}", action=argparse.BooleanOptionalAction, default=None)
+
     report = subparsers.add_parser("report", help="Audit physical evidence and generate scientific PNG figures")
     report.add_argument("--input-dir", default="outputs")
     report.add_argument("--validation-dir", help="Optional separate physical-load result directory")
-    report.add_argument("--output-dir", default="outputs/paper")
+    report.add_argument("--output-dir", default="outputs/report")
     suite = subparsers.add_parser("suite", help="Run all physical test families sequentially with recorded logs")
     suite.add_argument("--patient", action="store_true", help="Use one-hour budgets and attempt every configured point")
     suite.add_argument("--output-dir", default="outputs/suites")
     suite.add_argument("--dry-run", action="store_true")
+    suite.add_argument("--load-config", default="configs/load-benchmark.toml")
+    suite.add_argument("--experiment-config", default="configs/experiments.toml")
+    suite.add_argument("--campaign-config", default="configs/campaign.toml")
     suite.add_argument("--families", nargs="+", choices=("software","validation","monitoring","load","experiments","campaign","report"))
     campaign = subparsers.add_parser("campaign", help="Run configurable physical scalability and policy-cost axes")
     campaign.add_argument("--campaign-config", default="configs/campaign-smoke.toml")
-    campaign.add_argument("--output-dir", default="outputs/campaigns")
+    campaign.add_argument("--output-dir", default="outputs/campaign")
     campaign.add_argument("--axis", action="append")
     campaign.add_argument("--topology-name", default="physical")
     campaign.add_argument("--validate-only", action="store_true")
@@ -139,6 +149,7 @@ def _parser() -> argparse.ArgumentParser:
         "action",
         choices=(
             "authorize",
+            "prepare",
             "deploy",
             "start",
             "status",
@@ -148,19 +159,21 @@ def _parser() -> argparse.ArgumentParser:
             "all",
         ),
     )
+    physical.add_argument("--reasoner", action="append", choices=("rdfs", "hermit", "openllet", "jfact", "konclude"), help="Select one or more configured benchmark backends")
     physical.add_argument("--topology-name", default="physical")
     physical.add_argument("--ssh-user")
-    physical.add_argument("--output-dir", default="outputs/physical")
+    physical.add_argument("--with-dl-reasoners", action="store_true", help="Install and verify native reasoner runtimes during online deployment")
+    physical.add_argument("--output-dir", default="outputs/monitoring")
     physical.add_argument(
         "--layout",
-        choices=("replicated", "sharded"),
-        default="sharded",
-        help="Physical placement strategy (default: sharded)",
+        choices=("replicated", "distributed"),
+        default="distributed",
+        help="Physical ontology placement (default: distributed)",
     )
     physical.add_argument(
         "--skip-result-validation",
         action="store_true",
-        help="Skip bounded reference validation for sharded query results",
+        help="Skip bounded reference validation for distributed query results",
     )
 
     load = subparsers.add_parser(
@@ -219,7 +232,7 @@ def _parser() -> argparse.ArgumentParser:
         command_parser.add_argument(
             "--reasoner",
             action="append",
-            choices=("rdfs", "owlrl", "rdfs_owlrl"),
+            choices=("rdfs", "hermit", "openllet", "jfact", "konclude"),
         )
         command_parser.add_argument("--profile", action="append")
 
@@ -271,7 +284,7 @@ def _parser() -> argparse.ArgumentParser:
     study.add_argument("--output-dir", default="outputs/study")
     study.add_argument(
         "--events",
-        default="outputs/load/physical/event-runs.csv",
+        default="outputs/load/event-runs.csv",
         help="Request/event CSV used by category-cost analysis",
     )
     return parser
@@ -330,6 +343,8 @@ def _dispatch(args) -> int:
         return doctor_main(options)
 
     config = load_config(args.config)
+    if args.command == "physical" and args.reasoner:
+        config = replace(config, reasoners=tuple(dict.fromkeys(args.reasoner)))
 
     if args.timeout_seconds is not None:
         import math
@@ -337,8 +352,32 @@ def _dispatch(args) -> int:
             raise ValueError("--timeout-seconds must be finite and greater than 5")
         config = replace(config, distributed=replace(config.distributed, request_timeout_seconds=args.timeout_seconds),
                          limits=replace(config.limits, phase_timeout_seconds=args.timeout_seconds, point_timeout_seconds=args.timeout_seconds))
+    import math
+    transport_updates = {}
+    limit_updates = {}
+    for scope in ("request", "phase", "point"):
+        value = getattr(args, f"{scope}_timeout_seconds")
+        if value is not None:
+            if not math.isfinite(value) or value <= config.distributed.worker_timeout_margin_seconds:
+                raise ValueError(f"--{scope}-timeout-seconds must be finite and exceed the worker response margin")
+            (transport_updates if scope == "request" else limit_updates)[f"{scope}_timeout_seconds"] = value
+    for argument, field in (("skip_repetitions", "skip_repetitions_after_timeout"),
+                            ("skip_larger_points", "skip_larger_sizes_after_timeout"),
+                            ("skip_cumulative_stages", "skip_cumulative_stages_after_timeout")):
+        value = getattr(args, argument)
+        if value is not None:
+            limit_updates[field] = value
+    if args.skip_after_timeouts is not None:
+        limit_updates["consecutive_timeout_threshold"] = args.skip_after_timeouts
+    if args.timeout_mode:
+        limit_updates["timeout_mode"] = args.timeout_mode
     if args.keep_going or args.unlimited:
-        config = replace(config, limits=replace(config.limits, stop_scaling_after_timeout=False))
+        limit_updates.update(stop_scaling_after_timeout=False, skip_repetitions_after_timeout=False,
+                             skip_larger_sizes_after_timeout=False, skip_cumulative_stages_after_timeout=False)
+    if args.unlimited:
+        limit_updates["timeout_mode"] = "unlimited"
+    config = replace(config, distributed=replace(config.distributed, **transport_updates),
+                     limits=replace(config.limits, **limit_updates))
     if args.repetitions is not None:
         if args.repetitions < 1: raise ValueError("--repetitions must be positive")
         config = replace(config, repetitions=args.repetitions)
@@ -351,9 +390,16 @@ def _dispatch(args) -> int:
         from .monitoring.suite import run_suite
         result = run_suite(config.root, Path(args.config).resolve(), config.resolve(Path(args.output_dir)),
                            patient=args.patient, unlimited=args.unlimited, timeout_seconds=args.timeout_seconds, repetitions=args.repetitions,
-                           families=args.families, dry_run=args.dry_run)
+                           families=args.families, dry_run=args.dry_run,
+                           timeout_mode=args.timeout_mode, request_timeout_seconds=args.request_timeout_seconds,
+                           phase_timeout_seconds=args.phase_timeout_seconds, point_timeout_seconds=args.point_timeout_seconds,
+                           skip_after_timeouts=args.skip_after_timeouts, skip_repetitions=args.skip_repetitions,
+                           skip_larger_points=args.skip_larger_points, skip_cumulative_stages=args.skip_cumulative_stages,
+                           keep_going=args.keep_going, topology_file=args.topology_file,
+                           load_config=args.load_config, experiment_config=args.experiment_config,
+                           campaign_config=args.campaign_config)
         print(json.dumps(result, indent=2))
-        return int(any(step.get("returncode", 0) != 0 for step in result["steps"]))
+        return int(any(step.get("returncode", 0) != 0 or step.get("status") in {"failed", "missing_evidence"} for step in result["steps"]))
 
     if args.command == "campaign":
         from .monitoring.campaign_config import load_campaign
@@ -516,17 +562,30 @@ def _dispatch(args) -> int:
         from .physical_cluster import (
             authorize_cluster,
             deploy_cluster,
+            write_offline_manifest,
             start_cluster,
             status_cluster,
             stop_cluster,
         )
 
         inventory = _physical_inventory(config, args)
+        if args.action == "prepare":
+            readiness_root = (
+                config.root / "outputs/validation/readiness"
+                if args.output_dir == "outputs/monitoring"
+                else config.resolve(Path(args.output_dir))
+            )
+            report = write_offline_manifest(config.root, inventory, readiness_root / "offline-readiness.json")
+            print(json.dumps(report, indent=2))
+            return 0 if report["local_files_ready"] else 1
         if args.action == "authorize":
             authorize_cluster(inventory)
             return 0
         if args.action == "deploy":
-            deploy_cluster(config.root, inventory)
+            if args.with_dl_reasoners:
+                deploy_cluster(config.root, inventory, with_dl_reasoners=True)
+            else:
+                deploy_cluster(config.root, inventory)
             return 0
         if args.action == "start":
             start_cluster(config.root, inventory)
@@ -722,15 +781,16 @@ def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     physical_work = (
         args.command == "campaign" and not args.validate_only
-        or args.command == "physical" and args.action not in {"status", "authorize"}
+        or args.command == "physical" and args.action not in {"status", "authorize", "prepare"}
         or args.command in {"load", "experiment"} and getattr(args, "target", None) == "physical"
     )
     from contextlib import nullcontext
     from .monitoring.lease import physical_lease
     lease = physical_lease(load_config(args.config).root) if physical_work else nullcontext()
     from .monitoring.budget import execution_policy
-    with execution_policy(args.unlimited), lease:
-        if args.unlimited:
+    effective_unlimited = args.unlimited or (args.timeout_mode or load_config(args.config).limits.timeout_mode) == "unlimited"
+    with execution_policy(effective_unlimited), lease:
+        if effective_unlimited:
             print("[execution-policy] unlimited: benchmark budgets are recorded but not enforced", flush=True)
         status = _dispatch(args)
         if args.command in {"physical", "load", "experiment", "engines"} and hasattr(args, "output_dir"):

@@ -18,11 +18,8 @@ import numpy as np
 
 from ..csv_utils import write_dict_rows
 from ..result_contract import require_release_metadata
-REASONER_LABELS = {
-    "rdfs": "RDFS",
-    "owlrl": "OWL RL",
-    "rdfs_owlrl": "RDFS + OWL RL",
-}
+from .report_profiles import LABELS as REASONER_LABELS, observed_profiles
+
 
 
 DIMENSION_X = {
@@ -201,7 +198,7 @@ def _factorized_legend(
     *,
     partial: bool = False,
 ) -> None:
-    styles = {"rdfs": "-", "owlrl": "--", "rdfs_owlrl": ":"}
+    styles = {key: ("-", "--", ":", "-.")[i % 4] for i, key in enumerate(REASONER_LABELS)}
     handles = [
         Line2D(
             [],
@@ -218,10 +215,10 @@ def _factorized_legend(
             [],
             color="0.3",
             marker=markers[reasoner],
-            linestyle=styles[reasoner],
-            label=REASONER_LABELS[reasoner],
+            linestyle=styles.get(reasoner, "-"),
+            label=REASONER_LABELS.get(reasoner, reasoner),
         )
-        for reasoner in REASONER_LABELS
+        for reasoner in markers
     )
     if partial:
         handles.append(
@@ -286,7 +283,7 @@ def _series(
 ) -> list[tuple[str, str, list[dict[str, Any]]]]:
     output = []
     for architecture in ARCHITECTURES:
-        for reasoner in REASONER_LABELS:
+        for reasoner in observed_profiles(rows):
             selected = [
                 row
                 for row in rows
@@ -312,7 +309,7 @@ def _plot_lines(
     latency_band: bool = False,
     show_repetition_range: bool = True,
 ) -> None:
-    styles = {"rdfs": "-", "owlrl": "--", "rdfs_owlrl": ":"}
+    styles = {key: ("-", "--", ":", "-.")[i % 4] for i, key in enumerate(REASONER_LABELS)}
     for architecture, reasoner, selected in series:
         selected = [
             row
@@ -329,14 +326,14 @@ def _plot_lines(
         )
         label = (
             f"{LOAD_ARCHITECTURE_LABELS[architecture]} · "
-            f"{REASONER_LABELS[reasoner]}"
+            f"{REASONER_LABELS.get(reasoner, reasoner)}"
         )
         axis.plot(
             x,
             y,
             color=colors[architecture],
             marker=markers[reasoner],
-            linestyle=styles[reasoner],
+            linestyle=styles.get(reasoner, "-"),
             linewidth=1.4,
             label=label,
         )
@@ -441,7 +438,7 @@ def _plot_data_coverage(
     row_keys = [
         (architecture, reasoner)
         for architecture in ARCHITECTURES
-        for reasoner in REASONER_LABELS
+        for reasoner in observed_profiles(rows)
     ]
     lookup = {
         (
@@ -492,7 +489,7 @@ def _plot_data_coverage(
     axis.set_yticklabels(
         [
             f"{LOAD_ARCHITECTURE_LABELS[architecture]} · "
-            f"{REASONER_LABELS[reasoner]}"
+            f"{REASONER_LABELS.get(reasoner, reasoner)}"
             for architecture, reasoner in row_keys
         ]
     )
@@ -529,7 +526,7 @@ def _reference_summary(
 ) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
     for architecture in ARCHITECTURES:
-        for reasoner in REASONER_LABELS:
+        for reasoner in observed_profiles(rows):
             selected = [
                 row
                 for row in rows
@@ -620,7 +617,7 @@ def _plot_reference_overview(
     figure, axes = plt.subplots(2, 2, figsize=(10.8, 7.2))
     reasoners = [
         reasoner
-        for reasoner in REASONER_LABELS
+        for reasoner in observed_profiles(rows)
         if any(row["reasoner"] == reasoner for row in rows)
     ]
     positions = np.arange(len(reasoners))
@@ -712,7 +709,7 @@ def plot_load_comparison(
         old_table.unlink(missing_ok=True)
     rows: list[dict[str, str]] = []
     for architecture in ARCHITECTURES:
-        path = result_root / architecture / "summary.csv"
+        path = result_root / "summary.csv"
         if path.is_file():
             rows.extend(_read(path))
     if not rows:
@@ -731,7 +728,7 @@ def plot_load_comparison(
     colors = {
         "physical": colors_raw[2],
     }
-    markers = {"rdfs": "o", "owlrl": "s", "rdfs_owlrl": "^"}
+    markers = {key: ("o", "s", "^", "D", "v", "P", "X")[i % 7] for i, key in enumerate(observed_profiles(rows))}
     quality = _data_quality_rows(aggregate)
     quality_path = output_root / "data" / "load-data-quality.csv"
     write_dict_rows(

@@ -977,7 +977,7 @@ def run_load_benchmark(
                     flush=True,
                 )
 
-    output = output_root / architecture
+    output = output_root
     write_dict_rows(
         output / "summary.csv",
         summary_rows,

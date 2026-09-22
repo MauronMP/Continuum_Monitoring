@@ -14,18 +14,15 @@ import matplotlib.pyplot as plt
 from ..csv_utils import write_dict_rows
 
 
-REASONER_LABELS = {
-    "rdfs": "RDFS",
-    "owlrl": "OWL RL",
-    "rdfs_owlrl": "RDFS + OWL RL",
-}
+from .report_profiles import LABELS as REASONER_LABELS, observed_profiles
+
 ARCHITECTURES = ("physical",)
 
 
 def _rows(root: Path, experiment: str) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for architecture in ARCHITECTURES:
-        path = root / architecture / experiment / "summary.csv"
+        path = root / experiment / "summary.csv"
         if path.is_file():
             with path.open(encoding="utf-8", newline="") as handle:
                 rows.extend(
@@ -43,7 +40,7 @@ def _quality_rows(
     groups: dict[tuple[str, str, str], list[str]] = defaultdict(list)
     for architecture in ARCHITECTURES:
         for experiment in experiments:
-            path = root / architecture / experiment / "summary.csv"
+            path = root / experiment / "summary.csv"
             if not path.is_file():
                 continue
             with path.open(encoding="utf-8", newline="") as handle:

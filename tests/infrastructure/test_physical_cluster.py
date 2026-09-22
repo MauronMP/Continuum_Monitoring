@@ -4,6 +4,16 @@ import subprocess
 import pytest
 
 
+@pytest.fixture
+def config():
+    # Infrastructure depends on the inventory, not benchmark reasoner policy.
+    from pathlib import Path
+    from types import SimpleNamespace
+    root = Path(__file__).resolve().parents[2]
+    return SimpleNamespace(root=root, topology_file=Path("configs/topologies/physical/topology.toml"),
+                           resolve=lambda path: root / path)
+
+
 def _legacy_inventory(tmp_path, remote_dir):
     path = tmp_path / "legacy-inventory.toml"
     path.write_text(
@@ -100,16 +110,16 @@ def test_authorize_installs_key_on_each_remote_node(config, monkeypatch):
     physical_cluster.authorize_cluster(inventory)
 
     assert commands == [
-        ["ssh-copy-id", "pi@10.151.73.241"],
-        ["ssh-copy-id", "pi@10.151.73.34"],
-        ["ssh-copy-id", "pi@10.151.73.143"],
-        ["ssh-copy-id", "pi@10.151.73.173"],
+        ["ssh-copy-id", "pi@100.93.73.27"],
+        ["ssh-copy-id", "pi@100.101.178.35"],
+        ["ssh-copy-id", "pi@100.70.9.117"],
+        ["ssh-copy-id", "pi@100.121.135.60"],
     ]
 
 
 def test_ssh_lifecycle_commands_disable_password_prompts():
     command = physical_cluster._ssh(
-        "pi@10.151.73.241",
+        "pi@100.93.73.27",
         "true",
     )
 
@@ -137,7 +147,8 @@ def test_remote_start_records_python_pid_not_background_shell(
     assert "pgrep -f" in remote
     assert "worker_pid=$!" in remote
     assert 'echo "$worker_pid"' in remote
-    assert "cd /home/pi/continuum-bench || exit 20; nohup" in remote
+    assert "cd /home/pi/continuum-bench || exit 20; " in remote
+    assert ". ./.runtime/owl-reasoners.env || exit 22; fi; nohup" in remote
     assert "--topology-name physical" in remote
 
 
@@ -264,3 +275,59 @@ def test_stop_discards_pid_file_when_process_no_longer_exists(monkeypatch, tmp_p
         pytest.fail("A missing process must not receive a signal"))
     physical_cluster._safe_local_stop(tmp_path, "cloud")
     assert not pidfile.exists()
+
+
+def test_offline_manifest_never_contacts_or_starts_nodes(config, monkeypatch, tmp_path):
+    import json
+    import socket
+    inventory = load_physical_inventory(config.resolve(config.topology_file))
+    def forbidden(*args, **kwargs):
+        pytest.fail("Offline preparation must not execute commands or contact nodes")
+    for name in ("run", "Popen"):
+        monkeypatch.setattr(physical_cluster.subprocess, name, forbidden)
+    monkeypatch.setattr(physical_cluster, "_request", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    monkeypatch.setattr(socket, "getaddrinfo", forbidden)
+    output = tmp_path / "readiness.json"
+    result = physical_cluster.write_offline_manifest(config.root, inventory, output)
+    assert json.loads(output.read_text()) == result
+    assert result["remote_contacted"] is False
+    assert result["deployment_ready"] is False
+    assert [n["host"] for n in result["nodes"]] == [n.host for n in inventory.nodes]
+    for node in result["nodes"]:
+        assert node["location"]["latitude"] is None
+        assert node["runtime_verified"] is False
+        assert node["reachability"] == "not-probed"
+    assert result["nodes"][1]["cpu_architecture"] == "armv7l-32bit"
+    assert result["runtime_contract"]["fallback_allowed"] is False
+    assert "--skip-konclude" not in result["future_install_command"]
+
+
+def test_offline_preflight_rejects_stale_classpaths(config, tmp_path, monkeypatch):
+    inventory = load_physical_inventory(config.resolve(config.topology_file))
+    runtime = tmp_path / ".runtime"
+    runtime.mkdir()
+    for name in ("hermit", "openllet", "jfact"):
+        monkeypatch.delenv(f"CONTINUUM_{name.upper()}_CLASSPATH", raising=False)
+        (runtime / f"owl-validation-{name}.classpath").write_text('/missing/foreign-host.jar')
+    monkeypatch.setenv("CONTINUUM_KONCLUDE_EXECUTABLE", "/missing/Konclude")
+    report = physical_cluster.offline_preflight(tmp_path, inventory)
+    assert not report["local_files_ready"]
+    checks = {item["name"]: item["status"] for item in report["checks"]}
+    assert checks["classpath:hermit"] == "error"
+    assert checks["konclude-native"] == "error"
+
+
+def test_dl_deployment_copies_installer_and_requires_native_backend(config, monkeypatch):
+    inventory = load_physical_inventory(config.resolve(config.topology_file))
+    monkeypatch.setattr(physical_cluster, "_verify_key_auth", lambda _: None)
+    monkeypatch.setattr(physical_cluster, "_verify_remote_dependencies", lambda _: None)
+    commands = []
+    monkeypatch.setattr(physical_cluster, "_run", commands.append)
+    physical_cluster.deploy_cluster(config.root, inventory, with_dl_reasoners=True)
+    installs = [c for c in commands if 'tools/install_owl_reasoners.py' in c[-1]]
+    assert len(installs) == 4
+    assert all('--skip-konclude' not in c[-1] for c in installs)
+    copies = [c for c in commands if c[0] == 'rsync']
+    assert any(str(config.root / 'tools') in c for c in copies)
+    assert not any(str(config.root / '.runtime') in c for c in copies)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Read-only OWLAPI consistency check using an external reasoner classpath.
 
-Optional release validation, not part of timed RDFS/OWL-RL benchmarks. Requires
+Release and native runtime validation, separate from timed benchmarks. Requires
 Java 11+ (Java 17 recommended); Python uses only its standard library. Nothing
 is downloaded, installed or modified in Protégé. Nested dependency jars are
 extracted into a temporary directory and removed after the check.
@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -150,7 +151,10 @@ def main(argv: list[str] | None = None) -> int:
             log_config.write_text(
                 '<configuration><root level="WARN"/></configuration>\n'
             )
-            command = [java, "-Xmx2g", f"-Dlogback.configurationFile={log_config}",
+            heap = os.environ.get("CONTINUUM_OWL_JAVA_HEAP", "2g")
+            if not re.fullmatch(r"[1-9][0-9]*[kKmMgG]?", heap):
+                raise ValueError("CONTINUUM_OWL_JAVA_HEAP must be a Java heap size such as 512m or 2g")
+            command = [java, f"-Xmx{heap}", f"-Dlogback.configurationFile={log_config}",
                        "-cp", classpath, str(ROOT / "tools/owl/CheckOntology.java"),
                        str(ontology), OWLAPI_FACTORIES[args.reasoner]]
             started = time.perf_counter()

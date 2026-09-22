@@ -11,7 +11,7 @@ executed through the physical continuum deployment adapter.
 | Study module | `src/continuum_bench/monitoring/study` | Reproducible workload traces, mobility models, link estimates, SPARQL feature extraction and category-cost aggregation. |
 | Worker runtime | `src/continuum_bench/node.py` | Identical HTTP worker executed on physical nodes. |
 | Physical lifecycle | `src/continuum_bench/physical_cluster.py` | SSH authorization, deployment, start, status and stop operations. |
-| Placement | `src/continuum_bench/monitoring/sharded.py`, `src/continuum_bench/monitoring/physical.py` | Authority-sharded and replicated execution over real endpoints. |
+| Placement | `src/continuum_bench/monitoring/distributed_ontology.py`, `src/continuum_bench/monitoring/physical.py` | Authority-distributed and replicated execution over real endpoints. |
 | Product matrix | `src/continuum_bench/monitoring/engines.py`, `engine-service` | RDFLib, Jena, RDF4J and Oxigraph execution under one wire contract. |
 | OWL consistency | `src/continuum_bench/owl_validation.py`, `tools/owl` | Separate HermiT, Openllet, JFact and Konclude validation gate. |
 
@@ -25,7 +25,7 @@ on the deployment lifecycle.
 2. SSH lifecycle commands start the same worker implementation.
 3. Each node starts an HTTP worker with its own tier, categories, authority flag
    and topology fingerprint.
-4. The coordinator runs either a sharded or replicated monitoring benchmark.
+4. The coordinator runs either a distributed or replicated monitoring benchmark.
 5. Every measurement point is bounded by configurable timeouts.
 6. Target-separated CSV measurements and JSON metadata are written under
    `outputs/` for direct comparison.

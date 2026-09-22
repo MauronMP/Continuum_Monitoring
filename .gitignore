@@ -22,11 +22,7 @@ dist/
 target/
 *.class
 # Benchmark outputs and scratch files
-# Benchmark outputs and scratch files
-outputs/*
-!outputs/experiments/
-!outputs/paper/
-!outputs/physical/
+outputs/
 work/
 tmp/
 *.log

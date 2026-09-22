@@ -1,5 +1,7 @@
 # User guide
 
+For the current end-to-end launch procedure, see [Run all physical tests](design/RUN_ALL_TESTS.md).
+
 This page contains the workflow shared by every execution target. Operational
 instructions are intentionally separated:
 
@@ -29,13 +31,13 @@ continuum-bench topology validate --name physical
 continuum-bench validate
 continuum-bench preflight
 continuum-bench owl-validate
-python -m pytest
+CONTINUUM_TEST_NATIVE_OWL=1 python -m pytest
 python3 tools/check_documentation.py
 ```
 
-`validate` covers RDF parsing, SHACL, query contracts and the portable
-`rdfs`, `owlrl` and `rdfs_owlrl` materializers. External OWL 2 DL consistency
-is separate. After installing HermiT, Openllet, JFact and Konclude, run the
+`validate` covers RDF parsing, SHACL, query contracts and the configured
+materializers (RDFS and the four external reasoners in the default configuration).
+External OWL 2 DL consistency is a separate check. After installing HermiT, Openllet, JFact and Konclude, run the
 strict gate:
 
 ```bash
@@ -61,7 +63,7 @@ Choose the smallest family that answers the research question:
 
 - Smoke tests verify that the infrastructure and execution path work.
 - Normal cumulative/scalability benchmarks measure category growth and RDF
-  volume/user growth under `sharded` or `replicated` placement.
+  volume/user growth under `distributed` or `replicated` placement.
 - Load benchmarks stress independent demand dimensions and collect
   request-level latency, throughput, loss, accuracy, recovery and resources.
 - Experiments isolate scale-out, hardware reasoning and genuinely distributed

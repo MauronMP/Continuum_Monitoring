@@ -87,6 +87,23 @@ def test_checker_timeout_is_not_reported_as_consistency(checker, tmp_path, monke
     assert not output.exists()
 
 
+def test_checker_uses_configured_heap(checker, tmp_path, monkeypatch):
+    ontology = tmp_path / "ontology.ttl"
+    ontology.write_text("# fixture\n")
+    monkeypatch.setenv("CONTINUUM_OWL_JAVA_HEAP", "512m")
+    monkeypatch.setattr(checker.shutil, "which", lambda _: "/usr/bin/java")
+
+    def run(command, **kwargs):
+        assert "-Xmx512m" in command
+        report = {"consistent": True, "owl2_dl_profile": True,
+                  "unsatisfiable_classes": []}
+        return subprocess.CompletedProcess(command, 0,
+            checker.REPORT_PREFIX + json.dumps(report), "")
+
+    monkeypatch.setattr(checker.subprocess, "run", run)
+    assert checker.main([str(ontology), "--classpath", "fixture.jar"]) == 0
+
+
 @pytest.mark.owl_consistency
 def test_canonical_ontology_with_installed_protege_hermit(checker, tmp_path):
     try:

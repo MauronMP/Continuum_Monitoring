@@ -6,7 +6,7 @@ from pathlib import Path
 
 @contextmanager
 def physical_lease(root: Path):
-    directory = root/'outputs/physical/runtime'
+    directory = root/'outputs/runtime/physical'
     directory.mkdir(parents=True, exist_ok=True)
     with (directory/'coordinator.lock').open('a+') as handle:
         try:

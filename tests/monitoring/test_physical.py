@@ -10,11 +10,11 @@ def test_physical_inventory_has_expected_addresses(config):
     endpoints = inventory_endpoints(config.resolve(config.topology_file))
 
     assert endpoints == [
-        "http://127.0.0.1:8391",
-        "http://10.151.73.241:8391",
-        "http://10.151.73.34:8391",
-        "http://10.151.73.143:8391",
-        "http://10.151.73.173:8391",
+        "http://100.86.63.53:8391",
+        "http://100.93.73.27:8391",
+        "http://100.101.178.35:8391",
+        "http://100.70.9.117:8391",
+        "http://100.121.135.60:8391",
     ]
 
 

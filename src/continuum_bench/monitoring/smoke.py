@@ -101,7 +101,7 @@ def _require_completed_summaries(paths: list[Path]) -> int:
 def _run_monitoring(target: str, suite: str) -> int:
     root = _project_root()
     arguments = list(sys.argv[1:])
-    layout = _option(arguments, "--layout", "sharded")
+    layout = _option(arguments, "--layout", "distributed")
     default_output = f"outputs/smoke/{target}-monitoring"
     output = _option(arguments, "--output-dir", default_output)
     status = main(

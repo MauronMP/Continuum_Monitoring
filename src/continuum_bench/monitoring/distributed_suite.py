@@ -6,7 +6,7 @@ from pathlib import Path
 
 from ..config import BenchmarkConfig
 from ..physical import run_physical_cumulative, run_physical_scalability
-from ..sharded import run_sharded_cumulative, run_sharded_scalability
+from .distributed_ontology import run_distributed_cumulative, run_distributed_scalability
 from ..topology import Topology
 
 
@@ -21,12 +21,12 @@ def run_distributed_monitoring_suite(
 ) -> dict[str, str]:
     if suite not in {"cumulative", "scalability", "all"}:
         raise ValueError("suite must be cumulative, scalability or all")
-    if layout not in {"replicated", "sharded"}:
-        raise ValueError("layout must be replicated or sharded")
+    if layout not in {"replicated", "distributed"}:
+        raise ValueError("layout must be replicated or distributed")
     endpoints = topology.endpoints()
     output = output_root / layout
-    if layout == "sharded":
-        runners = (run_sharded_cumulative, run_sharded_scalability)
+    if layout == "distributed":
+        runners = (run_distributed_cumulative, run_distributed_scalability)
         options = {
             "target": topology.kind,
             "topology": topology,
@@ -37,7 +37,7 @@ def run_distributed_monitoring_suite(
         options = {}
 
     def invoke(runner):
-        if layout == "sharded":
+        if layout == "distributed":
             return runner(config, endpoints, output, **options)
         return runner(config, topology, output)
     results: dict[str, str] = {}

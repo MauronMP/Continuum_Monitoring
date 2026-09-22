@@ -6,7 +6,7 @@ from continuum_bench.experiment_reporting import plot_experiment_coverage
 
 
 def test_experiment_coverage_keeps_timeouts_and_failures(tmp_path):
-    summary = tmp_path / "physical/scale-out/summary.csv"
+    summary = tmp_path / "scale-out/summary.csv"
     summary.parent.mkdir(parents=True)
     with summary.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=("reasoner", "status"))

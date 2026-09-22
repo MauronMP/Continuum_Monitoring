@@ -24,10 +24,10 @@ from rdflib import Graph
 
 from .config import load_config
 from .ontology import load_graph
-from .partitioning import build_role_graph, privacy_violations
+from .partitioning import deserialize_fragment, privacy_violations
 from .protocol import WORKER_PROTOCOL_VERSION, WORKER_SERVICE
 from .queries import execute_query, execute_query_detailed, load_catalog
-from .reasoners import REASONING_CONTRACT, materialize
+from .reasoners import REASONING_CONTRACT, available_reasoners, materialize
 from .specification import ONTOLOGY_REVISION, ONTOLOGY_VERSION
 from .synthetic import (
     add_synthetic_data,
@@ -43,6 +43,19 @@ def _peak_rss_kib() -> int:
     value = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     # Linux reports KiB while Darwin reports bytes.
     return value // 1024 if sys.platform == "darwin" else value
+
+
+def _children_usage() -> tuple[float, int]:
+    """Cumulative CPU and lifetime high-water RSS of waited-for children.
+
+    RUSAGE_CHILDREN excludes running/unreaped children. Its ru_maxrss is
+    neither a per-preparation delta nor simultaneous process-tree memory.
+    """
+    usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+    peak = int(usage.ru_maxrss)
+    if sys.platform == "darwin":
+        peak //= 1024
+    return (usage.ru_utime + usage.ru_stime) * 1000, peak
 
 
 def _current_rss_kib() -> int:
@@ -167,7 +180,7 @@ class NodeRuntime:
             self.authority = self.tier in {"edge", "iot"}
             self.categories = default_categories(self.tier)
         self.config = load_config(root / "configs/benchmark.toml")
-        # The full logical graph is loaded lazily. Sharded workers otherwise
+        # The full logical graph is loaded lazily. Distributed workers otherwise
         # paid the memory cost of a replica they never queried.
         self.base_graph: Graph | None = None
         self.catalog = {
@@ -214,10 +227,12 @@ class NodeRuntime:
         target_triples: int = 0,
         padding_mode: str = "semantic",
         phase_timeout_seconds: float = 0,  # coordinator-only metadata
+        fragment: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         with self.lock:
             io_read_before, io_write_before = _process_io_bytes()
             cpu_started = process_time_ns()
+            children_cpu_before, _ = _children_usage()
             started = perf_counter_ns()
             if mode == "replicated":
                 source = self._copy(self._logical_base())
@@ -228,23 +243,14 @@ class NodeRuntime:
                 generation_ms = (
                     perf_counter_ns() - generated_at
                 ) / 1_000_000
-            elif mode == "partitioned":
-                topology = getattr(self, "topology", None)
-                if topology is None:
-                    source, fragments = build_role_graph(
-                        self.config,
-                        self.role,
-                        users,
-                        seed,
+            elif mode in {"distributed", "partitioned"}:
+                if rule_count or target_triples:
+                    raise ValueError(
+                        "Distributed fragments must include coordinator-generated data"
                     )
-                else:
-                    source, fragments = build_role_graph(
-                        self.config,
-                        self.role,
-                        users,
-                        seed,
-                        topology=topology,
-                    )
+                source, fragments = deserialize_fragment(
+                    fragment, self.role, users=users, seed=seed,
+                )
                 clone_ms = 0.0
                 generation_ms = (
                     perf_counter_ns() - started
@@ -252,7 +258,7 @@ class NodeRuntime:
                 synthetic_triples = fragments.synthetic_triples
             else:
                 raise ValueError(
-                    f"Unknown data mode {mode!r}; use replicated or partitioned"
+                    f"Unknown data mode {mode!r}; use replicated or distributed"
                 )
             violations = (
                 privacy_violations(
@@ -261,7 +267,7 @@ class NodeRuntime:
                     fragments.sensitive_resources,
                     authority=getattr(self, "authority", None),
                 )
-                if mode == "partitioned"
+                if mode in {"distributed", "partitioned"}
                 else []
             )
             if violations:
@@ -269,12 +275,13 @@ class NodeRuntime:
                     f"Privacy gate rejected {len(violations)} facts on "
                     f"{self.role}: {violations[0]}"
                 )
-            rule_triples = add_synthetic_rules(source, rule_count)
-            padding_triples = pad_to_target_triples(
-                source,
-                target_triples,
-                mode=padding_mode,
-            )
+            rule_triples = 0
+            padding_triples = 0
+            if fragments is None:
+                rule_triples = add_synthetic_rules(source, rule_count)
+                padding_triples = pad_to_target_triples(
+                    source, target_triples, mode=padding_mode,
+                )
             reasoning = materialize(source, reasoner)
             self.graph = reasoning.graph
             self.reasoner = reasoner
@@ -284,7 +291,9 @@ class NodeRuntime:
             self.target_triples = target_triples
             self.padding_mode = padding_mode
             self.mode = mode
+            self.fragment = dict(fragment) if fragment is not None else None
             process_cpu_ms = (process_time_ns() - cpu_started) / 1_000_000
+            children_cpu_after, child_peak_rss = _children_usage()
             io_read_after, io_write_after = _process_io_bytes()
             tier_name = getattr(self, "tier", None)
             if not tier_name:
@@ -295,6 +304,10 @@ class NodeRuntime:
                 "tier_name": tier_name,
                 "mode": mode,
                 "reasoner": reasoner,
+                **({"fragment_sha256": fragment["sha256"],
+                    "fragment_contract": fragment["contract"],
+                    "reasoning_scope": "local-fragment-closure"}
+                   if fragments is not None else {}),
                 "synthetic_users": users,
                 "synthetic_triples": synthetic_triples,
                 "synthetic_rule_count": rule_count,
@@ -316,7 +329,14 @@ class NodeRuntime:
                 ),
                 "output_triples": reasoning.output_triples,
                 "inferred_triples": reasoning.inferred_triples,
+                "children_cpu_ms": max(children_cpu_after - children_cpu_before, 0.0),
+                "children_cpu_scope": "waited-for-children-phase-delta",
+                "child_peak_rss_kib_lifetime": child_peak_rss,
+                "child_peak_rss_scope": "waited-for-children-lifetime-high-water",
                 "process_cpu_ms": process_cpu_ms,
+                "process_cpu_scope": "worker-process-only-phase-delta",
+                "current_rss_scope": "worker-process-only-current-or-lifetime-peak-fallback",
+                "peak_rss_scope": "worker-process-only-lifetime-high-water",
                 "current_rss_kib": _current_rss_kib(),
                 "peak_rss_kib": _peak_rss_kib(),
                 "disk_read_bytes": max(io_read_after - io_read_before, 0),
@@ -359,6 +379,7 @@ class NodeRuntime:
                 rule_count=rule_count,
                 target_triples=target_triples,
                 padding_mode=padding_mode,
+                fragment=getattr(self, "fragment", None),
             )
             result["recovery_ms"] = (
                 perf_counter_ns() - started
@@ -411,6 +432,9 @@ class NodeRuntime:
                     float(item["duration_ms"]) for item in measurements
                 ),
                 "process_cpu_ms": process_cpu_ms,
+                "process_cpu_scope": "worker-process-only-phase-delta",
+                "current_rss_scope": "worker-process-only-current-or-lifetime-peak-fallback",
+                "peak_rss_scope": "worker-process-only-lifetime-high-water",
                 "current_rss_kib": _current_rss_kib(),
                 "peak_rss_kib": _peak_rss_kib(),
                 "disk_read_bytes": max(io_read_after - io_read_before, 0),
@@ -462,6 +486,8 @@ class Handler(BaseHTTPRequestHandler):
                 "ontology_revision": ONTOLOGY_REVISION,
                 "query_count": len(runtime.catalog),
                 "reasoning_contract": REASONING_CONTRACT,
+                "registered_reasoners": list(available_reasoners()),
+                "backend_availability": "verify-native-runtimes-before-benchmark",
                 "node_id": runtime.node_id,
                 "role": runtime.role,
                 "tier": runtime.tier,
@@ -524,6 +550,7 @@ class Handler(BaseHTTPRequestHandler):
                         return
                 elif self.path == "/prepare":
                     result = self.server.runtime.prepare(
+                        fragment=payload.get("fragment"),
                         reasoner=str(payload["reasoner"]),
                         users=int(payload.get("users", 0)),
                         seed=int(payload.get("seed", 2026)),

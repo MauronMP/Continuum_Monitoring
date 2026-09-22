@@ -1,5 +1,7 @@
 # English ontology and Protégé validation
 
+For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
+
 ## Which file to open
 
 Open `ontology/legacy/smartcity_continuum-v3.0.0.ttl` with **File → Open**.
@@ -79,9 +81,9 @@ From the repository root, with the project Python environment installed:
 # Regenerate runtime assets after editing the canonical source
 .venv/bin/python tools/migrate_assets.py
 
-# Datatype guards, 115 queries, SHACL, three entailment profiles and partitioning
+# Datatype guards, 115 queries, SHACL, configured reasoners and partitioning
 .venv/bin/continuum-bench validate
-.venv/bin/python -m pytest
+CONTINUUM_TEST_NATIVE_OWL=1 .venv/bin/python -m pytest
 
 # OWL 2 DL profile + HermiT consistency, outside timed benchmarks
 python3 tools/check_owl_consistency.py --require-dl-profile \

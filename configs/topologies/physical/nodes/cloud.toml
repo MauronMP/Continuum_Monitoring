@@ -4,8 +4,8 @@ tier = "cloud"
 [[nodes]]
 id = "cloud"
 device_type = "coordinator"
-host = "127.0.0.1"
-endpoint = "http://127.0.0.1:8391"
+host = "100.86.63.53"
+endpoint = "http://100.86.63.53:8391"
 local = true
 port = 8391
 authority = false

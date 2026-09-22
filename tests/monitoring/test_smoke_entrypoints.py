@@ -20,7 +20,7 @@ def test_smoke_cumulative_uses_isolated_output_and_passes_arguments(
     (tmp_path / "configs").mkdir()
     summary = (
         tmp_path
-        / "outputs/smoke/physical-monitoring/sharded/cumulative/summary.csv"
+        / "outputs/smoke/physical-monitoring/distributed/cumulative/summary.csv"
     )
     _write_summary(summary, ["completed"])
     monkeypatch.setattr(

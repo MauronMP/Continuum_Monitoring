@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from .figure_style import save_png
 
-COLORS = {'rdfs':'#0072B2', 'owlrl':'#D55E00', 'rdfs_owlrl':'#009E73'}
-LABELS = {'rdfs':'RDFS', 'owlrl':'OWL RL', 'rdfs_owlrl':'RDFS + OWL RL'}
+from .report_profiles import COLORS, LABELS, LAYOUTS, CURRENT_LAYOUTS, observed_profiles, outcome
+
 STATUS = {'completed':'#009E73','timeout':'#E69F00','skipped':'#999999','failed':'#CC79A7'}
 
 
@@ -31,14 +31,6 @@ def number(row, key):
     return value if math.isfinite(value) else None
 
 
-def outcome(row):
-    value = row.get('status','unknown')
-    if value == 'completed': return 'completed'
-    if value.startswith('skipped'): return 'skipped'
-    if 'timeout' in value: return 'timeout'
-    return 'failed'
-
-
 def write_csv(path, rows):
     if not rows: return
     path.parent.mkdir(parents=True,exist_ok=True)
@@ -51,7 +43,7 @@ def figure_group(name):
     if name.startswith(('node-', 'continuum-layer-', 'hardware-')): return 'nodes-and-layers'
     if name.startswith(('query-', 'expensive-')): return 'queries'
     if name.startswith(('category-', 'policy-')): return 'categories-and-policies'
-    if name.startswith(('placement-', 'sharded-', 'replicated-', 'physical-scale-', 'distributed-ontology-')): return 'scalability-and-placement'
+    if name.startswith(('placement-', 'sharded-', 'replicated-', 'physical-scale-', 'distributed-')): return 'scalability-and-placement'
     if name.startswith('network-'): return 'network-scenarios'
     if name.startswith('extended-'): return 'recovery-and-validation'
     return 'coverage-and-integrity'
@@ -75,7 +67,10 @@ class Report:
         return rows
 
     def save(self,fig,name,caption):
-        title=name.replace('rdfs_owlrl','RDFS + OWL RL').replace('owlrl','OWL RL').replace('rdfs','RDFS').replace('-',' ').replace('_',' ')
+        title=name
+        for key in sorted(LABELS, key=len, reverse=True):
+            title=title.replace(key,LABELS[key])
+        title=title.replace('-',' ').replace('_',' ')
         fig.suptitle(title[:1].upper()+title[1:],fontsize=15,fontweight='bold')
         fig.text(.01,.005,caption,fontsize=9,ha='left',va='bottom')
         fig.tight_layout(rect=(0,.09,1,.94))
@@ -134,16 +129,16 @@ class Report:
         axes[0].set_xticks(range(len(labels)),[f'{d}\n{LABELS.get(r,r)}' for d,r in labels],rotation=70,ha='right',fontsize=8)
         axes[0].set_ylabel('Recorded points');axes[0].legend(fontsize=8)
         measured=[r for r in rows if outcome(r)!='skipped' and number(r,'event_loss_percent') is not None]
-        for reasoner in COLORS:
+        for reasoner in observed_profiles(measured):
             selected=[r for r in measured if r.get('reasoner')==reasoner]
-            axes[1].scatter([number(r,xfield) for r in selected],[number(r,'event_loss_percent') for r in selected],label=LABELS[reasoner],color=COLORS[reasoner],alpha=.7)
+            axes[1].scatter([number(r,xfield) for r in selected],[number(r,'event_loss_percent') for r in selected],label=LABELS.get(reasoner,reasoner),color=COLORS.get(reasoner),alpha=.7)
         ticks=sorted({number(r,xfield) for r in measured if number(r,xfield) is not None})
         if len(ticks)<=8: axes[1].set_xticks(ticks)
         axes[1].set_xlabel(xfield.replace('_',' ').title());axes[1].set_ylabel('Unserved scheduled events (%)');axes[1].set_ylim(-2,102);axes[1].legend();axes[1].grid(alpha=.2)
         self.save(fig,name,'Failure diagnosis, not throughput or packet loss. Unserved events include failed preparation; skipped profiles have no observations.')
 
     def policy_costs(self):
-        events=self.read(self.inputs/'load/physical/event-runs.csv')
+        events=self.read(self.inputs/'load/event-runs.csv')
         counts=Counter((r.get('profile','unknown'),r.get('reasoner','unknown')) for r in events if r.get('processed','').lower()=='true')
         reasoners={r for _,r in counts}; profiles={p for p,_ in counts}
         shared=[p for p in profiles if all(counts[p,r]>0 for r in reasoners)]
@@ -181,18 +176,18 @@ class Report:
                 values=[r[key]/div if r[key] is not None else np.nan for r in selected]
                 ax.barh(labels,values,color=COLORS.get(reasoner));ax.set_xlabel(label);ax.grid(axis='x',alpha=.2)
             self.save(fig,f'category-cost-{reasoner}',f'Conditional on completed requests; n=completed/attempted. CPU is batch-attributed; RSS is process memory. Matched profile: {selected_profile}.')
-        for reasoner in COLORS:
+        for reasoner in observed_profiles(summaries):
             selected=sorted([r for r in summaries if r['reasoner']==reasoner],key=lambda r:r['engine_duration_ms_sum'] or -1)
             if not selected:continue
             fig,axes=plt.subplots(1,3,figsize=(18,max(5,len(selected)*.32)),sharey=True)
             labels=[f"{r['category']} (n={r['completed']})" for r in selected]
             for ax,key,label,div in zip(axes,['engine_duration_ms_median','engine_duration_ms_p95','engine_duration_ms_sum'],['Median query time (ms)','p95 query time (ms)','Total observed query time (s)'],[1,1,1000]):
-                ax.barh(labels,[r[key]/div if r[key] is not None else np.nan for r in selected],color=COLORS[reasoner]);ax.set_xlabel(label);ax.grid(axis='x',alpha=.2)
+                ax.barh(labels,[r[key]/div if r[key] is not None else np.nan for r in selected],color=COLORS.get(reasoner));ax.set_xlabel(label);ax.grid(axis='x',alpha=.2)
             self.save(fig,f'category-tail-and-total-{reasoner}',f'Matched profile {selected_profile}; completed requests only. Median, tail latency and frequency-weighted cost answer different questions. Small n limits p95 stability.')
         from ..queries import load_catalog
         from .study.sparql import characterize_query
         specs={spec.id:spec for spec in load_catalog(self.root/'queries/catalog.csv',self.root)}
-        for reasoner in COLORS:
+        for reasoner in observed_profiles(events):
             query_groups=defaultdict(list)
             for event in events:
                 if event.get('reasoner')==reasoner and event.get('processed','').lower()=='true' and number(event,'engine_duration_ms') is not None:
@@ -200,7 +195,7 @@ class Report:
             points=[(qid,characterize_query(specs[qid]).structural_complexity,statistics.median(values),len(values)) for qid,values in query_groups.items() if qid in specs]
             if not points:continue
             fig,ax=plt.subplots(figsize=(10,5))
-            ax.scatter([p[1] for p in points],[p[2] for p in points],s=[20+5*p[3] for p in points],alpha=.6,color=COLORS[reasoner],label=LABELS[reasoner])
+            ax.scatter([p[1] for p in points],[p[2] for p in points],s=[20+5*p[3] for p in points],alpha=.6,color=COLORS.get(reasoner),label=LABELS.get(reasoner,reasoner))
             for index,(qid,x,y,n) in enumerate(sorted(points,key=lambda p:p[2],reverse=True)[:5]):
                 ax.annotate(qid,(x,y),xytext=(.78,.90-index*.1),textcoords='axes fraction',fontsize=9,arrowprops={'arrowstyle':'-','color':'#666666','lw':.6})
             ax.set_yscale('log');ax.set_xlabel('Static SPARQL structural-complexity score');ax.set_ylabel('Median observed query execution (ms)');ax.legend();ax.grid(alpha=.2)
@@ -213,10 +208,10 @@ class Report:
                 'attributed_query_ms':sum(number(r,'engine_duration_ms')*w for r,w in measured),
                 'mean_query_ms':sum(number(r,'engine_duration_ms')*w for r,w in measured)/weight if weight else None})
         write_csv(self.output/'policy-cost-by-reasoner.csv',policy_rows)
-        for reasoner in COLORS:
+        for reasoner in observed_profiles(policy_rows):
             selected=sorted([r for r in policy_rows if r['reasoner']==reasoner and r['mean_query_ms'] is not None],key=lambda r:r['attributed_query_ms'])[-15:]
             if not selected:continue
-            fig,ax=plt.subplots(figsize=(10,6));ax.barh([r['policy'] for r in selected],[r['attributed_query_ms']/1000 for r in selected],color=COLORS[reasoner]);ax.set_xlabel('Attributed total query execution (s)');ax.grid(axis='x',alpha=.2)
+            fig,ax=plt.subplots(figsize=(10,6));ax.barh([r['policy'] for r in selected],[r['attributed_query_ms']/1000 for r in selected],color=COLORS.get(reasoner));ax.set_xlabel('Attributed total query execution (s)');ax.grid(axis='x',alpha=.2)
             self.save(fig,f'policy-total-cost-{reasoner}',f'Top 15 observed costs in profile {selected_profile}. Multi-policy queries contribute 1/N each. Total cost combines frequency and duration; incomplete workload.')
 
     def audit(self,datasets):
@@ -230,7 +225,7 @@ class Report:
                     if field.endswith(('_ms','_kib','_bytes')):
                         v=number(row,field)
                         if v is not None and v<0:self.checks.append({'dataset':name,'row':index,'check':f'negative {field}','status':'failed'})
-        for base in (self.inputs/'physical',self.inputs/'experiments/physical'):
+        for base in (self.inputs/'monitoring',self.inputs/'experiments'):
             for path in base.rglob('result-validation.csv'):
                 rows=self.read(path);invalid=sum(r.get('valid','').lower()!='true' for r in rows)
                 self.checks.append({'dataset':str(path),'check':'canonical result equivalence','rows':len(rows),'invalid':invalid,'status':'failed' if invalid else 'passed'})
@@ -246,7 +241,7 @@ class Report:
         speed=settings['propagation_speed_km_s']; base=settings['base_rtt_ms']
         if not all(math.isfinite(float(v)) for v in [*distances,*bandwidths,speed,base]) or not distances or not bandwidths or speed<=0 or base<0 or min(distances)<0 or min(bandwidths)<=0:
             raise ValueError('Network scenarios require nonnegative distances and positive bandwidth/speed')
-        events=self.read(self.inputs/'load/physical/event-runs.csv')
+        events=self.read(self.inputs/'load/event-runs.csv')
         successful=[r for r in events if r.get('processed','').lower()=='true']
         sizes=[number(r,'request_bytes')+number(r,'response_bytes') for r in successful
                if number(r,'request_bytes') is not None and number(r,'response_bytes') is not None]
@@ -259,10 +254,10 @@ class Report:
             axes[0].plot(distances,delay,marker='o',label=f'{bandwidth:g} Mbps')
             for d,t in zip(distances,delay):estimates.append({'scenario_distance_km':d,'bandwidth_mbps':bandwidth,'base_rtt_ms':base,'propagation_speed_km_s':speed,'observed_median_payload_bytes':payload,'model_transport_ms':t,'kind':'analytical scenario; not a measured link'})
         axes[0].set_xscale('symlog',linthresh=.1);axes[0].set_xlabel('Scenario distance (km)');axes[0].set_ylabel('Estimated request + response transport (ms)');axes[0].legend();axes[0].grid(alpha=.2)
-        for reasoner in COLORS:
+        for reasoner in observed_profiles(successful):
             values=[v for r in successful if r.get('reasoner')==reasoner and (v:=number(r,'latency_ms')) is not None and (q:=number(r,'engine_duration_ms')) is not None]
             overhead=[max(0,number(r,'latency_ms')-number(r,'engine_duration_ms')) for r in successful if r.get('reasoner')==reasoner and number(r,'latency_ms') is not None and number(r,'engine_duration_ms') is not None]
-            if overhead:axes[1].bar(LABELS[reasoner],statistics.median(overhead),color=COLORS[reasoner])
+            if overhead:axes[1].bar(LABELS.get(reasoner,reasoner),statistics.median(overhead),color=COLORS.get(reasoner))
         axes[1].set_ylabel('Observed median non-query latency (ms)');axes[1].grid(axis='y',alpha=.2)
         self.save(fig,'network-scenarios-and-observed-overhead',f'Left: analytical model; payload median={payload:.0f} bytes, base RTT={base:g} ms. Right: queueing + transport + serialization; not a geographic-distance measurement.')
         write_csv(self.output/'network-scenarios.csv',estimates)
@@ -280,7 +275,7 @@ class Report:
         labels=[f"{LABELS.get(r['reasoner'],r['reasoner'])} / {r['profile']} / rep {r['repetition']}" for r in completed]
         left=np.zeros(len(completed))
         for key,label,color in [('prepare_wall_ms','Preparation','#56B4E9'),('workload_wall_ms','Event workload','#E69F00'),('recovery_wall_ms','Recovery','#009E73')]:
-            values=[(number(r,key) or 0)/1000 for r in completed]
+            values=[value/1000 if (value:=number(r,key)) is not None else np.nan for r in completed]
             axes[0].barh(labels,values,left=left,label=label,color=color);left+=values
         axes[0].set_xlabel('Observed phase wall time (s)');axes[0].legend(loc='upper center',bbox_to_anchor=(.5,1.16),ncol=3,fontsize=9);axes[0].grid(axis='x',alpha=.2)
         axes[1].barh(labels,[100*float(r['events_processed'])/float(r['events_offered']) for r in completed],color='#009E73')
@@ -291,23 +286,41 @@ class Report:
 
     def run(self):
         datasets={}
-        for layout in ('sharded','replicated'):
+        for layout in CURRENT_LAYOUTS:
             for suite in ('cumulative','scalability'):
-                rows=self.read(self.inputs/f'physical/{layout}/{suite}/summary.csv')
+                rows=self.read(self.inputs/f'monitoring/{layout}/{suite}/summary.csv')
+                validation_path = self.inputs/f'monitoring/{layout}/{suite}/result-validation.csv'
+                validations = self.read(validation_path) if validation_path.is_file() else []
+                invalid_reasoners = {
+                    row.get('reasoner') for row in validations
+                    if row.get('valid', '').lower() != 'true'
+                }
+                if invalid_reasoners:
+                    rows = [
+                        ({**row, 'status': 'invalid_results',
+                          'error': 'At least one distributed result differs from the canonical reference'}
+                         if row.get('reasoner') in invalid_reasoners and outcome(row) == 'completed'
+                         else row)
+                        for row in rows
+                    ]
+                    self.findings.append(
+                        f'{layout}/{suite}: excluded semantically invalid profiles '
+                        f'{sorted(invalid_reasoners)} from performance curves.'
+                    )
                 if rows:
                     datasets[f'{layout}/{suite}']=rows
                     self.curves(rows,'stage' if suite=='cumulative' else 'synthetic_users', [('total_wall_ms','Total wall time (s)',1000),('max_node_reasoning_ms','Critical reasoning (s)',1000),('query_wall_ms','Query wall time (s)',1000)],f'{layout}-{suite}-time')
                     self.curves(rows,'stage' if suite=='cumulative' else 'synthetic_users',[('total_process_cpu_ms','Aggregate process CPU (s)',1000),('max_node_peak_rss_kib','Maximum node peak RSS (MiB)',1024)],f'{layout}-{suite}-resources')
-        load=self.read(self.inputs/'load/physical/summary.csv')
+        load=self.read(self.inputs/'load/summary.csv')
         if load:datasets['physical/load']=load;self.failure_diagnostics(load)
         for suite in ('scale-out','reasoning-hardware','distributed-ontology'):
-            rows=self.read(self.inputs/f'experiments/physical/{suite}/summary.csv')
+            rows=self.read(self.inputs/f'experiments/{suite}/summary.csv')
             if not rows:continue
             datasets[suite]=rows
             if suite=='scale-out':self.curves(rows,'node_count',[('queries_per_second','Throughput (queries/s)',1),('query_latency_p95_ms','p95 query latency (ms)',1)],'physical-scale-out')
             elif suite=='distributed-ontology':self.curves(rows,'synthetic_users',[('total_wall_ms','Total wall time (s)',1000),('max_sum_node_current_rss_kib','Aggregate current RSS (MiB)',1024),('total_process_cpu_ms','Aggregate CPU time (s)',1000)],'distributed-ontology-cost')
             else:
-                for reasoner in COLORS:
+                for reasoner in observed_profiles(rows):
                     for dimension in sorted({r['dimension'] for r in rows}):
                         selected=[r for r in rows if r['reasoner']==reasoner and r['dimension']==dimension]
                         self.curves(selected,'dimension_value',[('reasoning_ms','Reasoning time (s)',1000),('process_cpu_ms','Process CPU (s)',1000),('current_rss_kib','Current RSS (MiB)',1024)],f'hardware-{dimension}-{reasoner}',group='role')

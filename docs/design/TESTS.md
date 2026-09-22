@@ -1,5 +1,7 @@
 # Test and validation catalogue
 
+For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
+
 The project separates software checks, semantic validation, smoke tests and
 measurement campaigns. A command returning zero only certifies the contract of
 that command; it does not imply scientific acceptance of every requirement.
@@ -34,7 +36,7 @@ orchestrates all physical benchmark families and acceptance checks.
 ## Software and documentation checks
 
 ```bash
-python -m pytest
+CONTINUUM_TEST_NATIVE_OWL=1 python -m pytest
 continuum-bench preflight
 python3 tools/check_documentation.py
 git diff --check
@@ -52,8 +54,8 @@ continuum-bench owl-validate
 continuum-bench owl-validate --require-all
 ```
 
-The first command runs the internal RDF/SHACL/query battery and the three
-portable materialization profiles. The second invokes every available external
+The first command runs the internal RDF/SHACL/query battery and the five
+configured materialization profiles. The second invokes every available external
 OWL validator. The strict form requires HermiT, Openllet, JFact and Konclude.
 An unavailable reasoner is reported as unavailable, never as a success.
 
@@ -84,7 +86,7 @@ event loss or incomplete semantic validation. They are not performance
 evidence.
 
 The unit suite also injects simulated HTTP 408/timeout failures into both
-replicated and sharded scalability runners. It verifies that later points for
+replicated and distributed scalability runners. It verifies that later points for
 the affected reasoner become `skipped_after_timeout` while the other reasoners
 still execute. This checks the failure policy without waiting for a real
 deadline.
@@ -103,14 +105,14 @@ It checks already-running native RDFLib, Jena, RDF4J and Oxigraph services.
 Run cumulative and scalability independently:
 
 ```bash
-continuum-bench physical cumulative --layout sharded --ssh-user pi
-continuum-bench physical scalability --layout sharded --ssh-user pi
+continuum-bench physical cumulative --layout distributed --ssh-user pi
+continuum-bench physical scalability --layout distributed --ssh-user pi
 ```
 
 Or run both with `all`:
 
 ```bash
-continuum-bench physical all --layout sharded --ssh-user pi
+continuum-bench physical all --layout distributed --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 ```
 
@@ -147,7 +149,7 @@ continuum-bench experiment all physical
 
 ```bash
 continuum-bench study trace --target physical --output-dir outputs/study/physical
-continuum-bench study category-cost --events outputs/load/physical/event-runs.csv --output-dir outputs/study/physical-cost
+continuum-bench study category-cost --events outputs/load/event-runs.csv --output-dir outputs/study
 continuum-bench report
 continuum-bench load plot
 continuum-bench experiment plot all
@@ -174,8 +176,9 @@ continuum-bench --unlimited --repetitions 5 suite
 continuum-bench --unlimited --repetitions 5 suite --families load experiments campaign report
 ```
 
-The default order is software tests, semantic validation/preflight/strict external
-OWL validation, worker startup, sharded monitoring, replicated monitoring, load,
+The default order is software tests (native OWL enabled), documentation checks,
+semantic validation/preflight/strict external
+OWL validation, worker startup, distributed monitoring, replicated monitoring, load,
 all three experiments, the full ten-axis campaign and publication reporting.
 The separate native semantic-product matrix and study traces are not included.
 The suite starts existing deployments; it does not install workers or authorize SSH.
@@ -198,9 +201,9 @@ Errors, incorrect results, queue loss and disconnections are not hidden.
 
 Each suite creates `outputs/suites/<UTC-time>-<id>/` containing `suite.json`,
 per-step logs, source/dependency provenance, physical/load/experiment/campaign
-results and a `paper/` report. Inspect logs while it runs. A non-zero child exit
-or incomplete monitoring/load/experiment summary makes that step fail; later
-families still execute. Cancellation is manual; a blocked operation may require
+results and a `paper/` report. Inspect logs while it runs. A non-zero child exit, failed result or missing evidence makes that step fail.
+Timeout and skipped summaries retain their distinct statuses; later families
+still execute. Cancellation is manual; a blocked operation may require
 terminating the coordinator and restarting the affected worker. Previous suite
 results are retained. Individual commands using the same output directory can
 replace earlier results, so select a new `--output-dir` for comparisons.

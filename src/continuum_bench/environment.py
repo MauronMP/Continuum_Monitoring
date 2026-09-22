@@ -163,7 +163,7 @@ def physical_checks() -> list[Check]:
             shutil.which(name) or "not installed",
             (
                 "Install openssh-client, ssh-copy-id and rsync on the "
-                "coordinator. Raspberry Pi workers do not need Java."
+                "coordinator. Workers running DL backends also need a target-compatible Java runtime."
             ),
         )
         for name in ("ssh", "ssh-copy-id", "rsync")

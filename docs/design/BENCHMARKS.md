@@ -1,5 +1,7 @@
 # Benchmarks
 
+For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
+
 The monitoring module provides reproducible contracts for
 physical continuum targets.
 
@@ -41,7 +43,7 @@ coverage tables. Layout comparisons require matched workloads and node counts.
 
 ## Layouts
 
-`sharded` distributes ontology fragments and queries according to authority,
+`distributed` distributes ontology fragments and queries according to authority,
 privacy class, tier and category.
 
 `replicated` loads a full replica on every active node and assigns queries using
@@ -64,7 +66,7 @@ Configuration loading rejects duplicate or decreasing scale values within a
 dimension, preventing a manually edited TOML file from invalidating this
 early-stop assumption.
 
-Query batches are interleaved for both replicated and sharded execution so
+Query batches are interleaved for both replicated and distributed execution so
 adjacent costly catalog queries are not concentrated in one HTTP request.
 
 Default full-run ceilings are: monitoring request/phase/point = 60/60/90 s;

@@ -2,6 +2,8 @@
 repetitions = 3
 request_timeout_seconds = 45
 point_timeout_seconds = 60
+# Skip later sizes/repetitions in this experiment after a timeout. Set false to keep going.
+stop_after_timeout = true
 seed = 2026
 query_rounds = 3
 warmup_query_rounds = 1

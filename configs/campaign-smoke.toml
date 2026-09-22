@@ -1,6 +1,6 @@
 [campaign]
 name = "physical-scalability-smoke"
-reasoners = ["rdfs", "owlrl", "rdfs_owlrl"]
+reasoners = ["rdfs", "hermit", "openllet", "jfact", "konclude"]
 modes = ["replicated", "distributed"]
 policy_categories = ["identity_consent", "security_identity", "policy_governance"]
 repetitions = 1

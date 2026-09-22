@@ -4,13 +4,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import lru_cache
+import hashlib
+import json
 from pathlib import Path
 import re
 import tomllib
 from typing import Iterable
 
 from rdflib import Graph, Namespace, RDF, URIRef
-from rdflib.namespace import FOAF
+from rdflib.namespace import FOAF, OWL
 
 from .config import BenchmarkConfig
 from .ontology import load_graph
@@ -220,7 +222,7 @@ def load_substrate(
 
     Without a role this returns the canonical logical substrate. With a role
     it applies the explicit placement manifest, so validation shapes remain at
-    cloud and wellbeing terms are not copied to fog.
+    cloud; imported schema dependencies are included on every dependent tier.
     """
     if role is None:
         paths = [
@@ -237,7 +239,24 @@ def load_substrate(
             raise ValueError(f"Unknown substrate tier {node_tier!r}")
         placement = _placement(config)[node_tier]
         paths = [config.root / str(path) for path in placement["files"]]
-    return load_graph(paths)
+    graph = load_graph(paths)
+    # Resolve schema dependencies on the coordinator before fragment transport.
+    # Never satisfy an import by loading unassigned individuals on a worker.
+    candidates = {}
+    for path in config.ontology_files:
+        if "ontology/examples/" in path.as_posix():
+            continue
+        document = load_graph([config.resolve(path)])
+        for identifier in document.subjects(RDF.type, OWL.Ontology):
+            candidates[identifier] = document
+    while True:
+        missing = set(graph.objects(None, OWL.imports)) - set(graph.subjects(RDF.type, OWL.Ontology))
+        if not missing:
+            return graph
+        for identifier in missing:
+            if identifier not in candidates:
+                raise ValueError(f"Unresolved configured ontology import: {identifier}")
+            _merge(graph, candidates[identifier])
 
 
 @lru_cache(maxsize=None)
@@ -700,3 +719,68 @@ def write_fragments(
         graph.serialize(path, format="turtle")
         paths.append(path)
     return paths
+
+
+FRAGMENT_CONTRACT = "continuum-distributed-rdf-fragment-v1"
+
+
+def _fragment_hash(payload: dict) -> str:
+    return hashlib.sha256(json.dumps(
+        {key: value for key, value in payload.items() if key != "sha256"},
+        sort_keys=True, separators=(",", ":"), ensure_ascii=True,
+    ).encode("utf-8")).hexdigest()
+
+
+def serialize_fragment(
+    fragments: FragmentSet, role: str, *, users: int, seed: int,
+) -> dict:
+    """Transport only assigned RDF; local closure is not distributed DL.
+
+    The checksum binds content and metadata, but is not authentication.
+    """
+    graph = fragments.graphs[role]
+    payload = {
+        "contract": FRAGMENT_CONTRACT, "node_id": role,
+        "users": users, "seed": seed, "format": "nt",
+        "data": graph.serialize(format="nt"), "triples": len(graph),
+        "substrate_triples": fragments.substrate_triples,
+        "local_substrate_triples": fragments.substrate_triples_by_role[role],
+        "reference_triples": fragments.reference_triples,
+        "synthetic_triples": fragments.synthetic_triples,
+        "profile": fragments.placement_profiles[role],
+    }
+    payload["sha256"] = _fragment_hash(payload)
+    return payload
+
+
+def deserialize_fragment(
+    payload: dict, role: str, *, users: int, seed: int,
+) -> tuple[Graph, FragmentSet]:
+    """Validate a local fragment without accessing canonical source data."""
+    if not isinstance(payload, dict):
+        raise ValueError("Distributed preparation requires a serialized fragment")
+    if payload.get("contract") != FRAGMENT_CONTRACT or payload.get("format") != "nt":
+        raise ValueError("Unsupported distributed fragment contract or format")
+    if payload.get("node_id") != role:
+        raise ValueError("Distributed fragment belongs to another node")
+    if payload.get("users") != users or payload.get("seed") != seed:
+        raise ValueError("Distributed fragment workload mismatch")
+    if payload.get("sha256") != _fragment_hash(payload):
+        raise ValueError("Distributed fragment hash mismatch")
+    for field in ("triples", "substrate_triples", "local_substrate_triples",
+                  "reference_triples", "synthetic_triples"):
+        if type(payload.get(field)) is not int or payload[field] < 0:
+            raise ValueError(f"Invalid fragment metadata: {field}")
+    if not isinstance(payload.get("data"), str) or not isinstance(payload.get("profile"), str):
+        raise ValueError("Invalid fragment data or profile")
+    graph = Graph().parse(data=payload["data"], format="nt")
+    if len(graph) != payload["triples"]:
+        raise ValueError("Distributed fragment triple count mismatch")
+    return graph, FragmentSet(
+        graphs={role: graph}, substrate_triples=payload["substrate_triples"],
+        substrate_triples_by_role={role: payload["local_substrate_triples"]},
+        placement_profiles={role: payload["profile"]},
+        reference_triples=payload["reference_triples"],
+        synthetic_triples=payload["synthetic_triples"],
+        sensitive_resources=frozenset(),
+    )

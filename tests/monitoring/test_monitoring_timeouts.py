@@ -5,7 +5,7 @@ from dataclasses import replace
 
 import pytest
 
-from continuum_bench import physical, sharded
+from continuum_bench import physical, distributed_ontology as distributed
 from continuum_bench.distributed import Endpoint
 from continuum_bench.topology import load_topology
 
@@ -23,8 +23,8 @@ def _statuses(path):
     (
         (physical.run_physical_scalability, physical, {}),
         (
-            sharded.run_sharded_scalability,
-            sharded,
+            distributed.run_distributed_scalability,
+            distributed,
             {"target": "physical", "validate_results": False},
         ),
     ),

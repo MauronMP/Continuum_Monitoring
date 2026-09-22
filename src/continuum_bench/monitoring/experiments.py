@@ -33,11 +33,12 @@ from .load_benchmark import _local_timeout
 from ..queries import QuerySpec, execute_query_detailed, load_catalog
 from ..specification import release_identity
 from .budget import execution_metadata
-from .sharded import (
-    _assignment as sharded_assignment,
+from .distributed_ontology import (
+    _prepare as distributed_prepare,
+    _assignment as distributed_assignment,
     _baseline_counts,
     _merge_responses,
-    _summary as sharded_summary,
+    _summary as distributed_summary,
     _validation_rows,
 )
 
@@ -613,7 +614,7 @@ def run_scale_out(
                         f"wall_ms={query_wall_ms:.2f}",
                         flush=True,
                     )
-    output = output_root / target / "scale-out"
+    output = output_root / "scale-out"
     _write(output / "summary.csv", summary_rows)
     if query_rows:
         _write(output / "query-runs.csv", query_rows)
@@ -761,7 +762,7 @@ def run_reasoning_hardware(
                         f"{float(result['reasoning_ms']):.2f}",
                         flush=True,
                     )
-    output = output_root / target / "reasoning-hardware"
+    output = output_root / "reasoning-hardware"
     _write(output / "summary.csv", rows)
     metadata = _metadata(
         target, "reasoning-hardware", config, workload, endpoints
@@ -841,26 +842,18 @@ def run_distributed_ontology(
                     continue
                 try:
                     point_started = monotonic()
-                    payload = _phase_payload(
-                        workload,
-                        reasoner=reasoner,
-                        users=users,
-                        mode=("partitioned"),
-                    )
-                    prepare_wall_ms, prepared = _parallel(
+                    prepare_wall_ms, prepared = distributed_prepare(
+                        config,
                         endpoints,
-                        "/prepare",
-                        {
-                            endpoint.url: payload for endpoint in endpoints
-                        },
-                        phase="experiment-partitioned-prepare",
-                        timeout=min(
+                        reasoner,
+                        users,
+                        workload.seed,
+                        timeout_seconds=min(
                             timeout,
                             remaining_seconds(point_started, point_timeout),
                         ),
-                        retries=0,
                     )
-                    assignment = sharded_assignment(specs, endpoints)
+                    assignment = distributed_assignment(specs, endpoints)
                     query_wall_ms, responses = _parallel(
                         endpoints,
                         "/queries",
@@ -890,7 +883,7 @@ def run_distributed_ontology(
                     query_rows.extend(
                         {**common, **item} for item in raw
                     )
-                    summary = sharded_summary(
+                    summary = distributed_summary(
                         common,
                         len(specs),
                         prepare_wall_ms,
@@ -978,7 +971,7 @@ def run_distributed_ontology(
                     "status=done",
                     flush=True,
                 )
-    output = output_root / target / "distributed-ontology"
+    output = output_root / "distributed-ontology"
     _write(output / "summary.csv", summary_rows)
     if query_rows:
         _write(output / "query-runs.csv", query_rows)

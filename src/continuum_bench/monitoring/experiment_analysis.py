@@ -80,7 +80,7 @@ def analyze_experiments(root: Path) -> list[Path]:
     for architecture in ARCHITECTURES:
         manifest["architectures"][architecture] = {}
         for experiment, (keys, fields) in specifications.items():
-            rows = _read_csv(root / architecture / experiment / "summary.csv")
+            rows = _read_csv(root / experiment / "summary.csv")
             grouped = _group(rows, keys, fields)
             output = data_root / f"{experiment}-{architecture}-summary.csv"
             if grouped:

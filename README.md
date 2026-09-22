@@ -1,5 +1,7 @@
 # Continuum Monitoring Ontology Benchmark
 
+For the current end-to-end launch procedure, see [Run all physical tests](docs/design/RUN_ALL_TESTS.md).
+
 Reproducible evaluation of a modular, policy-aware monitoring ontology across
 an elastic physical continuum. Its nodes use the same ontology, SPARQL catalog, generators,
 reasoners, time budgets and scientific result contracts.
@@ -30,13 +32,15 @@ Physical workers share the same benchmark implementation.
 
 ## Install
 
-Requires Python 3.11+, Git and OpenSSH/rsync.
+Requires Python 3.11+, Git, OpenSSH/rsync, Java 17, Maven and native Konclude
+on hosts participating in the five-reasoner comparison.
 
 ```bash
 git clone https://github.com/MauronMP/Continuum_Monitoring.git
 cd Continuum_Monitoring
 python3 tools/bootstrap.py --profile coordinator
 . .venv/bin/activate
+python tools/install_owl_reasoners.py
 continuum-bench validate
 continuum-bench preflight
 continuum-bench owl-validate
@@ -46,7 +50,7 @@ continuum-bench owl-validate
 Openllet, JFact and Konclude, use `continuum-bench owl-validate --require-all`
 as the strict release gate.
 
-Install their pinned validation runtime automatically with:
+Install their pinned reasoning runtime on each participating host with:
 
 ```bash
 python3 tools/install_owl_reasoners.py
@@ -55,16 +59,27 @@ python3 tools/install_owl_reasoners.py
 
 ## Physical continuum
 
+Current comparisons use `rdfs`, `hermit`, `openllet`, `jfact`, and `konclude`.
+RDFS is the RDF Schema baseline; plain RDF storage alone does not perform inference.
+`replicated` assigns a complete input graph to each worker. `distributed` assigns
+only that worker's ontology fragment and merges source query answers. Shared
+schema may be repeated to retain required dependencies; this is not shared memory.
+The old `sharded` name belongs to archived campaigns and is not a new-run option.
+
+See [physical readiness and five-reasoner execution](docs/design/PHYSICAL_REASONING.md)
+for offline preparation, timeout and skipped-point policy, and validation limits.
+
+
 ```bash
 continuum-bench physical authorize --ssh-user pi
-continuum-bench physical deploy --ssh-user pi
+continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
 continuum-smoke-physical-cumulative --ssh-user pi
 continuum-smoke-physical-scalability --ssh-user pi
 continuum-smoke-physical-load
 continuum-smoke-physical-experiments
-continuum-bench physical all --layout sharded --ssh-user pi
+continuum-bench physical all --layout distributed --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 continuum-bench load physical
 continuum-bench experiment all physical
@@ -85,7 +100,8 @@ continuum-bench engines plot
 Start the four native engine services before this command. It executes
 RDFLib, Jena, RDF4J and Oxigraph; engine
 names do not need to be passed manually. HermiT, Openllet, JFact and Konclude
-remain separate OWL 2 DL consistency validators invoked by `owl-validate`.
+are the OWL backends of the physical cumulative/scalability comparison alongside RDFS.
+`owl-validate` remains the separate consistency check.
 The plot command requires all four products in each selected summary and writes
 300-DPI PNG figures.
 
@@ -99,7 +115,7 @@ The plot command requires all four products in each selected summary and writes
   authority-partitioned distributed ontology execution.
 - Study: reproducible workload/mobility traces and category/policy/query cost.
 
-In bounded mode, timeouts are stored as right-censored observations. Results go to `outputs/`.
+In bounded mode, timeouts are stored as right-censored observations. Results use the unified tree documented in [Output layout and execution controls](docs/design/OUTPUTS_AND_EXECUTION.md).
 See [the user guide](docs/USER_GUIDE.md),
 [installation](docs/design/INSTALLATION.md),
 [physical continuum guide](docs/design/PHYSICAL_CONTINUUM.md),

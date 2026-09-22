@@ -1,5 +1,7 @@
 # Command reference
 
+For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
+
 Run these commands from the repository root after activating `.venv`. Commands
 are grouped so that each block can be repeated independently.
 
@@ -8,13 +10,26 @@ Target-specific preparation is documented separately in the
 
 ## A. Repository acceptance block
 
+For the entire installed physical stack, the recommended single entry point is:
+
+```bash
+continuum-bench --unlimited --repetitions 5 suite --dry-run
+continuum-bench --unlimited --repetitions 5 suite
+```
+
+The first command only writes the plan. The second executes software/native
+tests, documentation and semantic checks, both monitoring layouts, load,
+experiments, campaign and reporting. See the linked run guide for installation,
+smoke configuration overrides and evidence interpretation. The independent
+repository checks below remain useful when no physical measurements are needed.
+
 ```bash
 continuum-bench doctor --physical --owl
 continuum-bench topology validate --name physical
 continuum-bench validate
 continuum-bench preflight
 continuum-bench owl-validate
-python -m pytest
+CONTINUUM_TEST_NATIVE_OWL=1 python -m pytest
 python3 tools/check_documentation.py
 git diff --check
 ```
@@ -30,7 +45,7 @@ Edit `configs/topologies/physical/nodes/*.toml` first.
 ```bash
 continuum-bench doctor --physical
 continuum-bench physical authorize --ssh-user pi
-continuum-bench physical deploy --ssh-user pi
+continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
 
@@ -39,7 +54,7 @@ continuum-smoke-physical-scalability --ssh-user pi
 continuum-smoke-physical-load
 continuum-smoke-physical-experiments
 
-continuum-bench physical all --layout sharded --ssh-user pi
+continuum-bench physical all --layout distributed --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 continuum-bench load physical
 continuum-bench experiment all physical
@@ -48,7 +63,7 @@ continuum-bench campaign --campaign-config configs/campaign.toml
 continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
 continuum-bench study category-cost \
-  --events outputs/load/physical/event-runs.csv \
+  --events outputs/load/event-runs.csv \
   --output-dir outputs/study/physical-cost
 
 continuum-bench report
@@ -83,11 +98,11 @@ summaries, so all four names are guaranteed to appear in a valid figure.
 ## D. Individual monitoring blocks
 
 ```bash
-continuum-bench physical cumulative --layout sharded --ssh-user pi
-continuum-bench physical scalability --layout sharded --ssh-user pi
+continuum-bench physical cumulative --layout distributed --ssh-user pi
+continuum-bench physical scalability --layout distributed --ssh-user pi
 ```
 
-Replace `sharded` with `replicated` for the replication baseline.
+Replace `distributed` with `replicated` for the replication baseline.
 
 ## E. Individual load dimensions
 
@@ -158,7 +173,7 @@ regression coverage, cancellation and output contracts.
 ## I. Individual unlimited runs and smoke configuration
 
 ```bash
-continuum-bench --unlimited physical all --layout sharded
+continuum-bench --unlimited physical all --layout distributed
 continuum-bench --unlimited physical all --layout replicated
 continuum-bench --unlimited load physical
 continuum-bench --unlimited experiment all physical
@@ -175,8 +190,8 @@ command; family-specific flags follow it.
 
 ```bash
 continuum-bench report
-continuum-bench report --validation-dir outputs/audit/patient-load/physical
-continuum-bench report --input-dir outputs --output-dir outputs/paper
+continuum-bench report --validation-dir /path/to/separate/load-results
+continuum-bench report --input-dir outputs --output-dir outputs/report
 ```
 
 Use `--validation-dir` only when that separate measured load dataset exists.

@@ -20,6 +20,7 @@ from .budget import (
     error_text,
     failure_status,
     is_boundary_failure,
+    is_timeout_failure,
 )
 from ..csv_utils import write_dict_rows
 from ..protocol import worker_health_error
@@ -242,6 +243,7 @@ def _parallel(
     started = perf_counter_ns()
     results: dict[str, dict[str, Any]] = {}
     phase_name = phase or path.strip("/") or "request"
+    failures: list[tuple[Exception, str]] = []
     with ThreadPoolExecutor(max_workers=len(endpoints)) as executor:
         submitted_at: dict[str, int] = {}
         futures = {
@@ -277,12 +279,13 @@ def _parallel(
                     f"error={type(error).__name__}: {error}{hint}",
                     flush=True,
                 )
-                raise RuntimeError(
+                failures.append((error, (
                     f"Distributed phase {phase_name!r} failed on "
                     f"role={endpoint.role} endpoint={endpoint.url} after "
                     f"{endpoint_ms:.2f} ms: {type(error).__name__}: {error}"
                     f"{detail}"
-                ) from error
+                )))
+                continue
             print(
                 "[distributed-node] "
                 f"phase={phase_name} role={endpoint.role} "
@@ -290,6 +293,12 @@ def _parallel(
                 f"elapsed_ms={endpoint_ms:.2f}",
                 flush=True,
             )
+    if failures:
+        # Observe every worker before deciding: a deadline must never hide a
+        # simultaneously reported invalid ontology, runtime or programming error.
+        failures.sort(key=lambda pair: (is_timeout_failure(pair[0]), pair[1]))
+        error, detail = failures[0]
+        raise RuntimeError(detail) from error
     wall_ms = (perf_counter_ns() - started) / 1_000_000
     return wall_ms, results
 
@@ -382,6 +391,7 @@ def _prepare(
     timeout = min(
         transport.request_timeout_seconds,
         config.limits.point_timeout_seconds,
+        config.limits.phase_timeout_seconds,
     )
     payloads = {
         endpoint.url: {
@@ -497,6 +507,7 @@ def _query(
     point_timeout = min(
         timeout_seconds or config.limits.point_timeout_seconds,
         config.limits.point_timeout_seconds,
+        config.limits.phase_timeout_seconds,
     )
     started = monotonic()
     batches = {

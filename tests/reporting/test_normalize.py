@@ -15,3 +15,14 @@ def test_only_new_summaries_receive_a_canonical_envelope(config, tmp_path):
     assert row['reasoner']=='rdfs' and row['status']=='completed'
     assert row['measurements']['reasoning_ms']=='12.5'
     assert row['configuration']['seed']==config.seed
+
+
+def test_envelope_preserves_historical_identity_and_censoring(config, tmp_path):
+    (tmp_path/'summary.csv').write_text('status,reasoner,layout,profile\nskipped_after_timeout,owlrl,sharded,legacy-profile\n')
+    normalize_completed_outputs(config, tmp_path, 0)
+    row=json.loads((tmp_path/'results.jsonl').read_text())
+    assert row['reasoner']=='owlrl'
+    assert row['layout']=='sharded'
+    assert row['profile']=='legacy-profile'
+    assert row['status']=='skipped_after_timeout'
+    assert row['outcome']=='skipped'

@@ -9,7 +9,7 @@ from rdflib import Graph, URIRef
 
 from continuum_bench import node
 from continuum_bench.queries import QueryMeasurement
-from continuum_bench.sharded import _summary
+from continuum_bench.distributed_ontology import _summary
 
 
 def _runtime() -> node.NodeRuntime:
@@ -71,17 +71,13 @@ def test_partitioned_prepare_reports_placement_profile(monkeypatch):
         (URIRef("urn:test:s"), URIRef("urn:test:p"), URIRef("urn:test:o"))
     )
     fragments = SimpleNamespace(
+        graphs={"edge1": source},
         synthetic_triples=0,
         substrate_triples=5,
         substrate_triples_by_role={"edge1": 3},
         placement_profiles={"edge1": "edge"},
         reference_triples=1,
         sensitive_resources=frozenset(),
-    )
-    monkeypatch.setattr(
-        node,
-        "build_role_graph",
-        lambda config, role, users, seed: (source, fragments),
     )
     monkeypatch.setattr(
         node,
@@ -100,7 +96,11 @@ def test_partitioned_prepare_reports_placement_profile(monkeypatch):
         ),
     )
 
-    result = runtime.prepare("rdfs", users=0, seed=2026, mode="partitioned")
+    from continuum_bench.partitioning import serialize_fragment
+    result = runtime.prepare(
+        "rdfs", users=0, seed=2026, mode="distributed",
+        fragment=serialize_fragment(fragments, "edge1", users=0, seed=2026),
+    )
 
     assert result["profile"] == "edge"
     assert result["local_substrate_triples"] == 3
@@ -122,7 +122,7 @@ def test_worker_phase_timeout_interrupts_and_restores_signal_handler():
         pass
 
 
-def test_sharded_summary_aggregates_worker_telemetry():
+def test_distributed_summary_aggregates_worker_telemetry():
     prepared = {
         "cloud": {
             "input_triples": 60,
@@ -169,3 +169,29 @@ def test_sharded_summary_aggregates_worker_telemetry():
     assert result["max_node_peak_rss_kib"] == 1600
     assert result["prepare_request_bytes_sum"] == 21
     assert result["query_response_bytes_sum"] == 45
+
+
+@pytest.mark.parametrize("platform,peak", [("linux", 4096), ("darwin", 4096 * 1024)])
+def test_prepare_separates_child_cpu_and_lifetime_memory(monkeypatch, platform, peak):
+    runtime = _runtime()
+    snapshots = iter([
+        SimpleNamespace(ru_utime=10, ru_stime=2, ru_maxrss=peak),
+        SimpleNamespace(ru_utime=10.5, ru_stime=2.25, ru_maxrss=peak),
+    ])
+    worker = SimpleNamespace(ru_utime=0, ru_stime=0, ru_maxrss=peak * 2)
+    monkeypatch.setattr(node.sys, "platform", platform)
+    monkeypatch.setattr(node.resource, "getrusage", lambda who:
+                        next(snapshots) if who == node.resource.RUSAGE_CHILDREN else worker)
+    monkeypatch.setattr(node, "materialize", lambda graph, reasoner: SimpleNamespace(
+        graph=graph, duration_ms=0, input_triples=len(graph),
+        output_triples=len(graph), inferred_triples=0,
+    ))
+    result = runtime.prepare("rdfs", users=0, seed=2026)
+    assert result["children_cpu_ms"] == 750
+    # Unchanged lifetime peak is retained, not subtracted into a point peak.
+    assert result["child_peak_rss_kib_lifetime"] == 4096
+    assert result["peak_rss_kib"] == 8192
+    assert result["children_cpu_scope"] == "waited-for-children-phase-delta"
+    assert result["child_peak_rss_scope"] == "waited-for-children-lifetime-high-water"
+    assert result["process_cpu_scope"] == "worker-process-only-phase-delta"
+    assert result["peak_rss_scope"] == "worker-process-only-lifetime-high-water"

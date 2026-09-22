@@ -32,16 +32,22 @@ query_batch_size = 4
 worker_timeout_margin_seconds = 2
 
 [limits]
-# A phase or complete measurement point that exceeds these limits is not timed
-# to completion. Larger scalability points are recorded as skipped because the
-# first timeout already establishes that the acceptance ceiling was exceeded.
+# bounded enforces budgets; unlimited records nominal budgets without cancellation.
+timeout_mode = "bounded"
+# Independent timeout-only skip triggers. Real errors remain errors.
+consecutive_timeout_threshold = 1
+skip_repetitions_after_timeout = true
+skip_larger_sizes_after_timeout = true
+skip_cumulative_stages_after_timeout = true
+# In bounded mode an exceeded phase/point budget is recorded as a timeout.
+# The explicit triggers above determine whether later observations are omitted.
 phase_timeout_seconds = 60
 point_timeout_seconds = 90
 calibration_query_limit = 16
 stop_scaling_after_timeout = true
 
 [benchmark]
-reasoners = ["rdfs", "owlrl", "rdfs_owlrl"]
+reasoners = ["rdfs", "hermit", "openllet", "jfact", "konclude"]
 category_order = [
   "topology",
   "semantic_schema",

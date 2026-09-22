@@ -1,4 +1,5 @@
-# Minimal pure-Python worker dependencies for 32-bit Raspberry Pi OS.
+# Python worker dependencies. Native DL runtimes are installed separately with
+# tools/install_owl_reasoners.py on each physical host.
 owlrl==7.6.2
 rdflib==7.6.0
 pyparsing==3.3.2

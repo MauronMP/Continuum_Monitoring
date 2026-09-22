@@ -40,7 +40,7 @@ the physical nodes:
 
 ```bash
 .venv/bin/continuum-bench physical stop --ssh-user pi
-.venv/bin/continuum-bench physical deploy --ssh-user pi
+.venv/bin/continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 .venv/bin/continuum-bench physical start --ssh-user pi
 .venv/bin/continuum-bench physical status --ssh-user pi
 ```

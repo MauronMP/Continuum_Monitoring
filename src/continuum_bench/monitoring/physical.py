@@ -11,7 +11,10 @@ from time import monotonic
 from typing import Any
 
 from .config import BenchmarkConfig
-from .budget import error_text, failure_status, is_boundary_failure
+from .resource_summary import native_resources
+from ..reasoners import reasoner_provenance
+from .budget import (error_text, is_timeout_failure, TimeoutSkipState, skip_metadata,
+                     PhaseBudgetTimeout, unlimited_execution)
 from .distributed import (
     Endpoint,
     _censored_detail,
@@ -243,6 +246,7 @@ def _metadata(
     return {
         **release_identity(),
         "execution_policy": execution_metadata(),
+        "reasoner_backends": {name: reasoner_provenance(name) for name in config.reasoners},
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),
         "platform": platform.platform(),
@@ -285,12 +289,13 @@ def _metadata(
             "retry_counts_in_summary_and_node_runs": True,
         },
         "execution_limits": {
+            **skip_metadata(config.limits),
             "phase_timeout_seconds": config.limits.phase_timeout_seconds,
             "point_timeout_seconds": config.limits.point_timeout_seconds,
             "stop_scaling_after_timeout": (
                 config.limits.stop_scaling_after_timeout
             ),
-            "timeout_semantics": "right-censored with monotone early stop",
+            "timeout_semantics": "right-censored with configurable timeout skip scopes",
         },
     }
 
@@ -329,6 +334,7 @@ def _summary(
     )
     return {
         **common,
+        **native_resources(prepared),
         **_resource_summary(prepared, responses),
         "status": "completed",
         "censored": False,
@@ -409,333 +415,7 @@ def run_physical_cumulative(
     output_root: Path,
     topology_name: str = "physical",
 ) -> Path:
-    declared = (
-        load_physical_inventory(inventory, topology_name=topology_name)
-        if isinstance(inventory, Path)
-        else None
-    )
-    topology = inventory if isinstance(inventory, Topology) else declared.topology
-    target = topology.kind if topology is not None else "physical"
-    declared_nodes = topology.active_nodes if topology is not None else declared.nodes
-    endpoint_urls = [node.endpoint for node in declared_nodes]
-    endpoints = discover(
-        endpoint_urls,
-        declared_nodes,
-        topology.fingerprint if topology is not None else None,
-    )
-    node_count = len(endpoints)
-    endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}
-    specs = load_catalog(config.resolve(config.query_catalog), config.root)
-    details: list[dict[str, Any]] = []
-    summaries: list[dict[str, Any]] = []
-    assignments: list[dict[str, Any]] = []
-    nodes: list[dict[str, Any]] = []
-    stopped_reasoners: dict[str, str] = {}
-    stop_reason = ""
-
-    for reasoner in config.reasoners:
-        if reasoner in stopped_reasoners:
-            stop_reason = stopped_reasoners[reasoner]
-            for repetition in range(1, config.repetitions + 1):
-                for stage, category in enumerate(
-                    config.category_order, start=1
-                ):
-                    common = {
-                        "reasoner": reasoner,
-                        "repetition": repetition,
-                        "stage": stage,
-                        "added_category": category,
-                        "calibration_reused": False,
-                    }
-                    _append_failure(
-                        details,
-                        summaries,
-                        assignments,
-                        nodes,
-                        common,
-                        node_count,
-                        len(by_categories(specs, set(config.category_order[:stage]))),
-                        "skipped_after_timeout",
-                        "early-stop",
-                        stop_reason,
-                        config.limits.point_timeout_seconds,
-                    )
-            continue
-        print(
-            f"[{target}-cumulative] reasoner={reasoner} "
-            f"phase=calibration-prepare nodes={node_count} status=running",
-            flush=True,
-        )
-        phase_started = monotonic()
-        phase = "calibration-prepare"
-        try:
-            _prepare(config, endpoints, reasoner, 0, config.seed)
-            print(
-                f"[{target}-cumulative] reasoner={reasoner} "
-                f"phase=calibration nodes={node_count} "
-                f"queries={min(len(specs), config.limits.calibration_query_limit)} "
-                "status=running",
-                flush=True,
-            )
-            phase = "calibration"
-            (
-                calibration_ms,
-                calibration,
-                calibration_responses,
-            ) = _calibrate(config, endpoints, specs)
-        except Exception as error:
-            if not is_boundary_failure(error):
-                raise
-            status = failure_status(error)
-            stop_reason = error_text(error)
-            for repetition in range(1, config.repetitions + 1):
-                for stage, category in enumerate(
-                    config.category_order, start=1
-                ):
-                    common = {
-                        "reasoner": reasoner,
-                        "repetition": repetition,
-                        "stage": stage,
-                        "added_category": category,
-                        "calibration_reused": False,
-                    }
-                    row_status = (
-                        status
-                        if repetition == 1 and stage == 1
-                        else "skipped_after_timeout"
-                    )
-                    _append_failure(
-                        details,
-                        summaries,
-                        assignments,
-                        nodes,
-                        common,
-                        node_count,
-                        len(by_categories(specs, set(config.category_order[:stage]))),
-                        row_status,
-                        phase,
-                        stop_reason,
-                        config.limits.phase_timeout_seconds,
-                        monotonic() - phase_started
-                        if row_status == status else 0.0,
-                    )
-            if config.limits.stop_scaling_after_timeout:
-                stopped_reasoners[reasoner] = stop_reason
-            print(
-                f"[{target}-cumulative] reasoner={reasoner} phase={phase} "
-                f"status={status} "
-                f"limit_s={config.limits.phase_timeout_seconds:g}",
-                flush=True,
-            )
-            continue
-        for repetition in range(1, config.repetitions + 1):
-            if reasoner in stopped_reasoners:
-                stop_reason = stopped_reasoners[reasoner]
-                for stage, category in enumerate(
-                    config.category_order, start=1
-                ):
-                    common = {
-                        "reasoner": reasoner,
-                        "repetition": repetition,
-                        "stage": stage,
-                        "added_category": category,
-                        "calibration_reused": True,
-                    }
-                    _append_failure(
-                        details, summaries, assignments, nodes,
-                        common, node_count,
-                        len(by_categories(specs, set(config.category_order[:stage]))),
-                        "skipped_after_timeout", "early-stop", stop_reason,
-                        config.limits.point_timeout_seconds,
-                    )
-                continue
-            print(
-                f"[{target}-cumulative] reasoner={reasoner} "
-                f"repetition={repetition}/{config.repetitions} "
-                f"nodes={node_count} phase=prepare status=running",
-                flush=True,
-            )
-            point_started = monotonic()
-            try:
-                prepare_wall_ms, prepared = _prepare(
-                    config, endpoints, reasoner, 0, config.seed
-                )
-            except Exception as error:
-                if not is_boundary_failure(error):
-                    raise
-                status = failure_status(error)
-                stop_reason = error_text(error)
-                for stage, category in enumerate(
-                    config.category_order, start=1
-                ):
-                    common = {
-                        "reasoner": reasoner,
-                        "repetition": repetition,
-                        "stage": stage,
-                        "added_category": category,
-                        "calibration_reused": True,
-                    }
-                    row_status = status if stage == 1 else "skipped_after_timeout"
-                    _append_failure(
-                        details, summaries, assignments, nodes,
-                        common, node_count,
-                        len(by_categories(specs, set(config.category_order[:stage]))),
-                        row_status, "prepare", stop_reason,
-                        config.limits.point_timeout_seconds,
-                        monotonic() - point_started if stage == 1 else 0.0,
-                    )
-                if config.limits.stop_scaling_after_timeout:
-                    stopped_reasoners[reasoner] = stop_reason
-                continue
-            recorded_calibration_ms = (
-                calibration_ms if repetition == 1 else 0.0
-            )
-            active: set[str] = set()
-            for stage, category in enumerate(config.category_order, start=1):
-                active.add(category)
-                active_specs = by_categories(specs, active)
-                assignment, predicted = balanced_assignment(
-                    active_specs, endpoints, calibration
-                )
-                loads = ",".join(
-                    f"{endpoint.role}:{len(assignment[endpoint.url])}"
-                    f"/{predicted[endpoint.url]:.1f}ms"
-                    for endpoint in endpoints
-                )
-                print(
-                    f"[{target}-cumulative] reasoner={reasoner} "
-                    f"repetition={repetition}/{config.repetitions} "
-                    f"stage={stage}/{len(config.category_order)} "
-                    f"category={category} queries={len(active_specs)} "
-                    f"balance={loads} status=running",
-                    flush=True,
-                )
-                common = {
-                    "reasoner": reasoner,
-                    "repetition": repetition,
-                    "stage": stage,
-                    "added_category": category,
-                    "calibration_reused": True,
-                }
-                query_started = monotonic()
-                try:
-                    query_wall_ms, responses = _query(
-                        config,
-                        endpoints,
-                        assignment,
-                        timeout_seconds=max(
-                            config.limits.point_timeout_seconds
-                            - prepare_wall_ms / 1000,
-                            0.001,
-                        ),
-                        phase="physical-balanced-queries",
-                    )
-                except Exception as error:
-                    if not is_boundary_failure(error):
-                        raise
-                    status = failure_status(error)
-                    stop_reason = error_text(error)
-                    _append_failure(
-                        details, summaries, assignments, nodes,
-                        common, node_count, len(active_specs), status,
-                        "queries", stop_reason,
-                        config.limits.point_timeout_seconds,
-                        prepare_wall_ms / 1000 + monotonic() - query_started,
-                    )
-                    for skipped_stage in range(
-                        stage + 1, len(config.category_order) + 1
-                    ):
-                        skipped_common = {
-                            "reasoner": reasoner,
-                            "repetition": repetition,
-                            "stage": skipped_stage,
-                            "added_category": config.category_order[
-                                skipped_stage - 1
-                            ],
-                            "calibration_reused": True,
-                        }
-                        _append_failure(
-                            details, summaries, assignments, nodes,
-                            skipped_common, node_count,
-                            len(
-                                by_categories(
-                                    specs,
-                                    set(config.category_order[:skipped_stage]),
-                                )
-                            ),
-                            "skipped_after_timeout", "early-stop", stop_reason,
-                            config.limits.point_timeout_seconds,
-                        )
-                    if config.limits.stop_scaling_after_timeout:
-                        stopped_reasoners[reasoner] = stop_reason
-                    break
-                details.extend(
-                    _detail_rows(responses, endpoint_by_url, common)
-                )
-                assignments.extend(
-                    _assignment_rows(
-                        "cumulative",
-                        common,
-                        endpoints,
-                        assignment,
-                        calibration,
-                        predicted,
-                    )
-                )
-                nodes.extend(
-                    _node_rows(
-                        "cumulative",
-                        common,
-                        endpoints,
-                        prepared,
-                        calibration_responses,
-                        responses,
-                        predicted,
-                    )
-                )
-                summary = _summary(
-                    common,
-                    len(active_specs),
-                    prepare_wall_ms,
-                    recorded_calibration_ms,
-                    query_wall_ms,
-                    prepared,
-                    responses,
-                    predicted,
-                    True,
-                )
-                summaries.append(summary)
-                print(
-                    f"[{target}-cumulative] reasoner={reasoner} "
-                    f"stage={stage}/{len(config.category_order)} "
-                    f"category={category} status=done "
-                    f"wall_ms={summary['total_wall_ms']:.2f}",
-                    flush=True,
-                )
-
-    output = output_root / "cumulative"
-    _write_csv(output / "query-runs.csv", details)
-    _write_csv(output / "summary.csv", summaries)
-    _write_csv(output / "assignments.csv", assignments)
-    _write_csv(output / "node-runs.csv", nodes)
-    metadata = _metadata(config, endpoints, "cumulative", inventory)
-    metadata["category_order"] = list(config.category_order)
-    (output / "metadata.json").write_text(
-        json.dumps(metadata, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
-    completed = sum(row.get("status") == "completed" for row in summaries)
-    censored = sum(row.get("status") == "timeout" for row in summaries)
-    skipped = sum(
-        row.get("status") == "skipped_after_timeout" for row in summaries
-    )
-    print(
-        f"[{target}-cumulative] status=completed "
-        f"completed_points={completed} timeout_points={censored} "
-        f"skipped_points={skipped} output={output}",
-        flush=True,
-    )
-    return output
+    return _run_physical(config, inventory, output_root, topology_name, "cumulative")
 
 
 def run_physical_scalability(
@@ -744,6 +424,16 @@ def run_physical_scalability(
     output_root: Path,
     topology_name: str = "physical",
 ) -> Path:
+    return _run_physical(config, inventory, output_root, topology_name, "scalability")
+
+
+def _run_physical(config, *args, **kwargs):
+    from .budget import execution_policy
+    with execution_policy(unlimited_execution() or config.limits.timeout_mode == "unlimited"):
+        return _run_physical_impl(config, *args, **kwargs)
+
+
+def _run_physical_impl(config, inventory, output_root, topology_name, suite):
     declared = (
         load_physical_inventory(inventory, topology_name=topology_name)
         if isinstance(inventory, Path)
@@ -765,311 +455,107 @@ def run_physical_scalability(
     summaries: list[dict[str, Any]] = []
     assignments: list[dict[str, Any]] = []
     nodes: list[dict[str, Any]] = []
-    stopped_reasoners: dict[str, str] = {}
-
-    for block, users in enumerate(config.scale_users, start=1):
+    skips = TimeoutSkipState(config.limits)
+    cumulative = suite == "cumulative"
+    for users in ((0,) if cumulative else config.scale_users):
         for reasoner in config.reasoners:
-            if reasoner in stopped_reasoners:
-                stop_reason = stopped_reasoners[reasoner]
-                print(
-                    f"[{target}-scalability] block={block}/"
-                    f"{len(config.scale_users)} users={users} "
-                    f"reasoner={reasoner} phase=early-stop "
-                    "status=skipped_after_timeout",
-                    flush=True,
-                )
-                for repetition in range(1, config.repetitions + 1):
-                    common = {
-                        "reasoner": reasoner,
-                        "repetition": repetition,
-                        "synthetic_users": users,
-                        "synthetic_triples": "",
-                        "calibration_reused": False,
-                    }
-                    summary = _censored_summary(
-                        common,
-                        node_count,
-                        len(specs),
-                        "skipped_after_timeout",
-                        "early-stop",
-                        stop_reason,
-                        config.limits.point_timeout_seconds,
-                        0.0,
-                    )
-                    detail = _censored_detail(
-                        common,
-                        "skipped_after_timeout",
-                        "early-stop",
-                        stop_reason,
-                        config.limits.point_timeout_seconds,
-                    )
-                    summaries.append(summary)
-                    details.append(detail)
-                    assignments.append(detail)
-                    nodes.append(detail)
-                continue
-            print(
-                f"[{target}-scalability] block={block}/"
-                f"{len(config.scale_users)} users={users} "
-                f"reasoner={reasoner} phase=calibration-prepare "
-                f"nodes={node_count} status=running",
-                flush=True,
-            )
-            phase_started = monotonic()
-            phase = "calibration-prepare"
-            try:
-                _prepare(config, endpoints, reasoner, users, config.seed)
-                print(
-                    f"[{target}-scalability] block={block}/"
-                    f"{len(config.scale_users)} users={users} "
-                    f"reasoner={reasoner} phase=calibration "
-                    f"nodes={node_count} "
-                    f"queries={min(len(specs), config.limits.calibration_query_limit)} "
-                    "status=running",
-                    flush=True,
-                )
-                phase = "calibration"
-                (
-                    calibration_ms,
-                    calibration,
-                    calibration_responses,
-                ) = _calibrate(config, endpoints, specs)
-            except Exception as error:
-                if not is_boundary_failure(error):
-                    raise
-                status = failure_status(error)
-                stop_reason = error_text(error)
-                common = {
-                    "reasoner": reasoner,
-                    "repetition": 1,
-                    "synthetic_users": users,
-                    "synthetic_triples": "",
-                    "calibration_reused": False,
-                }
-                summary = _censored_summary(
-                    common,
-                    node_count,
-                    len(specs),
-                    status,
-                    phase,
-                    stop_reason,
-                    config.limits.phase_timeout_seconds,
-                    monotonic() - phase_started,
-                )
-                detail = _censored_detail(
-                    common,
-                    status,
-                    phase,
-                    stop_reason,
-                    config.limits.phase_timeout_seconds,
-                )
-                summaries.append(summary)
-                details.append(detail)
-                assignments.append(detail)
-                nodes.append(detail)
-                for skipped_repetition in range(2, config.repetitions + 1):
-                    skipped_common = {
-                        **common,
-                        "repetition": skipped_repetition,
-                    }
-                    _append_failure(
-                        details, summaries, assignments, nodes,
-                        skipped_common, node_count, len(specs),
-                        "skipped_after_timeout", "early-stop", stop_reason,
-                        config.limits.point_timeout_seconds,
-                    )
-                if config.limits.stop_scaling_after_timeout:
-                    stopped_reasoners[reasoner] = stop_reason
-                print(
-                    f"[{target}-scalability] block={block} users={users} "
-                    f"reasoner={reasoner} phase={phase} status={status} "
-                    f"limit_s={config.limits.phase_timeout_seconds:g}; "
-                    "larger points for this reasoner will be skipped",
-                    flush=True,
-                )
-                continue
+            calibration_data = None
+            calibration_repetition = None
             for repetition in range(1, config.repetitions + 1):
-                if reasoner in stopped_reasoners:
-                    stop_reason = stopped_reasoners[reasoner]
-                    common = {
-                        "reasoner": reasoner,
-                        "repetition": repetition,
-                        "synthetic_users": users,
-                        "synthetic_triples": "",
-                        "calibration_reused": True,
-                    }
-                    _append_failure(
-                        details, summaries, assignments, nodes,
-                        common, node_count, len(specs),
-                        "skipped_after_timeout", "early-stop", stop_reason,
-                        config.limits.point_timeout_seconds,
+                prepared_data = None
+                stages = enumerate(config.category_order, 1) if cumulative else [(0, None)]
+                for stage, category in stages:
+                    active_specs = (
+                        by_categories(specs, set(config.category_order[:stage]))
+                        if cumulative else specs
                     )
-                    continue
-                print(
-                    f"[{target}-scalability] block={block}/"
-                    f"{len(config.scale_users)} users={users} "
-                    f"reasoner={reasoner} "
-                    f"repetition={repetition}/{config.repetitions} "
-                    f"nodes={node_count} phase=prepare status=running",
-                    flush=True,
-                )
-                point_started = monotonic()
-                phase = "prepare"
-                try:
-                    prepare_wall_ms, prepared = _prepare(
-                        config, endpoints, reasoner, users, config.seed
+                    common = {"reasoner": reasoner, "repetition": repetition,
+                              "calibration_reused": calibration_data is not None}
+                    if cumulative:
+                        common.update(stage=stage, added_category=category)
+                    else:
+                        common.update(synthetic_users=users, synthetic_triples="")
+                    stop_reason = skips.skipped(reasoner, users, repetition, stage)
+                    if stop_reason is not None:
+                        _append_failure(
+                            details, summaries, assignments, nodes, common,
+                            node_count, len(active_specs), "skipped_after_timeout",
+                            "early-stop", stop_reason, config.limits.point_timeout_seconds,
+                        )
+                        print(f"[{target}-{suite}] reasoner={reasoner} users={users} "
+                              f"repetition={repetition} stage={stage} status=skipped_after_timeout", flush=True)
+                        continue
+                    phase = "calibration-prepare"
+                    started = monotonic()
+                    timeout_seconds = config.limits.phase_timeout_seconds
+                    print(f"[{target}-{suite}] reasoner={reasoner} users={users} "
+                          f"repetition={repetition} stage={stage} status=running", flush=True)
+                    try:
+                        if calibration_data is None:
+                            _prepare(config, endpoints, reasoner, users, config.seed)
+                            phase = "calibration"
+                            calibration_data = _calibrate(config, endpoints, specs)
+                            calibration_repetition = repetition
+                        calibration_ms, calibration, calibration_responses = calibration_data
+                        phase = "prepare"
+                        started = monotonic()
+                        timeout_seconds = config.limits.point_timeout_seconds
+                        if prepared_data is None:
+                            prepared_data = _prepare(config, endpoints, reasoner, users, config.seed)
+                        prepare_wall_ms, prepared = prepared_data
+                        assignment, predicted = balanced_assignment(active_specs, endpoints, calibration)
+                        phase = "queries"
+                        query_started = monotonic()
+                        # Preparation is shared by cumulative stages; charge it to each point.
+                        budget = timeout_seconds - prepare_wall_ms / 1000
+                        if budget <= 0 and not unlimited_execution():
+                            raise PhaseBudgetTimeout("preparation exhausted the point budget")
+                        query_wall_ms, responses = _query(
+                            config, endpoints, assignment, timeout_seconds=max(budget, 0.001),
+                            phase="physical-balanced-queries",
+                        )
+                    except Exception as error:
+                        if not is_timeout_failure(error):
+                            raise
+                        skips.timeout(reasoner, users, repetition, stage, error)
+                        elapsed = monotonic() - started
+                        if phase == "queries":
+                            elapsed = prepare_wall_ms / 1000 + monotonic() - query_started
+                        _append_failure(
+                            details, summaries, assignments, nodes, common,
+                            node_count, len(active_specs), "timeout", phase,
+                            error_text(error), timeout_seconds, elapsed,
+                        )
+                        print(f"[{target}-{suite}] reasoner={reasoner} phase={phase} status=timeout", flush=True)
+                        continue
+                    skips.completed(reasoner)
+                    if not cumulative:
+                        common["synthetic_triples"] = next(iter(prepared.values()))["synthetic_triples"]
+                    common["calibration_reused"] = True
+                    details.extend(_detail_rows(responses, endpoint_by_url, common))
+                    assignments.extend(_assignment_rows(suite, common, endpoints, assignment, calibration, predicted))
+                    nodes.extend(_node_rows(suite, common, endpoints, prepared, calibration_responses, responses, predicted))
+                    summary = _summary(
+                        common, len(active_specs), prepare_wall_ms,
+                        calibration_ms if repetition == calibration_repetition else 0.0,
+                        query_wall_ms, prepared, responses, predicted, True,
                     )
-                    recorded_calibration_ms = (
-                        calibration_ms if repetition == 1 else 0.0
-                    )
-                    assignment, predicted = balanced_assignment(
-                        specs, endpoints, calibration
-                    )
-                    loads = ",".join(
-                        f"{endpoint.role}:{len(assignment[endpoint.url])}"
-                        f"/{predicted[endpoint.url]:.1f}ms"
-                        for endpoint in endpoints
-                    )
-                    print(
-                        f"[{target}-scalability] block={block}/"
-                        f"{len(config.scale_users)} users={users} "
-                        f"reasoner={reasoner} balance={loads} status=running",
-                        flush=True,
-                    )
-                    phase = "queries"
-                    query_wall_ms, responses = _query(
-                        config,
-                        endpoints,
-                        assignment,
-                        timeout_seconds=max(
-                            config.limits.point_timeout_seconds
-                            - (monotonic() - point_started),
-                            0.001,
-                        ),
-                        phase="physical-balanced-queries",
-                    )
-                except Exception as error:
-                    if not is_boundary_failure(error):
-                        raise
-                    status = failure_status(error)
-                    stop_reason = error_text(error)
-                    common = {
-                        "reasoner": reasoner,
-                        "repetition": repetition,
-                        "synthetic_users": users,
-                        "synthetic_triples": "",
-                        "calibration_reused": True,
-                    }
-                    summary = _censored_summary(
-                        common,
-                        node_count,
-                        len(specs),
-                        status,
-                        phase,
-                        stop_reason,
-                        config.limits.point_timeout_seconds,
-                        monotonic() - point_started,
-                    )
-                    detail = _censored_detail(
-                        common,
-                        status,
-                        phase,
-                        stop_reason,
-                        config.limits.point_timeout_seconds,
-                    )
+                    if not cumulative:
+                        summary["node_generation_ms_sum"] = sum(float(item["generation_ms"]) for item in prepared.values())
                     summaries.append(summary)
-                    details.append(detail)
-                    assignments.append(detail)
-                    nodes.append(detail)
-                    if config.limits.stop_scaling_after_timeout:
-                        stopped_reasoners[reasoner] = stop_reason
-                    print(
-                        f"[{target}-scalability] block={block} users={users} "
-                        f"reasoner={reasoner} phase={phase} status={status} "
-                        f"limit_s={config.limits.point_timeout_seconds:g}; "
-                        "suite continues and larger points for this reasoner "
-                        "will be recorded as skipped_after_timeout",
-                        flush=True,
-                    )
-                    continue
-                common = {
-                    "reasoner": reasoner,
-                    "repetition": repetition,
-                    "synthetic_users": users,
-                    "synthetic_triples": next(iter(prepared.values()))[
-                        "synthetic_triples"
-                    ],
-                    "calibration_reused": True,
-                }
-                details.extend(
-                    _detail_rows(responses, endpoint_by_url, common)
-                )
-                assignments.extend(
-                    _assignment_rows(
-                        "scalability",
-                        common,
-                        endpoints,
-                        assignment,
-                        calibration,
-                        predicted,
-                    )
-                )
-                nodes.extend(
-                    _node_rows(
-                        "scalability",
-                        common,
-                        endpoints,
-                        prepared,
-                        calibration_responses,
-                        responses,
-                        predicted,
-                    )
-                )
-                summary = _summary(
-                    common,
-                    len(specs),
-                    prepare_wall_ms,
-                    recorded_calibration_ms,
-                    query_wall_ms,
-                    prepared,
-                    responses,
-                    predicted,
-                    True,
-                )
-                summary["node_generation_ms_sum"] = sum(
-                    float(item["generation_ms"])
-                    for item in prepared.values()
-                )
-                summaries.append(summary)
-                print(
-                    f"[{target}-scalability] block={block}/"
-                    f"{len(config.scale_users)} users={users} "
-                    f"reasoner={reasoner} status=done "
-                    f"queries={len(specs)} "
-                    f"wall_ms={summary['total_wall_ms']:.2f}",
-                    flush=True,
-                )
-
-    output = output_root / "scalability"
+                    print(f"[{target}-{suite}] reasoner={reasoner} stage={stage} status=done "
+                          f"wall_ms={summary['total_wall_ms']:.2f}", flush=True)
+    output = output_root / suite
     _write_csv(output / "query-runs.csv", details)
     _write_csv(output / "summary.csv", summaries)
     _write_csv(output / "assignments.csv", assignments)
     _write_csv(output / "node-runs.csv", nodes)
-    metadata = _metadata(config, endpoints, "scalability", inventory)
-    metadata["scale_users"] = list(config.scale_users)
-    (output / "metadata.json").write_text(
-        json.dumps(metadata, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
+    metadata = _metadata(config, endpoints, suite, inventory)
+    metadata["category_order" if cumulative else "scale_users"] = list(config.category_order if cumulative else config.scale_users)
+    (output / "metadata.json").write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     completed = sum(row.get("status") == "completed" for row in summaries)
     censored = sum(row.get("status") == "timeout" for row in summaries)
-    skipped = sum(
-        row.get("status") == "skipped_after_timeout" for row in summaries
-    )
-    print(
-        f"[{target}-scalability] status=completed "
-        f"completed_points={completed} timeout_points={censored} "
-        f"skipped_points={skipped} output={output}",
-        flush=True,
-    )
+    skipped = sum(row.get("status") == "skipped_after_timeout" for row in summaries)
+    print(f"[{target}-{suite}] status=completed completed_points={completed} "
+          f"timeout_points={censored} skipped_points={skipped} output={output}", flush=True)
     return output

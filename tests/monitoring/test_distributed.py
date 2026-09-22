@@ -47,7 +47,7 @@ def test_discover_rejects_an_unrelated_health_service(monkeypatch):
         RuntimeError,
         match="Incompatible continuum worker.*service",
     ):
-        distributed.discover(["http://10.151.73.241:8080"])
+        distributed.discover(["http://100.93.73.27:8080"])
 
 
 def test_request_retries_a_transient_disconnect(monkeypatch):
@@ -189,3 +189,23 @@ def test_worker_health_rejects_an_old_ontology_release():
         health,
         expected_topology_fingerprint="stale-topology",
     )
+
+
+def test_parallel_timeout_never_masks_another_worker_error(monkeypatch):
+    import pytest
+    from continuum_bench.monitoring import distributed
+    from continuum_bench.monitoring.budget import is_timeout_failure
+    from threading import Event
+    timeout_seen = Event()
+    def request(url, *args):
+        if url.endswith('first'):
+            timeout_seen.set()
+            raise TimeoutError('worker deadline')
+        assert timeout_seen.wait(2)
+        raise ValueError('invalid ontology')
+    monkeypatch.setattr(distributed, '_request', request)
+    endpoints = [distributed.Endpoint('http://first', 'edge1'), distributed.Endpoint('http://second', 'edge2')]
+    with pytest.raises(RuntimeError, match='invalid ontology') as caught:
+        distributed._parallel(endpoints, '/prepare', {e.url:{} for e in endpoints})
+    assert isinstance(caught.value.__cause__, ValueError)
+    assert not is_timeout_failure(caught.value)

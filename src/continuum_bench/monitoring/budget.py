@@ -156,3 +156,88 @@ def failure_status(error: BaseException) -> str:
 def error_text(error: BaseException, limit: int = 500) -> str:
     value = f"{type(error).__name__}: {error}".replace("\n", " ")
     return value if len(value) <= limit else value[: limit - 3] + "..."
+
+
+def is_timeout_failure(error: BaseException) -> bool:
+    """Accept typed deadline failures, never error-message guesses.
+
+    Explicit causes may wrap a transport timeout. Implicit exception context
+    does not turn a programming error raised during cleanup into a timeout.
+    """
+    seen: set[int] = set()
+    while id(error) not in seen:
+        seen.add(id(error))
+        if isinstance(error, HTTPError):
+            return error.code in {408, 504}
+        if isinstance(error, TimeoutError):
+            return True
+        if isinstance(error, URLError) and isinstance(error.reason, BaseException):
+            error = error.reason
+        elif error.__cause__ is not None:
+            error = error.__cause__
+        else:
+            return False
+    return False
+
+
+class TimeoutSkipState:
+    """Per-run timeout streaks and independent, latched skip scopes.
+
+    A completed point resets its reasoner's streak. Skipped points and shared
+    setup successes do not count as observations. Once triggered, a skip stays
+    latched for its scope, even if independent work subsequently succeeds.
+    """
+
+    def __init__(self, limits):
+        self.limits = limits
+        self.streaks: dict[str, int] = {}
+        self.repetitions: dict[tuple[str, int], tuple[int, str]] = {}
+        self.sizes: dict[str, tuple[int, str]] = {}
+        self.stages: dict[tuple[str, int, int], tuple[int, str]] = {}
+
+    def enabled(self, name: str) -> bool:
+        value = getattr(self.limits, name)
+        return not unlimited_execution() and (
+            self.limits.stop_scaling_after_timeout if value is None else value
+        )
+
+    def skipped(self, reasoner: str, users: int, repetition: int, stage: int) -> str | None:
+        if unlimited_execution():
+            return None
+        for previous, current in (
+            (self.sizes.get(reasoner), users),
+            (self.repetitions.get((reasoner, users)), repetition),
+            (self.stages.get((reasoner, users, repetition)), stage),
+        ):
+            if previous is not None and current > previous[0]:
+                return previous[1]
+        return None
+
+    def completed(self, reasoner: str) -> None:
+        self.streaks[reasoner] = 0
+
+    def timeout(self, reasoner: str, users: int, repetition: int, stage: int, error: BaseException) -> None:
+        if not is_timeout_failure(error):
+            raise error
+        self.streaks[reasoner] = self.streaks.get(reasoner, 0) + 1
+        if self.streaks[reasoner] < self.limits.consecutive_timeout_threshold:
+            return
+        reason = error_text(error)
+        if self.enabled("skip_repetitions_after_timeout"):
+            self.repetitions.setdefault((reasoner, users), (repetition, reason))
+        if self.enabled("skip_larger_sizes_after_timeout"):
+            self.sizes.setdefault(reasoner, (users, reason))
+        if self.enabled("skip_cumulative_stages_after_timeout"):
+            self.stages.setdefault((reasoner, users, repetition), (stage, reason))
+
+
+def skip_metadata(limits) -> dict:
+    state = TimeoutSkipState(limits)
+    return {
+        name: state.enabled(name)
+        for name in (
+            "skip_repetitions_after_timeout",
+            "skip_larger_sizes_after_timeout",
+            "skip_cumulative_stages_after_timeout",
+        )
+    } | {"consecutive_timeout_threshold": limits.consecutive_timeout_threshold}

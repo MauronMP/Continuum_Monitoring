@@ -1,4 +1,9 @@
+> Current five-reasoner deployment and timeout controls: [Physical reasoning](PHYSICAL_REASONING.md).
+> Commands below use the current `distributed` layout. Historical result examples retain their original profiles.
+
 # Physical continuum user guide
+
+For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
 
 This guide covers a coordinator and an elastic set of physical worker nodes.
 
@@ -14,7 +19,7 @@ continuum-bench validate
 continuum-bench preflight
 continuum-bench physical authorize --ssh-user pi
 continuum-bench physical stop --ssh-user pi
-continuum-bench physical deploy --ssh-user pi
+continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
 
@@ -23,13 +28,13 @@ continuum-smoke-physical-scalability --ssh-user pi
 continuum-smoke-physical-load
 continuum-smoke-physical-experiments
 
-continuum-bench physical all --layout sharded --ssh-user pi
+continuum-bench physical all --layout distributed --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 continuum-bench load physical
 continuum-bench experiment all physical
 
 continuum-bench study category-cost \
-  --events outputs/load/physical/event-runs.csv \
+  --events outputs/load/event-runs.csv \
   --output-dir outputs/study/physical-cost
 continuum-bench load plot
 continuum-bench experiment plot all
@@ -57,15 +62,15 @@ Each `[[nodes]]` entry defines identity, SSH host, HTTP endpoint, hardware,
 network capacity, location, authority and semantic categories. Add or remove
 nodes without changing Python code.
 
-The current laboratory inventory is:
+The current physical inventory uses Tailscale VPN addresses:
 
 | Node | Address | Semantic endpoint |
 | --- | --- | --- |
-| Cloud coordinator | `127.0.0.1` | `http://127.0.0.1:8391` |
-| Fog | `10.151.73.241` | `http://10.151.73.241:8391` |
-| Edge 1 | `10.151.73.34` | `http://10.151.73.34:8391` |
-| Edge 2 | `10.151.73.143` | `http://10.151.73.143:8391` |
-| Edge 3 | `10.151.73.173` | `http://10.151.73.173:8391` |
+| Cloud coordinator | `100.86.63.53` | `http://100.86.63.53:8391` |
+| Fog | `100.93.73.27` | `http://100.93.73.27:8391` |
+| Edge 1 | `100.101.178.35` | `http://100.101.178.35:8391` |
+| Edge 2 | `100.70.9.117` | `http://100.70.9.117:8391` |
+| Edge 3 | `100.121.135.60` | `http://100.121.135.60:8391` |
 
 ```bash
 continuum-bench topology validate --name physical
@@ -74,12 +79,12 @@ continuum-bench doctor --physical
 
 ## Initial authorization and deployment
 
-Install Python 3.11+, `venv`, `rsync`, `procps` and an SSH server on every
-worker. Then run from the coordinator:
+Install Python 3.11+, `venv`, `rsync`, `procps`, an SSH server, Java 17 JDK,
+Maven and native Konclude on every worker. Then run from the coordinator:
 
 ```bash
 continuum-bench physical authorize --ssh-user pi
-continuum-bench physical deploy --ssh-user pi
+continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
 ```
@@ -108,8 +113,8 @@ failure or event loss. They are not performance evidence.
 ## Normal monitoring benchmarks
 
 ```bash
-continuum-bench physical cumulative --layout sharded --ssh-user pi
-continuum-bench physical scalability --layout sharded --ssh-user pi
+continuum-bench physical cumulative --layout distributed --ssh-user pi
+continuum-bench physical scalability --layout distributed --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 ```
 
@@ -157,7 +162,7 @@ mobility is generated independently by the study module.
 continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
 continuum-bench study category-cost \
-  --events outputs/load/physical/event-runs.csv \
+  --events outputs/load/event-runs.csv \
   --output-dir outputs/study/physical-cost
 continuum-bench load plot
 continuum-bench experiment plot all
@@ -174,7 +179,7 @@ queries generate the most demand. It must be run after `load physical`:
 
 ```bash
 continuum-bench study category-cost \
-  --events outputs/load/physical/event-runs.csv \
+  --events outputs/load/event-runs.csv \
   --output-dir outputs/study/physical-cost
 ```
 
@@ -219,7 +224,7 @@ counts for completed, timed-out and skipped points.
 In replicated placement every node materializes the complete graph. Its
 preparation wall time is therefore bounded by the slowest active Raspberry Pi;
 adding replicas accelerates parallel query service but cannot accelerate that
-duplicated inference. Use `--layout sharded` to evaluate distributed ontology
+duplicated inference. Use `--layout distributed` to evaluate distributed ontology
 placement. A repeatable `rdfs_owlrl` preparation timeout at the same user block
 is the measured saturation frontier for that hardware/profile combination; it
 must not be relabeled as a successful exact timing. An explicitly recorded

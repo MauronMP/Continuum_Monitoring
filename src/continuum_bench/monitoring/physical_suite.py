@@ -1,7 +1,7 @@
 """Physical monitoring suite orchestration.
 
 This module is the public boundary for current monitoring work. It delegates
-to the lower-level replicated and authority-sharded coordinators, while keeping
+to the lower-level replicated and authority-distributed coordinators, while keeping
 the rest of the project focused on physical infrastructure.
 """
 
@@ -12,10 +12,10 @@ from pathlib import Path
 from ..config import BenchmarkConfig
 from ..physical import run_physical_cumulative, run_physical_scalability
 from ..physical_cluster import PhysicalInventory
-from ..sharded import (
+from .distributed_ontology import (
     export_fragments,
-    run_sharded_cumulative,
-    run_sharded_scalability,
+    run_distributed_cumulative,
+    run_distributed_scalability,
 )
 
 
@@ -32,11 +32,11 @@ def run_physical_monitoring_suite(
 
     if suite not in {"cumulative", "scalability", "all"}:
         raise ValueError("suite must be cumulative, scalability or all")
-    if layout not in {"replicated", "sharded"}:
-        raise ValueError("layout must be replicated or sharded")
+    if layout not in {"replicated", "distributed"}:
+        raise ValueError("layout must be replicated or distributed")
     outputs: dict[str, str] = {}
     suite_root = output_root / layout
-    if layout == "sharded":
+    if layout == "distributed":
         endpoints = [node.endpoint for node in inventory.nodes]
         options = {
             "target": "physical",
@@ -46,11 +46,11 @@ def run_physical_monitoring_suite(
             options["topology"] = inventory.topology
         if suite in {"cumulative", "all"}:
             outputs["cumulative"] = str(
-                run_sharded_cumulative(config, endpoints, suite_root, **options)
+                run_distributed_cumulative(config, endpoints, suite_root, **options)
             )
         if suite in {"scalability", "all"}:
             outputs["scalability"] = str(
-                run_sharded_scalability(config, endpoints, suite_root, **options)
+                run_distributed_scalability(config, endpoints, suite_root, **options)
             )
         return outputs
 

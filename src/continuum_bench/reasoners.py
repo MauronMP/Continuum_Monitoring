@@ -5,6 +5,10 @@ from itertools import combinations
 from time import perf_counter_ns
 from typing import Type
 from .core.contracts import Reasoner, ReasoningResult
+from .owl_materialization import (
+    NativeOWLReasoner, MaterializationError, InconsistentOntologyError,
+    OWL_MATERIALIZATION_CONTRACT,
+)
 
 from owlrl import (
     DeductiveClosure,
@@ -107,69 +111,26 @@ REASONER_ENGINES: dict[str, ReasonerEngine] = {
             "Combined closure used to quantify the cost of richer semantics."
         ),
     ),
-    "hermit": ReasonerEngine(
-        name="HermiT",
-        profile="owl_dl",
-        implementation="Java OWLAPI reasoner",
-        owl_fragment="OWL 2 DL",
-        supported=False,
-        suitability=(
-            "Technically valuable for consistency checking, but unsuitable as "
-            "a default physical benchmark engine on 32-bit Raspberry Pi nodes "
-            "because startup cost, memory use and JVM availability dominate "
-            "the monitored workload."
-        ),
-        replacement="owlrl",
-    ),
-    "openllet": ReasonerEngine(
-        name="Openllet",
-        profile="owl_dl",
-        implementation="Java OWLAPI reasoner",
-        owl_fragment="OWL 2 DL",
-        supported=False,
-        suitability=(
-            "Useful for offline OWL DL validation, but not integrated in the "
-            "bounded physical-node worker because it requires a Java service "
-            "layer not portable to every target node."
-        ),
-        replacement="rdfs_owlrl",
-    ),
-    "jfact": ReasonerEngine(
-        name="JFact",
-        profile="owl_dl",
-        implementation="Java OWLAPI reasoner",
-        owl_fragment="OWL 2 DL",
-        supported=False,
-        suitability=(
-            "Appropriate for ontology development checks, but less suitable "
-            "for repeated low-latency monitoring benchmarks on constrained "
-            "nodes."
-        ),
-        replacement="owlrl",
-    ),
-    "konclude": ReasonerEngine(
-        name="Konclude",
-        profile="owl_dl",
-        implementation="Native OWL reasoner",
-        owl_fragment="OWL 2 DL",
-        supported=False,
-        suitability=(
-            "High-performance native reasoning is attractive on servers, but "
-            "the deployment target includes 32-bit Raspberry Pi nodes where "
-            "portable packages and identical execution semantics are not "
-            "guaranteed."
-        ),
-        replacement="rdfs",
-    ),
+    **{
+        name: ReasonerEngine(
+            name=label,
+            profile="owl_dl",
+            implementation="Native Konclude OWLlink" if name == "konclude" else "Isolated Java OWLAPI",
+            owl_fragment="OWL 2 DL; named-class-individual-v1 output",
+            supported=True,
+            suitability="Local runtime required; startup and serialization are included in timing. No fallback.",
+        )
+        for name, label in (("hermit", "HermiT"), ("openllet", "Openllet"), ("jfact", "JFact"), ("konclude", "Konclude"))
+    },
 }
 
 
 def available_reasoners() -> tuple[str, ...]:
-    return tuple(_BACKENDS)
+    return tuple(name for name in _BACKENDS if name not in ("owlrl", "rdfs_owlrl"))
 
 
 def reasoner_catalog() -> tuple[ReasonerEngine, ...]:
-    """Return supported profiles and documented rejected alternatives."""
+    """Return implemented profiles; native runtime availability is checked at execution."""
 
     return tuple(REASONER_ENGINES.values())
 
@@ -211,6 +172,7 @@ class OwlrlReasoner:
 
 
 _BACKENDS: dict[str, Reasoner] = {name: OwlrlReasoner(name) for name in _PROFILES}
+_BACKENDS.update({name: NativeOWLReasoner(name) for name in ("hermit", "openllet", "jfact", "konclude")})
 
 
 def register_reasoner(backend: Reasoner, *, replace: bool = False) -> None:
@@ -229,3 +191,47 @@ def get_reasoner(name: str) -> Reasoner:
 
 def materialize(source: Graph, reasoner: str) -> ReasoningMeasurement:
     return get_reasoner(reasoner).materialize(source)
+
+
+def reasoner_contract(name: str) -> str:
+    """Version of the output semantics, independent of worker wire protocol."""
+    get_reasoner(name)
+    if name in ("hermit", "openllet", "jfact", "konclude"):
+        return OWL_MATERIALIZATION_CONTRACT
+    if name == "rdfs":
+        return REASONING_CONTRACT
+    return f"{name}-closure-v1"
+
+
+def reasoner_provenance(name: str) -> dict[str, str]:
+    """Describe the selected backend without asserting runtime verification."""
+    engine = REASONER_ENGINES.get(name)
+    return {
+        "backend": name,
+        "contract": reasoner_contract(name),
+        "implementation": engine.implementation if engine else type(get_reasoner(name)).__name__,
+        "fallback": "none",
+    }
+
+
+def reasoner_readiness(name: str) -> dict:
+    """Read-only presence check; verification requires actual materialization."""
+    import os
+    import shutil
+    from .owl_materialization import _classpath, ROOT
+
+    backend = get_reasoner(name)
+    missing = []
+    if isinstance(backend, NativeOWLReasoner):
+        if not shutil.which(os.environ.get("JAVA", "java")):
+            missing.append("Java executable")
+        if not (ROOT / "tools/owl/MaterializeOntology.java").is_file():
+            missing.append("tools/owl/MaterializeOntology.java")
+        try:
+            _classpath(name)
+        except MaterializationError as error:
+            missing.append(str(error))
+        if name == "konclude" and not shutil.which(os.environ.get("CONTINUUM_KONCLUDE_EXECUTABLE", "Konclude")):
+            missing.append("Konclude executable")
+    return {**reasoner_provenance(name), "runtime_present": not missing,
+            "execution_verified": False, "missing": missing}

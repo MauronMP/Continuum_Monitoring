@@ -4,8 +4,8 @@ tier = "edge"
 [[nodes]]
 id = "edge1"
 device_type = "raspberry-pi-500"
-host = "10.151.73.34"
-endpoint = "http://10.151.73.34:8391"
+host = "100.101.178.35"
+endpoint = "http://100.101.178.35:8391"
 local = false
 port = 8391
 authority = true
@@ -24,8 +24,8 @@ region = "physical-lab"
 [[nodes]]
 id = "edge2"
 device_type = "raspberry-pi-500"
-host = "10.151.73.143"
-endpoint = "http://10.151.73.143:8391"
+host = "100.70.9.117"
+endpoint = "http://100.70.9.117:8391"
 local = false
 port = 8391
 authority = true
@@ -44,8 +44,8 @@ region = "physical-lab"
 [[nodes]]
 id = "edge3"
 device_type = "raspberry-pi-500"
-host = "10.151.73.173"
-endpoint = "http://10.151.73.173:8391"
+host = "100.121.135.60"
+endpoint = "http://100.121.135.60:8391"
 local = false
 port = 8391
 authority = true

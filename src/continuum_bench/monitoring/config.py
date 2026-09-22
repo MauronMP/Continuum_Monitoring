@@ -24,6 +24,23 @@ class ExecutionLimits:
     point_timeout_seconds: float
     calibration_query_limit: int
     stop_scaling_after_timeout: bool
+    skip_repetitions_after_timeout: bool | None = None
+    skip_larger_sizes_after_timeout: bool | None = None
+    skip_cumulative_stages_after_timeout: bool = True
+    consecutive_timeout_threshold: int = 1
+    timeout_mode: str = "bounded"
+
+    def __post_init__(self) -> None:
+        for name in ("stop_scaling_after_timeout", "skip_cumulative_stages_after_timeout"):
+            if type(getattr(self, name)) is not bool:
+                raise ValueError(f"limits.{name} must be a boolean")
+        for name in ("skip_repetitions_after_timeout", "skip_larger_sizes_after_timeout"):
+            if getattr(self, name) is not None and type(getattr(self, name)) is not bool:
+                raise ValueError(f"limits.{name} must be a boolean")
+        if type(self.consecutive_timeout_threshold) is not int or self.consecutive_timeout_threshold < 1:
+            raise ValueError("limits.consecutive_timeout_threshold must be a positive integer")
+        if self.timeout_mode not in ("bounded", "unlimited"):
+            raise ValueError("limits.timeout_mode must be bounded or unlimited")
 
 
 @dataclass(frozen=True)
@@ -100,9 +117,12 @@ def load_config(path: str | Path) -> BenchmarkConfig:
         calibration_query_limit=int(
             limits_raw.get("calibration_query_limit", 16)
         ),
-        stop_scaling_after_timeout=bool(
-            limits_raw.get("stop_scaling_after_timeout", True)
-        ),
+        stop_scaling_after_timeout=limits_raw.get("stop_scaling_after_timeout", True),
+        skip_repetitions_after_timeout=limits_raw.get("skip_repetitions_after_timeout"),
+        skip_larger_sizes_after_timeout=limits_raw.get("skip_larger_sizes_after_timeout"),
+        skip_cumulative_stages_after_timeout=limits_raw.get("skip_cumulative_stages_after_timeout", True),
+        consecutive_timeout_threshold=limits_raw.get("consecutive_timeout_threshold", 1),
+        timeout_mode=limits_raw.get("timeout_mode", "bounded"),
     )
     for field, value in (
         ("phase_timeout_seconds", limits.phase_timeout_seconds),
@@ -137,7 +157,9 @@ def load_config(path: str | Path) -> BenchmarkConfig:
 
 
 def _validate_benchmark(config: BenchmarkConfig) -> None:
-    supported_reasoners = {"rdfs", "owlrl", "rdfs_owlrl"}
+    from ..reasoners import available_reasoners
+
+    supported_reasoners = set(available_reasoners())
     if not config.reasoners:
         raise ValueError("benchmark.reasoners cannot be empty")
     unknown_reasoners = sorted(set(config.reasoners) - supported_reasoners)

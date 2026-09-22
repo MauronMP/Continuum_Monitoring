@@ -197,7 +197,7 @@ def test_v3_synthetic_data_does_not_trigger_violation_queries(config):
     assert failures == {}
 
 
-def test_three_reasoner_profiles_have_no_explicit_contradictions(config):
+def test_configured_reasoner_profiles_have_no_explicit_contradictions(config):
     graph = load_graph(config.resolve(path) for path in config.ontology_files)
     assert len(available_reasoners()) >= 3
     for reasoner in config.reasoners:

@@ -8,7 +8,7 @@
   <version>1.0.0</version>
   <packaging>pom</packaging>
 
-  <!-- Common validation-only dependency; never deployed to workers. -->
+  <!-- Common logging dependency for native validation and worker adapters. -->
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>

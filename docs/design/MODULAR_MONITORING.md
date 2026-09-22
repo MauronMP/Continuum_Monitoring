@@ -1,5 +1,7 @@
 # Modular physical monitoring
 
+For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
+
 All benchmark execution targets physical HTTP workers in the continuum.
 Canonical graph computations on the coordinator only validate result semantics;
 they are excluded from benchmark performance measurements.
@@ -28,7 +30,7 @@ src/continuum_bench/
     normalize.py            Canonical envelope for retained scientific suites
     distributed.py          HTTP transport and common distributed execution
     physical.py             Calibrated replica execution
-    sharded.py              Authority-aware canonical ontology execution
+    distributed_ontology.py              Authority-aware canonical ontology execution
     load_benchmark.py       Event-pressure and recovery measurements
     experiments.py          Scale-out, hardware and distributed ontology
     study/                  Real-query policy attribution and static trace tools
@@ -87,7 +89,7 @@ axis, leaving all other baseline values fixed:
 - actual concurrent HTTP request count.
 
 Node count cannot exceed the physical inventory. The supplied smoke contains
-21 workload points, three reasoners and two layouts: 126 measurements.
+21 workload points, five reasoners and two layouts: 210 measurements.
 Synthetic IoT entities are not additional connected hardware devices. The
 microbenchmark schema and generated policies are explicitly synthetic. Use the
 canonical load and study commands to measure the project's real policy catalog.
@@ -108,17 +110,16 @@ within each logical request. These properties are part of the measured design.
 ## Reasoning abstraction
 
 The materialization port accepts a graph and returns a graph, elapsed reasoning
-time, asserted triples and output triples. Built-in physical backends are RDFS,
-OWL RL and combined RDFS/OWL RL. They share one registry and contract.
+time, asserted triples and output triples. Current physical comparisons select
+RDFS, HermiT, Openllet, JFact and Konclude through the same registry. External
+backends require their actual Java/native installation on each selected host;
+missing runtimes are explicit errors, never substituted Python profiles.
 
-HermiT, Openllet, JFact and native Konclude are evaluated by the separate OWL 2 DL
-consistency port. The installed worker profile runs 32-bit Python on Raspberry Pi
-OS and has only RDFLib/OWL-RL dependencies. These four external tools require a
-Java or native runtime, have a different DL consistency task and do not currently
-implement the worker's materialized-SPARQL-graph port. They are therefore not
-silently treated as interchangeable timed workers. RDFS/OWL RL are the explicit
-physical alternatives, with lower logical expressiveness recorded in the catalog.
-All four external tools remain mandatory in the strict release validation gate.
+The timed materialization contract and separate consistency gate are described
+in [physical reasoning](PHYSICAL_REASONING.md). Local inference over fragments
+is validated against each backend's canonical reference. This does not establish
+complete arbitrary distributed OWL DL entailment. Historical OWL RL results
+remain historical and must not be combined with this new comparison.
 
 JFact's Guice and AssistedInject dependencies are pinned together to 5.1.0.
 An explicit Protégé selection takes precedence over an ambient HermiT classpath.
@@ -177,13 +178,13 @@ On an Ubuntu/Debian coordinator:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y git python3 python3-venv python3-pip openssh-client rsync openjdk-17-jre-headless maven konclude
+sudo apt-get install -y git python3 python3-venv python3-pip openssh-client rsync openjdk-17-jdk maven konclude
 git clone https://github.com/MauronMP/Continuum_Monitoring.git
 cd Continuum_Monitoring
 python3 tools/bootstrap.py --profile coordinator
 . .venv/bin/activate
 python tools/install_owl_reasoners.py
-python -m pytest
+CONTINUUM_TEST_NATIVE_OWL=1 python -m pytest
 python tools/check_documentation.py
 continuum-bench validate
 continuum-bench preflight
@@ -202,7 +203,7 @@ coordinator:
 
 ```bash
 continuum-bench physical authorize --ssh-user pi
-continuum-bench physical deploy --ssh-user pi
+continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
 continuum-bench campaign
@@ -211,11 +212,11 @@ continuum-bench campaign --axis physical_nodes --axis concurrency
 continuum-smoke-physical-scalability
 continuum-smoke-physical-scalability --layout replicated
 continuum-smoke-physical-load
-continuum-bench physical all --layout sharded
+continuum-bench physical all --layout distributed
 continuum-bench physical all --layout replicated
 continuum-bench load physical
 continuum-bench experiment all physical
-continuum-bench study category-cost --events outputs/load/physical/event-runs.csv
+continuum-bench study category-cost --events outputs/load/event-runs.csv
 continuum-bench physical stop --ssh-user pi
 ```
 

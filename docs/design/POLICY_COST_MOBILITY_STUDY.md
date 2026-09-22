@@ -69,10 +69,10 @@ After running a physical load benchmark, aggregate request-level observations:
 
 ```bash
 .venv/bin/continuum-bench study category-cost \
-  --events outputs/load/physical/event-runs.csv
+  --events outputs/load/event-runs.csv
 ```
 
-`outputs/load/physical/event-runs.csv` for the other targets and write each
+`outputs/load/event-runs.csv` for the other targets and write each
 analysis to a separate output directory. The trace generator does not execute
 the scheduled requests: `execution_mode` and `concurrency` describe a
 replayable workload contract, while measured timing and resource values must

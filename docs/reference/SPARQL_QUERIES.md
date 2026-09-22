@@ -30,8 +30,8 @@ legitimately report pending configuration.
 
 ```bash
 .venv/bin/continuum-bench validate
-.venv/bin/continuum-bench physical cumulative --layout sharded
-.venv/bin/continuum-bench physical scalability --layout sharded
+.venv/bin/continuum-bench physical cumulative --layout distributed
+.venv/bin/continuum-bench physical scalability --layout distributed
 ```
 
 ## Complete catalog
