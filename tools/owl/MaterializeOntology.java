@@ -4,7 +4,7 @@ import org.semanticweb.owlapi.formats.OWLXMLDocumentFormat;
 import org.semanticweb.owlapi.formats.NTriplesDocumentFormat;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.*;
-import org.semanticweb.owlapi.profiles.OWL2DLProfile;
+import org.semanticweb.owlapi.profiles.*;
 import org.semanticweb.owlapi.io.RDFParserMetaData;
 
 /** Named class/individual closure; see docs/design/PHYSICAL_REASONING.md. */
@@ -28,9 +28,11 @@ class MaterializeOntology {
         // of entities already recognized by OWLAPI before structural validation.
         for (OWLEntity entity : ontology.getSignature())
             manager.addAxiom(ontology, df.getOWLDeclarationAxiom(entity));
-        String violations = new OWL2DLProfile().checkOntology(ontology).toString();
-        if (!new OWL2DLProfile().checkOntology(ontology).isInProfile())
-            throw new IllegalArgumentException("Unsupported OWL 2 DL input: " + violations);
+        OWLProfile profile = args[2].contains("ElkReasonerFactory")
+            ? new OWL2ELProfile() : new OWL2DLProfile();
+        String violations = profile.checkOntology(ontology).toString();
+        if (!profile.checkOntology(ontology).isInProfile())
+            throw new IllegalArgumentException("Input is outside the required OWL profile: " + violations);
         if (args[2].equals("convert")) {
             if (!ontology.getAxioms(AxiomType.HAS_KEY).isEmpty())
                 throw new IllegalArgumentException("Konclude does not support HasKey axioms");

@@ -29,6 +29,7 @@ OWLAPI_FACTORIES = {
     "hermit": "org.semanticweb.HermiT.ReasonerFactory",
     "openllet": "openllet.owlapi.OpenlletReasonerFactory",
     "jfact": "uk.ac.manchester.cs.jfact.JFactFactory",
+    "elk": "org.semanticweb.elk.owlapi.ElkReasonerFactory",
 }
 
 
@@ -99,9 +100,15 @@ def diagnostic_excerpt(output: str, limit: int = 3000) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("ontology", nargs="?", type=Path, default=(
-        ROOT / "ontology/legacy/smartcity_continuum-v3.0.0.ttl"
-    ))
+    parser.add_argument(
+        "ontology",
+        type=Path,
+        help=(
+            "Ontology file to validate. The path is mandatory so this low-level "
+            "tool cannot silently select the archived single-file release. Use "
+            "'continuum-bench owl-validate' for the active modular ontology."
+        ),
+    )
     parser.add_argument("--protege-home", type=Path)
     parser.add_argument(
         "--reasoner", choices=tuple(OWLAPI_FACTORIES), default="hermit",

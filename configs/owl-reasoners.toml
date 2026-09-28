@@ -1,5 +1,20 @@
 [validation]
-ontology = "ontology/legacy/smartcity_continuum-v3.0.0.ttl"
+ontology_files = [
+  "ontology/core/schema.ttl",
+  "ontology/modules/foundation.ttl",
+  "ontology/modules/topology.ttl",
+  "ontology/modules/observability.ttl",
+  "ontology/modules/governance.ttl",
+  "ontology/modules/orchestration.ttl",
+  "ontology/modules/federation.ttl",
+  "ontology/modules/deployment.ttl",
+  "ontology/core/vocabulary.ttl",
+  "ontology/domains/wellbeing/schema.ttl",
+  "ontology/domains/wellbeing/vocabulary.ttl",
+  "ontology/examples/reference-system.ttl",
+  "ontology/shapes/core-compliance.ttl",
+  "ontology/shapes/federated-learning.ttl",
+]
 timeout_seconds = 180
 reasoners = ["hermit", "openllet", "jfact", "konclude"]
 

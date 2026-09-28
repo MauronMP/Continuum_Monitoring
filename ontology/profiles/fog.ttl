@@ -9,5 +9,6 @@
         <http://example.org/smartcity>,
         <http://example.org/smartcity/modules/core-vocabulary>,
         <http://example.org/smartcity/modules/deployment> ;
-    ex:usesEntailmentProfile "rdfs" ;
+    # The benchmark selects the reasoner at runtime; this profile controls only
+    # the modules placed on the fog authority.
     owl:versionInfo "3.0.0" .

@@ -105,3 +105,17 @@ def test_new_comparison_defaults_and_removed_layout(config):
     assert config.reasoners == ('rdfs', 'hermit', 'openllet', 'jfact', 'konclude')
     with pytest.raises(SystemExit):
         cli._parser().parse_args(['physical', 'all', '--layout', 'sharded'])
+
+
+def test_production_config_continues_after_timeout(config):
+    from continuum_bench.config import load_config
+
+    production = load_config(config.root / 'configs/benchmark.toml')
+
+    assert production.distributed.request_timeout_seconds == 300
+    assert production.limits.phase_timeout_seconds == 300
+    assert production.limits.point_timeout_seconds == 900
+    assert production.limits.stop_scaling_after_timeout is False
+    assert production.limits.skip_repetitions_after_timeout is False
+    assert production.limits.skip_larger_sizes_after_timeout is False
+    assert production.limits.skip_cumulative_stages_after_timeout is False

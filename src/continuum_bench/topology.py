@@ -90,7 +90,7 @@ def default_categories(tier: str) -> tuple[str, ...]:
 
 
 def authority_index(value: object, authority_count: int) -> int:
-    """Return the deterministic privacy-authority shard for a resource key."""
+    """Return the deterministic privacy-authority partition for a resource key."""
     if authority_count < 1:
         raise ValueError("authority_count must be >= 1")
     digits = re.findall(r"\d+", str(value))

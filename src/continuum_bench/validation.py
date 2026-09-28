@@ -131,10 +131,11 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
         "datatype_range_errors": range_errors,
         "owl_dl_consistency": {
             "status": "not_checked",
-            "check_command": "python3 tools/check_owl_consistency.py --require-dl-profile",
+            "check_command": "continuum-bench owl-validate --require-all",
             "interpretation": (
                 "Datatype guards, SHACL and zero owl:Nothing instances do not "
-                "establish OWL consistency. Run the separate HermiT check."
+                "establish OWL consistency. Run the external modular-ontology "
+                "reasoner gate."
             ),
         },
         "query_expectation_errors": expectation_errors,

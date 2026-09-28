@@ -19,6 +19,12 @@ def test_benchmark_rejects_unknown_reasoner(config):
         _validate_benchmark(replace(config, reasoners=("rdfs", "unknown")))
 
 
+@pytest.mark.parametrize("reasoner", ("none", "owlrl", "rdfs_owlrl", "elk"))
+def test_benchmark_rejects_retired_comparison_reasoners(config, reasoner):
+    with pytest.raises(ValueError, match="unsupported"):
+        _validate_benchmark(replace(config, reasoners=("rdfs", reasoner)))
+
+
 def test_load_early_stop_dimensions_must_be_ordered(config, tmp_path):
     source = (config.root / "configs/load-benchmark.toml").read_text(
         encoding="utf-8"

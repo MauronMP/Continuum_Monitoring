@@ -6,8 +6,8 @@ policy_categories = ["identity_consent", "security_identity", "policy_governance
 repetitions = 3
 warmup = 3
 seed = 2026
-request_timeout_seconds = 30
-point_timeout_seconds = 90
+request_timeout_seconds = 300
+point_timeout_seconds = 900
 
 [workload]
 physical_nodes = 1
@@ -23,7 +23,7 @@ concurrency = 1
 
 [[axes]]
 name = "physical_nodes"
-values = [1, 2, 5]
+values = [1, 2, 5, 6]
 [[axes]]
 name = "iot_devices"
 values = [2, 10, 25]

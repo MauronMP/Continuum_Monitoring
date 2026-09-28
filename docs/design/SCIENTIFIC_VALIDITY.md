@@ -21,8 +21,9 @@ The complete suite evaluates complementary concerns:
 7. exact result preservation for the authority-partitioned physical layout;
 8. isolated reasoning-hardware measurements for each physical node;
 9. query scale-out with calibrated replica scheduling;
-10. independent product behaviour in RDFLib, Jena, RDF4J and Oxigraph;
-11. OWL 2 DL consistency with HermiT, Openllet, JFact and Konclude.
+10. OWL 2 DL consistency with HermiT, Openllet, JFact and Konclude;
+11. strong and weak distributed-reasoning scaling with exact graph sizes,
+    task-group comparison, per-node evidence and sampled query equivalence.
 
 Absence of an inferred `owl:Nothing` member alone does not prove complete OWL
 2 DL consistency. The separate Protégé workflow remains the appropriate tool
@@ -41,6 +42,8 @@ statements such as:
 - query replicas scaled to the tested node count with the reported efficiency;
 - authority-partitioned execution preserved or failed to preserve the canonical
   logical graph results under the declared execution plan.
+- a tested reasoning task achieved the reported speedup, efficiency, throughput
+  or capacity bound for matched graph, layout, node and repetition controls.
 
 Every claim must name the release, reasoner profile, topology, workload,
 repetitions, timeout policy and hardware environment.
@@ -53,6 +56,8 @@ The current suite cannot establish by itself:
 - compliance with every possible interpretation of the requirements or
   policies;
 - complete OWL 2 DL behaviour from RDFS/OWL RL benchmark timings;
+- complete arbitrary OWL DL entailment across independently materialized
+  fragments;
 - energy efficiency without external power measurements;
 - production availability under arbitrary operating-system, network or device
   failures;
@@ -70,7 +75,7 @@ Record and, where possible, fix all of the following:
 
 - Git commit and clean/dirty state;
 - ontology revision, graph hash, query-catalog hash and topology fingerprint;
-- Python, RDFLib, OWL-RL and pyoxigraph versions;
+- Python, RDFLib and OWL-RL versions;
 - external OWL 2 DL consistency evidence from HermiT, Openllet, JFact and
   Konclude when those independently installed engines are available;
 - host and node hardware, processor width, operating system, memory, storage
@@ -81,3 +86,9 @@ Record and, where possible, fix all of the following:
 
 Performance statements require semantic equivalence first. A faster result with
 incorrect answers is a failed run, not a speedup.
+
+Identity, RDFS closure, OWL rule closure, OWL 2 EL and OWL DL are distinct
+semantic tasks. Timing ranks are valid within a task contract. Comparisons across
+tasks describe the cost of different semantics and must not be presented as an
+engine-only speed contest. Profile-incompatible ELK rows and right-censored
+timeouts remain coverage evidence, not completed measurements.

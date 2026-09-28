@@ -4,6 +4,8 @@ import json
 import subprocess
 import time
 
+import pytest
+
 from continuum_bench import owl_validation
 
 
@@ -30,6 +32,33 @@ def test_missing_external_reasoners_are_not_reported_as_success(
     assert by_name["openllet"]["status"] == "unavailable"
     assert by_name["jfact"]["status"] == "unavailable"
     assert report["all_available"] is False
+    assert report["source_ontology_triples"] == 7966
+    assert report["compiled_ontology_triples"] == 7938
+    assert len(report["resolved_imports"]) == 28
+    assert len(report["ontology_files"]) == 14
+    assert not any("/legacy/" in path for path in report["ontology_files"])
+    assert len(report["compiled_ontology_sha256"]) == 64
+
+
+def test_modular_compilation_rejects_unresolved_imports(
+    tmp_path, monkeypatch
+):
+    ontology = tmp_path / "ontology.ttl"
+    ontology.write_text(
+        "@prefix owl: <http://www.w3.org/2002/07/owl#> .\n"
+        "<urn:root> a owl:Ontology ; owl:imports <urn:missing> .\n",
+        encoding="utf-8",
+    )
+    config = tmp_path / "reasoners.toml"
+    config.write_text(
+        '[validation]\nontology_files=["ontology.ttl"]\n'
+        'timeout_seconds=10\nreasoners=[]\n',
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="unresolved owl:imports"):
+        owl_validation.validate_external_reasoners(
+            tmp_path, config, tmp_path / "report.json"
+        )
 
 
 def test_owlapi_adapter_preserves_machine_readable_consistency(

@@ -564,8 +564,12 @@ def query_scope(query_id: str, tier: str, category: str) -> str:
     # projection for UserB and must execute at its configured authority owner.
     if query_id in {"BASE-Q02", "BASE-Q04", "BASE-Q33"}:
         return "authority_key:http://example.org/smartcity#UserB"
-    if query_id in {"BASE-Q11", "BASE-Q14", "EXT-Q36", "EXT-Q39"}:
+    if query_id in {"BASE-Q11", "BASE-Q14"}:
         return "authority_key:http://example.org/smartcity#UserA"
+    if query_id == "EXT-Q36":
+        return "authority_key:http://example.org/smartcity#UserD"
+    if query_id == "EXT-Q39":
+        return "authorities"
     edge_ids = {
         "BASE-Q01", "BASE-Q15", "BASE-Q25",
         "BASE-Q18", "BASE-Q21", "BASE-Q23", "BASE-Q35",
@@ -715,6 +719,7 @@ def split_queries(source_path: Path = QUERY_SOURCE) -> list[Path]:
         "authorities",
         "authority_key:http://example.org/smartcity#UserA",
         "authority_key:http://example.org/smartcity#UserB",
+        "authority_key:http://example.org/smartcity#UserD",
     ):
         values = ", ".join(f'"{item}"' for item in scopes[scope])
         lines.append(f"{json.dumps(scope)} = [{values}]")

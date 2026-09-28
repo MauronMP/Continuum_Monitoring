@@ -47,6 +47,7 @@ EXPERIMENTS = (
     "scale-out",
     "reasoning-hardware",
     "distributed-ontology",
+    "distributed-reasoning-scalability",
 )
 
 

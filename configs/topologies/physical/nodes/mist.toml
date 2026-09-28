@@ -1,24 +1,24 @@
 [layer]
 tier = "mist"
 
-# Add one or more [[nodes]] tables when devices use the mist tier.
-#
-# Example:
-# [[nodes]]
-# id = "mist1"
-# device_type = "gateway"
-# host = "192.168.1.150"
-# endpoint = "http://192.168.1.150:8391"
-# local = false
-# port = 8391
-# authority = false
-#
-# [nodes.resources]
-# cpu_cores = 2
-# ram = "1g"
-# storage_mib = 16384
-# processing_capacity = 0.25
-# network_mbps = 100
-#
-# [nodes.location]
-# region = "physical-lab"
+[[nodes]]
+id = "mist"
+device_type = "raspberry-pi-500"
+host = "100.72.111.107"
+endpoint = "http://100.72.111.107:8391"
+local = false
+port = 8391
+authority = true
+
+# Hardware values follow the declared Raspberry Pi 500 class. CPU architecture
+# must be confirmed on this host when SSH becomes available.
+[nodes.resources]
+cpu_cores = 4
+cpu_architecture = "aarch64"
+ram = "8g"
+storage_mib = 32768
+processing_capacity = 0.40
+network_mbps = 100
+
+[nodes.location]
+region = "physical-lab"

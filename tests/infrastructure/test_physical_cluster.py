@@ -70,6 +70,7 @@ def test_elastic_manifest_is_the_default_physical_inventory(config):
     assert [node.tier for node in inventory.nodes] == [
         "cloud",
         "fog",
+        "mist",
         "edge",
         "edge",
         "edge",
@@ -77,6 +78,7 @@ def test_elastic_manifest_is_the_default_physical_inventory(config):
     assert [node.role for node in inventory.nodes] == [
         "cloud",
         "fog",
+        "mist",
         "edge1",
         "edge2",
         "edge3",
@@ -111,6 +113,7 @@ def test_authorize_installs_key_on_each_remote_node(config, monkeypatch):
 
     assert commands == [
         ["ssh-copy-id", "pi@100.93.73.27"],
+        ["ssh-copy-id", "pi@100.72.111.107"],
         ["ssh-copy-id", "pi@100.101.178.35"],
         ["ssh-copy-id", "pi@100.70.9.117"],
         ["ssh-copy-id", "pi@100.121.135.60"],
@@ -255,7 +258,7 @@ def test_deploy_checks_all_remotes_before_copying(config, monkeypatch):
     monkeypatch.setattr(physical_cluster, "_run", lambda command: pytest.fail("Must not copy before checking all hosts"))
     with pytest.raises(RuntimeError, match="before copying any files"):
         physical_cluster.deploy_cluster(config.root, inventory)
-    assert len(calls) == 4
+    assert len(calls) == sum(not node.local for node in inventory.nodes)
 
 
 @pytest.mark.parametrize("directory", ["/", "/home/pi", "/home/pi/", "/home/pi/../other", "/tmp", "/var/tmp/"])
@@ -298,7 +301,7 @@ def test_offline_manifest_never_contacts_or_starts_nodes(config, monkeypatch, tm
         assert node["location"]["latitude"] is None
         assert node["runtime_verified"] is False
         assert node["reachability"] == "not-probed"
-    assert result["nodes"][1]["cpu_architecture"] == "armv7l-32bit"
+    assert result["nodes"][1]["cpu_architecture"] == "aarch64"
     assert result["runtime_contract"]["fallback_allowed"] is False
     assert "--skip-konclude" not in result["future_install_command"]
 
@@ -307,7 +310,7 @@ def test_offline_preflight_rejects_stale_classpaths(config, tmp_path, monkeypatc
     inventory = load_physical_inventory(config.resolve(config.topology_file))
     runtime = tmp_path / ".runtime"
     runtime.mkdir()
-    for name in ("hermit", "openllet", "jfact"):
+    for name in ("hermit", "openllet", "jfact", "elk"):
         monkeypatch.delenv(f"CONTINUUM_{name.upper()}_CLASSPATH", raising=False)
         (runtime / f"owl-validation-{name}.classpath").write_text('/missing/foreign-host.jar')
     monkeypatch.setenv("CONTINUUM_KONCLUDE_EXECUTABLE", "/missing/Konclude")
@@ -326,7 +329,7 @@ def test_dl_deployment_copies_installer_and_requires_native_backend(config, monk
     monkeypatch.setattr(physical_cluster, "_run", commands.append)
     physical_cluster.deploy_cluster(config.root, inventory, with_dl_reasoners=True)
     installs = [c for c in commands if 'tools/install_owl_reasoners.py' in c[-1]]
-    assert len(installs) == 4
+    assert len(installs) == sum(not node.local for node in inventory.nodes)
     assert all('--skip-konclude' not in c[-1] for c in installs)
     copies = [c for c in commands if c[0] == 'rsync']
     assert any(str(config.root / 'tools') in c for c in copies)

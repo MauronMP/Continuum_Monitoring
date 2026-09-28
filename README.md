@@ -33,7 +33,11 @@ Physical workers share the same benchmark implementation.
 ## Install
 
 Requires Python 3.11+, Git, OpenSSH/rsync, Java 17, Maven and native Konclude
-on hosts participating in the five-reasoner comparison.
+on hosts participating in native reasoning. Every active physical comparison
+uses RDFS, HermiT, Openllet, JFact and Konclude. The physical CLI accepts only
+these five backends. Historical identity, OWL RL, combined RDFS+OWL RL and ELK
+records remain readable for provenance but cannot be selected for new physical
+comparisons.
 
 ```bash
 git clone https://github.com/MauronMP/Continuum_Monitoring.git
@@ -66,7 +70,7 @@ only that worker's ontology fragment and merges source query answers. Shared
 schema may be repeated to retain required dependencies; this is not shared memory.
 The old `sharded` name belongs to archived campaigns and is not a new-run option.
 
-See [physical readiness and five-reasoner execution](docs/design/PHYSICAL_REASONING.md)
+See [physical readiness and reasoning execution](docs/design/PHYSICAL_REASONING.md)
 for offline preparation, timeout and skipped-point policy, and validation limits.
 
 
@@ -82,28 +86,13 @@ continuum-smoke-physical-experiments
 continuum-bench physical all --layout distributed --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 continuum-bench load physical
-continuum-bench experiment all physical
+continuum-bench experiment all physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 continuum-bench physical stop --ssh-user pi
 ```
 
 `physical all` covers cumulative and scalability only. See the
 [command reference](docs/design/COMMAND_REFERENCE.md) for the ordered complete suite.
-
-## Independent semantic products
-
-```bash
-continuum-smoke-engines
-continuum-bench engines all
-continuum-bench engines plot
-```
-
-Start the four native engine services before this command. It executes
-RDFLib, Jena, RDF4J and Oxigraph; engine
-names do not need to be passed manually. HermiT, Openllet, JFact and Konclude
-are the OWL backends of the physical cumulative/scalability comparison alongside RDFS.
-`owl-validate` remains the separate consistency check.
-The plot command requires all four products in each selected summary and writes
-300-DPI PNG figures.
 
 ## Evaluation families
 
@@ -111,8 +100,9 @@ The plot command requires all four products in each selected summary and writes
 - Scalability: increases synthetic users and RDF volume.
 - Load: varies events/s, users, triples, rules and node count; records latency,
   throughput, loss, accuracy, recovery and resource metrics.
-- Experiments: replicated query scale-out, reasoning by hardware and
-  authority-partitioned distributed ontology execution.
+- Experiments: replicated query scale-out, reasoning by hardware,
+  authority-partitioned ontology execution, and strong/weak distributed
+  reasoning scalability with exact graph-size controls.
 - Study: reproducible workload/mobility traces and category/policy/query cost.
 
 In bounded mode, timeouts are stored as right-censored observations. Results use the unified tree documented in [Output layout and execution controls](docs/design/OUTPUTS_AND_EXECUTION.md).
@@ -135,3 +125,8 @@ continuum-bench --unlimited --repetitions 5 suite
 
 Each suite saves a separate directory, logs, execution policy and PNG reports.
 Configured budgets remain in the evidence but are not enforced in this mode.
+
+The dedicated reasoning matrix, formulas, semantic contracts and output files
+are documented in [Distributed reasoning scalability](docs/design/DISTRIBUTED_REASONING_SCALABILITY.md).
+Current corrections are in [Release 0.4.1](docs/design/RELEASE_0_4_1.md); the
+experiment introduction remains in [Release 0.4.0](docs/design/RELEASE_0_4.md).

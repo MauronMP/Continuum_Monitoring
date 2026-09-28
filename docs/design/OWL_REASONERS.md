@@ -2,8 +2,9 @@
 
 For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
 
-HermiT, Openllet, JFact and Konclude validate OWL 2 DL consistency on the
-coordinator and provide materialization backends for physical workers. Install
+HermiT, Openllet, JFact and Konclude validate OWL 2 DL consistency; ELK provides
+the OWL 2 EL profile comparison. They run on the coordinator and physical
+workers. Install
 the pinned runtime on every participating host. See [the physical reasoning
 contract](PHYSICAL_REASONING.md) for the timed inference comparison and deployment.
 
@@ -50,7 +51,7 @@ The installer:
 2. resolves each pinned Maven profile from `tools/owl/pom.xml` independently;
 3. self-tests each Java factory on `tools/owl/smoke-ontology.ttl`;
 4. writes one isolated classpath per reasoner:
-   `.runtime/owl-validation-{hermit,openllet,jfact}.classpath`;
+   `.runtime/owl-validation-{hermit,openllet,jfact,elk}.classpath`;
 5. writes `.runtime/owl-validation.classpath` only for OWLAPI format conversion;
 6. locates native Konclude;
 7. runs a real, bounded Konclude consistency smoke (not the help command);
@@ -77,7 +78,8 @@ An invalid installed classpath fails explicitly rather than falling back.
 For an intentional custom runtime, set `CONTINUUM_OWL_CLASSPATH_SOURCE=environment`
 and the corresponding `CONTINUUM_HERMIT_CLASSPATH`,
 `CONTINUUM_OPENLLET_CLASSPATH`, `CONTINUUM_JFACT_CLASSPATH`, or
-`CONTINUUM_OWL_CLASSPATH` (Konclude conversion). Without an installed file,
+`CONTINUUM_ELK_CLASSPATH`, or `CONTINUUM_OWL_CLASSPATH` (Konclude conversion).
+Without an installed file,
 the default `auto` mode also accepts the relevant environment variable.
 This selects dependencies only; it never substitutes a different reasoner.
 
@@ -90,9 +92,10 @@ The Maven runtime contains:
 | HermiT | `net.sourceforge.owlapi:org.semanticweb.hermit` | `1.4.5.519` |
 | Openllet | `com.github.galigator.openllet:openllet-owlapi` | `2.6.5` |
 | JFact | `net.sourceforge.owlapi:jfact` | `5.0.3` |
+| ELK | `org.semanticweb.elk:elk-owlapi` | `0.4.3` |
 
 All are invoked through the same OWLAPI checker but with their own factory and
-isolated dependency graph. This is essential: putting the three dependency
+isolated dependency graph. This is essential: putting the dependency
 trees on one Java classpath can mix incompatible OWLAPI versions and fail in
 `OWLManager` before HermiT is instantiated. The generated per-engine
 classpath is supplied automatically; Protégé is no longer required for
@@ -102,8 +105,15 @@ The isolated JFact profile overrides its legacy transitive injection stack with
 Guice 5.1.0 and Guava 30.1-jre. JFact 5.0.3 otherwise can select
 Guice/CGLIB and Guava 20 code that cannot initialize on Java 17. The installer
 checks both resolved JAR names before executing the JFact smoke. These
-compatibility dependencies affect only the external JFact validation process;
-they are not deployed to benchmark nodes.
+compatibility dependencies affect only JFact's isolated process. Physical
+deployment installs the same target-local reasoner classpaths when
+`--with-dl-reasoners` is selected.
+
+ELK uses OWLAPI 4.1.3. Its smoke ontology is OWL 2 EL compatible, but the current
+complete ontology contains RDF mappings such as `owl:AllDifferent` that this
+runtime does not interpret. The distributed-reasoning experiment records this
+as `profile_compatible=false` and skips later equivalent ELK points. It does not
+substitute another engine or include those rows in timing comparisons.
 
 ## Konclude execution
 
@@ -141,8 +151,9 @@ Run every available reasoner while allowing unavailable optional tools:
 continuum-bench owl-validate
 ```
 
-Release gate requiring all four engines to complete, report consistency, pass
-the OWL 2 DL structural profile and report no unsatisfiable named classes:
+Release gate requiring all four OWL 2 DL validators to complete,
+report consistency, pass the OWL 2 DL profile and report no
+unsatisfiable named classes:
 
 ```bash
 continuum-bench owl-validate --require-all
@@ -152,6 +163,7 @@ Run HermiT alone for diagnostics:
 
 ```bash
 python3 tools/check_owl_consistency.py \
+  ontology/legacy/smartcity_continuum-v3.0.0.ttl \
   --reasoner hermit \
   --require-dl-profile \
   --output outputs/validation/hermit.json
@@ -160,6 +172,11 @@ python3 tools/check_owl_consistency.py \
 Evidence from the combined command is written to
 `outputs/validation/owl-reasoners.json`. Missing dependencies remain
 `unavailable`; timeouts remain `timeout`; neither is reported as consistency.
+The combined command loads the 14 configured modules, verifies that every
+`owl:imports` target is present in that set, removes those resolved import
+statements from the temporary flattened document, and records its SHA-256 and
+the 28 resolved import edges. It never dereferences ontology IRIs over the
+network.
 
 ## Troubleshooting
 

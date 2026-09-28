@@ -28,6 +28,13 @@ def campaign(root):
     c = load_campaign(root/'configs/campaign-smoke.toml')
     return replace(c, reasoners=('rdfs',), axes=(Axis('physical_nodes',(1,2)),), warmup=0)
 
+
+def test_full_campaign_uses_production_budgets(root):
+    config = load_campaign(root / 'configs/campaign.toml')
+
+    assert config.request_timeout_seconds == 300
+    assert config.point_timeout_seconds == 900
+
 def test_equivalent_replicated_and_distributed_workloads(campaign):
     sink = Sink()
     assert execute_campaign(campaign, MemoryInfrastructure(), sink) == 0
@@ -66,7 +73,7 @@ def test_structured_results_keep_configuration_and_do_not_overwrite(campaign,tmp
 def test_unknown_or_decreasing_axes_fail_before_execution(root,tmp_path):
     source=(root/'configs/campaign-smoke.toml').read_text()
     p=tmp_path/'campaign.toml'
-    p.write_text(source.replace('values = [1, 2, 5]','values = [2, 1]'))
+    p.write_text(source.replace('values = [1, 2, 6]','values = [2, 1]'))
     with pytest.raises(ValueError,match='increasing'):load_campaign(p)
 
 

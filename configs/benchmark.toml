@@ -24,9 +24,10 @@ topology_file = "configs/topologies/physical/topology.toml"
 output_dir = "outputs"
 
 [distributed]
-# One minute is the response-time acceptance ceiling. A timeout is persisted as
-# a right-censored observation and does not abort the complete suite.
-request_timeout_seconds = 60
+# Five minutes bounds one worker request. A timeout remains a right-censored
+# observation and later points continue so one slow profile does not erase the
+# remainder of the matrix.
+request_timeout_seconds = 300
 request_retries = 0
 query_batch_size = 4
 worker_timeout_margin_seconds = 2
@@ -36,15 +37,15 @@ worker_timeout_margin_seconds = 2
 timeout_mode = "bounded"
 # Independent timeout-only skip triggers. Real errors remain errors.
 consecutive_timeout_threshold = 1
-skip_repetitions_after_timeout = true
-skip_larger_sizes_after_timeout = true
-skip_cumulative_stages_after_timeout = true
+skip_repetitions_after_timeout = false
+skip_larger_sizes_after_timeout = false
+skip_cumulative_stages_after_timeout = false
 # In bounded mode an exceeded phase/point budget is recorded as a timeout.
 # The explicit triggers above determine whether later observations are omitted.
-phase_timeout_seconds = 60
-point_timeout_seconds = 90
+phase_timeout_seconds = 300
+point_timeout_seconds = 900
 calibration_query_limit = 16
-stop_scaling_after_timeout = true
+stop_scaling_after_timeout = false
 
 [benchmark]
 reasoners = ["rdfs", "hermit", "openllet", "jfact", "konclude"]

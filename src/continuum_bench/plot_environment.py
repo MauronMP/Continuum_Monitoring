@@ -14,3 +14,23 @@ def configure_matplotlib() -> None:
     import matplotlib
 
     matplotlib.use("Agg")
+    matplotlib.rcParams.update({
+        "font.family": "DejaVu Sans",
+        "font.size": 9,
+        "axes.titlesize": 10,
+        "axes.labelsize": 9,
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "axes.linewidth": 0.8,
+        "xtick.labelsize": 8,
+        "ytick.labelsize": 8,
+        "legend.fontsize": 8,
+        "legend.frameon": False,
+        "lines.linewidth": 1.5,
+        "lines.markersize": 5,
+        "grid.color": "#d9d9d9",
+        "grid.linewidth": 0.6,
+        "grid.alpha": 0.6,
+        "figure.dpi": 120,
+        "savefig.dpi": 300,
+    })

@@ -13,7 +13,10 @@ from ..csv_utils import write_dict_rows
 from ..result_contract import require_release_metadata
 
 
-EXPERIMENTS = ("scale-out", "reasoning-hardware", "distributed-ontology")
+EXPERIMENTS = (
+    "scale-out", "reasoning-hardware", "distributed-ontology",
+    "distributed-reasoning-scalability",
+)
 ARCHITECTURES = ("physical",)
 
 
@@ -75,12 +78,22 @@ def analyze_experiments(root: Path) -> list[Path]:
             ("reasoner", "synthetic_users", "node_count"),
             ("total_wall_ms", "prepare_wall_ms", "query_wall_ms"),
         ),
+        "distributed-reasoning-scalability": (
+            ("scaling_mode", "layout", "reasoner", "reasoning_task", "target_triples", "node_count"),
+            ("reasoning_critical_path_ms", "reasoning_throughput_triples_s", "speedup",
+             "parallel_efficiency", "weak_scaling_efficiency", "coordination_overhead_pct"),
+        ),
     }
     manifest: dict[str, Any] = {"architectures": {}, "experiments": {}}
     for architecture in ARCHITECTURES:
         manifest["architectures"][architecture] = {}
         for experiment, (keys, fields) in specifications.items():
-            rows = _read_csv(root / experiment / "summary.csv")
+            filename = (
+                "distributed-reasoning-summary.csv"
+                if experiment == "distributed-reasoning-scalability"
+                else "summary.csv"
+            )
+            rows = _read_csv(root / experiment / filename)
             grouped = _group(rows, keys, fields)
             output = data_root / f"{experiment}-{architecture}-summary.csv"
             if grouped:

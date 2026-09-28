@@ -14,7 +14,7 @@ that command; it does not imply scientific acceptance of every requirement.
 | Normal scalability | How does the monitoring ontology react to larger synthetic graphs and user populations? | Synthetic users and RDF individuals/volume | Per-block/query timings, inferred triples and timeout state |
 | Load, one dimension | Where is the saturation point for one controlled factor? | One of events/s, users, triples, rules or active nodes | Event, node and summary rows with percentiles, throughput, loss and resources |
 | Load, complete matrix | How does the system respond across all configured demand axes? | Every enabled load profile and dimension | The union of all load observations and coverage data |
-| Experiments all | Which architectural mechanism explains performance? | Replicas/node count, reasoning hardware, then ontology partitioning | Three experiment datasets and architecture-specific comparisons |
+| Experiments all | Which architectural mechanism explains performance? | Replicas/node count, reasoning hardware, ontology partitioning, then strong/weak reasoning scalability | Four experiment datasets and architecture-specific comparisons |
 
 “Normal” tests execute the ontology/query catalogue under two broad progression
 models. Load tests model sustained request pressure and resource saturation.
@@ -29,8 +29,9 @@ selected by omitting filters:
 continuum-bench load physical
 ```
 
-The aggregate command `continuum-bench experiment all physical` executes the
-three experiment families sequentially. `continuum-bench suite` additionally
+The aggregate command executes all four families when supplied with
+`--distributed-reasoning-config configs/distributed-reasoning.toml`.
+`continuum-bench suite` supplies it automatically and additionally
 orchestrates all physical benchmark families and acceptance checks.
 
 ## Software and documentation checks
@@ -91,15 +92,6 @@ the affected reasoner become `skipped_after_timeout` while the other reasoners
 still execute. This checks the failure policy without waiting for a real
 deadline.
 
-The independent semantic-product smoke is:
-
-```bash
-continuum-smoke-engines
-continuum-bench engines plot
-```
-
-It checks already-running native RDFLib, Jena, RDF4J and Oxigraph services.
-
 ## Monitoring benchmarks
 
 Run cumulative and scalability independently:
@@ -131,19 +123,24 @@ CPU, memory, disk, network and recovery observations. Timeouts are recorded as
 right-censored outcomes in bounded mode. Use `--unlimited` before `load` to
 finish accepted work without elapsed-time cutoffs.
 
-## Three separated experiments
+## Four separated experiments
 
 ```bash
 continuum-bench experiment scale-out physical
 continuum-bench experiment reasoning-hardware physical
 continuum-bench experiment distributed-ontology physical
-continuum-bench experiment all physical
+continuum-bench experiment distributed-reasoning-scalability physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
+continuum-bench experiment all physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 ```
 
 - `scale-out` evaluates replicated query service while varying workers.
 - `reasoning-hardware` isolates materialization cost by node hardware.
 - `distributed-ontology` evaluates authority/category fragments, local
   reasoning and federated result merge against a canonical result bag.
+- `distributed-reasoning-scalability` fixes exact logical graph sizes and
+  measures strong/weak scaling, capacity, semantic equivalence and query concurrency.
 
 ## Study and figures
 
@@ -154,7 +151,6 @@ continuum-bench report
 continuum-bench load plot
 continuum-bench experiment plot all
 continuum-bench experiment analyze
-continuum-bench engines plot
 ```
 
 Trace generation is deterministic workload preparation, not live semantic
@@ -179,7 +175,7 @@ continuum-bench --unlimited --repetitions 5 suite --families load experiments ca
 The default order is software tests (native OWL enabled), documentation checks,
 semantic validation/preflight/strict external
 OWL validation, worker startup, distributed monitoring, replicated monitoring, load,
-all three experiments, the full ten-axis campaign and publication reporting.
+all four experiments, the full ten-axis campaign and publication reporting.
 The separate native semantic-product matrix and study traces are not included.
 The suite starts existing deployments; it does not install workers or authorize SSH.
 

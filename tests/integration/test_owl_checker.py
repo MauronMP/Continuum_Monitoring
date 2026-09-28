@@ -124,7 +124,8 @@ def test_canonical_ontology_with_installed_protege_hermit(checker, tmp_path):
     if version.returncode or not match or int(match.group(1)) < 11:
         pytest.skip("Optional HermiT integration requires a working Java 11+")
     output = tmp_path / "hermit.json"
-    assert checker.main(["--protege-home", str(protege), "--require-dl-profile",
+    ontology = checker.ROOT / "ontology/legacy/smartcity_continuum-v3.0.0.ttl"
+    assert checker.main([str(ontology), "--protege-home", str(protege), "--require-dl-profile",
                          "--output", str(output)]) == 0
     result = json.loads(output.read_text())
     assert result["consistent"] is True

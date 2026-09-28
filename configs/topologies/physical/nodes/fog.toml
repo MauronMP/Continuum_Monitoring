@@ -12,7 +12,7 @@ authority = false
 
 [nodes.resources]
 cpu_cores = 4
-cpu_architecture = "armv7l-32bit"
+cpu_architecture = "aarch64"
 ram = "8g"
 storage_mib = 32768
 processing_capacity = 0.45

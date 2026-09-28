@@ -14,6 +14,16 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 /** OWLAPI consistency check using a reasoner factory selected at runtime. */
 class CheckOntology {
+    private static String reasonerVersion(OWLReasoner reasoner) {
+        try {
+            return reasoner.getReasonerVersion().toString();
+        } catch (RuntimeException incompatibleVersionMetadata) {
+            // ELK 0.4.3 parses a build timestamp as an integer on newer JDKs.
+            // Reasoning remains usable; retain an explicit unavailable value.
+            return "unavailable";
+        }
+    }
+
     private static String quote(String value) {
         StringBuilder result = new StringBuilder("\"");
         for (int index = 0; index < value.length(); index++) {
@@ -71,7 +81,7 @@ class CheckOntology {
                 .collect(Collectors.joining(",", "[", "]"));
             System.out.println("CONTINUUM_OWL_REPORT\t{" +
                 "\"reasoner\":" + quote(reasoner.getReasonerName()) +
-                ",\"reasoner_version\":" + quote(reasoner.getReasonerVersion().toString()) +
+                ",\"reasoner_version\":" + quote(reasonerVersion(reasoner)) +
                 ",\"axioms\":" + ontology.getAxiomCount() +
                 ",\"consistent\":" + consistent +
                 ",\"unsatisfiable_classes\":" + classesJson +

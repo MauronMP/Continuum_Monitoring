@@ -14,19 +14,27 @@ The report always keeps `deployment_ready=false` until a separate online
 validation occurs. Executable presence does not verify JVM versions or ABI.
 
 The current Tailscale inventory declares cloud at 100.86.63.53 (x86_64), fog at
-100.93.73.27, and edge1/edge2/edge3 at 100.101.178.35, 100.70.9.117,
-100.121.135.60 (armv7l-32bit). These are configuration declarations, not fresh
-hardware measurements. Use the Tailscale addresses for SSH and worker HTTP;
+100.93.73.27, Mist at 100.72.111.107, and edge1/edge2/edge3 at
+100.101.178.35, 100.70.9.117, 100.121.135.60 (declared AArch64 hardware). The
+2026-09-27 audit observed an AArch64 kernel with 32-bit `armhf` user space and
+Python on Fog and the three Edge nodes. Mist remains unverified while SSH is
+unavailable. Use the Tailscale addresses for SSH and worker HTTP;
 the direct LAN addresses printed by `tailscale ping` are transport details,
 not inventory endpoints. Cloud remains `local = true` for process management,
 but advertises its VPN address so remote nodes can reach it.
 
-On 2026-09-21, all four remote nodes answered Tailscale ping and authenticated
-SSH as `pi`. Each reported an aarch64 kernel and 32-bit Python. Java was found
-on PATH; Maven and Konclude were not. All five HTTP endpoints refused port
-8391 connections, so no worker was certified ready. These are point-in-time
-observations, not throughput measurements. Local diagnostic evidence is in
-`outputs/validation/readiness/tailscale-check.json`. No remote service was changed.
+The initial 2026-09-21 probe found Java but not Maven or Konclude. The subsequent
+online deployment installed the missing packages and isolated reasoner runtimes,
+started all five workers and completed distributed and replicated acceptance
+checks. The initial report remains historical evidence; the later state is
+documented in [Tailscale validation](TAILSCALE_VALIDATION.md). Neither record is
+a throughput study.
+
+On 2026-09-25, Tailscale reached the new Mist host through DERP Madrid, but TCP
+port 22 refused connections. Its Raspberry Pi 500 resource values are therefore
+declared from the operator-provided device class and remain unverified. Enable
+SSH, authorize the coordinator key, deploy the worker/runtime, then replace any
+declared CPU, RAM, storage or network value that differs from observation.
 
 Regions `local-lab` and `physical-lab` are legacy inventory labels, not verified
 geographic locations after the VPN migration. They come directly
@@ -66,7 +74,7 @@ not call either mode.
 
 The reasoner installer owns these paths:
 
-- `.runtime/owl-validation-{hermit,openllet,jfact}.classpath`
+- `.runtime/owl-validation-{hermit,openllet,jfact,elk}.classpath`
 - `.runtime/owl-validation.classpath` for OWLAPI conversion
 - `.runtime/owl-reasoners.env`
 - `tools/owl/` Java sources, pinned Maven POM, adapter and smoke ontology
@@ -80,7 +88,8 @@ cache; this preparation is not an air-gapped package bundle.
 
 Before online deployment, provision Python >=3.11 with venv/ensurepip, rsync,
 procps, Java 17 and Maven on each target. JAR portability does not establish
-JVM availability, heap sufficiency or native ABI compatibility on 32-bit ARM.
+JVM availability, heap sufficiency or native ABI compatibility with the 32-bit
+`armhf` execution environment currently installed on the accessible workers.
 Native Konclude must be installed for the target OS/CPU/ABI and discoverable as
 `Konclude` on PATH (or explicitly configured using
 `CONTINUUM_KONCLUDE_EXECUTABLE`). No supported ARM binary is assumed. If it
@@ -93,6 +102,7 @@ not atomic across hosts: a later failure can leave earlier hosts installed.
 For custom executable paths, ensure the worker launch environment receives the
 installer-generated environment (or provision the binary on PATH). Inspect
 `.runtime/owl-reasoners.env` on that same host before sourcing it. Validate each
-backend there before starting workers or admitting DL workloads. Hardware
-measurements, reachability, target installation and runtime validation remain
-pending while the devices are offline.
+backend there before starting workers or admitting DL workloads. The current
+workers have been validated online, but any redeployment must repeat status,
+native-runtime and smoke checks. Fragment contract 3 requires all nodes to run
+the same 0.4.1 worker source before distributed-reasoning measurements.

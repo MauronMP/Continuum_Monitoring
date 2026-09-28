@@ -2,16 +2,39 @@
 
 from __future__ import annotations
 
+from hashlib import sha256
+from pathlib import Path
 from typing import Any, Mapping
 
+from . import __version__
 from .specification import ONTOLOGY_REVISION, ONTOLOGY_VERSION
 from .reasoners import REASONING_CONTRACT
 from .topology import NODE_ID_PATTERN, TIERS
 
 
 WORKER_SERVICE = "continuum-benchmark-node"
-WORKER_PROTOCOL_VERSION = "8"
+WORKER_PROTOCOL_VERSION = "9"
 EXPECTED_QUERY_COUNT = 115
+
+
+def _software_build_id() -> str:
+    """Identify the exact installed Python source used by this process."""
+
+    package_root = Path(__file__).resolve().parent
+    digest = sha256()
+    for path in sorted(package_root.rglob("*.py")):
+        relative = path.relative_to(package_root).as_posix().encode("utf-8")
+        digest.update(relative)
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return (
+        f"continuum-benchmark-{__version__}-protocol-"
+        f"{WORKER_PROTOCOL_VERSION}-source-{digest.hexdigest()[:16]}"
+    )
+
+
+SOFTWARE_BUILD_ID = _software_build_id()
 
 
 def worker_health_error(
@@ -36,6 +59,18 @@ def worker_health_error(
         return (
             f"protocol_version must be {WORKER_PROTOCOL_VERSION!r}, "
             f"got {health.get('protocol_version')!r}"
+        )
+    if str(health.get("benchmark_version", "")) != __version__:
+        return (
+            f"benchmark_version must be {__version__!r}, "
+            f"got {health.get('benchmark_version')!r}; redeploy the worker "
+            "from the same source revision as the coordinator"
+        )
+    if str(health.get("build_id", "")) != SOFTWARE_BUILD_ID:
+        return (
+            f"build_id must be {SOFTWARE_BUILD_ID!r}, "
+            f"got {health.get('build_id')!r}; redeploy the worker from the "
+            "same source tree as the coordinator"
         )
     if str(health.get("ontology_version", "")) != ONTOLOGY_VERSION:
         return (

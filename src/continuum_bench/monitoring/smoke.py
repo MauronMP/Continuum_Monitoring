@@ -227,38 +227,3 @@ def main_physical_load() -> int:
 
 def main_physical_experiments() -> int:
     return _run_experiments("physical")
-
-
-
-
-
-
-def main_engines() -> int:
-    root = _project_root()
-    arguments = list(sys.argv[1:])
-    default_output = "outputs/smoke/engines"
-    output = _option(arguments, "--output-dir", default_output)
-    status = main(
-        [
-            "--config",
-            str(root / "configs/smoke-scalability.toml"),
-            "engines",
-            "all",
-            "--warmups",
-            "0",
-            "--output-dir",
-            default_output,
-            *arguments,
-        ]
-    )
-    if status:
-        return status
-    output_root = Path(output)
-    if not output_root.is_absolute():
-        output_root = root / output_root
-    return _require_completed_summaries(
-        [
-            output_root / "cumulative" / "summary.csv",
-            output_root / "scalability" / "summary.csv",
-        ]
-    )

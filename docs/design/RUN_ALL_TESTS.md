@@ -1,6 +1,8 @@
 # Run all physical tests
 
-This is the operational entry point for the current five-reasoner continuum.
+This is the operational entry point for the physical continuum. Standard
+monitoring uses five profiles; the dedicated distributed-reasoning experiment
+uses the task-aware matrix in its own configuration.
 Run commands from the repository root with `.venv` activated. Configuration,
 installation and historical measurements are documented separately; historical
 RDFS/OWL-RL results are not evidence for the current native comparison.
@@ -26,8 +28,9 @@ continuum-bench doctor --physical --owl
 
 The native adapters prefer installed isolated classpaths; inherited Protégé
 variables do not override them. No shell-profile edits are required. The remote
-32-bit runtimes use a 512 MiB Java heap; larger workloads may exhaust memory
-even in unlimited mode. See [reasoner configuration](OWL_REASONERS.md).
+workers currently use 32-bit `armhf` user space on AArch64 hardware, so their
+reasoner installer selects a 512 MiB Java heap; larger workloads may exhaust
+memory even in unlimited mode. See [reasoner configuration](OWL_REASONERS.md).
 
 ## 2. Deploy or check the existing deployment
 
@@ -35,13 +38,16 @@ even in unlimited mode. See [reasoner configuration](OWL_REASONERS.md).
 | --- | --- |
 | Cloud/coordinator | `100.86.63.53` |
 | Fog | `100.93.73.27` |
+| Mist | `100.72.111.107` |
 | Edge 1 | `100.101.178.35` |
 | Edge 2 | `100.70.9.117` |
 | Edge 3 | `100.121.135.60` |
 
 The inventory is `configs/topologies/physical/topology.toml` with per-tier files
 in `nodes/`. SSH uses `pi` on remote nodes; HTTP endpoints use port 8391.
-Cloud advertises its VPN IP while retaining local process management.
+Cloud advertises its VPN IP while retaining local process management. The Mist
+host is present in Tailscale but must have SSH enabled and be deployed before a
+six-node run; a reachable VPN address alone is not worker readiness.
 
 For a fresh deployment or changed worker code, with no campaign running:
 
@@ -83,14 +89,13 @@ Keep the terminal/session alive for long runs. This executes sequentially:
    validation requiring HermiT, Openllet, JFact and Konclude.
 3. Campaign configuration/topology preflight and physical worker startup.
 4. Cumulative and scalability monitoring, distributed then replicated.
-5. All configured load profiles and the three physical experiments.
+5. All configured load profiles and the four physical experiments.
 6. The ten-axis policy/scalability campaign in both configured layouts.
 7. Publication reporting from that run's evidence, with PNG figures.
 
-RDFS, HermiT, Openllet, JFact and Konclude are the default profiles. Separate
-native semantic products (Jena, RDF4J, Oxigraph), optional Graphviz rendering
-and study trace generation require their own setup and are not secretly
-installed or included by this command.
+RDFS, HermiT, Openllet, JFact and Konclude are the default profiles. Optional
+Graphviz rendering and study trace generation require their own setup and are
+not silently installed or included by this command.
 
 The full campaign can be expensive: the monitoring configuration reaches 5,000
 synthetic users, while the campaign varies ten axes. Unlimited mode removes
@@ -100,20 +105,22 @@ checks and external OWL validation retain their operational limits.
 
 ## 5. Short acceptance run or finite budgets
 
-For a smaller end-to-end benchmark plan, retain the five-reasoner monitoring
+For a smaller end-to-end benchmark plan, retain the five-profile monitoring
 smoke and select the separate smoke configurations explicitly:
 
 ```bash
 continuum-bench --config configs/smoke-scalability.toml --unlimited \
   --repetitions 1 suite --load-config configs/load-smoke.toml \
   --experiment-config configs/experiments-smoke.toml \
+  --distributed-reasoning-config configs/distributed-reasoning-smoke.toml \
   --campaign-config configs/campaign-smoke.toml --dry-run
 ```
 
 Remove `--dry-run` to execute it. `physical all` still includes cumulative
 monitoring with every configured category, so this is more than a connectivity
 check. The minimal connectivity check uses `configs/smoke-vpn.toml`; it defaults
-to RDFS and is not a replacement for all-five-reasoner acceptance.
+to RDFS and is not a replacement for standard five-profile acceptance or the
+separate distributed-reasoning smoke.
 
 ```bash
 continuum-bench --timeout-seconds 7200 --keep-going --repetitions 3 suite

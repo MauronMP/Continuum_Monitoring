@@ -9,6 +9,7 @@ def test_suite_uses_selected_configs_and_topology(root, tmp_path):
         topology_file='configs/topologies/physical/topology.toml',
         load_config='configs/load-smoke.toml',
         experiment_config='configs/experiments-smoke.toml',
+        distributed_reasoning_config='configs/distributed-reasoning-smoke.toml',
         campaign_config='configs/campaign-smoke.toml')
     steps = {step['name']: step for step in plan}
     for name in ('preflight', 'load'):
@@ -17,6 +18,8 @@ def test_suite_uses_selected_configs_and_topology(root, tmp_path):
     for name in ('preflight', 'experiments'):
         command = steps[name]['command']
         assert command[command.index('--experiment-config') + 1] == 'configs/experiments-smoke.toml'
+    command = steps['experiments']['command']
+    assert command[command.index('--distributed-reasoning-config') + 1] == 'configs/distributed-reasoning-smoke.toml'
     for name in ('campaign-preflight', 'campaign'):
         command = steps[name]['command']
         assert command[command.index('--campaign-config') + 1] == 'configs/campaign-smoke.toml'

@@ -1,4 +1,5 @@
-from continuum_bench.protocol import WORKER_PROTOCOL_VERSION
+from continuum_bench import __version__
+from continuum_bench.protocol import SOFTWARE_BUILD_ID, WORKER_PROTOCOL_VERSION
 import pytest
 from io import BytesIO
 from urllib.error import HTTPError, URLError
@@ -151,6 +152,8 @@ def test_worker_health_rejects_an_old_ontology_release():
         "status": "ok",
         "service": "continuum-benchmark-node",
         "protocol_version": WORKER_PROTOCOL_VERSION,
+        "benchmark_version": __version__,
+        "build_id": SOFTWARE_BUILD_ID,
         "ontology_version": "2.3.0",
         "query_count": 69,
         "role": "fog",
@@ -168,6 +171,14 @@ def test_worker_health_rejects_an_old_ontology_release():
     assert "ontology_revision" in worker_health_error(health)
     health["ontology_revision"] = ONTOLOGY_REVISION
     assert worker_health_error(health, expected_role="fog") is None
+
+    health["benchmark_version"] = "0.4.0"
+    assert "benchmark_version" in worker_health_error(health)
+    health["benchmark_version"] = __version__
+
+    health["build_id"] = "continuum-benchmark-stale-source"
+    assert "build_id" in worker_health_error(health)
+    health["build_id"] = SOFTWARE_BUILD_ID
 
     health.update(
         authority=False,

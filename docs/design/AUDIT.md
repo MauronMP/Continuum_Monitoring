@@ -16,10 +16,10 @@ the same bounded workload can be measured without hiding failures.
 | Cumulative category workload | Adds catalog categories and runs all accumulated queries | Implemented |
 | Synthetic scalability | Increases users and ABox volume with bounded right-censoring | Implemented |
 | Load dimensions | Events/s, users, triples, rules and effective node count | Implemented |
-| Separated hypotheses | Query scale-out, hardware reasoning and distributed ontology | Implemented |
-| Portable materialisers | RDFS, OWL RL and combined RDFS+OWL RL modes | Implemented |
-| Independent RDF products | RDFLib, Apache Jena, Eclipse RDF4J and Oxigraph | Implemented in an isolated product matrix |
+| Separated hypotheses | Query scale-out, hardware reasoning, distributed ontology and strong/weak distributed reasoning | Implemented |
+| Portable materialisers | RDFS, OWL RL and combined RDFS+OWL RL modes | Diagnostic adapters; outside the active matrix |
 | OWL 2 DL validation | HermiT, Openllet, JFact and Konclude | Implemented as a separate consistency gate |
+| Active reasoning matrix | RDFS, HermiT, Openllet, JFact and Konclude | Unified across monitoring, load, campaign and distributed reasoning scalability |
 | Policy/category/query cost | Event attribution, including fractional attribution | Implemented |
 | Physical figures | Resource and workload observations from continuum nodes | Implemented |
 
@@ -40,32 +40,49 @@ the same bounded workload can be measured without hiding failures.
 5. Old smokes could return zero without examining their result tables. Every
    smoke now writes to `outputs/smoke`, checks the expected summaries and rejects
    timeout, error, loss or semantic-validation rows.
-7. Custom elastic node identifiers could trigger eager tier inference despite a
+6. Custom elastic node identifiers could trigger eager tier inference despite a
    configured tier. Node startup now honours the declared tier first.
-9. The duplicate flat physical inventory was removed. The layered topology is
+7. The duplicate flat physical inventory was removed. The layered topology is
    canonical, while the backward-compatible loader remains covered by a unit
    test.
-10. The load generator previously sampled only alert queries and therefore
-    omitted three categories from cost attribution. It now rotates through all
-    115 queries while computing alert accuracy only over explicitly labelled
-    alert checks.
-11. Configuration files could place larger points before smaller ones, making
-    monotone timeout pruning invalid. Loaders now reject duplicate or
-    decreasing values per scale dimension before execution.
-12. Partial architecture results could crash the load overview or disappear
-    from experiment figures. The overview now tolerates missing combinations,
-    and experiment reports include explicit completion/timeout/failure
-    coverage.
-13. The coordinator bootstrap unnecessarily required physical SSH tooling for
-    `doctor --physical` owns the optional SSH/rsync gate.
+8. The load generator previously sampled only alert queries and therefore
+   omitted three categories from cost attribution. It now rotates through all
+   115 queries while computing alert accuracy only over explicitly labelled
+   alert checks.
+9. Configuration files could place larger points before smaller ones, making
+   monotone timeout pruning invalid. Loaders now reject duplicate or
+   decreasing values per scale dimension before execution.
+10. Partial architecture results could crash the load overview or disappear
+   from experiment figures. The overview now tolerates missing combinations,
+   and experiment reports include explicit completion/timeout/failure
+   coverage.
+11. The coordinator bootstrap unnecessarily required physical SSH tooling;
+   `doctor --physical` now owns the optional SSH/rsync gate.
+12. Global request, phase and point timeout overrides could overwrite one
+   another while adapting family-specific configurations. Each override now
+   updates only its intended budget; `--timeout-seconds` remains the explicit
+   all-budget shortcut.
+13. Distributed reasoning previously lacked a controlled strong/weak matrix.
+   Exact graph-size padding, deterministic partitioning, per-node evidence,
+   sampled answer validation, capacity censoring and query-concurrency metrics
+   now form one independent experiment.
+14. Release 0.4.1 adds a sixth Mist authority. The routing plan now places
+    `EXT-Q36` with `UserD`, fans `EXT-Q39` across authorities and co-locates
+    transfer identifiers with their events. Offline verification matches all
+    115 query projections for every active reasoner across six fragments.
+15. Publication acceptance now rejects mixed software releases, old topology
+    fingerprints, reconstructed metadata, absent required families and families
+    without a completed observation. Historical figures visibly disclose this
+    status.
 
 ## Bounded-execution policy
 
 | Suite | Request timeout | Point/phase deadline | Recovery deadline |
 |---|---:|---:|---:|
-| Monitoring full profiles | 60 s | 60--90 s | Not applicable |
-| Load benchmark | 45 s | 60 s | 45 s |
-| Research experiments | 45 s | 60 s | Not applicable |
+| Monitoring full profiles | 300 s | 300--900 s | Not applicable |
+| Load benchmark | 300 s | 900 s | 300 s |
+| Research experiments | 300 s | 900 s | Not applicable |
+| Distributed reasoning matrix | 300 s | 1,800 s | Not applicable |
 | Monitoring/experiment smoke | 30 s | 45 s | Not applicable |
 | Load smoke | 45 s | 90 s | 45 s |
 
@@ -76,19 +93,22 @@ uninformative for the same execution stratum.
 
 ## Semantic validation boundaries
 
-- RDFLib, Jena, RDF4J and Oxigraph compare query observability and product-level
-  execution cost. They are not presented as interchangeable OWL 2 DL reasoners.
-- RDFS, OWL RL and their combined materialisation modes exercise portable rule
-  closure used by the monitoring workload.
-- HermiT, Openllet, JFact and Konclude form an independent ontology-consistency
-  gate. Their validation time must not be compared directly with SPARQL endpoint
-  query latency.
+- RDFS provides the portable rule-closure baseline used in timed physical
+  experiments.
+- HermiT, Openllet, JFact and Konclude provide the matched OWL DL named-class and
+  individual contract. Their separate consistency-gate time must not be compared
+  directly with timed materialization or SPARQL latency.
+- ELK is an OWL 2 EL task. The current complete ontology is incompatible with
+  its installed OWLAPI path, so those rows are profile evidence rather than
+  successful performance observations.
 - Exact result validation uses the canonical graph and query expectations; an
   HTTP success response alone is insufficient.
 
-The canonical complete ontology remains
-`ontology/legacy/smartcity_continuum-v3.0.0.ttl`. Runtime partitions are derived
-artifacts and must not be opened in Protégé as replacements for that source.
+The runtime ontology is the union declared in `configs/benchmark.toml`.
+`ontology/legacy/smartcity_continuum-v3.0.0.ttl` is retained as the controlled
+release migration source and equivalence evidence; physical execution and
+external OWL validation load the modular files. It changes only through the
+documented regeneration workflow.
 
 ## Repository hygiene
 
@@ -111,10 +131,8 @@ artifacts and must not be opened in Protégé as replacements for that source.
 ```
 
 Then run the architecture-specific smoke gates documented in
-`docs/design/COMMAND_REFERENCE.md`. Run `continuum-smoke-engines` before
-`continuum-bench engines plot`; plotting intentionally rejects a partial
-four-product data set. Physical smokes require reachable, prepared hosts and
-therefore cannot be certified by an offline CI runner.
+`docs/design/COMMAND_REFERENCE.md`. Physical smokes require reachable,
+prepared hosts and therefore cannot be certified by an offline CI runner.
 
 ## Scientific limits
 
@@ -166,19 +184,27 @@ Additional corrections verified during this audit:
 
 Evidence is machine-local under `outputs/` and deliberately ignored by Git.
 
+The entries below are historical functional checks. They do not supersede the
+0.4.1 acceptance decision in `outputs/report/results-audit.json`.
+
 | Validation | Observed result | Evidence |
 |---|---|---|
+| Version 0.4.0 default software suite | 399 passed; 12 documented optional skips | `outputs/validation/readiness/version-0.4-tests.log` |
+| Version 0.4.0 focused native runtimes | 32 passed; 2 documented Konclude annotation warnings | `outputs/validation/readiness/version-0.4-native-tests.log` |
+| Version 0.4.0 documentation | 33 files passed link/reference checks | `tools/check_documentation.py` |
 | Fresh coordinator installation | Dependencies installed; pip check passed | `work/clean-venv` |
 | Clean-environment software suite | 226 passed; 2 optional renderer tests skipped | `outputs/audit/pytest.xml` |
 | Final CLI/campaign/result regression subset | 16 passed | Infrastructure, monitoring and reporting tests |
 | Resource capacity adapter regression | 5 passed | `tests/infrastructure/test_topology.py` |
 | Ontology validation and profile preflight | Both passed, scientific warnings retained | `continuum-bench validate` and `preflight` |
 | Native OWL consistency | HermiT, Openllet, JFact and Konclude available and consistent | `outputs/validation/owl-reasoners.json` |
-| Physical sharded scalability smoke | 6 completed, 0 timeouts | `outputs/audit/monitoring/sharded/scalability` |
+| Archived authority-partitioned scalability smoke | 6 completed, 0 timeouts | Historical `sharded` output, outside the active output tree |
 | Physical replicated scalability smoke | 6 completed, 0 timeouts | `outputs/audit/monitoring/replicated/scalability` |
-| Physical sharded scalability, 500 users | All 3 reasoning profiles completed, 0 timeouts | `outputs/audit/scalability-500/sharded/scalability` |
+| Archived authority-partitioned scalability, 500 users | All 3 portable profiles completed, 0 timeouts | Historical `sharded` output, outside the active output tree |
 | Physical event-load smoke | 6 completed, no lost events; acceptance passed | `outputs/audit/load` |
 | Ten-axis physical campaign | 126 points, 0 failed | `outputs/audit/final-campaign/20260908T164004Z-967d25df` |
+| Version 0.4.1 focused reporting/configuration tests | 34 passed | Publication acceptance and distributed-reasoner matrix tests |
+| Version 0.4.1 six-fragment semantic verification | 115/115 queries matched for five active reasoners | Local canonical/partition projection check |
 
 These are functional acceptance measurements, not a statistically powered
 performance study. The larger repeated campaign configuration is provided but
@@ -186,12 +212,9 @@ has not been certified across its entire saturation range.
 
 ### Outstanding machine and scientific limits
 
-The physical SSH account cannot access the system container socket and cannot
-run `sudo` without an interactive password on the Raspberry Pi workers. Project
-container support has been removed, but removal of root-owned legacy containers
-has not been verified. An administrator must inspect those services and remove
-only the legacy project instances. This is an operating-system privilege limit,
-not an automatic approval-review rejection.
+Project container support has been removed. Any root-owned legacy containers are
+outside the project lifecycle and are not benchmark dependencies. Physical
+execution uses SSH, target-local virtual environments and native processes.
 
 Configured resource capacities and processing scores are inventory declarations;
 observed process architecture, CPU and memory are recorded separately. Storage
@@ -200,8 +223,9 @@ unknown until supplied by the operator. Measurements taken with other host
 activity are functional evidence and must be repeated on controlled hosts for
 performance claims.
 
-External OWL 2 DL tools currently validate consistency rather than implementing
-the physical graph-materialization port. Synthetic campaign policies complement
+External OWL 2 DL tools now implement the finite named-class/individual
+materialization contract as well as the separate consistency gate. This is not
+a complete distributed OWL DL decision procedure. Synthetic campaign policies complement
 the canonical policy workload; they do not prove coverage of every real policy.
 Shared mode aliases the distributed-data/shared-schema treatment. Workers execute
 queries serially; client concurrency measures queueing pressure. Cross-host
@@ -218,8 +242,9 @@ console scripts, tests and comparison-ratio plots have been removed. Native
 ontology consistency checks and canonical result validation remain semantic
 acceptance checks, outside measured experiment execution.
 
-The current software suite passes 227 tests; one optional Graphviz renderer test
-is skipped. The physical load smoke completes six points without lost events.
+This paragraph records the earlier physical-only migration gate: 227 tests passed
+and one optional Graphviz renderer test was skipped. The physical load smoke
+completed six points without lost events.
 Load plots render successfully using the physical results alone. The cleanup
 was synchronized to all four remote workers and file absence was checked over
 SSH. Evidence is stored in `outputs/audit/physical-only-tests.xml` and

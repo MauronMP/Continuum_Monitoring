@@ -1,5 +1,8 @@
 # Physical reasoning validation
 
+This file preserves dated validation records. Earlier counts describe the source
+revision tested on that date and must not be read as acceptance of version 0.4.0.
+
 Validation date: 2026-09-21. Scope: coordinator code and installed native
 reasoners. No remote physical device was contacted or started.
 
@@ -70,3 +73,27 @@ Fragment reasoning is not a complete distributed OWL DL decision procedure;
 new policies and queries require canonical-answer validation. Native memory
 telemetry is a lifetime child high-water mark rather than a per-point process
 tree peak. See [execution and reasoning contracts](PHYSICAL_REASONING.md).
+
+## Version 0.4.0 pre-deployment status
+
+The 0.4.0 implementation adds ELK installation, fragment contract 3 and the
+task-aware distributed-reasoning experiment. Local unit/integration validation
+and documentation checks cover configuration, exact graph sizing, task grouping,
+semantic sampling, timeout propagation, statistics, result files and PNG report
+generation. On 2026-09-22, the complete default software suite reported 399
+passed and 12 optional skips in 143.92 seconds; documentation validation passed
+33 files. The skipped native cases require explicitly enabled local runtimes,
+two calibration cases do not apply to the partitioned coordinator, and Graphviz
+is optional. ELK passes the EL smoke ontology; the full ontology is explicitly
+reported as profile-incompatible by the installed ELK/OWLAPI path.
+With `.runtime/owl-reasoners.env` loaded and native checks enabled, the focused
+reasoner/runtime suite passed 32 tests in 20.08 seconds. Its two Konclude warnings
+state the documented annotation-preservation behavior; no check failed.
+Logs are retained under `outputs/validation/readiness/` as
+`version-0.4-tests.log` and `version-0.4-native-tests.log`.
+
+This local evidence does not certify remote contract-3 deployment or physical
+performance. After any active campaign finishes, deploy the same source revision
+to all six configured nodes, run the smoke configuration, inspect semantic-validation and
+coverage rows, then run the full matrix. Record that physical acceptance in a
+new dated section instead of rewriting the historical records above.

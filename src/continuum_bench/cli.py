@@ -9,6 +9,26 @@ import webbrowser
 from .config import load_config
 from .validation import validate_project
 
+REASONER_CHOICES = ("rdfs", "hermit", "openllet", "jfact", "konclude")
+
+
+def _family_timeout_updates(args: argparse.Namespace, *, recovery: bool = False) -> dict[str, float]:
+    """Map global deadline options to family-specific workload contracts."""
+    if args.timeout_seconds is not None:
+        updates = {
+            "request_timeout_seconds": args.timeout_seconds,
+            "point_timeout_seconds": args.timeout_seconds,
+        }
+        if recovery:
+            updates["recovery_timeout_seconds"] = args.timeout_seconds
+        return updates
+    updates = {}
+    if args.request_timeout_seconds is not None:
+        updates["request_timeout_seconds"] = args.request_timeout_seconds
+    if args.point_timeout_seconds is not None:
+        updates["point_timeout_seconds"] = args.point_timeout_seconds
+    return updates
+
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -50,6 +70,7 @@ def _parser() -> argparse.ArgumentParser:
     suite.add_argument("--dry-run", action="store_true")
     suite.add_argument("--load-config", default="configs/load-benchmark.toml")
     suite.add_argument("--experiment-config", default="configs/experiments.toml")
+    suite.add_argument("--distributed-reasoning-config", default="configs/distributed-reasoning.toml")
     suite.add_argument("--campaign-config", default="configs/campaign.toml")
     suite.add_argument("--families", nargs="+", choices=("software","validation","monitoring","load","experiments","campaign","report"))
     campaign = subparsers.add_parser("campaign", help="Run configurable physical scalability and policy-cost axes")
@@ -91,29 +112,6 @@ def _parser() -> argparse.ArgumentParser:
         "--reasoner-config", default="configs/owl-reasoners.toml"
     )
 
-    engines = subparsers.add_parser(
-        "engines",
-        help="Run all RDFLib, Jena, RDF4J and Oxigraph engine benchmarks",
-    )
-    engines.add_argument(
-        "suite", choices=("cumulative", "scalability", "all", "plot")
-    )
-    engines.add_argument(
-        "--plot-suite",
-        choices=("cumulative", "scalability", "all"),
-        default="all",
-        help="Suite selected when the engines action is plot",
-    )
-    engines.add_argument(
-        "--endpoints",
-        help=(
-            "Comma-separated native engine URLs; defaults to the four "
-            "local native service ports"
-        ),
-    )
-    engines.add_argument("--warmups", type=int, default=1)
-    engines.add_argument("--output-dir", default="outputs/engines")
-    engines.add_argument("--keep-running", action="store_true")
     owl_validate.add_argument(
         "--output", default="outputs/validation/owl-reasoners.json"
     )
@@ -159,7 +157,7 @@ def _parser() -> argparse.ArgumentParser:
             "all",
         ),
     )
-    physical.add_argument("--reasoner", action="append", choices=("rdfs", "hermit", "openllet", "jfact", "konclude"), help="Select one or more configured benchmark backends")
+    physical.add_argument("--reasoner", action="append", choices=REASONER_CHOICES, help="Select one or more configured benchmark backends")
     physical.add_argument("--topology-name", default="physical")
     physical.add_argument("--ssh-user")
     physical.add_argument("--with-dl-reasoners", action="store_true", help="Install and verify native reasoner runtimes during online deployment")
@@ -232,7 +230,7 @@ def _parser() -> argparse.ArgumentParser:
         command_parser.add_argument(
             "--reasoner",
             action="append",
-            choices=("rdfs", "hermit", "openllet", "jfact", "konclude"),
+            choices=REASONER_CHOICES,
         )
         command_parser.add_argument("--profile", action="append")
 
@@ -240,9 +238,20 @@ def _parser() -> argparse.ArgumentParser:
         "scale-out",
         "reasoning-hardware",
         "distributed-ontology",
+        "distributed-reasoning-scalability",
         "all",
     ):
         add_experiment_arguments(experiment_commands.add_parser(name))
+    selected_parser = experiment_commands.choices["distributed-reasoning-scalability"]
+    selected_parser.add_argument(
+        "--distributed-reasoning-config",
+        default="configs/distributed-reasoning.toml",
+    )
+    experiment_commands.choices["all"].add_argument(
+        "--distributed-reasoning-config",
+        default=None,
+        help="Include the distributed reasoning scalability family using this TOML",
+    )
 
     experiment_plot = experiment_commands.add_parser("plot")
     experiment_plot.add_argument(
@@ -251,6 +260,7 @@ def _parser() -> argparse.ArgumentParser:
             "scale-out",
             "reasoning-hardware",
             "distributed-ontology",
+            "distributed-reasoning-scalability",
             "all",
         ),
     )
@@ -397,6 +407,7 @@ def _dispatch(args) -> int:
                            skip_larger_points=args.skip_larger_points, skip_cumulative_stages=args.skip_cumulative_stages,
                            keep_going=args.keep_going, topology_file=args.topology_file,
                            load_config=args.load_config, experiment_config=args.experiment_config,
+                           distributed_reasoning_config=args.distributed_reasoning_config,
                            campaign_config=args.campaign_config)
         print(json.dumps(result, indent=2))
         return int(any(step.get("returncode", 0) != 0 or step.get("status") in {"failed", "missing_evidence"} for step in result["steps"]))
@@ -406,8 +417,7 @@ def _dispatch(args) -> int:
         from .monitoring.campaign import run_campaign
         from .monitoring.campaign_infrastructure import PhysicalInfrastructure
         campaign = load_campaign(config.resolve(Path(args.campaign_config)))
-        if args.timeout_seconds:
-            campaign = replace(campaign, request_timeout_seconds=args.timeout_seconds, point_timeout_seconds=args.timeout_seconds)
+        campaign = replace(campaign, **_family_timeout_updates(args))
         if args.repetitions:
             campaign = replace(campaign, repetitions=args.repetitions)
         if args.axis:
@@ -462,70 +472,6 @@ def _dispatch(args) -> int:
         if args.require_all:
             success = success and report["all_available"] and report["all_consistent"]
         return 0 if success else 1
-
-    if args.command == "engines":
-        from contextlib import nullcontext
-
-        if args.suite == "plot":
-            from .engine_reporting import plot_engine_benchmarks
-
-            output_root = Path(args.output_dir)
-            if not output_root.is_absolute():
-                output_root = config.root / output_root
-            selected = (
-                ("cumulative", "scalability")
-                if args.plot_suite == "all"
-                else (args.plot_suite,)
-            )
-            paths = plot_engine_benchmarks(output_root, selected)
-            print(
-                json.dumps(
-                    {"engine_plots": [str(path) for path in paths]},
-                    indent=2,
-                    ensure_ascii=False,
-                )
-            )
-            return 0
-
-        from .engine_stack import semantic_engine_stack
-        from .engines import (
-            run_engine_cumulative,
-            run_engine_scalability,
-            validate_rdfs_equivalence,
-        )
-
-        if args.warmups < 0:
-            raise ValueError("--warmups must be zero or greater")
-        output_root = Path(args.output_dir)
-        if not output_root.is_absolute():
-            output_root = config.root / output_root
-        if args.endpoints:
-            urls = tuple(
-                value.strip()
-                for value in args.endpoints.split(",")
-                if value.strip()
-            )
-            context = nullcontext(urls)
-        else:
-            context = semantic_engine_stack(
-                config.root, keep_running=args.keep_running
-            )
-        outputs: dict[str, str] = {}
-        with context as endpoint_urls:
-            if args.suite in {"cumulative", "all"}:
-                path = run_engine_cumulative(
-                    config, list(endpoint_urls), output_root, args.warmups
-                )
-                validate_rdfs_equivalence(output_root, "cumulative")
-                outputs["cumulative"] = str(path)
-            if args.suite in {"scalability", "all"}:
-                path = run_engine_scalability(
-                    config, list(endpoint_urls), output_root, args.warmups
-                )
-                validate_rdfs_equivalence(output_root, "scalability")
-                outputs["scalability"] = str(path)
-        print(json.dumps(outputs, indent=2, ensure_ascii=False))
-        return 0
 
     if args.command == "topology":
         from .topology import load_topology, load_topology_manifest
@@ -628,8 +574,7 @@ def _dispatch(args) -> int:
         )
         from .preflight import validate_load_workload
 
-        if args.timeout_seconds:
-            workload = replace(workload, request_timeout_seconds=args.timeout_seconds, point_timeout_seconds=args.timeout_seconds, recovery_timeout_seconds=args.timeout_seconds)
+        workload = replace(workload, **_family_timeout_updates(args, recovery=True))
         if args.repetitions:
             workload = replace(workload, repetitions=args.repetitions)
         if args.keep_going or args.unlimited:
@@ -688,6 +633,42 @@ def _dispatch(args) -> int:
             )
             return 0
 
+        distributed_outputs = {}
+        run_distributed_reasoning = (
+            args.experiment_name == "distributed-reasoning-scalability"
+            or (
+                args.experiment_name == "all"
+                and args.distributed_reasoning_config is not None
+            )
+        )
+        if run_distributed_reasoning:
+            from .monitoring.distributed_reasoning_config import (
+                load_distributed_reasoning_config,
+                override_distributed_reasoning_config,
+            )
+            from .monitoring.distributed_reasoning_scalability import run_distributed_reasoning_scalability
+            distributed_path = Path(args.distributed_reasoning_config)
+            if not distributed_path.is_absolute():
+                distributed_path = config.root / distributed_path
+            distributed_workload = override_distributed_reasoning_config(
+                load_distributed_reasoning_config(distributed_path),
+                repetitions=args.repetitions,
+                timeout_seconds=args.timeout_seconds,
+                request_timeout_seconds=args.request_timeout_seconds,
+                point_timeout_seconds=args.point_timeout_seconds,
+                reasoners=args.reasoner,
+            )
+            topology = _target_topology(config, args, args.target)
+            distributed_outputs["distributed-reasoning-scalability"] = str(
+                run_distributed_reasoning_scalability(
+                    config, distributed_workload, args.target, output_root,
+                    endpoint_urls=topology.endpoints(),
+                )
+            )
+            if args.experiment_name == "distributed-reasoning-scalability":
+                print(json.dumps(distributed_outputs, indent=2, ensure_ascii=False))
+                return 0
+
         experiment_path = Path(args.experiment_config)
         if not experiment_path.is_absolute():
             experiment_path = config.root / experiment_path
@@ -697,8 +678,7 @@ def _dispatch(args) -> int:
         )
         from .preflight import validate_experiment_workload
 
-        if args.timeout_seconds:
-            workload = replace(workload, request_timeout_seconds=args.timeout_seconds, point_timeout_seconds=args.timeout_seconds)
+        workload = replace(workload, **_family_timeout_updates(args))
         if args.repetitions:
             workload = replace(workload, repetitions=args.repetitions)
         if args.keep_going or args.unlimited:
@@ -709,12 +689,9 @@ def _dispatch(args) -> int:
         endpoints = None
         topology = _target_topology(config, args, args.target)
         endpoints = topology.endpoints()
-        selected = (
-            EXPERIMENTS
-            if args.experiment_name == "all"
-            else (args.experiment_name,)
-        )
-        outputs = {
+        core_experiments = tuple(name for name in EXPERIMENTS if name != "distributed-reasoning-scalability")
+        selected = core_experiments if args.experiment_name == "all" else (args.experiment_name,)
+        outputs = distributed_outputs | {
             name: str(
                 run_experiment(
                     name,
@@ -793,7 +770,7 @@ def main(argv: list[str] | None = None) -> int:
         if effective_unlimited:
             print("[execution-policy] unlimited: benchmark budgets are recorded but not enforced", flush=True)
         status = _dispatch(args)
-        if args.command in {"physical", "load", "experiment", "engines"} and hasattr(args, "output_dir"):
+        if args.command in {"physical", "load", "experiment"} and hasattr(args, "output_dir"):
             from .monitoring.normalize import normalize_completed_outputs
             config = load_config(args.config)
             normalize_completed_outputs(config, config.resolve(Path(args.output_dir)), started_ns)

@@ -4,7 +4,7 @@
 > entries by hand. Regenerate with
 > `.venv/bin/python tools/generate_reference_docs.py`.
 
-Canonical source: `ontology/legacy/smartcity_continuum-v3.0.0.ttl`.
+Authoritative release source: `ontology/legacy/smartcity_continuum-v3.0.0.ttl`.
 
 This manual lists every requirement represented by the executable
 ontology. Links are direct RDF traceability assertions; the query

@@ -10,6 +10,7 @@ from rdflib.namespace import DCTERMS, OWL
 from .queries import QueryMeasurement, QuerySpec
 from .reasoners import REASONING_CONTRACT
 from .environment import installed_versions
+from . import __version__
 
 
 EX = Namespace("http://example.org/smartcity#")
@@ -44,6 +45,7 @@ def release_identity() -> dict[str, Any]:
     """Return stable provenance fields shared by every benchmark output."""
 
     return {
+        "benchmark_version": __version__,
         "ontology_version": ONTOLOGY_VERSION,
         "ontology_revision": ONTOLOGY_REVISION,
         "query_contract": "BASE-Q01..BASE-Q35;EXT-Q01..EXT-Q80",

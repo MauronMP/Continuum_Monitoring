@@ -19,10 +19,19 @@ from .report_profiles import LABELS as REASONER_LABELS, observed_profiles
 ARCHITECTURES = ("physical",)
 
 
+def _summary_path(root: Path, experiment: str) -> Path:
+    filename = (
+        "distributed-reasoning-summary.csv"
+        if experiment == "distributed-reasoning-scalability"
+        else "summary.csv"
+    )
+    return root / experiment / filename
+
+
 def _rows(root: Path, experiment: str) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for architecture in ARCHITECTURES:
-        path = root / experiment / "summary.csv"
+        path = _summary_path(root, experiment)
         if path.is_file():
             with path.open(encoding="utf-8", newline="") as handle:
                 rows.extend(
@@ -40,7 +49,7 @@ def _quality_rows(
     groups: dict[tuple[str, str, str], list[str]] = defaultdict(list)
     for architecture in ARCHITECTURES:
         for experiment in experiments:
-            path = root / experiment / "summary.csv"
+            path = _summary_path(root, experiment)
             if not path.is_file():
                 continue
             with path.open(encoding="utf-8", newline="") as handle:
@@ -235,6 +244,82 @@ def plot_distributed_ontology(root: Path) -> list[Path]:
     return _save(figure, root / "figures" / "architecture-distributed-ontology")
 
 
+def plot_distributed_reasoning_scalability(root: Path) -> list[Path]:
+    rows = _rows(root, "distributed-reasoning-scalability")
+    if not rows:
+        return []
+    outputs: list[Path] = []
+    specifications = (
+        ("reasoning-time-vs-triples", "strong", "target_triples", "reasoning_critical_path_ms", "Logical asserted triples", "Critical-path reasoning (s)", 1000),
+        ("throughput-vs-triples", "strong", "target_triples", "reasoning_throughput_triples_s", "Logical asserted triples", "Reasoning throughput (triples/s)", 1),
+        ("speedup-vs-nodes", "strong", "node_count", "speedup", "Physical nodes", "Speedup T1/Tn", 1),
+        ("parallel-efficiency-vs-nodes", "strong", "node_count", "parallel_efficiency", "Physical nodes", "Parallel efficiency", 1),
+        ("weak-scaling-efficiency", "weak", "node_count", "weak_scaling_efficiency", "Physical nodes", "Weak-scaling efficiency T1/Tn", 1),
+        ("coordination-overhead-vs-nodes", "strong", "node_count", "coordination_overhead_pct", "Physical nodes", "Coordination overhead (%)", 1),
+        ("fragment-imbalance-vs-nodes", "strong", "node_count", "fragment_imbalance_ratio", "Physical nodes", "Fragment max/mean", 1),
+        ("closure-expansion-vs-triples", "strong", "target_triples", "closure_expansion_factor", "Logical asserted triples", "Closure expansion factor", 1),
+        ("layout-comparison", "strong", "target_triples", "prepare_wall_ms", "Logical asserted triples", "End-to-end preparation (s)", 1000),
+    )
+    reasoners = observed_profiles(rows)
+    colors = {reasoner: plt.get_cmap("tab10")(index % 10) for index, reasoner in enumerate(reasoners)}
+    for filename, mode, xfield, yfield, xlabel, ylabel, divisor in specifications:
+        selected = [row for row in rows if row.get("scaling_mode") == mode and row.get(yfield, "") != ""]
+        if not selected:
+            continue
+        tasks = sorted({row.get("reasoning_task", "unspecified") for row in selected})
+        columns = 2
+        row_count = (len(tasks) + columns - 1) // columns
+        figure, axes = plt.subplots(
+            row_count, columns, figsize=(13, max(4.4, 4.1 * row_count)),
+            squeeze=False,
+        )
+        series_field = "node_count" if xfield == "target_triples" else "target_triples"
+        groups = _median_groups(
+            selected,
+            ("reasoning_task", "reasoner", "layout", series_field, xfield),
+            yfield,
+        )
+        for index, task in enumerate(tasks):
+            axis = axes.flat[index]
+            task_reasoners = [
+                reasoner for reasoner in reasoners
+                if any(row.get("reasoning_task", "unspecified") == task and row["reasoner"] == reasoner for row in selected)
+            ]
+            for reasoner in task_reasoners:
+                for layout, marker in (("distributed", "o"), ("replicated", "s")):
+                    series_values = sorted(
+                        {key[3] for key in groups if key[0] == task and key[1] == reasoner and key[2] == layout},
+                        key=float,
+                    )
+                    for series in series_values:
+                        points = sorted(
+                            (float(key[-1]), value / divisor)
+                            for key, value in groups.items()
+                            if key[0] == task and key[1] == reasoner
+                            and key[2] == layout and key[3] == series
+                        )
+                        if points:
+                            suffix = f"n={series}" if series_field == "node_count" else f"triples={int(float(series)):,}"
+                            axis.plot(
+                                [point[0] for point in points],
+                                [point[1] for point in points],
+                                marker=marker, color=colors[reasoner], alpha=.85,
+                                linestyle="-" if layout == "distributed" else "--",
+                                label=f"{REASONER_LABELS.get(reasoner, reasoner)} · {layout} · {suffix}",
+                            )
+            axis.set_title(task.replace("_", " ").title())
+            axis.set_xlabel(xlabel); axis.set_ylabel(ylabel); axis.grid(alpha=.25)
+            if xfield == "target_triples":
+                axis.set_xscale("log")
+            axis.legend(frameon=False, fontsize=7, ncol=1)
+        for index in range(len(tasks), row_count * columns):
+            axes.flat[index].set_visible(False)
+        figure.suptitle(filename.replace("-", " ").title(), fontweight="bold")
+        figure.tight_layout(rect=(0, 0, 1, .97))
+        outputs.extend(_save(figure, root / "figures" / "distributed-reasoning" / filename))
+    return outputs
+
+
 def plot_experiment_coverage(
     root: Path,
     experiments: Iterable[str],
@@ -314,6 +399,8 @@ def plot_experiments(root: Path, selected: Iterable[str]) -> list[Path]:
         outputs.extend(plot_reasoning_hardware(root))
     if "distributed-ontology" in selected_set:
         outputs.extend(plot_distributed_ontology(root))
+    if "distributed-reasoning-scalability" in selected_set:
+        outputs.extend(plot_distributed_reasoning_scalability(root))
     outputs.extend(plot_experiment_coverage(root, selected_set))
     return outputs
 
@@ -322,4 +409,4 @@ def plot_claim_analysis(root: Path) -> list[Path]:
     from .experiment_analysis import analyze_experiments
 
     analyze_experiments(root)
-    return plot_experiments(root, ("scale-out", "reasoning-hardware", "distributed-ontology"))
+    return plot_experiments(root, ("scale-out", "reasoning-hardware", "distributed-ontology", "distributed-reasoning-scalability"))

@@ -1,11 +1,22 @@
 """Display identities; historical profiles are never aliases for current engines."""
 
-CURRENT_PROFILES = ("rdfs", "hermit", "openllet", "jfact", "konclude")
-LABELS = dict(zip(CURRENT_PROFILES, ("RDFS", "HermiT", "Openllet", "JFact", "Konclude")))
-LABELS.update({"owlrl": "OWL RL", "rdfs_owlrl": "RDFS + OWL RL"})
-COLORS = dict(zip(LABELS, ("#0072B2", "#E69F00", "#CC79A7", "#56B4E9", "#000000", "#D55E00", "#009E73")))
-LAYOUTS = {"distributed": "Distributed", "replicated": "Replicated", "sharded": "Sharded (historical)"}
-CURRENT_LAYOUTS = {key: LAYOUTS[key] for key in ("distributed", "replicated")}
+CURRENT_PROFILES = (
+    "none", "rdfs", "owlrl", "rdfs_owlrl", "elk",
+    "hermit", "openllet", "jfact", "konclude",
+)
+LABELS = {
+    "none": "Identity", "rdfs": "RDFS", "owlrl": "OWL RL",
+    "rdfs_owlrl": "RDFS + OWL RL", "elk": "ELK",
+    "hermit": "HermiT", "openllet": "Openllet", "jfact": "JFact",
+    "konclude": "Konclude",
+}
+COLORS = dict(zip(
+    CURRENT_PROFILES,
+    ("#999999", "#0072B2", "#009E73", "#CC79A7", "#F0E442",
+     "#E69F00", "#56B4E9", "#D55E00", "#000000"),
+))
+LAYOUTS = {"distributed": "Distributed", "replicated": "Replicated"}
+CURRENT_LAYOUTS = dict(LAYOUTS)
 
 
 def observed_profiles(rows):

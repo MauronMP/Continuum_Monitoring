@@ -20,6 +20,8 @@ from rdflib import Graph, Literal
 
 
 REASONING_CONTRACT = "rdfs-literal-value-space-v1"
+IDENTITY_CONTRACT = "identity-graph-v1"
+PHYSICAL_REASONERS = ("rdfs", "hermit", "openllet", "jfact", "konclude")
 
 
 class DatatypeAwareRDFSSemantics(RDFS_Semantics):
@@ -79,6 +81,14 @@ _PROFILES: dict[str, Type] = {
 
 
 REASONER_ENGINES: dict[str, ReasonerEngine] = {
+    "none": ReasonerEngine(
+        name="Identity / no inference",
+        profile="rdf",
+        implementation="In-process graph copy",
+        owl_fragment="RDF graph",
+        supported=True,
+        suitability="Infrastructure-only baseline with no semantic inference.",
+    ),
     "rdfs": ReasonerEngine(
         name="RDFLib RDFS",
         profile="rdfs",
@@ -122,11 +132,22 @@ REASONER_ENGINES: dict[str, ReasonerEngine] = {
         )
         for name, label in (("hermit", "HermiT"), ("openllet", "Openllet"), ("jfact", "JFact"), ("konclude", "Konclude"))
     },
+    "elk": ReasonerEngine(
+        name="ELK",
+        profile="owl_el",
+        implementation="Isolated Java OWLAPI with ELK",
+        owl_fragment="OWL 2 EL; named-class-individual-v1 output",
+        supported=True,
+        suitability="Specialized OWL 2 EL classification and realization reference.",
+    ),
 }
 
 
 def available_reasoners() -> tuple[str, ...]:
-    return tuple(name for name in _BACKENDS if name not in ("owlrl", "rdfs_owlrl"))
+    return (
+        "none", "rdfs", "owlrl", "rdfs_owlrl", "elk",
+        "hermit", "openllet", "jfact", "konclude",
+    )
 
 
 def reasoner_catalog() -> tuple[ReasonerEngine, ...]:
@@ -171,8 +192,28 @@ class OwlrlReasoner:
         return _materialize_owlrl(source, self.name)
 
 
+@dataclass(frozen=True)
+class IdentityReasoner:
+    name: str = "none"
+
+    def materialize(self, source: Graph) -> ReasoningResult:
+        started = perf_counter_ns()
+        graph = Graph()
+        for prefix, namespace in source.namespaces():
+            graph.bind(prefix, namespace)
+        for triple in source:
+            graph.add(triple)
+        return ReasoningResult(
+            graph=graph,
+            duration_ms=(perf_counter_ns() - started) / 1_000_000,
+            input_triples=len(source),
+            output_triples=len(graph),
+        )
+
+
 _BACKENDS: dict[str, Reasoner] = {name: OwlrlReasoner(name) for name in _PROFILES}
-_BACKENDS.update({name: NativeOWLReasoner(name) for name in ("hermit", "openllet", "jfact", "konclude")})
+_BACKENDS["none"] = IdentityReasoner()
+_BACKENDS.update({name: NativeOWLReasoner(name) for name in ("hermit", "openllet", "jfact", "konclude", "elk")})
 
 
 def register_reasoner(backend: Reasoner, *, replace: bool = False) -> None:
@@ -196,8 +237,10 @@ def materialize(source: Graph, reasoner: str) -> ReasoningMeasurement:
 def reasoner_contract(name: str) -> str:
     """Version of the output semantics, independent of worker wire protocol."""
     get_reasoner(name)
-    if name in ("hermit", "openllet", "jfact", "konclude"):
+    if name in ("hermit", "openllet", "jfact", "konclude", "elk"):
         return OWL_MATERIALIZATION_CONTRACT
+    if name == "none":
+        return IDENTITY_CONTRACT
     if name == "rdfs":
         return REASONING_CONTRACT
     return f"{name}-closure-v1"
@@ -211,6 +254,29 @@ def reasoner_provenance(name: str) -> dict[str, str]:
         "contract": reasoner_contract(name),
         "implementation": engine.implementation if engine else type(get_reasoner(name)).__name__,
         "fallback": "none",
+    }
+
+
+def reasoner_semantics(name: str) -> dict[str, str | bool]:
+    """Return the task/profile contract used to form comparable groups."""
+    engine = REASONER_ENGINES[name]
+    task = {
+        "none": "identity",
+        "rdfs": "rdfs_closure",
+        "owlrl": "owl_rl_materialization",
+        "rdfs_owlrl": "rdfs_owl_rl_materialization",
+        "elk": "owl_el_classification_realization",
+        "hermit": "owl_dl_classification_realization",
+        "openllet": "owl_dl_classification_realization",
+        "jfact": "owl_dl_classification_realization",
+        "konclude": "owl_dl_classification_realization",
+    }[name]
+    return {
+        "reasoning_task": task,
+        "reasoning_contract": reasoner_contract(name),
+        "reasoner_profile": engine.profile,
+        "output_semantics": engine.owl_fragment,
+        "profile_compatible": True,
     }
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 from pathlib import Path
 import re
@@ -10,9 +11,14 @@ import signal
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import tomllib
 from typing import Any
+
+from rdflib import Graph, OWL, RDF
+
+from .ontology import load_graph
 
 
 def validate_external_reasoners(
@@ -25,20 +31,73 @@ def validate_external_reasoners(
     with config_path.open("rb") as handle:
         raw = tomllib.load(handle)
     validation = raw["validation"]
-    ontology = root / str(validation["ontology"])
-    if not ontology.is_file():
-        raise ValueError(f"Ontology does not exist: {ontology}")
+    configured_files = tuple(
+        root / str(path) for path in validation.get("ontology_files", ())
+    )
+    if not configured_files:
+        raise ValueError(
+            "validation.ontology_files must list the active modular ontology"
+        )
+    missing = [str(path) for path in configured_files if not path.is_file()]
+    if missing:
+        raise ValueError(f"Ontology modules do not exist: {missing}")
     timeout = float(validation.get("timeout_seconds", 180))
     if timeout <= 0:
         raise ValueError("validation.timeout_seconds must be positive")
     requested = tuple(str(item) for item in validation["reasoners"])
     definitions = raw.get("reasoners", {})
-    results = [
-        _run_reasoner(root, ontology, name, definitions.get(name, {}), timeout)
-        for name in requested
-    ]
+    graph = load_graph(configured_files)
+    declared_ontologies = set(graph.subjects(RDF.type, OWL.Ontology))
+    imports = sorted(
+        {(str(subject), str(target)) for subject, target in graph.subject_objects(OWL.imports)}
+    )
+    unresolved_imports = sorted(
+        target
+        for target in {target for _, target in graph.subject_objects(OWL.imports)}
+        if target not in declared_ontologies
+    )
+    if unresolved_imports:
+        raise ValueError(
+            "The modular ontology has unresolved owl:imports: "
+            + ", ".join(str(item) for item in unresolved_imports)
+        )
+    # OWLAPI resolves owl:imports as documents even when every imported graph is
+    # already present in the flattened RDF union. Remove only those locally
+    # resolved import declarations from the temporary closed-world document.
+    compiled_graph = Graph()
+    for prefix, namespace in graph.namespaces():
+        compiled_graph.bind(prefix, namespace)
+    for triple in graph:
+        if triple[1] != OWL.imports:
+            compiled_graph.add(triple)
+    serialized = "\n".join(
+        sorted(
+            f"{subject.n3()} {predicate.n3()} {object_.n3()} ."
+            for subject, predicate, object_ in compiled_graph
+        )
+    ) + "\n"
+    with tempfile.TemporaryDirectory(prefix="continuum-modular-owl-") as temp:
+        ontology = Path(temp) / "runtime-ontology.nt"
+        ontology.write_text(serialized, encoding="utf-8")
+        results = [
+            _run_reasoner(
+                root, ontology, name, definitions.get(name, {}), timeout
+            )
+            for name in requested
+        ]
     report = {
-        "ontology": str(ontology.resolve()),
+        "ontology_files": [
+            str(path.resolve()) for path in configured_files
+        ],
+        "compiled_ontology_sha256": hashlib.sha256(
+            serialized.encode("utf-8")
+        ).hexdigest(),
+        "source_ontology_triples": len(graph),
+        "compiled_ontology_triples": len(compiled_graph),
+        "resolved_imports": [
+            {"ontology": source, "import": target}
+            for source, target in imports
+        ],
         "reasoners": results,
         "all_available": all(item["status"] != "unavailable" for item in results),
         "all_consistent": all(

@@ -16,19 +16,39 @@ The report writes 300-DPI PNG figures and CSV source tables under `outputs/repor
 records each plotted series, sample count, median and observed range. No PDF or SVG
 benchmark figures are generated. Existing equivalents are removed when a figure
 is regenerated. Source ontology diagrams are separate semantic documentation.
+`results-audit.json` gives a machine-readable acceptance decision and blockers.
+It also records the active software version and topology fingerprint. A report
+is rejected when its metadata belongs to another release, uses a different
+physical-node count, was reconstructed after a failed run, omits a required
+benchmark family or contains no completed observations for that family. Every
+stale diagnostic carries a prominent historical-evidence notice. When the
+acceptance decision is rejected, performance figures and derived performance
+tables are removed from the catalogue and from disk. Only coverage and
+integrity diagnostics remain; `report.json` lists every suppressed artifact.
+`coverage-and-integrity/png-quality-audit.json` is regenerated from exactly the
+retained PNG files and records dimensions, sampled colour count and blankness.
 
 Figures include completed execution times, CPU and RSS, reasoning by physical
 node, cumulative and scalability curves, outcome coverage, category costs,
 fractionally attributed policy costs, and communication scenarios. Missing
 measurements remain missing. A workload with no completed points gets failure
-and loss diagnostics instead of empty performance panels.
+and loss diagnostics instead of empty performance panels. Progression figures
+require at least two distinct completed values on their x axis, and placement
+comparisons require a completed value shared by both layouts.
 
-The September 9 input audit found no completed points among the 207 load records.
-There were 39 attempted timeout points and 168 skipped points. Completed requests
+The coverage group additionally contains normalized evidence readiness,
+semantic-equivalence acceptance, reasoner capacity frontiers and
+load-completion matrices. Category panels are
+generated only when a backend has completed requests with the required metric;
+obsolete empty PNGs are removed during regeneration.
+
+The September 27 review confirmed no completed benchmark points among the 345
+load records. There were 65 timeout-class outcomes and 280 skipped points. Completed requests
 inside these failed runs still carry real observations, but their category/policy
 rankings are conditional on survival and on the workload profile. The report selects a shared profile with the greatest
 minimum completed coverage across observed reasoners and records that choice. They
-are exploratory evidence, not an unbiased estimate of all-policy performance.
+are diagnostic evidence, not an unbiased estimate of all-policy performance,
+and are suppressed from a rejected publication catalogue.
 CPU is attributed from batch timing; RSS is process memory, not policy allocation.
 
 Curves use only completed observations. Whiskers show observed minimum–maximum,
@@ -69,7 +89,7 @@ continuum-bench --unlimited --repetitions 5 suite
 
 This runs software tests, semantic validation, preflight, the four external OWL
 validators, physical worker startup, cumulative/scalability in both layouts,
-load, the three separated experiments, the ten-axis campaign and PNG reporting.
+load, the four separated experiments, the ten-axis campaign and PNG reporting.
 Every invocation creates a unique directory below `outputs/suites` with a
 `suite.json` plan/status record and one log per step. Inspect the logs while a
 long step runs. Worker deployment and SSH authorization must already be complete.
@@ -89,7 +109,8 @@ may require terminating the coordinator and restarting its physical worker.
 ```bash
 continuum-bench --unlimited load physical
 continuum-bench --unlimited physical all
-continuum-bench --unlimited experiment all physical
+continuum-bench --unlimited experiment all physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 continuum-bench --unlimited campaign --campaign-config configs/campaign.toml
 ```
 
@@ -162,8 +183,11 @@ and `coverage-and-integrity/`. The generated `README.md` links every figure;
 `report.json` records its path and source hashes. Regenerating a legacy flat PNG
 moves that figure into its group; raw benchmark evidence is unchanged.
 
-Node/category and query rankings select the smallest population with completed
-summary observations across both layouts and all three portable reasoners.
+Node/category and query rankings over archived evidence select the smallest
+population with completed summary observations across both layouts and the
+available reasoners. Figures generated from the old RDFS/OWL-RL campaign carry a
+historical-evidence notice; the active five-reasoner matrix requires a new 0.4.1
+six-node run.
 Only node measurements belonging to those completed repetitions are included.
 Per-node query heatmaps show missing assignments explicitly, not as zero cost.
 Expensive-query scatter plots use a stable category colour, one dot per query
@@ -171,15 +195,15 @@ and reasoner (median), and a segment to p95; rankings use the maximum median
 across reasoners so every panel shows the same query IDs. CSVs retain sample
 counts. Tail estimates with few observations are descriptive only.
 
-`sharded` means shared/authority-partitioned ontology placement with federated
-queries; it is not a shared-memory implementation. Node time is read from actual
+Historical evidence may use `sharded` for authority-partitioned placement. New
+runs use `distributed`; neither term denotes shared memory. Node time is read from actual
 worker records. It is never obtained by dividing a federated duration among
 nodes. Layer totals sum worker query work within each repetition before taking
 the median; Edge combines its physical nodes. Routing and query assignment can
 differ, so these totals do not measure hardware speedup in isolation.
 
 The cumulative and scalability panels overlay both placements separately for
-RDFS, OWL RL and combined RDFS/OWL RL. They retain completed observations only;
+the reasoners present in the recorded dataset. They retain completed observations only;
 coverage shows why later points may be absent. Category/method comparisons use
 summed node query execution per repetition, including actual partition fan-out.
 New source tables include `node-category-observations.csv`,
@@ -194,3 +218,9 @@ still needed for causal claims. Added cumulative categories change both policy
 functionality and the query workload. Historical replica resource omissions,
 incomplete high-load runs, analytical distances and separate recovery validation
 remain explicitly identified rather than filled with synthetic measurements.
+
+The dedicated distributed-reasoning report adds nine PNG figures for strong and
+weak scaling, task-group throughput, speedup, efficiency, coordination overhead,
+fragment balance, closure expansion and placement. It reads only
+`distributed-reasoning-summary.csv`; until a physical run produces completed
+rows, no result from that matrix should be added to a paper as measured evidence.

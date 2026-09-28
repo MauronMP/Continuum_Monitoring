@@ -11,5 +11,5 @@
         <http://example.org/smartcity/modules/deployment>,
         <http://example.org/smartcity/modules/wellbeing>,
         <http://example.org/smartcity/modules/wellbeing-vocabulary> ;
-    ex:usesEntailmentProfile "rdfs" ;
+    # Reserved for future device-side placement; no reasoner is pinned here.
     owl:versionInfo "3.0.0" .

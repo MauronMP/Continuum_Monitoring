@@ -4,7 +4,7 @@
 > entries by hand. Regenerate with
 > `.venv/bin/python tools/generate_reference_docs.py`.
 
-Canonical source: `queries/catalog.csv and queries/**/*.rq`.
+Authoritative release source: `queries/catalog.csv and queries/**/*.rq`.
 
 The battery contains 35 BASE queries and 80 EXT queries. Every
 entry below is executed by the validation gate and by cumulative

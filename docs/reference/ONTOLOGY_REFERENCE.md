@@ -4,7 +4,7 @@
 > entries by hand. Regenerate with
 > `.venv/bin/python tools/generate_reference_docs.py`.
 
-Canonical source: `ontology/legacy/smartcity_continuum-v3.0.0.ttl`.
+Authoritative release source: `ontology/legacy/smartcity_continuum-v3.0.0.ttl`.
 
 ## Scope
 
@@ -38,7 +38,7 @@ policies, trust evidence and resulting action can be audited.
 | SHACL constraints | `ontology/shapes/*.ttl` |
 | Reference individuals | `ontology/examples/reference-system.ttl` |
 | Tier profiles | `ontology/profiles/*.ttl` |
-| Protégé source | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |
+| Release migration source | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |
 
 ## Release inventory
 
@@ -57,14 +57,16 @@ policies, trust evidence and resulting action can be audited.
 
 ```bash
 .venv/bin/continuum-bench validate
-python3 tools/check_owl_consistency.py --require-dl-profile \
-  --output outputs/validation/ontology-hermit.json
+.venv/bin/continuum-bench owl-validate --require-all \
+  --output outputs/validation/owl-reasoners.json
 ```
 
 The first command validates parsing, release contracts, query
-expectations, SHACL, RDFLib RDFS/OWL RL profiles and distributed
-fragment reconstruction. The second is the independent OWL 2 DL
-consistency/profile gate and requires Java plus Protégé/HermiT.
+expectations, SHACL, the configured benchmark reasoners and distributed
+fragment reconstruction. The second compiles the same 14 runtime
+modules and runs the independent HermiT, Openllet, JFact and Konclude
+consistency gate. It requires Java, the installed OWLAPI classpaths
+and native Konclude.
 
 ## Known limits
 

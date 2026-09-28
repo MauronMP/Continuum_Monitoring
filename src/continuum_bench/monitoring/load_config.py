@@ -175,4 +175,5 @@ def select_load_profiles(
         point_timeout_seconds=config.point_timeout_seconds,
         recovery_timeout_seconds=config.recovery_timeout_seconds,
         seed=config.seed,
+        stop_after_timeout=config.stop_after_timeout,
     )

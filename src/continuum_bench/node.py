@@ -21,11 +21,13 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any, Iterator
 
 from rdflib import Graph
+from rdflib.compare import to_isomorphic
 
+from . import __version__
 from .config import load_config
 from .ontology import load_graph
 from .partitioning import deserialize_fragment, privacy_violations
-from .protocol import WORKER_PROTOCOL_VERSION, WORKER_SERVICE
+from .protocol import SOFTWARE_BUILD_ID, WORKER_PROTOCOL_VERSION, WORKER_SERVICE
 from .queries import execute_query, execute_query_detailed, load_catalog
 from .reasoners import REASONING_CONTRACT, available_reasoners, materialize
 from .specification import ONTOLOGY_REVISION, ONTOLOGY_VERSION
@@ -226,6 +228,7 @@ class NodeRuntime:
         rule_count: int = 0,
         target_triples: int = 0,
         padding_mode: str = "semantic",
+        validate_graph_digest: bool = True,
         phase_timeout_seconds: float = 0,  # coordinator-only metadata
         fragment: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
@@ -282,7 +285,19 @@ class NodeRuntime:
                 padding_triples = pad_to_target_triples(
                     source, target_triples, mode=padding_mode,
                 )
+            input_graph_digest = ""
+            input_graph_digest_ms = 0.0
+            if validate_graph_digest:
+                digest_started = perf_counter_ns()
+                input_graph_digest = str(to_isomorphic(source).graph_digest())
+                input_graph_digest_ms = (perf_counter_ns() - digest_started) / 1_000_000
             reasoning = materialize(source, reasoner)
+            closure_graph_digest = ""
+            closure_graph_digest_ms = 0.0
+            if validate_graph_digest:
+                closure_digest_started = perf_counter_ns()
+                closure_graph_digest = str(to_isomorphic(reasoning.graph).graph_digest())
+                closure_graph_digest_ms = (perf_counter_ns() - closure_digest_started) / 1_000_000
             self.graph = reasoning.graph
             self.reasoner = reasoner
             self.users = users
@@ -325,10 +340,22 @@ class NodeRuntime:
                         fragments.substrate_triples
                         + fragments.reference_triples
                         + fragments.synthetic_triples
+                        + fragments.padding_triples
                     )
                 ),
                 "output_triples": reasoning.output_triples,
                 "inferred_triples": reasoning.inferred_triples,
+                "input_graph_digest": input_graph_digest,
+                "logical_input_graph_digest": (
+                    input_graph_digest if fragments is None else fragments.logical_graph_digest
+                ),
+                "closure_graph_digest": closure_graph_digest,
+                "input_graph_digest_ms": input_graph_digest_ms,
+                "closure_graph_digest_ms": closure_graph_digest_ms,
+                "logical_graph_digest_ms": (
+                    0.0 if fragments is None else fragments.logical_graph_digest_ms
+                ),
+                "validation_digest_ms": input_graph_digest_ms + closure_graph_digest_ms,
                 "children_cpu_ms": max(children_cpu_after - children_cpu_before, 0.0),
                 "children_cpu_scope": "waited-for-children-phase-delta",
                 "child_peak_rss_kib_lifetime": child_peak_rss,
@@ -482,6 +509,8 @@ class Handler(BaseHTTPRequestHandler):
                 "status": "ok",
                 "service": WORKER_SERVICE,
                 "protocol_version": WORKER_PROTOCOL_VERSION,
+                "benchmark_version": __version__,
+                "build_id": SOFTWARE_BUILD_ID,
                 "ontology_version": ONTOLOGY_VERSION,
                 "ontology_revision": ONTOLOGY_REVISION,
                 "query_count": len(runtime.catalog),
@@ -559,6 +588,9 @@ class Handler(BaseHTTPRequestHandler):
                         target_triples=int(payload.get("target_triples", 0)),
                         padding_mode=str(
                             payload.get("padding_mode", "semantic")
+                        ),
+                        validate_graph_digest=bool(
+                            payload.get("validate_graph_digest", True)
                         ),
                     )
                 elif self.path == "/queries":

@@ -4,11 +4,14 @@ For the current end-to-end launch procedure, see [Run all physical tests](RUN_AL
 
 ## Which file to open
 
-Open `ontology/legacy/smartcity_continuum-v3.0.0.ttl` with **File → Open**.
-Despite the historical directory name, this is the maintained, complete
-canonical ontology: schema, controlled vocabularies, reference individuals,
-requirements, policies, mechanisms, scenarios and embedded SHACL shapes. It
-has no remote imports. Its ontology IRI and version remain
+Open `ontology/legacy/smartcity_continuum-v3.0.0.ttl` with **File → Open**
+only when editing or reviewing the complete release migration source. Physical
+execution never loads this single-file artefact: it loads the 14 modules listed
+in `configs/benchmark.toml`. Regeneration tests require the modular union to be
+isomorphic to this source, which prevents either representation from drifting.
+The release source contains schema, controlled vocabularies, reference
+individuals, requirements, policies, mechanisms, scenarios and embedded SHACL
+shapes. It has no remote imports. Its ontology IRI and version remain
 `http://example.org/smartcity` and `3.0.0`; the corrected artifact revision is
 `3.0.0-en-datatypes-v1`, recorded as `dcterms:identifier`.
 
@@ -18,10 +21,10 @@ corrected file. Select **Reasoner → HermiT → Start reasoner**. If your rende
 uses `rdfs:label`, labels are now English too.
 
 `ontology/profiles/full.ttl` is an import profile, not a self-contained copy.
-The benchmark loads its explicitly configured modules, including the additional
-deployment module. Their stable skolem IRIs support distributed RDF identity;
-open the canonical file, with native anonymous OWL structures, for editing in
-Protégé. Do not overwrite modules by saving a Protégé rendering of them.
+The benchmark loads its explicitly configured modules, including the deployment
+module. Their stable skolem IRIs support distributed RDF identity. Do not
+overwrite modules by saving a Protégé rendering of them; make a deliberate
+release-source change and regenerate the modules instead.
 
 ## Cause of the inconsistency
 
@@ -85,17 +88,20 @@ From the repository root, with the project Python environment installed:
 .venv/bin/continuum-bench validate
 CONTINUUM_TEST_NATIVE_OWL=1 .venv/bin/python -m pytest
 
-# OWL 2 DL profile + HermiT consistency, outside timed benchmarks
-python3 tools/check_owl_consistency.py --require-dl-profile \
-  --output outputs/validation/ontology-english-hermit.json
+# OWL 2 DL profile and consistency for the active modular runtime ontology
+.venv/bin/continuum-bench owl-validate --require-all \
+  --output outputs/validation/owl-reasoners.json
 ```
 
-The last command requires Java 11+ (Java 17 recommended) and an existing Protégé
-installation with HermiT. It discovers the macOS application automatically.
-On Linux or for a nonstandard installation:
+The last command requires Java 17, the isolated HermiT, Openllet and JFact
+classpaths installed by `tools/install_owl_reasoners.py`, and native Konclude.
+It compiles the configured modules into a deterministic temporary N-Triples
+file and validates that exact graph. For a low-level check of the complete
+release source with an existing Protégé installation:
 
 ```bash
 python3 tools/check_owl_consistency.py \
+  ontology/legacy/smartcity_continuum-v3.0.0.ttl \
   --protege-home /path/to/Protege \
   --require-dl-profile --timeout 180 \
   --output outputs/validation/ontology-english-hermit.json
@@ -116,7 +122,7 @@ with `-m owl_consistency`.
 
 `continuum-bench validate` explicitly reports OWL consistency as `not_checked`:
 its inexpensive datatype guard and absence of explicit `owl:Nothing` instances
-are necessary checks, not a substitute for HermiT. SHACL warnings and the
+are necessary checks, not a substitute for the external four-reasoner gate. SHACL warnings and the
 `EXT-Q76`/`EXT-Q77` scientific-acceptance debt remain separate.
 
 ## Existing physical deployments and results

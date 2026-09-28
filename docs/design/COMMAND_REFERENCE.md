@@ -57,7 +57,8 @@ continuum-smoke-physical-experiments
 continuum-bench physical all --layout distributed --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 continuum-bench load physical
-continuum-bench experiment all physical
+continuum-bench experiment all physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 continuum-bench campaign --campaign-config configs/campaign.toml
 
 continuum-bench study trace --target physical \
@@ -77,25 +78,7 @@ Category/policy/query cost files are written below
 `outputs/study/physical-cost/category-cost/`. This analysis is not included in
 `physical all` or `load physical`; it consumes the load event dataset.
 
-## C. Independent semantic-product block
-
-```bash
-continuum-smoke-engines
-continuum-bench engines cumulative
-continuum-bench engines scalability
-continuum-bench engines all
-continuum-bench engines plot
-continuum-bench engines plot --plot-suite cumulative
-continuum-bench engines plot --plot-suite scalability
-```
-
-Start the native RDFLib, Jena, RDF4J and Oxigraph services first. Each engine
-command discovers these services and runs the selected benchmark. It
-is distinct from `owl-validate`, which runs HermiT, Openllet, JFact and
-Konclude as OWL consistency validators. `engines plot` refuses partial product
-summaries, so all four names are guaranteed to appear in a valid figure.
-
-## D. Individual monitoring blocks
+## C. Individual monitoring blocks
 
 ```bash
 continuum-bench physical cumulative --layout distributed --ssh-user pi
@@ -104,7 +87,7 @@ continuum-bench physical scalability --layout distributed --ssh-user pi
 
 Replace `distributed` with `replicated` for the replication baseline.
 
-## E. Individual load dimensions
+## D. Individual load dimensions
 
 ```bash
 continuum-bench load physical --dimension events_per_second
@@ -120,11 +103,11 @@ Select one named configuration with
 ## F. Individual scientific experiments
 
 ```bash
-
-
 continuum-bench experiment scale-out physical
 continuum-bench experiment reasoning-hardware physical
 continuum-bench experiment distributed-ontology physical
+continuum-bench experiment distributed-reasoning-scalability physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 ```
 
 ## G. Custom configuration files
@@ -151,7 +134,7 @@ continuum-bench --unlimited --repetitions 5 suite
 
 The first command records the plan without contacting workers. The second runs
 software/semantic checks, worker startup, both monitoring layouts, load, all
-three experiments, the full ten-axis campaign and PNG reporting sequentially.
+four experiments, the full ten-axis campaign and PNG reporting sequentially.
 Each run gets its own `outputs/suites/<UTC-time>-<id>/` directory and logs.
 Native semantic-product benchmarks and study traces remain separate commands.
 
@@ -176,7 +159,8 @@ regression coverage, cancellation and output contracts.
 continuum-bench --unlimited physical all --layout distributed
 continuum-bench --unlimited physical all --layout replicated
 continuum-bench --unlimited load physical
-continuum-bench --unlimited experiment all physical
+continuum-bench --unlimited experiment all physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 continuum-bench --unlimited campaign --campaign-config configs/campaign.toml
 continuum-bench --unlimited campaign --campaign-config configs/campaign.toml --axis policies --axis query_complexity
 continuum-bench --timeout-seconds 6 --unlimited --repetitions 1 load physical --load-config configs/load-smoke.toml --output-dir outputs/audit/unlimited-load

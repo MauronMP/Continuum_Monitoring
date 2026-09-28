@@ -9,7 +9,7 @@ import tomllib
 def test_reasoner_pom_isolates_java_dependency_trees(root):
     pom = (root / "tools/owl/pom.xml").read_text(encoding="utf-8")
 
-    for profile in ("hermit", "openllet", "jfact"):
+    for profile in ("hermit", "openllet", "jfact", "elk"):
         assert f"<id>{profile}</id>" in pom
     common = pom.split("<profiles>", maxsplit=1)[0]
     assert "org.semanticweb.hermit" not in common
@@ -23,6 +23,13 @@ def test_reasoner_pom_isolates_java_dependency_trees(root):
     assert "<version>5.1.0</version>" in jfact_profile
     assert "<artifactId>guava</artifactId>" in jfact_profile
     assert "<version>30.1-jre</version>" in jfact_profile
+    elk_profile = pom.split("<id>elk</id>", maxsplit=1)[1].split(
+        "</profile>", maxsplit=1
+    )[0]
+    assert "<artifactId>owlapi-distribution</artifactId>" in elk_profile
+    assert "<version>4.1.3</version>" in elk_profile
+    assert "<artifactId>guice</artifactId>" in elk_profile
+    assert "<version>5.1.0</version>" in elk_profile
 
 
 def test_konclude_wrapper_rejects_help_only_invocation(root):
@@ -48,6 +55,11 @@ def test_konclude_configuration_runs_a_bounded_consistency_operation(root):
         config = tomllib.load(handle)
 
     konclude = config["reasoners"]["konclude"]
+    assert len(config["validation"]["ontology_files"]) == 14
+    assert not any(
+        "/legacy/" in path
+        for path in config["validation"]["ontology_files"]
+    )
     assert konclude["command"][2:6] == ["consistency", "-w", "AUTO", "-i"]
     assert konclude["timeout_seconds"] > 0
 

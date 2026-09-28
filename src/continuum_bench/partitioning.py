@@ -9,10 +9,12 @@ import json
 from pathlib import Path
 import re
 import tomllib
+from time import perf_counter_ns
 from typing import Iterable
 
-from rdflib import Graph, Namespace, RDF, URIRef
-from rdflib.namespace import FOAF, OWL
+from rdflib import Graph, Literal, Namespace, RDF, URIRef
+from rdflib.namespace import FOAF, OWL, XSD
+from rdflib.compare import to_isomorphic
 
 from .config import BenchmarkConfig
 from .ontology import load_graph
@@ -83,6 +85,7 @@ _USER_COMPONENT_PREDICATES = {
     EX.hasConsentRecord,
     EX.consentSubject,
     EX.hasIdentifier,
+    EX.usesIdentifier,
     EX.evaluationUser,
     EX.hasAuthorizationDecision,
     EX.basedOnConsentRecord,
@@ -154,6 +157,9 @@ class FragmentSet:
     reference_triples: int
     synthetic_triples: int
     sensitive_resources: frozenset[object]
+    padding_triples: int = 0
+    logical_graph_digest: str = ""
+    logical_graph_digest_ms: float = 0.0
 
     def union(self) -> Graph:
         graph = Graph()
@@ -551,6 +557,9 @@ def build_fragments(
     seed: int | None = None,
     *,
     topology: Topology | None = None,
+    target_triples: int = 0,
+    padding_mode: str = "neutral",
+    validate_graph_digest: bool = True,
 ) -> FragmentSet:
     """Build one deterministic fragment per configured active node."""
     topology = _resolve_topology(config, topology)
@@ -579,6 +588,42 @@ def build_fragments(
     for role in all_nodes:
         _merge(graphs[role], references[role])
         _merge(graphs[role], synthetic[role])
+    logical = FragmentSet(
+        graphs=graphs,
+        substrate_triples=len(logical_substrate),
+        substrate_triples_by_role={role: len(graph) for role, graph in substrates.items()},
+        placement_profiles={role: str(placement[topology.node(role).tier]["profile"]) for role in all_nodes},
+        reference_triples=len(reference), synthetic_triples=synthetic_count,
+        sensitive_resources=reference_sensitive | synthetic_sensitive,
+    ).union()
+    if target_triples and target_triples < len(logical):
+        raise ValueError(
+            f"target_triples={target_triples} is below distributed logical size={len(logical)}"
+        )
+    if padding_mode not in {"neutral", "semantic"}:
+        raise ValueError("padding_mode must be neutral or semantic")
+    padding_count = max(target_triples - len(logical), 0) if target_triples else 0
+    padding_nodes = authority_nodes if padding_mode == "semantic" else all_nodes
+    for index in range(padding_count):
+        role = padding_nodes[index % len(padding_nodes)]
+        subject = SYN[f"padding-{index:09d}"]
+        triple = (
+            (subject, RDF.type, EX.User)
+            if padding_mode == "semantic"
+            else (subject, SYN["benchmarkPayload"], Literal(index, datatype=XSD.integer))
+        )
+        graphs[role].add(triple)
+    logical_graph_digest = ""
+    logical_graph_digest_ms = 0.0
+    if validate_graph_digest:
+        logical_union = FragmentSet(
+            graphs=graphs, substrate_triples=0, substrate_triples_by_role={},
+            placement_profiles={}, reference_triples=0, synthetic_triples=0,
+            sensitive_resources=frozenset(),
+        ).union()
+        digest_started = perf_counter_ns()
+        logical_graph_digest = str(to_isomorphic(logical_union).graph_digest())
+        logical_graph_digest_ms = (perf_counter_ns() - digest_started) / 1_000_000
     return FragmentSet(
         graphs=graphs,
         substrate_triples=len(logical_substrate),
@@ -592,6 +637,9 @@ def build_fragments(
         reference_triples=len(reference),
         synthetic_triples=synthetic_count,
         sensitive_resources=reference_sensitive | synthetic_sensitive,
+        padding_triples=padding_count,
+        logical_graph_digest=logical_graph_digest,
+        logical_graph_digest_ms=logical_graph_digest_ms,
     )
 
 
@@ -721,7 +769,7 @@ def write_fragments(
     return paths
 
 
-FRAGMENT_CONTRACT = "continuum-distributed-rdf-fragment-v1"
+FRAGMENT_CONTRACT = "continuum-distributed-rdf-fragment-v3"
 
 
 def _fragment_hash(payload: dict) -> str:
@@ -739,6 +787,10 @@ def serialize_fragment(
     The checksum binds content and metadata, but is not authentication.
     """
     graph = fragments.graphs[role]
+    logical_digest = getattr(fragments, "logical_graph_digest", "")
+    if not logical_digest:
+        source = fragments.union() if hasattr(fragments, "union") else graph
+        logical_digest = str(to_isomorphic(source).graph_digest())
     payload = {
         "contract": FRAGMENT_CONTRACT, "node_id": role,
         "users": users, "seed": seed, "format": "nt",
@@ -747,6 +799,9 @@ def serialize_fragment(
         "local_substrate_triples": fragments.substrate_triples_by_role[role],
         "reference_triples": fragments.reference_triples,
         "synthetic_triples": fragments.synthetic_triples,
+        "padding_triples": getattr(fragments, "padding_triples", 0),
+        "logical_graph_digest": logical_digest,
+        "logical_graph_digest_ms": float(getattr(fragments, "logical_graph_digest_ms", 0.0)),
         "profile": fragments.placement_profiles[role],
     }
     payload["sha256"] = _fragment_hash(payload)
@@ -768,11 +823,15 @@ def deserialize_fragment(
     if payload.get("sha256") != _fragment_hash(payload):
         raise ValueError("Distributed fragment hash mismatch")
     for field in ("triples", "substrate_triples", "local_substrate_triples",
-                  "reference_triples", "synthetic_triples"):
+                  "reference_triples", "synthetic_triples", "padding_triples"):
         if type(payload.get(field)) is not int or payload[field] < 0:
             raise ValueError(f"Invalid fragment metadata: {field}")
     if not isinstance(payload.get("data"), str) or not isinstance(payload.get("profile"), str):
         raise ValueError("Invalid fragment data or profile")
+    if not isinstance(payload.get("logical_graph_digest"), str):
+        raise ValueError("Invalid logical graph digest")
+    if not isinstance(payload.get("logical_graph_digest_ms"), (int, float)) or payload["logical_graph_digest_ms"] < 0:
+        raise ValueError("Invalid logical graph digest duration")
     graph = Graph().parse(data=payload["data"], format="nt")
     if len(graph) != payload["triples"]:
         raise ValueError("Distributed fragment triple count mismatch")
@@ -783,4 +842,7 @@ def deserialize_fragment(
         reference_triples=payload["reference_triples"],
         synthetic_triples=payload["synthetic_triples"],
         sensitive_resources=frozenset(),
+        padding_triples=payload["padding_triples"],
+        logical_graph_digest=payload["logical_graph_digest"],
+        logical_graph_digest_ms=float(payload["logical_graph_digest_ms"]),
     )

@@ -32,11 +32,14 @@ def fixture():
 
 
 def test_public_defaults_and_contracts():
-    assert available_reasoners() == ("rdfs", *NAMES)
+    assert available_reasoners() == (
+        "none", "rdfs", "owlrl", "rdfs_owlrl", "elk", *NAMES,
+    )
     assert reasoner_contract("rdfs") == REASONING_CONTRACT
     assert {reasoner_contract(n) for n in NAMES} == {"named-class-individual-v1"}
     assert native.NativeOWLReasoner("hermit").timeout is None
     assert materialize(Graph(), "owlrl").graph is not None
+    assert reasoner_contract("elk") == "named-class-individual-v1"
 
 
 @pytest.mark.parametrize("name", NAMES)

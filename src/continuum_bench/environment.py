@@ -65,7 +65,6 @@ def installed_versions() -> dict[str, str]:
         "rdflib",
         "owlrl",
         "pyshacl",
-        "pyoxigraph",
         "numpy",
         "matplotlib",
     ):
@@ -101,7 +100,6 @@ def project_checks(root: Path) -> list[Check]:
         "configs/benchmark.toml",
         "configs/owl-reasoners.toml",
         "configs/topologies/physical/topology.toml",
-        "engine-service/pom.xml",
         "queries/catalog.csv",
         "queries/execution-plan.toml",
         "ontology/core/schema.ttl",

@@ -12,6 +12,7 @@ from continuum_bench.queries import execute_query_detailed, load_catalog
 from continuum_bench.distributed import Endpoint
 from continuum_bench.distributed_ontology import _sources
 from continuum_bench.synthetic import add_synthetic_data
+from continuum_bench.topology import load_topology
 
 
 EX = Namespace("http://example.org/smartcity#")
@@ -27,7 +28,7 @@ def test_fragments_reconstruct_canonical_graph(config):
     fragments = build_fragments(config, 5)
 
     assert set(fragments.graphs) == {
-        "cloud", "fog", "edge1", "edge2", "edge3"
+        "cloud", "fog", "mist", "edge1", "edge2", "edge3"
     }
     assert isomorphic(fragments.union(), expected)
 
@@ -69,7 +70,7 @@ def test_reference_links_to_private_objects_stay_at_their_authority(config):
     assert any("evaluatesNode" in violation for violation in violations)
 
 
-def test_q17_and_q20_edge_union_matches_canonical(config):
+def test_q17_and_q20_authority_union_matches_canonical(config):
     users = 10
     canonical = load_graph(
         config.resolve(path) for path in config.ontology_files
@@ -86,13 +87,13 @@ def test_q17_and_q20_edge_union_matches_canonical(config):
 
     for query_id in ("BASE-Q17", "BASE-Q20"):
         expected = execute_query_detailed(canonical, specs[query_id])
-        edge_results = [
+        authority_results = [
             execute_query_detailed(fragments.graphs[role], specs[query_id])
-            for role in ("edge1", "edge2", "edge3")
+            for role in ("mist", "edge1", "edge2", "edge3")
         ]
         merged_keys = {
             key
-            for result in edge_results
+            for result in authority_results
             for key in result.result_keys
         }
 
@@ -169,8 +170,18 @@ def test_v3_execution_plan_preserves_all_canonical_results(config):
 
     for spec in specs:
         expected = execute_query_detailed(canonical, spec)
+        topology = load_topology(
+            config.resolve(config.topology_file),
+            "physical",
+        )
         endpoints = [
-            Endpoint(f"http://{role}", role)
+            Endpoint(
+                f"http://{role}",
+                role,
+                tier=topology.node(role).tier,
+                authority=topology.node(role).authority,
+                categories=topology.node(role).categories,
+            )
             for role in fragments.graphs
         ]
         roles = tuple(source.role for source in _sources(spec, endpoints))

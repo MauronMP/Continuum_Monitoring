@@ -34,6 +34,114 @@ def test_curves_preserve_zero_measurements_and_png_only(root,tmp_path):
     assert Path(report.figures[0]).suffix=='.png'
 
 
+def test_progression_figure_requires_two_distinct_completed_x_values(root,tmp_path):
+    report=Report(root,tmp_path,tmp_path/'paper')
+    rows=[
+        {'status':'completed','x':'1','cpu':'1','reasoner':'rdfs'},
+        {'status':'completed','x':'1','cpu':'2','reasoner':'rdfs'},
+    ]
+    report.curves(
+        rows,
+        'x',
+        [('cpu','CPU',1)],
+        'underpowered-scale-out',
+        min_distinct_x=2,
+    )
+    assert not report.figures
+    assert 'suppressed because only 1 distinct completed x value' in report.findings[0]
+
+
+def test_rejected_report_retains_only_integrity_diagnostics(root,tmp_path):
+    report=Report(root,tmp_path,tmp_path/'paper')
+    report.figures=[
+        str(report.output/'coverage-and-integrity/execution-coverage.png'),
+        str(report.output/'queries/expensive-queries-distributed.png'),
+    ]
+    suppressed=report.apply_publication_gate({
+        'accepted_for_performance_claims':False,
+    })
+    assert [Path(path).stem for path in report.figures] == ['execution-coverage']
+    assert [Path(path).stem for path in suppressed] == [
+        'expensive-queries-distributed'
+    ]
+
+
+def test_rejected_report_removes_derived_performance_tables(root, tmp_path):
+    report=Report(root,tmp_path,tmp_path/'paper')
+    report.output.mkdir(parents=True, exist_ok=True)
+    for name in ('execution-coverage.csv', 'data-integrity.csv',
+                 'query-ranking.csv', 'placement-comparison.csv'):
+        (report.output/name).write_text('value\n1\n')
+    report.figures=[
+        str(report.output/'coverage-and-integrity/execution-coverage.png')
+    ]
+    report.statistics=[
+        {'figure':'execution-coverage', 'median':1},
+        {'figure':'placement-scalability-rdfs', 'median':2},
+    ]
+
+    suppressed=report.apply_table_gate({
+        'accepted_for_performance_claims':False,
+    })
+
+    assert {Path(path).name for path in suppressed} == {
+        'query-ranking.csv', 'placement-comparison.csv'
+    }
+    assert (report.output/'execution-coverage.csv').is_file()
+    assert (report.output/'data-integrity.csv').is_file()
+    assert report.statistics == [
+        {'figure':'execution-coverage', 'median':1}
+    ]
+
+
+def test_png_quality_audit_tracks_only_existing_nonblank_pngs(root, tmp_path):
+    import json
+    from PIL import Image, ImageDraw
+
+    report=Report(root,tmp_path,tmp_path/'paper')
+    path=report.output/'coverage-and-integrity/diagnostic.png'
+    path.parent.mkdir(parents=True,exist_ok=True)
+    image=Image.new('RGB',(320,240),'white')
+    ImageDraw.Draw(image).rectangle((20,20,300,220),fill='green')
+    image.save(path)
+
+    audit_path=Path(report.write_png_quality_audit())
+    rows=json.loads(audit_path.read_text())
+
+    assert len(rows) == 1
+    assert rows[0]['path'] == 'coverage-and-integrity/diagnostic.png'
+    assert rows[0]['width'] == 320
+    assert rows[0]['height'] == 240
+    assert rows[0]['colors_sampled'] >= 2
+    assert rows[0]['near_blank'] is False
+
+
+def test_report_rejects_stale_release_and_topology(root, tmp_path):
+    import json
+    metadata = tmp_path/'load/metadata.json'
+    metadata.parent.mkdir(parents=True)
+    metadata.write_text(json.dumps({
+        'runtime_versions': {'continuum-ontology-benchmark': '0.4.0'},
+        'available_endpoints': [{'url': f'http://node-{i}'} for i in range(5)],
+    }))
+    report = Report(root, tmp_path, tmp_path/'paper')
+    assert report.evidence_context['version_compatible'] is False
+    assert report.evidence_context['topology_compatible'] is False
+    assert report.evidence_context['current_topology_node_count'] == 6
+
+
+def test_evidence_readiness_is_a_normalized_png(root, tmp_path):
+    report = Report(root, tmp_path, tmp_path/'paper')
+    report.evidence_readiness(
+        {'physical/load': [
+            {'status': 'completed'}, {'status': 'timeout'},
+            {'status': 'skipped_after_timeout'},
+        ]},
+        {'status': 'rejected', 'blocking_findings': ['incomplete']},
+    )
+    assert Path(report.figures[0]).name == 'evidence-readiness.png'
+
+
 def test_suite_detects_incomplete_rows_even_when_process_succeeds(root,tmp_path,monkeypatch):
     from types import SimpleNamespace
     from continuum_bench.monitoring import suite
@@ -99,12 +207,77 @@ def test_publication_reads_large_federated_result_bags(tmp_path):
     assert len(read_csv(path)[0]['result_keys']) == 200000
 
 
+def test_empty_generated_csv_removes_stale_file(tmp_path):
+    from continuum_bench.monitoring.publication import write_csv
+
+    path=tmp_path/'stale.csv'
+    path.write_text('old\nvalue\n')
+
+    write_csv(path, [])
+
+    assert not path.exists()
+
+
+def test_quality_figures_expose_semantic_failures_and_capacity(root, tmp_path):
+    import matplotlib.pyplot as plt
+    validation = tmp_path/'monitoring/distributed/scalability/result-validation.csv'
+    validation.parent.mkdir(parents=True)
+    validation.write_text(
+        'reasoner,query_id,valid\n'
+        'rdfs,Q1,True\n'
+        'konclude,Q1,False\n'
+    )
+    report = Report(root, tmp_path, tmp_path/'paper')
+    captured = []
+    report.save = lambda fig, name, caption: (captured.append(name), plt.close(fig))
+    datasets = {
+        'distributed/scalability': [
+            {'reasoner':'rdfs','status':'completed','synthetic_users':'10'},
+            {'reasoner':'konclude','status':'invalid_results','synthetic_users':'10'},
+        ],
+        'replicated/scalability': [
+            {'reasoner':'rdfs','status':'completed','synthetic_users':'100'},
+        ],
+        'distributed/cumulative': [
+            {'reasoner':'rdfs','status':'completed','stage':'16'},
+        ],
+        'replicated/cumulative': [
+            {'reasoner':'rdfs','status':'completed','stage':'16'},
+        ],
+        'physical/load': [
+            {'reasoner':'rdfs','dimension':'users','status':'timeout'},
+            {'reasoner':'rdfs','dimension':'users','status':'completed'},
+        ],
+    }
+    report.quality_figures(datasets)
+    assert {'semantic-equivalence-coverage', 'reasoner-capacity-frontier',
+            'load-completion-matrix'} <= set(captured)
+
+
+def test_policy_figures_skip_profiles_without_completed_requests(root, tmp_path):
+    import matplotlib.pyplot as plt
+    events = tmp_path/'load/event-runs.csv'
+    events.parent.mkdir(parents=True)
+    events.write_text(
+        'profile,reasoner,query_id,processed,engine_duration_ms,process_cpu_ms,current_rss_kib\n'
+        'p,rdfs,BASE-Q01,true,2,1,1024\n'
+        'p,hermit,BASE-Q01,false,,,,\n'
+    )
+    report = Report(root, tmp_path, tmp_path/'paper')
+    captured=[]
+    report.save=lambda fig,name,caption:(captured.append(name),plt.close(fig))
+    report.policy_costs()
+    assert 'category-cost-rdfs' in captured
+    assert 'category-cost-hermit' not in captured
+    assert 'category-tail-and-total-hermit' not in captured
+
+
 def test_comparisons_render_all_observed_profiles_for_current_layouts(root, tmp_path):
     import matplotlib.pyplot as plt
     from continuum_bench.monitoring.comparative_reporting import generate_comparisons
     from continuum_bench.monitoring.report_profiles import CURRENT_PROFILES, LABELS
     report = Report(root, tmp_path, tmp_path/'paper')
-    profiles = (*CURRENT_PROFILES, 'owlrl', 'rdfs_owlrl')
+    profiles = tuple(dict.fromkeys((*CURRENT_PROFILES, 'owlrl', 'rdfs_owlrl')))
     def read(path):
         if path.name == 'summary.csv':
             return [dict(reasoner=r, status='completed', synthetic_users='10', stage='1', repetition='1', total_wall_ms='12') for r in profiles]
@@ -126,7 +299,7 @@ def test_comparisons_render_all_observed_profiles_for_current_layouts(root, tmp_
     assert {r['reasoner'] for r in rows} == set(profiles)
 
 
-def test_comparisons_accept_a_single_available_profile(root, tmp_path):
+def test_comparisons_do_not_claim_placement_with_one_layout(root, tmp_path):
     import matplotlib.pyplot as plt
     from continuum_bench.monitoring.comparative_reporting import generate_comparisons
     report = Report(root, tmp_path, tmp_path/'paper')
@@ -134,10 +307,11 @@ def test_comparisons_accept_a_single_available_profile(root, tmp_path):
                                if str(path).endswith('distributed/scalability/summary.csv') else [])
     report.save = lambda fig, *args: plt.close(fig)
     generate_comparisons(report)
-    rows = list(csv.DictReader((report.output/'placement-comparison.csv').open()))
-    assert len(rows) == 1
-    assert rows[0]['reasoner'] == 'hermit'
-    assert float(rows[0]['median']) == 0
+    assert not (report.output/'placement-comparison.csv').exists()
+    assert any(
+        'placement-scalability-hermit: suppressed' in finding
+        for finding in report.findings
+    )
 
 
 def test_suite_records_censoring_and_real_failures(root, tmp_path, monkeypatch):

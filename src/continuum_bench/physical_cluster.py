@@ -185,7 +185,7 @@ def load_physical_inventory(
 
 # Shared with tools/install_owl_reasoners.py. These files contain host-local
 # absolute Maven paths and must never be copied from the coordinator.
-_JAVA_REASONERS = ("hermit", "openllet", "jfact")
+_JAVA_REASONERS = ("hermit", "openllet", "jfact", "elk")
 _DL_ASSETS = ("tools/install_owl_reasoners.py", "tools/check_owl_consistency.py", "tools/owl")
 
 
@@ -284,7 +284,10 @@ def _run(command: list[str]) -> None:
     try:
         subprocess.run(command, check=True)
     except FileNotFoundError as error:
-        raise RuntimeError(f"Required command not installed: {command[0]}. Run 'python3 tools/doctor.py --physical'.") from error
+        raise RuntimeError(
+            f"Required command not installed: {command[0]}. "
+            "Run 'continuum-bench doctor --physical'."
+        ) from error
 
 
 def _ssh(target: str, *remote_command: str) -> list[str]:

@@ -29,6 +29,7 @@ FACTORIES = {
     "hermit": "org.semanticweb.HermiT.ReasonerFactory",
     "openllet": "openllet.owlapi.OpenlletReasonerFactory",
     "jfact": "uk.ac.manchester.cs.jfact.JFactFactory",
+    "elk": "org.semanticweb.elk.owlapi.ElkReasonerFactory",
 }
 LINK = "http://www.owllink.org/owllink#"
 OWL_NS = str(OWL)

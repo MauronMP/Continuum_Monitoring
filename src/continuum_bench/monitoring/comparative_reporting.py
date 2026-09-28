@@ -71,7 +71,7 @@ def generate_comparisons(report):
         report.findings.append(f"Matched node/category/query comparisons use synthetic_users={population:g} and profiles={comparable_reasoners}; excluded profiles without valid completed coverage in every layout={excluded}. Worker timings include routing and fan-out.")
         node_rows = []
         for layout in layouts:
-            filename = 'node-query-runs.csv' if layout in ('distributed', 'sharded') else 'query-runs.csv'
+            filename = 'node-query-runs.csv' if layout == 'distributed' else 'query-runs.csv'
             raw = report.read(report.inputs / f'monitoring/{layout}/scalability/{filename}')
             valid = {(r['reasoner'], r['repetition']) for r in summaries[layout, 'scalability']
                      if outcome(r) == 'completed' and number(r, 'synthetic_users') == population}
@@ -222,11 +222,28 @@ def generate_comparisons(report):
     for suite in ('scalability', 'cumulative'):
         xkey = 'synthetic_users' if suite == 'scalability' else 'stage'
         for reasoner in reasoners:
+            completed_by_layout = {
+                layout: [
+                    r for r in summaries[layout, suite]
+                    if outcome(r) == 'completed' and r['reasoner'] == reasoner
+                ]
+                for layout in layouts
+            }
+            common_x = set.intersection(*(
+                {number(r, xkey) for r in rows if number(r, xkey) is not None}
+                for rows in completed_by_layout.values()
+            )) if completed_by_layout else set()
+            if len(completed_by_layout) < 2 or not common_x:
+                report.findings.append(
+                    f'placement-{suite}-{reasoner}: suppressed because no '
+                    'completed x value is shared by both physical layouts.'
+                )
+                continue
             fig, axes = plt.subplots(1, 3, figsize=(16, 5))
             plotted = False
             for ax, metric, label in zip(axes, ['total_wall_ms','max_node_reasoning_ms','query_wall_ms'], ['Total wall time (s)','Critical reasoning time (s)','Query wall time (s)']):
                 for layout, marker in zip(layouts, ['o','s','^']):
-                    rows = [r for r in summaries[layout,suite] if outcome(r)=='completed' and r['reasoner']==reasoner]
+                    rows = completed_by_layout[layout]
                     points = summarize(rows, [xkey], metric)
                     points.sort(key=lambda p: float(p[xkey]))
                     if not points: continue

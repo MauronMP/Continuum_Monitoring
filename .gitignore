@@ -1,7 +1,6 @@
 # Machine-local configuration and secrets
 .env
 .env.*
-!.env.example
 *.local.toml
 configs/local/
 .runtime/

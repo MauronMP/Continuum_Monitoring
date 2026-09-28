@@ -21,7 +21,7 @@ def snapshot(root: Path, output: Path) -> dict:
         commit = subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True,stderr=subprocess.DEVNULL).strip()
     except (OSError,subprocess.CalledProcessError): commit = None
     dependencies = {}
-    for name in ('rdflib','owlrl','pyshacl','pyoxigraph','numpy','matplotlib'):
+    for name in ('rdflib','owlrl','pyshacl','numpy','matplotlib'):
         try: dependencies[name] = version(name)
         except PackageNotFoundError: dependencies[name] = None
     from .budget import execution_metadata

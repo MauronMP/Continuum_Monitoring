@@ -157,9 +157,9 @@ def load_config(path: str | Path) -> BenchmarkConfig:
 
 
 def _validate_benchmark(config: BenchmarkConfig) -> None:
-    from ..reasoners import available_reasoners
+    from ..reasoners import PHYSICAL_REASONERS
 
-    supported_reasoners = set(available_reasoners())
+    supported_reasoners = set(PHYSICAL_REASONERS)
     if not config.reasoners:
         raise ValueError("benchmark.reasoners cannot be empty")
     unknown_reasoners = sorted(set(config.reasoners) - supported_reasoners)

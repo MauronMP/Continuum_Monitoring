@@ -66,14 +66,16 @@ Choose the smallest family that answers the research question:
   volume/user growth under `distributed` or `replicated` placement.
 - Load benchmarks stress independent demand dimensions and collect
   request-level latency, throughput, loss, accuracy, recovery and resources.
-- Experiments isolate scale-out, hardware reasoning and genuinely distributed
-  ontology placement.
+- Experiments isolate scale-out, hardware reasoning, distributed ontology
+  placement and strong/weak distributed reasoning scalability.
 - Study commands generate reproducible workload/mobility traces and aggregate
   category, policy and query costs from measured event data.
 
 `physical all` runs cumulative and scalability suites. `load physical` runs
-all configured load profiles, and `experiment all physical` runs the three
-separate scientific experiments.
+all configured load profiles. `experiment all physical` runs all four
+scientific experiments when given
+`--distributed-reasoning-config configs/distributed-reasoning.toml`; complete
+suites add this option automatically.
 
 ## Run all physical tests
 
@@ -85,7 +87,7 @@ continuum-bench --unlimited --repetitions 5 suite
 ```
 
 The suite includes software/semantic checks, both monitoring layouts, load,
-three physical experiments, the ten-axis campaign and PNG reporting. It starts
+four physical experiments, the ten-axis campaign and PNG reporting. It starts
 already-installed workers and saves each run in a new directory under
 `outputs/suites`. Native engine comparisons and study traces remain separate.
 
@@ -111,14 +113,6 @@ record their execution policy explicitly. In bounded mode, timeouts are
 right-censored observations: they remain visible in coverage reporting and are
 not converted into zero latency. Compare completed physical observations with
 matching workloads and disclose node counts and placement layouts.
-
-RDFLib, Jena, RDF4J and Oxigraph are exercised without naming each engine:
-
-```bash
-continuum-smoke-engines
-continuum-bench engines all
-continuum-bench engines plot
-```
 
 ```bash
 continuum-bench report

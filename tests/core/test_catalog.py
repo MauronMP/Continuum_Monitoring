@@ -18,6 +18,7 @@ def test_catalog_contains_every_query_once(config):
         "authorities",
         "authority_key:http://example.org/smartcity#UserA",
         "authority_key:http://example.org/smartcity#UserB",
+        "authority_key:http://example.org/smartcity#UserD",
     }
     assert all(spec.purpose for spec in specs)
     assert all(spec.requirements for spec in specs)

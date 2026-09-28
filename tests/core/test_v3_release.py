@@ -1,4 +1,6 @@
 from collections import defaultdict
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
 import tomllib
 
 from rdflib import OWL, URIRef
@@ -10,7 +12,20 @@ from continuum_bench.specification import (
     acceptance_status,
     validate_release_contract,
 )
-from tools import migrate_assets
+
+
+def _load_migration_tool():
+    """Load the repository tool without depending on pytest's import path."""
+
+    path = Path(__file__).resolve().parents[2] / "tools/migrate_assets.py"
+    spec = spec_from_file_location("continuum_migrate_assets", path)
+    assert spec is not None and spec.loader is not None
+    module = module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+migrate_assets = _load_migration_tool()
 
 
 def test_v3_release_inventory_and_traceability(config):

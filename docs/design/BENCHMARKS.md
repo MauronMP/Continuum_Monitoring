@@ -36,8 +36,9 @@ metrics but are excluded from the confusion matrix.
 The deterministic schedule interleaves categories and rotates its start between
 repetitions, preventing a short low-rate profile from measuring only the first
 catalog category.
-The three experiments separately measure replicated query scale-out,
-reasoning by physical node hardware and authority-partitioned ontology execution.
+The four experiments separately measure replicated query scale-out,
+reasoning by physical node hardware, authority-partitioned ontology execution,
+and strong/weak distributed reasoning scalability.
 Reports include only physical observations and retain incomplete points in
 coverage tables. Layout comparisons require matched workloads and node counts.
 

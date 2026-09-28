@@ -1,4 +1,4 @@
-> Current five-reasoner deployment and timeout controls: [Physical reasoning](PHYSICAL_REASONING.md).
+> Current reasoning deployment and timeout controls: [Physical reasoning](PHYSICAL_REASONING.md).
 > Commands below use the current `distributed` layout. Historical result examples retain their original profiles.
 
 # Physical continuum user guide
@@ -31,7 +31,8 @@ continuum-smoke-physical-experiments
 continuum-bench physical all --layout distributed --ssh-user pi
 continuum-bench physical all --layout replicated --ssh-user pi
 continuum-bench load physical
-continuum-bench experiment all physical
+continuum-bench experiment all physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 
 continuum-bench study category-cost \
   --events outputs/load/event-runs.csv \
@@ -68,6 +69,7 @@ The current physical inventory uses Tailscale VPN addresses:
 | --- | --- | --- |
 | Cloud coordinator | `100.86.63.53` | `http://100.86.63.53:8391` |
 | Fog | `100.93.73.27` | `http://100.93.73.27:8391` |
+| Mist | `100.72.111.107` | `http://100.72.111.107:8391` |
 | Edge 1 | `100.101.178.35` | `http://100.101.178.35:8391` |
 | Edge 2 | `100.70.9.117` | `http://100.70.9.117:8391` |
 | Edge 3 | `100.121.135.60` | `http://100.121.135.60:8391` |
@@ -91,7 +93,10 @@ continuum-bench physical status --ssh-user pi
 
 `authorize` installs SSH keys so passwords are neither repeatedly requested nor
 stored in configuration. `deploy` creates the lightweight `.venv-node` suited
-to 32-bit Raspberry Pi workers and synchronizes the required project files.
+to the Raspberry Pi workers and synchronizes the required project files. The
+inventory records AArch64 hardware; health metadata separately records the
+observed machine string and process pointer width, because the current workers
+use a 32-bit `armhf` user space on an AArch64 kernel.
 
 ## Smoke tests
 
@@ -142,15 +147,18 @@ continuum-bench load physical --profile <profile-name>
 ## Complete experiment family
 
 ```bash
-continuum-bench experiment all physical
+continuum-bench experiment all physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 ```
 
-This is equivalent to running these three distinct experiments:
+This is equivalent to running these four distinct experiments:
 
 ```bash
 continuum-bench experiment scale-out physical
 continuum-bench experiment reasoning-hardware physical
 continuum-bench experiment distributed-ontology physical
+continuum-bench experiment distributed-reasoning-scalability physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 ```
 
 ## Mobility, costs and plots
@@ -243,7 +251,7 @@ continuum-bench --unlimited --repetitions 5 suite --dry-run
 continuum-bench --unlimited --repetitions 5 suite
 ```
 
-This includes both physical monitoring layouts, all load profiles, all three
+This includes both physical monitoring layouts, all load profiles, all four
 experiments, the ten-axis campaign, software/semantic checks and PNG reports.
 Worker startup uses the SSH settings in the physical inventory. Each run retains
 its own logs and results below `outputs/suites`. Strict external OWL validation

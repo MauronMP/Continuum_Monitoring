@@ -11,5 +11,6 @@
         <http://example.org/smartcity/modules/deployment>,
         <http://example.org/smartcity/modules/wellbeing>,
         <http://example.org/smartcity/modules/wellbeing-vocabulary> ;
-    ex:usesEntailmentProfile "rdfs" ;
+    # The benchmark selects the reasoner at runtime; this profile controls only
+    # the modules placed on edge authorities.
     owl:versionInfo "3.0.0" .

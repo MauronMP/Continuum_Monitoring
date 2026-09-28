@@ -12,6 +12,7 @@ def test_physical_inventory_has_expected_addresses(config):
     assert endpoints == [
         "http://100.86.63.53:8391",
         "http://100.93.73.27:8391",
+        "http://100.72.111.107:8391",
         "http://100.101.178.35:8391",
         "http://100.70.9.117:8391",
         "http://100.121.135.60:8391",

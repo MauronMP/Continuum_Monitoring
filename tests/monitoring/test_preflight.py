@@ -18,7 +18,7 @@ def test_repository_workloads_pass_capacity_preflight(config):
         config.root / "configs/experiments.toml"
     )
 
-    assert validate_load_workload(config, load)["targets_checked"] == 23
+    assert validate_load_workload(config, load)["targets_checked"] == 24
     assert validate_experiment_workload(
         config, experiments, "configs/experiments.toml"
     )["targets_checked"] == 16

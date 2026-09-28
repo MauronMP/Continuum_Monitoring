@@ -23,7 +23,7 @@ concurrency = 1
 
 [[axes]]
 name = "physical_nodes"
-values = [1, 2, 5]
+values = [1, 2, 6]
 [[axes]]
 name = "iot_devices"
 values = [2, 4]

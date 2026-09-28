@@ -1,9 +1,9 @@
 [experiment]
 repetitions = 3
-request_timeout_seconds = 45
-point_timeout_seconds = 60
-# Skip later sizes/repetitions in this experiment after a timeout. Set false to keep going.
-stop_after_timeout = true
+request_timeout_seconds = 300
+point_timeout_seconds = 900
+# Record a timed-out point and continue the remaining matrix.
+stop_after_timeout = false
 seed = 2026
 query_rounds = 3
 warmup_query_rounds = 1
@@ -12,7 +12,7 @@ warmup_query_rounds = 1
 users = 500
 target_triples = 50000
 rule_count = 25
-node_counts = [1, 3, 5]
+node_counts = [1, 3, 5, 6]
 padding_mode = "neutral"
 
 [reasoning_hardware]

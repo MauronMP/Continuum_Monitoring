@@ -20,6 +20,7 @@ def suite_plan(root, config, destination, *, patient=False, unlimited=False,
                keep_going=False, topology_file=None,
                load_config='configs/load-benchmark.toml',
                experiment_config='configs/experiments.toml',
+               distributed_reasoning_config='configs/distributed-reasoning.toml',
                campaign_config='configs/campaign.toml'):
     budget=timeout_seconds if timeout_seconds is not None else (3600 if patient else None)
     prefix=[sys.executable,'-m','continuum_bench','--config',str(config)]
@@ -61,7 +62,7 @@ def suite_plan(root, config, destination, *, patient=False, unlimited=False,
     if 'monitoring' in families:
         for layout in ('distributed','replicated'):add('monitoring-'+layout,['physical','all','--layout',layout,'--output-dir',str(destination/'monitoring')])
     if 'load' in families:add('load',['load','physical','--load-config',str(load_config),'--output-dir',str(destination/'load')])
-    if 'experiments' in families:add('experiments',['experiment','all','physical','--experiment-config',str(experiment_config),'--output-dir',str(destination/'experiments')])
+    if 'experiments' in families:add('experiments',['experiment','all','physical','--experiment-config',str(experiment_config),'--distributed-reasoning-config',str(distributed_reasoning_config),'--output-dir',str(destination/'experiments')])
     if 'campaign' in families:add('campaign',['campaign','--campaign-config',str(campaign_config),'--output-dir',str(destination/'campaign')])
     if 'report' in families:add('report',['report','--input-dir',str(destination),'--output-dir',str(destination/'report')])
     return steps
@@ -92,7 +93,9 @@ def run_suite(root,config,output,**options):
         step['status']='completed' if result.returncode==0 else 'failed'
         if step['name'] in roots:
             records=[]
-            for summary in roots[step['name']].rglob('summary.csv'):
+            summaries = list(roots[step['name']].rglob('summary.csv'))
+            summaries.extend(roots[step['name']].rglob('distributed-reasoning-summary.csv'))
+            for summary in summaries:
                 with summary.open(newline='') as handle: records.extend(csv.DictReader(handle))
             step['recorded_points']=len(records)
             step['incomplete_points']=sum(r.get('status')!='completed' for r in records)

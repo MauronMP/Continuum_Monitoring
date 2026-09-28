@@ -43,7 +43,7 @@ from ..queries import (
 from ..reasoners import materialize
 from ..specification import release_identity
 from .budget import execution_metadata, unlimited_execution
-from ..synthetic import add_synthetic_data
+from ..synthetic import add_synthetic_data, add_synthetic_rules, pad_to_target_triples
 from ..topology import TIER_ORDER, authority_index
 
 
@@ -115,6 +115,9 @@ def _prepare(
     seed: int,
     *,
     timeout_seconds: float | None = None,
+    target_triples: int = 0,
+    padding_mode: str = "neutral",
+    validate_graph_digest: bool = True,
 ) -> tuple[float, dict[str, dict[str, Any]]]:
     # Placement and serialization are part of preparation wall time, just as
     # replicated worker graph construction is included in its HTTP phase.
@@ -147,18 +150,27 @@ def _prepare(
             for item in endpoints
         ),
     )
+    partition_started = monotonic()
     with local_phase_timeout(remaining_seconds(started, point_budget)):
-        fragments = build_fragments(config, users, seed, topology=topology)
+        fragments = build_fragments(
+            config, users, seed, topology=topology,
+            target_triples=target_triples, padding_mode=padding_mode,
+            validate_graph_digest=validate_graph_digest,
+        )
+        partition_ms = (monotonic() - partition_started) * 1000
+        serialization_started = monotonic()
         payloads = {
             endpoint.url: {
                 "reasoner": reasoner, "users": users, "seed": seed,
                 "mode": "distributed",
+                "validate_graph_digest": validate_graph_digest,
                 "fragment": serialize_fragment(
                     fragments, endpoint.role, users=users, seed=seed,
                 ),
             }
             for endpoint in endpoints
         }
+        serialization_ms = (monotonic() - serialization_started) * 1000
     placement_ms = (monotonic() - started) * 1000
     timeout = min(
         remaining_seconds(started, point_budget),
@@ -176,7 +188,7 @@ def _prepare(
         f"nodes={len(endpoints)} placement_ms={placement_ms:.2f} "
         f"request_limit_s={timeout:.1f}", flush=True,
     )
-    _, prepared = _parallel(
+    transport_wall_ms, prepared = _parallel(
         endpoints, "/prepare", payloads, phase="distributed-prepare",
         timeout=timeout, retries=transport.request_retries,
     )
@@ -190,6 +202,9 @@ def _prepare(
         ):
             raise ValueError(f"Worker {endpoint.role!r} did not confirm its assigned fragment")
         response["coordinator_placement_ms"] = placement_ms
+        response["partition_ms"] = partition_ms
+        response["serialization_ms"] = serialization_ms
+        response["transport_wall_ms"] = transport_wall_ms
         response["placement_validation"] = "observed-worker-fragment-match"
     return (monotonic() - started) * 1000, prepared
 
@@ -240,7 +255,9 @@ def _query(
                 "query_ids": query_ids,
                 "include_result_keys": True,
                 "phase_timeout_seconds": (
-                    request_timeout
+                    0
+                    if unlimited_execution()
+                    else request_timeout
                     - transport.worker_timeout_margin_seconds
                 ),
             }
@@ -384,11 +401,17 @@ def _merge_responses(
     return merged, node_rows
 
 
-def _full_source(config: BenchmarkConfig, users: int) -> Graph:
+def _full_source(
+    config: BenchmarkConfig, users: int, *, seed: int | None = None,
+    target_triples: int = 0, rule_count: int = 0,
+    padding_mode: str = "neutral",
+) -> Graph:
     graph = load_graph(
         config.resolve(path) for path in config.ontology_files
     )
-    add_synthetic_data(graph, users, config.seed)
+    add_synthetic_data(graph, users, config.seed if seed is None else seed)
+    add_synthetic_rules(graph, rule_count)
+    pad_to_target_triples(graph, target_triples, mode=padding_mode)
     return graph
 
 
@@ -397,8 +420,16 @@ def _baseline_counts(
     specs: list[QuerySpec],
     reasoner: str,
     users: int,
+    *,
+    seed: int | None = None,
+    target_triples: int = 0,
+    rule_count: int = 0,
+    padding_mode: str = "neutral",
 ) -> dict[str, tuple[int, bool | None, str]]:
-    reasoning = materialize(_full_source(config, users), reasoner)
+    reasoning = materialize(_full_source(
+        config, users, seed=seed, target_triples=target_triples,
+        rule_count=rule_count, padding_mode=padding_mode,
+    ), reasoner)
     return {
         spec.id: (
             execution.measurement.result_count,

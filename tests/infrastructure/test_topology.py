@@ -7,8 +7,10 @@ def test_physical_manifest_loads_layered_nodes(config):
     assert set(manifest.topologies) == {"physical"}
     topology = manifest.topology("physical")
     assert topology.kind == "physical"
-    assert len(topology.active_nodes) == 5
+    assert len(topology.active_nodes) == 6
     assert topology.node("cloud").local is True
+    assert topology.node("mist").host == "100.72.111.107"
+    assert topology.node("mist").authority is True
     assert topology.node("edge1").authority is True
 
 
@@ -32,6 +34,7 @@ def test_topology_public_shape_is_physical_only(config):
 
     assert value["name"] == "physical"
     assert value["tier_counts"]["cloud"] == 1
+    assert value["tier_counts"]["mist"] == 1
     assert value["tier_counts"]["edge"] == 3
     assert "fingerprint" in value
 

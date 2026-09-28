@@ -7,12 +7,20 @@ from continuum_bench.experiment_config import (
 )
 
 
+def test_full_experiment_config_uses_non_pruning_production_budgets(config):
+    workload = load_experiment_config(config.root / "configs/experiments.toml")
+
+    assert workload.request_timeout_seconds == 300
+    assert workload.point_timeout_seconds == 900
+    assert workload.stop_after_timeout is False
+
+
 def test_experiment_smoke_config_defines_all_three_families(config):
     workload = load_experiment_config(
         config.root / "configs/experiments-smoke.toml"
     )
 
-    assert workload.scale_out_node_counts == (1, 3, 5)
+    assert workload.scale_out_node_counts == (1, 3, 6)
     assert {item.dimension for item in workload.reasoning_profiles} == {
         "target_triples",
         "rule_count",

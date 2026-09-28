@@ -19,7 +19,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / ".runtime"
-JAVA_REASONERS = ("hermit", "openllet", "jfact")
+JAVA_REASONERS = ("hermit", "openllet", "jfact", "elk")
 CLASSPATH_FILES = {
     name: RUNTIME / f"owl-validation-{name}.classpath"
     for name in JAVA_REASONERS
@@ -188,6 +188,7 @@ def write_environment(classpaths: dict[str, str], konclude: str) -> None:
         f"export CONTINUUM_HERMIT_CLASSPATH={shlex.quote(classpaths['hermit'])}",
         f"export CONTINUUM_OPENLLET_CLASSPATH={shlex.quote(classpaths['openllet'])}",
         f"export CONTINUUM_JFACT_CLASSPATH={shlex.quote(classpaths['jfact'])}",
+        f"export CONTINUUM_ELK_CLASSPATH={shlex.quote(classpaths['elk'])}",
     ]
     if konclude.startswith("native:"):
         lines.append(

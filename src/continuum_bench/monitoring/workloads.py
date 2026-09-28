@@ -15,7 +15,7 @@ NS = Namespace('urn:continuum:campaign:')
 def build_workload(workload: Workload, seed: int, owner: int = 0, owners: int = 1) -> Graph:
     graph = Graph()
     graph.bind('bench', NS)
-    # Every shard shares the schema. Data and all of its join paths have one owner.
+    # Every partition shares the schema. Data and its join paths have one owner.
     for kind in ('User', 'IoTDevice', 'Individual', 'Requirement', 'Policy'):
         graph.add((NS[kind], RDFS.subClassOf, NS.Record))
     index = 0

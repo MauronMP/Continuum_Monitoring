@@ -2,7 +2,8 @@
 
 | Need | Verifiable artefact |
 |---|---|
-| Complete ontology | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |
+| Complete release migration source | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |
+| Active runtime ontology | 14 files listed in `configs/benchmark.toml` |
 | Modular continuum core | `ontology/core`, `ontology/modules` |
 | Wellbeing extension | `ontology/domains/wellbeing` |
 | Closed-world constraints | `ontology/shapes` and violation queries |
@@ -18,15 +19,15 @@
 | Release contract | `continuum_bench.specification` |
 | Synthetic data | `continuum_bench.synthetic` |
 | Cumulative/scalability | `continuum_bench.monitoring` shared suites |
-| Multidimensional load | `continuum_bench.load_benchmark` |
-| Policy cost and mobility study | `continuum_bench.study` |
-| Physical experiments | `continuum_bench.experiments` |
+| Multidimensional load | `continuum_bench.monitoring.load_benchmark` |
+| Policy cost and mobility study | `continuum_bench.monitoring.study` |
+| Physical experiments | `continuum_bench.monitoring.experiments` |
+| Distributed reasoning matrix | `continuum_bench.monitoring.distributed_reasoning_scalability` |
 | Reasoner profiles | `continuum_bench.reasoners` |
-| Independent semantic products | `continuum_bench.engines`, `engine-service` |
 | External OWL consistency | `continuum_bench.owl_validation`, `tools/owl` |
 | Physical lifecycle | `continuum_bench.physical_cluster` |
 | Result equivalence | canonical digest and `result-validation.csv` |
-| Publication figures | load, experiment and engine reporting modules |
+| Publication figures | physical load, experiment and publication reporting modules |
 
 The generated references are derived from executable RDF and CSV rather than
 maintained as independent prose copies:

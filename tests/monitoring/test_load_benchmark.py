@@ -67,7 +67,7 @@ def test_full_load_config_covers_all_independent_variables_and_high_scale(
     assert max(profile.users for profile in workload.profiles) >= 10000
     assert max(profile.target_triples for profile in workload.profiles) >= 500000
     assert max(profile.rule_count for profile in workload.profiles) >= 250
-    assert max(profile.node_count for profile in workload.profiles) == 5
+    assert max(profile.node_count for profile in workload.profiles) == 6
 
     selected = select_load_profiles(
         workload,
@@ -75,6 +75,11 @@ def test_full_load_config_covers_all_independent_variables_and_high_scale(
         names=["eps-2500"],
     )
     assert [profile.name for profile in selected.profiles] == ["eps-2500"]
+    assert workload.request_timeout_seconds == 300
+    assert workload.point_timeout_seconds == 900
+    assert workload.recovery_timeout_seconds == 300
+    assert workload.stop_after_timeout is False
+    assert selected.stop_after_timeout is False
 
 
 def test_load_workload_covers_every_query_category(config):

@@ -13,6 +13,7 @@ outputs/
 │   ├── scale-out/
 │   ├── reasoning-hardware/
 │   ├── distributed-ontology/
+│   ├── distributed-reasoning-scalability/
 │   ├── analysis/
 │   └── figures/
 ├── campaign/
@@ -30,22 +31,28 @@ Edit [`configs/benchmark.toml`](../../configs/benchmark.toml):
 
 ```toml
 [distributed]
-request_timeout_seconds = 60
+request_timeout_seconds = 300
 request_retries = 0
 worker_timeout_margin_seconds = 2
 
 [limits]
 timeout_mode = "bounded"
-phase_timeout_seconds = 60
-point_timeout_seconds = 90
+phase_timeout_seconds = 300
+point_timeout_seconds = 900
 consecutive_timeout_threshold = 1
-skip_repetitions_after_timeout = true
-skip_larger_sizes_after_timeout = true
-skip_cumulative_stages_after_timeout = true
-stop_scaling_after_timeout = true
+skip_repetitions_after_timeout = false
+skip_larger_sizes_after_timeout = false
+skip_cumulative_stages_after_timeout = false
+stop_scaling_after_timeout = false
 ```
 
-The values are seconds. `request_timeout_seconds` bounds one HTTP request. `phase_timeout_seconds` bounds a benchmark phase. `point_timeout_seconds` bounds one configured point. The three `skip_*` switches decide which later observations become `skipped_after_timeout` after `consecutive_timeout_threshold` consecutive timeouts. Application errors do not activate timeout skip triggers.
+The values are seconds. The production defaults allow five minutes per worker
+request and fifteen minutes per configured point. A timeout is recorded, but
+the remaining matrix continues. `request_timeout_seconds` bounds one HTTP
+request. `phase_timeout_seconds` bounds a benchmark phase.
+`point_timeout_seconds` bounds one configured point. The three `skip_*`
+switches can be enabled for exploratory runs where pruning is desired.
+Application errors do not activate timeout skip triggers.
 
 Set `timeout_mode = "unlimited"` to record the configured budgets without enforcing them. The equivalent command-line option is `--unlimited`.
 
@@ -55,6 +62,7 @@ These families have workload-specific budgets:
 
 - [`configs/load-benchmark.toml`](../../configs/load-benchmark.toml), section `[load]`: `request_timeout_seconds`, `point_timeout_seconds`, `recovery_timeout_seconds` and `stop_after_timeout`.
 - [`configs/experiments.toml`](../../configs/experiments.toml), section `[experiment]`: `request_timeout_seconds`, `point_timeout_seconds` and `stop_after_timeout`.
+- [`configs/distributed-reasoning.toml`](../../configs/distributed-reasoning.toml): dedicated matrix, request/point budgets, semantic-validation sample, timeout pruning, statistics and query concurrency for distributed reasoning scalability.
 - [`configs/campaign.toml`](../../configs/campaign.toml), section `[campaign]`: `request_timeout_seconds` and `point_timeout_seconds`.
 
 Global command-line overrides must precede the command:
@@ -72,3 +80,14 @@ continuum-bench --request-timeout-seconds 300 \
 
 Use `--keep-going` to disable skip pruning while retaining finite timeout budgets. Use `--unlimited` when operations must be allowed to finish without elapsed-time cancellation.
 
+Global timeout overrides are propagated independently to monitoring, load,
+campaign and every experiment configuration. `--request-timeout-seconds` does
+not overwrite a separately configured phase or point budget; the corresponding
+flag changes only that budget. `--timeout-seconds` intentionally sets all
+applicable request, phase and point budgets to one value.
+
+The distributed-reasoning family writes schema `distributed-reasoning-v1` rows,
+per-node evidence, capacity bounds, query-concurrency observations and sampled
+semantic validation. `profile_compatible=false` and
+`skipped_profile_incompatible` preserve an unsupported ontology/profile pair;
+they are not timeouts and are excluded from performance aggregation.

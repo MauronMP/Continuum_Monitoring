@@ -44,11 +44,6 @@ inputs.
 ## Generated datasets
 
 ```bash
-
-.venv/bin/continuum-bench study trace --target physical \
-  --output-dir outputs/study/physical
-
-# Generate it against the physical topology
 .venv/bin/continuum-bench study trace --target physical \
   --output-dir outputs/study/physical
 ```
@@ -72,7 +67,7 @@ After running a physical load benchmark, aggregate request-level observations:
   --events outputs/load/event-runs.csv
 ```
 
-`outputs/load/event-runs.csv` for the other targets and write each
+Use event files from other physical suites in the same way and write each
 analysis to a separate output directory. The trace generator does not execute
 the scheduled requests: `execution_mode` and `concurrency` describe a
 replayable workload contract, while measured timing and resource values must
@@ -80,7 +75,7 @@ come from load/benchmark event rows.
 
 The load event stream rotates through all 115 catalog queries; consequently,
 the command can produce category, policy and query summaries for all 16
-configured categories. It reports popularity,
+configured query categories. It reports popularity,
 completion rate, latency percentiles, mean execution time, structural
 complexity and accumulated latency impact.
 

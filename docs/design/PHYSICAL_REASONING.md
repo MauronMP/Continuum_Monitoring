@@ -2,8 +2,9 @@
 
 For the current end-to-end launch procedure, see [Run all physical tests](RUN_ALL_TESTS.md).
 
-See the [local validation record](PHYSICAL_REASONING_VALIDATION.md) for checked
-behavior and pending physical deployment validation.
+See the [validation record](PHYSICAL_REASONING_VALIDATION.md) and
+[Tailscale validation](../deployment/TAILSCALE_VALIDATION.md) for local and
+physical evidence.
 
 ## Current comparison
 
@@ -11,6 +12,12 @@ The default benchmark and both physical smoke configurations select `rdfs`,
 `hermit`, `openllet`, `jfact`, and `konclude`. RDFS is the RDF Schema baseline;
 plain RDF storage has no inference engine. The old OWL RL and combined profiles
 remain readable in historical evidence and are not the default new comparison.
+
+The dedicated distributed reasoning scalability experiment uses that same
+five-backend matrix. Identity, OWL RL, combined RDFS+OWL RL and ELK remain
+available for isolated adapter diagnostics, but they are not enabled in active
+physical or publication configurations. See
+[Distributed reasoning scalability](DISTRIBUTED_REASONING_SCALABILITY.md).
 
 The external backends execute actual installed Java/native reasoners. An absent
 runtime, inconsistent ontology, invalid fragment, or invalid query answer is an
@@ -60,11 +67,11 @@ timeout_mode = "bounded"
 phase_timeout_seconds = 300
 point_timeout_seconds = 900
 calibration_query_limit = 16
-stop_scaling_after_timeout = true
+stop_scaling_after_timeout = false
 skip_repetitions_after_timeout = false
-skip_larger_sizes_after_timeout = true
+skip_larger_sizes_after_timeout = false
 skip_cumulative_stages_after_timeout = false
-consecutive_timeout_threshold = 2
+consecutive_timeout_threshold = 1
 ```
 
 The request budget bounds transport plus remote execution. The phase budget
@@ -139,9 +146,14 @@ a public Internet endpoint. Authentication and transport encryption are not
 provided by the HTTP worker itself. Distribution over distant devices does not
 imply simulated network delay or verified WAN performance.
 
-Worker protocol version 8 rejects old workers; redeploy all participating nodes.
-See [deployment details](../deployment/PHYSICAL_DEPLOYMENT.md). No remote execution
-is certified while those devices remain offline.
+Worker protocol version 9 adds the benchmark release and a build ID derived
+from the installed Python source tree to the HTTP health envelope. The distributed RDF
+fragment contract is now version 3, so redeploy all participating nodes before
+running the new scalability experiment; a stale worker rejects the fragment.
+See [deployment details](../deployment/PHYSICAL_DEPLOYMENT.md). A deployment
+certified for fragment contract 2 must be replaced with the current contract 3
+worker before this experiment runs. The coordinator lock prevents deployment
+while another physical campaign owns the workers.
 
 ## Offline verification and resource scope
 
@@ -152,7 +164,7 @@ python tools/verify_distributed_reasoning.py
 ```
 
 The second command compares all 115 logical query answers between the canonical
-input and five locally evaluated fragments for every configured reasoner. It
+input and six locally evaluated fragments for every configured reasoner. It
 opens no sockets and is not evidence of physical network performance.
 
 Imported schema dependencies are assembled on the coordinator before fragment

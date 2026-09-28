@@ -101,10 +101,12 @@ sudo apt-get install -y openjdk-17-jdk maven konclude
 python3 tools/install_owl_reasoners.py
 ```
 
-The installer resolves pinned HermiT, Openllet and JFact dependencies into
+The installer resolves pinned HermiT, Openllet, JFact and ELK dependencies into
 separate classpaths, preventing incompatible transitive OWLAPI libraries from
-being mixed. It then self-tests all three Java factories and executes a real
-Konclude consistency smoke through the native backend. Turtle
+being mixed. It then self-tests all four Java factories and executes a real
+Konclude consistency smoke through the native backend. ELK is installed for the
+OWL 2 EL experiment and is outside the strict four-engine OWL 2 DL consistency
+gate. Turtle
 is converted to OWL/XML before Konclude. The same operation can be requested
 during initial setup with
 `python3 tools/bootstrap.py --profile coordinator --with-owl-reasoners`.
@@ -137,3 +139,8 @@ materialization. It does not prove OWL 2 DL consistency; that is the purpose of
 `continuum-bench preflight` calculates the exact asserted graph lower bound for
 every load and experiment profile. It rejects an impossible `target_triples`
 value locally, before an HTTP request can become a worker-side 400 response.
+
+After worker code, fragment-contract or reasoner-runtime changes, redeploy every
+participating node before running a physical experiment. Version 0.4.1 uses
+worker HTTP protocol 9 and distributed fragment contract 3. Health
+checks reject a worker whose benchmark release differs from the coordinator.

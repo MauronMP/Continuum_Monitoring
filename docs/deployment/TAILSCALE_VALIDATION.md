@@ -22,8 +22,10 @@ continuum-bench --config configs/smoke-vpn.toml --timeout-seconds 180 \
 continuum-bench physical status
 ```
 
-The acceptance configuration is intentionally RDFS-only. The main comparison
-and original smoke configurations still select all five reasoners.
+The acceptance configuration is intentionally RDFS-only. Standard monitoring
+configurations select RDFS plus HermiT, Openllet, JFact and Konclude. The
+dedicated distributed-reasoning configurations define a separate task-aware
+matrix and must be invoked explicitly or through `suite`.
 
 Local evidence: `outputs/validation/readiness/vpn-deploy.log`, `vpn-start.log`,
 `vpn-services.json`, `vpn-smoke-distributed.log`, `vpn-smoke-replicated.log`,
@@ -35,7 +37,9 @@ All four remote machines report Raspbian 12 armhf, an aarch64 kernel and
 32-bit Python. The JDK compiler, Maven and Konclude were initially absent.
 They have now been installed on all four targets. The installer verified native
 inference and inconsistency detection for HermiT, Openllet, JFact and Konclude
-on each target (16 successful backend/target checks). No credentials are stored
+on each target (16 successful backend/target checks). ELK was added later to the
+isolated installer for OWL 2 EL-compatible experiments; it requires a new
+deployment and target-local smoke before remote ELK measurements. No credentials are stored
 in project files or installation logs.
 
 To reproduce the package installation, run on each remote node:
@@ -99,3 +103,29 @@ workers, which remain running. Machine-readable summaries are
 Local regression validation for the installer/checker and physical lifecycle
 changes: 29 tests passed. Documentation link and generated-reference validation
 passed for 29 files.
+
+Version 0.4.0 introduced distributed fragment contract 3; version 0.4.1 keeps
+that contract and corrects six-node authority routing. The HTTP envelope
+uses protocol 9 so the coordinator also verifies benchmark release identity.
+Deploy the current source to every node before
+running `distributed-reasoning-scalability`; mixed worker revisions are rejected.
+
+## Mist extension
+
+The physical inventory now includes `mist` at `100.72.111.107`, between Fog and
+Edge in topology order. On 2026-09-25, Tailscale ping succeeded through DERP
+Madrid (43--80 ms), while SSH port 22 returned connection refused. The node is
+configured but not deployment-ready. Six-node campaigns must wait until SSH,
+the target-local virtual environment, reasoner runtimes and worker health have
+all been verified. Earlier five-node measurements remain historical evidence
+and must not be relabelled as six-node runs.
+
+## 2026-09-27 deployment audit
+
+Cloud, Fog and all three Edge workers run release 0.4.1, protocol 9 and the same
+six-node topology fingerprint. HermiT, Openllet, JFact, ELK and native Konclude
+passed inference and inconsistency smoke checks on every accessible Raspberry
+Pi. Their Python environments pass dependency checks. Mist is visible in
+Tailscale but rejects SSH and worker HTTP connections, so no six-node physical
+benchmark was executed. A five-worker health result is operational readiness
+evidence only and must not be reported as a complete six-node experiment.

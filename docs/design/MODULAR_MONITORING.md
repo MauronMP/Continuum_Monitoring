@@ -13,6 +13,8 @@ configs/
   topologies/physical/       Physical inventory and per-tier resources
   campaign-smoke.toml        Ten-axis acceptance campaign
   campaign.toml              Repeated configurable campaign
+  distributed-reasoning-smoke.toml  Bounded reasoning acceptance
+  distributed-reasoning.toml        Full strong/weak reasoning matrix
   benchmark.toml             Canonical ontology monitoring
   load-benchmark.toml        Event-load and saturation profiles
   owl-reasoners.toml         Native OWL validation adapters
@@ -32,7 +34,9 @@ src/continuum_bench/
     physical.py             Calibrated replica execution
     distributed_ontology.py              Authority-aware canonical ontology execution
     load_benchmark.py       Event-pressure and recovery measurements
-    experiments.py          Scale-out, hardware and distributed ontology
+    experiments.py          Experiment registry and shared dispatch
+    distributed_reasoning_config.py  Validated matrix configuration
+    distributed_reasoning_scalability.py  Task-aware scaling experiment
     study/                  Real-query policy attribution and static trace tools
     *_reporting.py          Optional analysis and figures
   topology.py               TOML adapter to physical domain nodes
@@ -88,8 +92,10 @@ axis, leaving all other baseline values fixed:
 - synthetic policies, request count, query count and query join complexity;
 - actual concurrent HTTP request count.
 
-Node count cannot exceed the physical inventory. The supplied smoke contains
-21 workload points, five reasoners and two layouts: 210 measurements.
+Node count cannot exceed the physical inventory. The ten-axis campaign smoke
+contains 21 workload points, five standard monitoring reasoners and two layouts:
+210 configured measurements. The separate distributed-reasoning smoke and full
+matrix have their own reasoner/task lists and are not part of those 210 points.
 Synthetic IoT entities are not additional connected hardware devices. The
 microbenchmark schema and generated policies are explicitly synthetic. Use the
 canonical load and study commands to measure the project's real policy catalog.
@@ -110,8 +116,11 @@ within each logical request. These properties are part of the measured design.
 ## Reasoning abstraction
 
 The materialization port accepts a graph and returns a graph, elapsed reasoning
-time, asserted triples and output triples. Current physical comparisons select
-RDFS, HermiT, Openllet, JFact and Konclude through the same registry. External
+time, asserted triples and output triples. Standard physical monitoring and the
+dedicated scalability matrix select RDFS, HermiT, Openllet, JFact and Konclude
+through the same registry. Identity, OWL RL, combined RDFS+OWL RL and ELK are
+optional diagnostic adapters and do not participate in active physical
+comparisons. External
 backends require their actual Java/native installation on each selected host;
 missing runtimes are explicit errors, never substituted Python profiles.
 
@@ -215,7 +224,8 @@ continuum-smoke-physical-load
 continuum-bench physical all --layout distributed
 continuum-bench physical all --layout replicated
 continuum-bench load physical
-continuum-bench experiment all physical
+continuum-bench experiment all physical \
+  --distributed-reasoning-config configs/distributed-reasoning.toml
 continuum-bench study category-cost --events outputs/load/event-runs.csv
 continuum-bench physical stop --ssh-user pi
 ```

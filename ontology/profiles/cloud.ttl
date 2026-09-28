@@ -9,5 +9,6 @@
         <http://example.org/smartcity>,
         <http://example.org/smartcity/modules/core-vocabulary>,
         <http://example.org/smartcity/modules/deployment> ;
-    ex:usesEntailmentProfile "owlrl" ;
+    # The benchmark selects RDFS or one of the four OWL DL backends at runtime;
+    # this profile controls module placement and does not pin a reasoner.
     owl:versionInfo "3.0.0" .

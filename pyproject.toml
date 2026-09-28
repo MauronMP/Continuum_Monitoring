@@ -4,14 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "continuum-ontology-benchmark"
-version = "0.3.1"
+version = "0.4.1"
 description = "Reproducible ontology benchmarks for policy-aware continuum monitoring"
 requires-python = ">=3.11"
 dependencies = [
     "matplotlib>=3.8,<4",
     "numpy>=1.26,<3",
     "owlrl>=7.1,<8",
-    "pyoxigraph>=0.5.9,<0.6",
     "pyshacl>=0.30,<1",
     "rdflib>=7.1,<8",
 ]
@@ -28,7 +27,6 @@ continuum-smoke-physical-cumulative = "continuum_bench.monitoring.smoke:main_cum
 continuum-smoke-physical-scalability = "continuum_bench.monitoring.smoke:main_scalability"
 continuum-smoke-physical-load = "continuum_bench.monitoring.smoke:main_physical_load"
 continuum-smoke-physical-experiments = "continuum_bench.monitoring.smoke:main_physical_experiments"
-continuum-smoke-engines = "continuum_bench.monitoring.smoke:main_engines"
 
 [tool.setuptools.packages.find]
 where = ["src"]
