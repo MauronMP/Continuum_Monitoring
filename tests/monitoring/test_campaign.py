@@ -77,6 +77,17 @@ def test_unknown_or_decreasing_axes_fail_before_execution(root,tmp_path):
     with pytest.raises(ValueError,match='increasing'):load_campaign(p)
 
 
+def test_campaign_rejects_ambiguous_shared_mode(root, tmp_path):
+    source = (root / "configs/campaign-smoke.toml").read_text()
+    path = tmp_path / "shared.toml"
+    path.write_text(source.replace(
+        'modes = ["replicated", "distributed"]',
+        'modes = ["replicated", "shared"]',
+    ))
+    with pytest.raises(ValueError, match="replicated or distributed"):
+        load_campaign(path)
+
+
 def test_physical_lease_rejects_overlap_and_releases_after_failure(tmp_path):
     from continuum_bench.monitoring.lease import physical_lease
     with physical_lease(tmp_path):

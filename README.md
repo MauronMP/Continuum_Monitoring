@@ -1,132 +1,107 @@
-# Continuum Monitoring Ontology Benchmark
+# Policy-Driven Continuum Monitoring
 
-For the current end-to-end launch procedure, see [Run all physical tests](docs/design/RUN_ALL_TESTS.md).
-
-Reproducible evaluation of a modular, policy-aware monitoring ontology across
-an elastic physical continuum. Its nodes use the same ontology, SPARQL catalog, generators,
-reasoners, time budgets and scientific result contracts.
-
-## Modular physical campaigns
-
-See [the complete architecture and reproduction guide](docs/design/MODULAR_MONITORING.md)
-for the domain ports, ten scalability axes, physical resource model, reasoner
-choices, structured evidence and testing boundaries.
-
-```bash
-continuum-bench campaign --validate-only
-continuum-bench campaign
-continuum-bench campaign --campaign-config configs/campaign.toml
-```
-
-## Structure
-
-| Path | Responsibility |
-| --- | --- |
-| `src/continuum_bench/core` | Infrastructure-neutral domain model. |
-| `src/continuum_bench/monitoring` | Shared cumulative/scalability orchestration. |
-| `src/continuum_bench/monitoring/study` | Workload, mobility and policy-cost studies. |
-| `configs/topologies/physical` | Elastic physical nodes split by tier. |
-| `ontology`, `queries` | Modular semantic model and categorized SPARQL battery. |
-
-Physical workers share the same benchmark implementation.
+This project evaluates how policies select and adapt monitoring across a physical
+Cloud–Fog–Mist–Edge continuum. The modular ontology is an internal knowledge
+mechanism: the primary outcomes are monitoring coverage, adaptation latency,
+scalability and computational cost.
 
 ## Install
 
-Requires Python 3.11+, Git, OpenSSH/rsync, Java 17, Maven and native Konclude
-on hosts participating in native reasoning. Every active physical comparison
-uses RDFS, HermiT, Openllet, JFact and Konclude. The physical CLI accepts only
-these five backends. Historical identity, OWL RL, combined RDFS+OWL RL and ELK
-records remain readable for provenance but cannot be selected for new physical
-comparisons.
+The coordinator requires Python 3.11 or newer. Physical deployment additionally
+requires OpenSSH, `ssh-copy-id`, `rsync`, Java 17 and Maven. Konclude is required
+only when that native backend is selected.
 
 ```bash
 git clone https://github.com/MauronMP/Continuum_Monitoring.git
 cd Continuum_Monitoring
 python3 tools/bootstrap.py --profile coordinator
 . .venv/bin/activate
-python tools/install_owl_reasoners.py
+python3 tools/install_owl_reasoners.py
 continuum-bench validate
-continuum-bench preflight
-continuum-bench owl-validate
+continuum-bench doctor --physical --owl
 ```
 
-`owl-validate` runs all available external validators. After installing HermiT,
-Openllet, JFact and Konclude, use `continuum-bench owl-validate --require-all`
-as the strict release gate.
+See [Installation](docs/INSTALLATION.md) for clean-host and worker instructions.
+The complete ordered command sequence is in
+[Complete installation and test execution](docs/COMPLETE_EXECUTION.md).
 
-Install their pinned reasoning runtime on each participating host with:
+## Four policy evaluation experiments
+
+The main evaluation has four independently executable blocks:
+
+1. **Policy effectiveness** compares a static plan with policy-driven decisions
+   against explicit scenario ground truth.
+2. **Dynamic adaptation** executes the controlled sequence normal, overload,
+   failure and recovery in one trace.
+3. **Policy scalability** jointly increases continuum resources, evaluable
+   policies, active categories and context events.
+4. **Computational cost** compares static and policy-driven monitoring on the
+   same scenarios and resources.
+
+Run a quick end-to-end verification and generate the four PNG figures:
 
 ```bash
-python3 tools/install_owl_reasoners.py
+continuum-bench policy-evaluation all \
+  --evaluation-config configs/policy-evaluation-smoke.toml
+continuum-bench policy-evaluation plot
 ```
 
+Run the publication configuration:
+
+```bash
+continuum-bench policy-evaluation all \
+  --evaluation-config configs/policy-evaluation.toml
+continuum-bench policy-evaluation plot
+```
+
+The runner writes CSV first. Figure generation is a separate operation and never
+changes measured data. See [Experiments](docs/EXPERIMENTS.md) and
+[Outputs](docs/OUTPUTS.md).
 
 ## Physical continuum
 
-Current comparisons use `rdfs`, `hermit`, `openllet`, `jfact`, and `konclude`.
-RDFS is the RDF Schema baseline; plain RDF storage alone does not perform inference.
-`replicated` assigns a complete input graph to each worker. `distributed` assigns
-only that worker's ontology fragment and merges source query answers. Shared
-schema may be repeated to retain required dependencies; this is not shared memory.
-The old `sharded` name belongs to archived campaigns and is not a new-run option.
-
-See [physical readiness and reasoning execution](docs/design/PHYSICAL_REASONING.md)
-for offline preparation, timeout and skipped-point policy, and validation limits.
-
+The inventory in `configs/topologies/physical/` declares one Cloud coordinator,
+one Fog node, one Mist node and three Edge nodes connected through Tailscale.
+The active physical reasoning matrix supports RDFS, HermiT, Openllet, JFact and
+Konclude. RDFS is the portable baseline. The policy evaluation uses one configured
+reasoner only as an internal cost and does not rank reasoners.
 
 ```bash
 continuum-bench physical authorize --ssh-user pi
 continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
-continuum-smoke-physical-cumulative --ssh-user pi
-continuum-smoke-physical-scalability --ssh-user pi
-continuum-smoke-physical-load
-continuum-smoke-physical-experiments
-continuum-bench physical all --layout distributed --ssh-user pi
-continuum-bench physical all --layout replicated --ssh-user pi
-continuum-bench load physical
-continuum-bench experiment all physical \
-  --distributed-reasoning-config configs/distributed-reasoning.toml
+continuum-bench --unlimited --keep-going suite
 continuum-bench physical stop --ssh-user pi
 ```
 
-`physical all` covers cumulative and scalability only. See the
-[command reference](docs/design/COMMAND_REFERENCE.md) for the ordered complete suite.
+Use `--unlimited` to record nominal budgets without cancelling slow benchmark
+points. Timeout and skip controls are in `configs/benchmark.toml` under
+`[distributed]` and `[limits]`. See [Physical continuum](docs/PHYSICAL_CONTINUUM.md).
 
-## Evaluation families
+## Modules
 
-- Cumulative: progressively activates every policy/query category.
-- Scalability: increases synthetic users and RDF volume.
-- Load: varies events/s, users, triples, rules and node count; records latency,
-  throughput, loss, accuracy, recovery and resource metrics.
-- Experiments: replicated query scale-out, reasoning by hardware,
-  authority-partitioned ontology execution, and strong/weak distributed
-  reasoning scalability with exact graph-size controls.
-- Study: reproducible workload/mobility traces and category/policy/query cost.
+| Path | Responsibility |
+| --- | --- |
+| `src/continuum_bench/core` | Infrastructure-neutral domain contracts. |
+| `src/continuum_bench/monitoring` | Physical orchestration, metrics and reporting. |
+| `src/continuum_bench/monitoring/policy_evaluation` | Monitoring-plan engine and four policy experiments. |
+| `ontology` | Modular internal knowledge model and validation shapes. |
+| `queries` | Categorized SPARQL catalog with policy traceability. |
+| `configs/topologies/physical` | Physical node resources, tiers and Tailscale endpoints. |
+| `configs/policy-evaluation*.toml` | Reproducible policy scenarios and scalability levels. |
+| `tests` | Unit, integration, infrastructure, monitoring and reporting checks. |
 
-In bounded mode, timeouts are stored as right-censored observations. Results use the unified tree documented in [Output layout and execution controls](docs/design/OUTPUTS_AND_EXECUTION.md).
-See [the user guide](docs/USER_GUIDE.md),
-[installation](docs/design/INSTALLATION.md),
-[physical continuum guide](docs/design/PHYSICAL_CONTINUUM.md),
-[command reference](docs/design/COMMAND_REFERENCE.md),
-[tests](docs/design/TESTS.md) and [architecture](docs/design/ARCHITECTURE.md).
+The small top-level configuration and experiment modules preserve the public
+import API. Their maintained implementations live under `monitoring`; they are
+compatibility facades rather than a second benchmark architecture.
 
-For evidence-led figures and extended full-suite execution, see
-[Publication reports](docs/design/PUBLICATION_REPORTS.md).
-
-Run all physical benchmark families without elapsed-time cutoffs (after worker
-installation and SSH setup):
+Run the software and documentation checks with:
 
 ```bash
-. .venv/bin/activate
-continuum-bench --unlimited --repetitions 5 suite
+.venv/bin/python -m pytest -q
+.venv/bin/python tools/check_documentation.py
 ```
 
-Each suite saves a separate directory, logs, execution policy and PNG reports.
-Configured budgets remain in the evidence but are not enforced in this mode.
-
-The dedicated reasoning matrix, formulas, semantic contracts and output files
-are documented in [Distributed reasoning scalability](docs/design/DISTRIBUTED_REASONING_SCALABILITY.md).
-Current corrections are in [Release 0.4.1](docs/design/RELEASE_0_4_1.md); the
-experiment introduction remains in [Release 0.4.0](docs/design/RELEASE_0_4.md).
+Generated benchmark data, figures, logs and local runtime files are excluded by
+`.gitignore` and belong under `outputs/`.

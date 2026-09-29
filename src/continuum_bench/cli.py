@@ -34,8 +34,8 @@ def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="continuum-bench",
         description=(
-            "Validate and benchmark the policy-aware monitoring ontology on "
-            "physical continuum infrastructure."
+            "Evaluate policy-driven monitoring on physical continuum "
+            "infrastructure, using the ontology as an internal mechanism."
         ),
     )
     parser.add_argument(
@@ -72,7 +72,8 @@ def _parser() -> argparse.ArgumentParser:
     suite.add_argument("--experiment-config", default="configs/experiments.toml")
     suite.add_argument("--distributed-reasoning-config", default="configs/distributed-reasoning.toml")
     suite.add_argument("--campaign-config", default="configs/campaign.toml")
-    suite.add_argument("--families", nargs="+", choices=("software","validation","monitoring","load","experiments","campaign","report"))
+    suite.add_argument("--policy-evaluation-config", default="configs/policy-evaluation.toml")
+    suite.add_argument("--families", nargs="+", choices=("software","validation","monitoring","load","experiments","campaign","policy-evaluation","report"))
     campaign = subparsers.add_parser("campaign", help="Run configurable physical scalability and policy-cost axes")
     campaign.add_argument("--campaign-config", default="configs/campaign-smoke.toml")
     campaign.add_argument("--output-dir", default="outputs/campaign")
@@ -297,6 +298,31 @@ def _parser() -> argparse.ArgumentParser:
         default="outputs/load/event-runs.csv",
         help="Request/event CSV used by category-cost analysis",
     )
+
+    policy_evaluation = subparsers.add_parser(
+        "policy-evaluation",
+        help="Evaluate functional policy decisions, adaptation, scalability and cost",
+    )
+    policy_evaluation.add_argument(
+        "action",
+        choices=(
+            "effectiveness",
+            "dynamic-adaptation",
+            "scalability",
+            "computational-cost",
+            "all",
+            "plot",
+        ),
+    )
+    policy_evaluation.add_argument(
+        "--evaluation-config",
+        default="configs/policy-evaluation.toml",
+    )
+    policy_evaluation.add_argument(
+        "--output-dir",
+        default="outputs/policy-evaluation",
+    )
+    policy_evaluation.add_argument("--show", action="store_true")
     return parser
 
 
@@ -408,7 +434,8 @@ def _dispatch(args) -> int:
                            keep_going=args.keep_going, topology_file=args.topology_file,
                            load_config=args.load_config, experiment_config=args.experiment_config,
                            distributed_reasoning_config=args.distributed_reasoning_config,
-                           campaign_config=args.campaign_config)
+                           campaign_config=args.campaign_config,
+                           policy_evaluation_config=args.policy_evaluation_config)
         print(json.dumps(result, indent=2))
         return int(any(step.get("returncode", 0) != 0 or step.get("status") in {"failed", "missing_evidence"} for step in result["steps"]))
 
@@ -746,6 +773,28 @@ def _dispatch(args) -> int:
                 ensure_ascii=False,
             )
         )
+        return 0
+
+    if args.command == "policy-evaluation":
+        from .monitoring.policy_evaluation.config import load_policy_evaluation_config
+        from .monitoring.policy_evaluation.runner import EXPERIMENTS, run_policy_evaluation
+
+        output_root = config.resolve(Path(args.output_dir))
+        if args.action == "plot":
+            from .monitoring.policy_evaluation.reporting import plot_policy_evaluation
+
+            paths = plot_policy_evaluation(output_root)
+            if args.show:
+                _open_paths(paths)
+            print(json.dumps({"policy_evaluation_plots": [str(path) for path in paths]}, indent=2))
+            return 0
+        evaluation_path = config.resolve(Path(args.evaluation_config))
+        evaluation = load_policy_evaluation_config(evaluation_path)
+        if args.repetitions is not None:
+            evaluation = replace(evaluation, repetitions=args.repetitions)
+        selected = EXPERIMENTS if args.action == "all" else (args.action,)
+        result = run_policy_evaluation(config, evaluation, output_root, selected)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
         return 0
 
     raise AssertionError(f"Unhandled command: {args.command}")

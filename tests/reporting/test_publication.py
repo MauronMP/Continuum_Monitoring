@@ -130,6 +130,23 @@ def test_report_rejects_stale_release_and_topology(root, tmp_path):
     assert report.evidence_context['current_topology_node_count'] == 6
 
 
+def test_report_accepts_current_distribution_metadata(root, tmp_path):
+    import json
+    from continuum_bench import __version__
+
+    metadata = tmp_path / 'load/metadata.json'
+    metadata.parent.mkdir(parents=True)
+    metadata.write_text(json.dumps({
+        'runtime_versions': {'continuum-monitoring-benchmark': __version__},
+        'available_endpoints': [
+            {'url': f'http://node-{index}'} for index in range(6)
+        ],
+    }))
+    report = Report(root, tmp_path, tmp_path / 'paper')
+    assert report.evidence_context['version_compatible'] is True
+    assert report.evidence_context['topology_compatible'] is True
+
+
 def test_evidence_readiness_is_a_normalized_png(root, tmp_path):
     report = Report(root, tmp_path, tmp_path/'paper')
     report.evidence_readiness(

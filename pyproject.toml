@@ -3,9 +3,9 @@ requires = ["setuptools==84.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "continuum-ontology-benchmark"
-version = "0.4.1"
-description = "Reproducible ontology benchmarks for policy-aware continuum monitoring"
+name = "continuum-monitoring-benchmark"
+version = "0.5.0"
+description = "Reproducible evaluation of policy-driven monitoring on a physical computing continuum"
 requires-python = ">=3.11"
 dependencies = [
     "matplotlib>=3.8,<4",

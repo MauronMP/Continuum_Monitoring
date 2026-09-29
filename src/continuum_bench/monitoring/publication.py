@@ -101,8 +101,10 @@ class Report:
                 value=json.loads(path.read_text())
             except (OSError,json.JSONDecodeError):
                 continue
+            runtime_versions=value.get('runtime_versions',{})
             version=(value.get('benchmark_version') or
-                     value.get('runtime_versions',{}).get('continuum-ontology-benchmark'))
+                     runtime_versions.get('continuum-monitoring-benchmark') or
+                     runtime_versions.get('continuum-ontology-benchmark'))
             endpoints=(value.get('endpoints') or value.get('available_endpoints') or
                        value.get('topology',{}).get('endpoint_override') or [])
             count=value.get('node_count') or (len(endpoints) if endpoints else None)

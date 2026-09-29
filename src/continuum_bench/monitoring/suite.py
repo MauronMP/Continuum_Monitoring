@@ -21,7 +21,8 @@ def suite_plan(root, config, destination, *, patient=False, unlimited=False,
                load_config='configs/load-benchmark.toml',
                experiment_config='configs/experiments.toml',
                distributed_reasoning_config='configs/distributed-reasoning.toml',
-               campaign_config='configs/campaign.toml'):
+               campaign_config='configs/campaign.toml',
+               policy_evaluation_config='configs/policy-evaluation.toml'):
     budget=timeout_seconds if timeout_seconds is not None else (3600 if patient else None)
     prefix=[sys.executable,'-m','continuum_bench','--config',str(config)]
     if topology_file is not None:prefix+=['--topology-file',str(topology_file)]
@@ -45,7 +46,7 @@ def suite_plan(root, config, destination, *, patient=False, unlimited=False,
     ):
         if value is not None:
             prefix.append('--'+('' if value else 'no-')+name)
-    families=families or ['software','validation','monitoring','load','experiments','campaign','report']
+    families=families or ['software','validation','monitoring','load','experiments','campaign','policy-evaluation','report']
     steps=[]
     def add(name,args):steps.append({'name':name,'command':prefix+args})
     if 'software' in families:
@@ -64,6 +65,9 @@ def suite_plan(root, config, destination, *, patient=False, unlimited=False,
     if 'load' in families:add('load',['load','physical','--load-config',str(load_config),'--output-dir',str(destination/'load')])
     if 'experiments' in families:add('experiments',['experiment','all','physical','--experiment-config',str(experiment_config),'--distributed-reasoning-config',str(distributed_reasoning_config),'--output-dir',str(destination/'experiments')])
     if 'campaign' in families:add('campaign',['campaign','--campaign-config',str(campaign_config),'--output-dir',str(destination/'campaign')])
+    if 'policy-evaluation' in families:
+        add('policy-evaluation',['policy-evaluation','all','--evaluation-config',str(policy_evaluation_config),'--output-dir',str(destination/'policy-evaluation')])
+        add('policy-figures',['policy-evaluation','plot','--output-dir',str(destination/'policy-evaluation')])
     if 'report' in families:add('report',['report','--input-dir',str(destination),'--output-dir',str(destination/'report')])
     return steps
 
@@ -89,12 +93,17 @@ def run_suite(root,config,output,**options):
         step['returncode']=result.returncode
         step['finished_at']=datetime.now(timezone.utc).isoformat()
         roots={'monitoring-distributed':directory/'monitoring/distributed','monitoring-replicated':directory/'monitoring/replicated',
-               'load':directory/'load','experiments':directory/'experiments'}
+               'load':directory/'load','experiments':directory/'experiments',
+               'policy-evaluation':directory/'policy-evaluation'}
         step['status']='completed' if result.returncode==0 else 'failed'
         if step['name'] in roots:
             records=[]
             summaries = list(roots[step['name']].rglob('summary.csv'))
             summaries.extend(roots[step['name']].rglob('distributed-reasoning-summary.csv'))
+            if step['name'] == 'policy-evaluation':
+                summaries.extend(roots[step['name']].rglob('policy_*.csv'))
+                summaries.extend(roots[step['name']].rglob('dynamic_adaptation.csv'))
+                summaries.extend(roots[step['name']].rglob('computational_cost.csv'))
             for summary in summaries:
                 with summary.open(newline='') as handle: records.extend(csv.DictReader(handle))
             step['recorded_points']=len(records)

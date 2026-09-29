@@ -7,7 +7,7 @@ import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.profiles.*;
 import org.semanticweb.owlapi.io.RDFParserMetaData;
 
-/** Named class/individual closure; see docs/design/PHYSICAL_REASONING.md. */
+/** Named class/individual closure; see docs/PHYSICAL_CONTINUUM.md. */
 class MaterializeOntology {
     public static void main(String[] args) throws Exception {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();

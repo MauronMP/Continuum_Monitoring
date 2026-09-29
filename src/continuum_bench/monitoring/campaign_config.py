@@ -77,8 +77,8 @@ def load_campaign(path: str | Path) -> CampaignConfig:
         raise ValueError("Repetitions must be positive and warmup nonnegative")
     if not config.reasoners or not config.policy_categories:
         raise ValueError("Reasoners and policy categories must be explicit")
-    if not config.modes or set(config.modes) - {"replicated", "distributed", "shared"}:
-        raise ValueError("Modes must be replicated, distributed or shared")
+    if not config.modes or set(config.modes) - {"replicated", "distributed"}:
+        raise ValueError("Modes must be replicated or distributed")
     for budget in (config.request_timeout_seconds, config.point_timeout_seconds):
         if not math.isfinite(budget) or budget <= 1:
             raise ValueError("Timeouts must be finite and greater than one second")

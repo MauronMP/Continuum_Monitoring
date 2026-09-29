@@ -1,0 +1,142 @@
+[experiment]
+repetitions = 1
+warmup = 1
+seed = 2026
+reasoner = "rdfs"
+observation_window_seconds = 60
+bytes_per_observation = 96
+cost_decisions_per_scenario = 200
+transition_interval_seconds = 10
+
+[static_plan]
+resources = ["cloud", "fog", "mist", "edge1", "edge2", "edge3"]
+metrics = ["availability", "cpu_usage", "error_rate", "memory_usage", "network_health", "queue_depth", "stress_score"]
+actions = ["collect_all"]
+sampling_interval_seconds = 2
+
+[[resources]]
+id = "cloud"
+tier = "cloud"
+[[resources]]
+id = "fog"
+tier = "fog"
+[[resources]]
+id = "mist"
+tier = "mist"
+[[resources]]
+id = "edge1"
+tier = "edge"
+[[resources]]
+id = "edge2"
+tier = "edge"
+[[resources]]
+id = "edge3"
+tier = "edge"
+
+[[rules]]
+id = "P-OPS-05"
+categories = ["operations"]
+contexts = ["normal"]
+tiers = ["edge"]
+metrics = ["availability", "cpu_usage", "stress_score"]
+actions = ["baseline_monitoring"]
+sampling_interval_seconds = 30
+[[rules]]
+id = "P-NODE-02"
+categories = ["node_state"]
+contexts = ["overload"]
+tiers = ["edge", "fog"]
+metrics = ["cpu_usage", "memory_usage", "queue_depth"]
+actions = ["increase_sampling"]
+sampling_interval_seconds = 5
+[[rules]]
+id = "P-ADAPT-01"
+categories = ["adaptation", "operations"]
+contexts = ["overload"]
+tiers = ["fog"]
+metrics = ["network_health"]
+actions = ["route_monitoring_to_fog"]
+sampling_interval_seconds = 5
+[[rules]]
+id = "P-NODE-01"
+categories = ["node_state"]
+contexts = ["failure"]
+tiers = ["edge", "mist", "fog", "cloud"]
+metrics = ["availability", "error_rate", "network_health"]
+actions = ["health_check"]
+sampling_interval_seconds = 2
+[[rules]]
+id = "P-ADAPT-02"
+categories = ["adaptation"]
+contexts = ["failure"]
+tiers = ["fog", "cloud"]
+metrics = ["availability", "network_health"]
+actions = ["failover_monitoring"]
+sampling_interval_seconds = 2
+[[rules]]
+id = "P-NODE-03"
+categories = ["node_state", "operations"]
+contexts = ["recovery"]
+tiers = ["edge", "fog"]
+metrics = ["availability", "cpu_usage"]
+actions = ["restore_sampling"]
+sampling_interval_seconds = 15
+[[rules]]
+id = "P-AUD-01"
+categories = ["audit"]
+contexts = ["recovery"]
+tiers = ["fog"]
+metrics = ["network_health"]
+actions = ["verify_recovery"]
+sampling_interval_seconds = 15
+
+[[scenarios]]
+id = "S1-normal"
+context = "normal"
+category = "operations"
+expected_policies = ["P-OPS-05"]
+expected_resources = ["edge1", "edge2", "edge3"]
+expected_metrics = ["availability", "cpu_usage", "stress_score"]
+expected_actions = ["baseline_monitoring"]
+expected_sampling_interval_seconds = 30
+[[scenarios]]
+id = "S2-overload"
+context = "overload"
+category = "node_state;adaptation;operations"
+expected_policies = ["P-NODE-02", "P-ADAPT-01"]
+expected_resources = ["edge1", "edge2", "edge3", "fog"]
+expected_metrics = ["cpu_usage", "memory_usage", "network_health", "queue_depth"]
+expected_actions = ["increase_sampling", "route_monitoring_to_fog"]
+expected_sampling_interval_seconds = 5
+[[scenarios]]
+id = "S3-failure"
+context = "failure"
+category = "node_state;adaptation"
+expected_policies = ["P-NODE-01", "P-ADAPT-02"]
+expected_resources = ["cloud", "fog", "mist", "edge1", "edge2", "edge3"]
+expected_metrics = ["availability", "error_rate", "network_health"]
+expected_actions = ["failover_monitoring", "health_check"]
+expected_sampling_interval_seconds = 2
+[[scenarios]]
+id = "S4-recovery"
+context = "recovery"
+category = "node_state;operations;audit"
+expected_policies = ["P-NODE-03", "P-AUD-01"]
+expected_resources = ["fog", "edge1", "edge2", "edge3"]
+expected_metrics = ["availability", "cpu_usage", "network_health"]
+expected_actions = ["restore_sampling", "verify_recovery"]
+expected_sampling_interval_seconds = 15
+
+[scalability]
+[[scalability.levels]]
+name = "smoke-small"
+resources = 8
+policies = 4
+categories = 2
+events = 16
+[[scalability.levels]]
+name = "smoke-medium"
+resources = 16
+policies = 8
+categories = 4
+events = 32

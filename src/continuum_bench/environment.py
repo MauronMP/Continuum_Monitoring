@@ -61,7 +61,7 @@ def runtime_checks(*, worker: bool = False) -> list[Check]:
 def installed_versions() -> dict[str, str]:
     versions = {}
     for name in (
-        "continuum-ontology-benchmark",
+        "continuum-monitoring-benchmark",
         "rdflib",
         "owlrl",
         "pyshacl",
@@ -183,7 +183,7 @@ def owl_reasoner_checks() -> list[Check]:
                 f"owl-{executable.lower()}",
                 "ok" if path else "warning",
                 path or "not installed",
-                "See docs/design/OWL_REASONERS.md.",
+                "See docs/INSTALLATION.md.",
             )
         )
     project_root = Path(__file__).resolve().parents[2]
@@ -203,7 +203,7 @@ def owl_reasoner_checks() -> list[Check]:
                 configured or "not configured",
                 (
                     "Run 'python3 tools/install_owl_reasoners.py' or set "
-                    f"{name}; see docs/design/OWL_REASONERS.md."
+                    f"{name}; see docs/INSTALLATION.md."
                 ),
             )
         )

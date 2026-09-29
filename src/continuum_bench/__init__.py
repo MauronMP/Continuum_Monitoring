@@ -1,3 +1,3 @@
-"""Policy-aware ontology benchmark suite for the computing continuum."""
+"""Policy-driven monitoring evaluation for the physical computing continuum."""
 
-__version__ = "0.4.1"
+__version__ = "0.5.0"

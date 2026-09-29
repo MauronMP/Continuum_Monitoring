@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.5.0 — 2026-09-29
+
+- Added four policy-driven monitoring evaluations for functional effectiveness,
+  dynamic adaptation, joint scalability and computational cost.
+- Added explicit monitoring-plan ground truth, stale-decision checks, process
+  resource sampling and consistent experiment identity fields.
+- Added one data-backed 300 dpi PNG figure per policy experiment and kept figure
+  generation separate from benchmark execution.
+- Replaced the deleted deployment/design manuals with a concise English
+  installation, experiment, output and physical-continuum documentation set.
+- Reframed ontology and reasoning measurements as internal mechanisms and
+  secondary explanatory costs rather than primary comparison outcomes.
+- Renamed the Python distribution to `continuum-monitoring-benchmark` so its
+  package identity matches the current monitoring scope.
+- Removed the ambiguous campaign-level `shared` alias. Physical placement is
+  now explicitly either replicated or distributed.
+- Added a current project audit with reproducible validation evidence and
+  explicit scientific and operational limitations.
+
 ## 0.4.1 — 2026-09-25
 
 - Restricted every active physical comparison, including distributed reasoning
