@@ -6,19 +6,19 @@ from time import monotonic, sleep
 
 import pytest
 
-from continuum_bench.distributed import Endpoint
-from continuum_bench.load_benchmark import (
+from continuum_bench.monitoring.distributed import Endpoint
+from continuum_bench.monitoring.load_benchmark import (
     _is_timeout,
     _run_event_stream,
     _workload_specs,
 )
-from continuum_bench.load_config import (
+from continuum_bench.monitoring.load_config import (
     LoadBenchmarkConfig,
     LoadProfile,
     load_load_config,
     select_load_profiles,
 )
-from continuum_bench.load_reporting import (
+from continuum_bench.monitoring.load_reporting import (
     _aggregate,
 )
 from continuum_bench.queries import QuerySpec
@@ -316,3 +316,16 @@ def test_unlimited_stream_drains_slow_requests_after_point_budget(tmp_path):
     assert summary['events_lost'] == 0
     assert summary['timed_out'] is False
     assert len(rows) == 1
+
+
+@pytest.mark.parametrize("field", ["events_per_second", "duration_seconds"])
+@pytest.mark.parametrize("value", ["nan", "inf"])
+def test_load_profiles_reject_nonfinite_workload(config, tmp_path, field, value):
+    import re
+    source = (config.root / "configs/load-benchmark.toml").read_text()
+    source, count = re.subn(rf"(?m)^{field}\s*=.*$", f"{field} = {value}", source, count=1)
+    assert count == 1
+    path = tmp_path / "invalid.toml"
+    path.write_text(source)
+    with pytest.raises(ValueError, match="finite"):
+        load_load_config(path)

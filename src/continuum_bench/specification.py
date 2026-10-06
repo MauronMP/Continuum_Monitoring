@@ -16,7 +16,7 @@ from . import __version__
 EX = Namespace("http://example.org/smartcity#")
 ONTOLOGY_IRI = URIRef("http://example.org/smartcity")
 ONTOLOGY_VERSION = "3.0.0"
-ONTOLOGY_REVISION = "3.0.0-en-datatypes-v1"
+ONTOLOGY_REVISION = "3.0.0-en-audit-v2"
 EXPECTED_QUERY_IDS = frozenset(
     {
         *{f"BASE-Q{i:02d}" for i in range(1, 36)},
@@ -44,8 +44,15 @@ ACCEPTANCE_PRECONDITIONS = (
 def release_identity() -> dict[str, Any]:
     """Return stable provenance fields shared by every benchmark output."""
 
+    # Import lazily because protocol imports the ontology constants above.
+    # Every result must identify the exact Python source, not only the package
+    # version: editable builds can legitimately share a version while their
+    # experiment logic differs.
+    from .protocol import SOFTWARE_BUILD_ID
+
     return {
         "benchmark_version": __version__,
+        "software_build_id": SOFTWARE_BUILD_ID,
         "ontology_version": ONTOLOGY_VERSION,
         "ontology_revision": ONTOLOGY_REVISION,
         "query_contract": "BASE-Q01..BASE-Q35;EXT-Q01..EXT-Q80",
@@ -160,6 +167,7 @@ def validate_release_contract(
 def acceptance_status(
     specs: Iterable[QuerySpec],
     measurements: Iterable[QueryMeasurement],
+    *, graph: Graph,
 ) -> dict[str, Any]:
     """Report whether zero-row violation queries may support compliance claims.
 
@@ -178,6 +186,20 @@ def acceptance_status(
         "EXT-Q76": measured["EXT-Q76"].result_count == 0,
         "EXT-Q77": measured["EXT-Q77"].result_count >= 7,
     }
+    # Cardinality alone can be satisfied by duplicate artifact instances. Check
+    # the actual evidence and never accept a merely declared/planned campaign.
+    catalogs = set(graph.subjects(RDF.type, EX.QueryCatalog))
+    catalog_ready = bool(catalogs) and all(
+        {str(value) for value in graph.objects(item, EX.artifactStatus)}
+        == {"validated-structural"} for item in catalogs
+    )
+    campaigns = set(graph.subjects(RDF.type, EX.ValidationCampaign))
+    completed_campaigns = [item for item in campaigns
+        if "completed" in {str(value) for value in graph.objects(item, EX.artifactStatus)}
+        and any((result, RDF.type, EX.ValidationResult) in graph
+                for result in graph.objects(item, EX.hasValidationResult))]
+    checks["EXT-Q77"] = checks["EXT-Q77"] and catalog_ready and bool(completed_campaigns)
+    checks["EXT-Q76"] = checks["EXT-Q76"] and bool(set(graph.subjects(RDF.type, EX.AcceptanceProfile)))
     violation_rows = {
         spec.id: measured[spec.id].result_count
         for spec in spec_by_id.values()
@@ -186,6 +208,9 @@ def acceptance_status(
     return {
         "ready": all(checks.values()),
         "preconditions": list(ACCEPTANCE_PRECONDITIONS),
+        "query_catalog_structurally_ready": catalog_ready,
+        "completed_campaigns_with_result_records": sorted(map(str, completed_campaigns)),
+        "evidence_scope": "RDF evidence preconditions only; independent scientific review remains required",
         "checks": checks,
         "observed": {
             query_id: measured[query_id].result_count

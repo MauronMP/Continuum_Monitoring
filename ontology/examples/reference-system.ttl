@@ -621,12 +621,12 @@ ex:OntologyArtifact_3_0_0 a ex:OntologyArtifact,
         ex:Standard_SPARQL11,
         ex:Standard_Turtle .
 
-ex:QueryCatalog_Pending a ex:QueryCatalog,
+ex:QueryCatalog_v3 a ex:QueryCatalog,
         owl:NamedIndividual ;
-    rdfs:label "SPARQL Query Catalog - Pending" ;
-    ex:artifactIdentifier "QUERY-CATALOG-PENDING" ;
-    ex:artifactStatus "pending-definition" ;
-    rdfs:comment "Intentionally contains no query specifications. Query assignment is deferred to a later phase." .
+    rdfs:label "Validated SPARQL Query Catalog v3" ;
+    ex:artifactIdentifier "queries/catalog.csv" ;
+    ex:artifactStatus "validated-structural" ;
+    rdfs:comment "The maintained queries/catalog.csv and queries/execution-plan.toml define 115 executable query contracts. Structural validation is complete; clinical acceptance and full policy coverage are not implied." .
 
 ex:RF-01 a ex:FunctionalRequirement,
         ex:Requirement,

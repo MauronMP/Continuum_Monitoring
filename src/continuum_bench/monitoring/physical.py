@@ -10,11 +10,13 @@ import statistics
 from time import monotonic
 from typing import Any
 
-from .config import BenchmarkConfig
+from ..config import BenchmarkConfig
 from .resource_summary import native_resources
 from ..reasoners import reasoner_provenance
-from .budget import (error_text, is_timeout_failure, TimeoutSkipState, skip_metadata,
-                     PhaseBudgetTimeout, unlimited_execution)
+from .budget import (error_text, is_timeout_failure, keep_going_execution,
+                     TimeoutSkipState, skip_metadata, PhaseBudgetTimeout,
+                     unlimited_execution)
+from .progress import PointProgress
 from .distributed import (
     Endpoint,
     _censored_detail,
@@ -243,6 +245,11 @@ def _metadata(
     architecture = (
         inventory.kind if isinstance(inventory, Topology) else "physical"
     )
+    topology = (
+        inventory
+        if isinstance(inventory, Topology)
+        else load_physical_inventory(inventory).topology
+    )
     return {
         **release_identity(),
         "execution_policy": execution_metadata(),
@@ -272,6 +279,7 @@ def _metadata(
         "seed": config.seed,
         "replica_count": len(endpoints),
         "node_count": len(endpoints),
+        "topology_fingerprint": topology.fingerprint if topology else None,
         "balancing": (
             "one unmeasured stratified calibration sample per reasoner and "
             "dataset on every node, category-median estimation for queries "
@@ -429,7 +437,10 @@ def run_physical_scalability(
 
 def _run_physical(config, *args, **kwargs):
     from .budget import execution_policy
-    with execution_policy(unlimited_execution() or config.limits.timeout_mode == "unlimited"):
+    with execution_policy(
+        unlimited_execution() or config.limits.timeout_mode == "unlimited",
+        keep_going_execution(),
+    ):
         return _run_physical_impl(config, *args, **kwargs)
 
 
@@ -457,6 +468,13 @@ def _run_physical_impl(config, inventory, output_root, topology_name, suite):
     nodes: list[dict[str, Any]] = []
     skips = TimeoutSkipState(config.limits)
     cumulative = suite == "cumulative"
+    output = output_root / suite
+    total_points = (
+        len(config.reasoners)
+        * config.repetitions
+        * (len(config.category_order) if cumulative else len(config.scale_users))
+    )
+    progress = PointProgress(output, f"{target}-replicated-{suite}", total_points)
     for users in ((0,) if cumulative else config.scale_users):
         for reasoner in config.reasoners:
             calibration_data = None
@@ -484,12 +502,21 @@ def _run_physical_impl(config, inventory, output_root, topology_name, suite):
                         )
                         print(f"[{target}-{suite}] reasoner={reasoner} users={users} "
                               f"repetition={repetition} stage={stage} status=skipped_after_timeout", flush=True)
+                        _write_csv(output / "summary.csv", summaries)
+                        progress.finish(
+                            "skipped_after_timeout", reasoner=reasoner,
+                            users=users, repetition=repetition, stage=stage,
+                        )
                         continue
                     phase = "calibration-prepare"
                     started = monotonic()
                     timeout_seconds = config.limits.phase_timeout_seconds
                     print(f"[{target}-{suite}] reasoner={reasoner} users={users} "
                           f"repetition={repetition} stage={stage} status=running", flush=True)
+                    progress.start(
+                        reasoner=reasoner, users=users,
+                        repetition=repetition, stage=stage, phase=phase,
+                    )
                     try:
                         if calibration_data is None:
                             _prepare(config, endpoints, reasoner, users, config.seed)
@@ -515,18 +542,27 @@ def _run_physical_impl(config, inventory, output_root, topology_name, suite):
                             phase="physical-balanced-queries",
                         )
                     except Exception as error:
-                        if not is_timeout_failure(error):
+                        timeout_failure = is_timeout_failure(error)
+                        if not timeout_failure and not keep_going_execution():
                             raise
-                        skips.timeout(reasoner, users, repetition, stage, error)
+                        if timeout_failure:
+                            skips.timeout(reasoner, users, repetition, stage, error)
                         elapsed = monotonic() - started
                         if phase == "queries":
                             elapsed = prepare_wall_ms / 1000 + monotonic() - query_started
                         _append_failure(
                             details, summaries, assignments, nodes, common,
-                            node_count, len(active_specs), "timeout", phase,
+                            node_count, len(active_specs),
+                            "timeout" if timeout_failure else "failed", phase,
                             error_text(error), timeout_seconds, elapsed,
                         )
-                        print(f"[{target}-{suite}] reasoner={reasoner} phase={phase} status=timeout", flush=True)
+                        status = "timeout" if timeout_failure else "failed"
+                        print(f"[{target}-{suite}] reasoner={reasoner} phase={phase} status={status}", flush=True)
+                        _write_csv(output / "summary.csv", summaries)
+                        progress.finish(
+                            status, reasoner=reasoner, users=users,
+                            repetition=repetition, stage=stage, phase=phase,
+                        )
                         continue
                     skips.completed(reasoner)
                     if not cumulative:
@@ -545,17 +581,23 @@ def _run_physical_impl(config, inventory, output_root, topology_name, suite):
                     summaries.append(summary)
                     print(f"[{target}-{suite}] reasoner={reasoner} stage={stage} status=done "
                           f"wall_ms={summary['total_wall_ms']:.2f}", flush=True)
-    output = output_root / suite
+                    _write_csv(output / "summary.csv", summaries)
+                    progress.finish(
+                        "completed", reasoner=reasoner, users=users,
+                        repetition=repetition, stage=stage,
+                    )
     _write_csv(output / "query-runs.csv", details)
     _write_csv(output / "summary.csv", summaries)
     _write_csv(output / "assignments.csv", assignments)
     _write_csv(output / "node-runs.csv", nodes)
-    metadata = _metadata(config, endpoints, suite, inventory)
+    metadata = _metadata(config, endpoints, suite, topology or inventory)
     metadata["category_order" if cumulative else "scale_users"] = list(config.category_order if cumulative else config.scale_users)
     (output / "metadata.json").write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     completed = sum(row.get("status") == "completed" for row in summaries)
     censored = sum(row.get("status") == "timeout" for row in summaries)
     skipped = sum(row.get("status") == "skipped_after_timeout" for row in summaries)
+    failed = sum(row.get("status") == "failed" for row in summaries)
     print(f"[{target}-{suite}] status=completed completed_points={completed} "
-          f"timeout_points={censored} skipped_points={skipped} output={output}", flush=True)
+          f"timeout_points={censored} skipped_points={skipped} "
+          f"failed_points={failed} output={output}", flush=True)
     return output

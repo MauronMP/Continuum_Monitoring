@@ -14,24 +14,6 @@ def config():
                            resolve=lambda path: root / path)
 
 
-def _legacy_inventory(tmp_path, remote_dir):
-    path = tmp_path / "legacy-inventory.toml"
-    path.write_text(
-        "[cluster]\n"
-        'ssh_user = "pi"\n'
-        f'remote_dir = "{remote_dir}"\n'
-        f'remote_python = "{remote_dir}/.venv-node/bin/python"\n'
-        "[[nodes]]\n"
-        'role = "cloud"\n'
-        'host = "127.0.0.1"\n'
-        'endpoint = "http://127.0.0.1:8391"\n'
-        "local = true\n"
-        "port = 8391\n",
-        encoding="utf-8",
-    )
-    return path
-
-
 def test_status_rejects_wrong_worker_contract(config, monkeypatch):
     inventory = load_physical_inventory(
         config.resolve(config.topology_file)
@@ -196,8 +178,11 @@ def test_remote_stop_recovers_from_a_stale_pid_file(config, monkeypatch):
     assert "continuum_bench" in remote
     assert "--node-id edge2" in remote
     assert "--port 8391" in remote
-    assert 'for pid in $pids; do kill "$pid"' in remote
+    assert 'for pid in $pids; do' in remote
+    assert 'pgrep -P "$pid"' in remote
     assert 'while kill -0 "$pid"' in remote
+    assert "MaterializeOntology" not in remote
+    assert 'kill -TERM -- "-$child"' in remote
 
 
 def test_start_replaces_workers_with_a_stale_topology(config, monkeypatch):
@@ -262,10 +247,13 @@ def test_deploy_checks_all_remotes_before_copying(config, monkeypatch):
 
 
 @pytest.mark.parametrize("directory", ["/", "/home/pi", "/home/pi/", "/home/pi/../other", "/tmp", "/var/tmp/"])
-def test_inventory_rejects_broad_deployment_targets(config, tmp_path, directory):
-    path = _legacy_inventory(tmp_path, directory)
+def test_inventory_rejects_broad_deployment_targets(directory):
     with pytest.raises(ValueError, match="dedicated remote_dir"):
-        load_physical_inventory(path)
+        physical_cluster._validate_remote_install_paths(
+            directory,
+            f"{directory.rstrip('/')}/.venv-node/bin/python",
+            "pi",
+        )
 
 
 def test_stop_discards_pid_file_when_process_no_longer_exists(monkeypatch, tmp_path):
@@ -310,7 +298,7 @@ def test_offline_preflight_rejects_stale_classpaths(config, tmp_path, monkeypatc
     inventory = load_physical_inventory(config.resolve(config.topology_file))
     runtime = tmp_path / ".runtime"
     runtime.mkdir()
-    for name in ("hermit", "openllet", "jfact", "elk"):
+    for name in ("hermit", "openllet", "jfact"):
         monkeypatch.delenv(f"CONTINUUM_{name.upper()}_CLASSPATH", raising=False)
         (runtime / f"owl-validation-{name}.classpath").write_text('/missing/foreign-host.jar')
     monkeypatch.setenv("CONTINUUM_KONCLUDE_EXECUTABLE", "/missing/Konclude")
@@ -334,3 +322,17 @@ def test_dl_deployment_copies_installer_and_requires_native_backend(config, monk
     copies = [c for c in commands if c[0] == 'rsync']
     assert any(str(config.root / 'tools') in c for c in copies)
     assert not any(str(config.root / '.runtime') in c for c in copies)
+
+
+def test_native_cleanup_preserves_independent_diagnostics(monkeypatch):
+    killed = []
+    monkeypatch.setattr(physical_cluster.subprocess, "run", lambda *a, **k:
+        subprocess.CompletedProcess(a, 0, "100 1\n101 100\n102 101\n200 1\n201 200\n", ""))
+    monkeypatch.setattr(physical_cluster.os, "getpgid", lambda pid: pid)
+    monkeypatch.setattr(physical_cluster.os, "killpg", lambda pid, sig: killed.append(pid))
+    def absent(pid, signal):
+        raise ProcessLookupError
+    monkeypatch.setattr(physical_cluster.os, "kill", absent)
+    physical_cluster._stop_local_native_children(100)
+    assert set(killed) == {101, 102}
+    assert 201 not in killed

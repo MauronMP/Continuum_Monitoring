@@ -100,11 +100,11 @@ def test_physical_prepare_is_offline_and_does_not_take_worker_lease(tmp_path, mo
     assert cli.main(['physical', 'prepare', '--output-dir', str(tmp_path)]) == 0
 
 
-def test_new_comparison_defaults_and_removed_layout(config):
+def test_new_comparison_defaults_and_invalid_layout(config):
     import pytest
     assert config.reasoners == ('rdfs', 'hermit', 'openllet', 'jfact', 'konclude')
     with pytest.raises(SystemExit):
-        cli._parser().parse_args(['physical', 'all', '--layout', 'sharded'])
+        cli._parser().parse_args(['physical', 'all', '--layout', 'invalid'])
 
 
 def test_production_config_continues_after_timeout(config):

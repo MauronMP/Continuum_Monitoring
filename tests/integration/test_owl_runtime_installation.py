@@ -9,7 +9,7 @@ import tomllib
 def test_reasoner_pom_isolates_java_dependency_trees(root):
     pom = (root / "tools/owl/pom.xml").read_text(encoding="utf-8")
 
-    for profile in ("hermit", "openllet", "jfact", "elk"):
+    for profile in ("hermit", "openllet", "jfact"):
         assert f"<id>{profile}</id>" in pom
     common = pom.split("<profiles>", maxsplit=1)[0]
     assert "org.semanticweb.hermit" not in common
@@ -23,17 +23,11 @@ def test_reasoner_pom_isolates_java_dependency_trees(root):
     assert "<version>5.1.0</version>" in jfact_profile
     assert "<artifactId>guava</artifactId>" in jfact_profile
     assert "<version>30.1-jre</version>" in jfact_profile
-    elk_profile = pom.split("<id>elk</id>", maxsplit=1)[1].split(
-        "</profile>", maxsplit=1
-    )[0]
-    assert "<artifactId>owlapi-distribution</artifactId>" in elk_profile
-    assert "<version>4.1.3</version>" in elk_profile
-    assert "<artifactId>guice</artifactId>" in elk_profile
-    assert "<version>5.1.0</version>" in elk_profile
+    assert "<id>elk</id>" not in pom
 
 
 def test_konclude_wrapper_rejects_help_only_invocation(root):
-    ontology = root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl"
+    ontology = root / "ontology/core/schema.ttl"
     completed = subprocess.run(
         [
             sys.executable,

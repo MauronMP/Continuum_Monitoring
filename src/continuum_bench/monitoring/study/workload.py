@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import random
 
-from ..config import BenchmarkConfig
+from ...config import BenchmarkConfig
 from ...csv_utils import write_dict_rows
 from ..distributed import Endpoint
 from ...queries import QuerySpec, load_catalog

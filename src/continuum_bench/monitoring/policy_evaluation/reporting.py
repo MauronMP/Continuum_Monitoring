@@ -73,6 +73,26 @@ def _group(rows: list[dict[str, str]], keys: tuple[str, ...], value: str) -> dic
     }
 
 
+def _repetition_means(rows, strategy: str, field: str) -> list[float]:
+    """Use repetitions, not individual scenarios, as the uncertainty unit."""
+    grouped = defaultdict(list)
+    for row in rows:
+        if row["strategy"] == strategy:
+            grouped[row["repetition"]].append(float(row[field]))
+    return [mean(values) for values in grouped.values()]
+
+
+def _per_decision_cost(row, field: str) -> float:
+    """Amortize the once-per-batch reasoning probe before stacking costs."""
+    value = float(row[field])
+    if field == "reasoning_ms":
+        iterations = int(row["decision_iterations"])
+        if iterations <= 0:
+            raise ValueError("decision_iterations must be positive")
+        return value / iterations
+    return value
+
+
 def plot_effectiveness(root: Path) -> list[Path]:
     rows = _rows(root, "effectiveness")
     if not rows:
@@ -82,7 +102,7 @@ def plot_effectiveness(root: Path) -> list[Path]:
         figure,
         1,
         "Policy effectiveness in monitoring decisions",
-        "Ground-truth agreement across controlled continuum states; bars report mean and population SD over repetitions.",
+        "Configured plan agreement, averaged across scenarios; bars show mean and population SD of repetition means.",
     )
     strategies = ("static", "policy_driven")
     labels = ("Coverage", "Precision", "Over-monitoring", "Under-monitoring")
@@ -93,7 +113,7 @@ def plot_effectiveness(root: Path) -> list[Path]:
         means: list[float] = []
         errors: list[float] = []
         for field in fields:
-            samples = [float(row[field]) * 100 for row in rows if row["strategy"] == strategy]
+            samples = [value * 100 for value in _repetition_means(rows, strategy, field)]
             means.append(mean(samples))
             errors.append(pstdev(samples) if len(samples) > 1 else 0.0)
         positions = x + (offset - 0.5) * width
@@ -157,7 +177,7 @@ def plot_dynamic_adaptation(root: Path) -> list[Path]:
         figure,
         2,
         "Dynamic adaptation to context changes",
-        "One continuous normal → overload → failure → recovery trace; shaded regions denote the observed context.",
+        "Supplied normal → overload → failure → recovery contexts on a simulated timeline; no physical fault injection.",
     )
     for axis in axes:
         for time_value, context in zip(times, contexts):
@@ -165,9 +185,9 @@ def plot_dynamic_adaptation(root: Path) -> list[Path]:
         _style(axis)
     total = [grouped[(str(index), contexts[index])][0] for index in transitions]
     total_sd = [grouped[(str(index), contexts[index])][1] for index in transitions]
-    axes[0].errorbar(centers, total, yerr=total_sd, marker="o", linewidth=2, capsize=3, color="#145da0", label="Total adaptation")
+    axes[0].errorbar(centers, total, yerr=total_sd, marker="o", linewidth=2, capsize=3, color="#145da0", label="Decision plus reasoning probe")
     axes[0].set_ylabel("Latency (ms)")
-    axes[0].set_title("End-to-end adaptation latency")
+    axes[0].set_title("Controlled transition processing cost")
     axes[0].legend(frameon=False)
 
     active_policies = [float(representative[index]["active_policy_count"]) for index in transitions]
@@ -180,10 +200,10 @@ def plot_dynamic_adaptation(root: Path) -> list[Path]:
     axes[1].legend(frameon=False, ncol=2)
 
     components = (
-        ("reasoning_ms", "Internal reasoning", COLORS["reasoning"]),
+        ("reasoning_ms", "Separate reasoning probe", COLORS["reasoning"]),
         ("policy_evaluation_latency_ms", "Policy evaluation", COLORS["evaluation"]),
         ("monitoring_plan_generation_latency_ms", "Plan generation", COLORS["plan"]),
-        ("detection_latency_ms", "Detection", "#7f8c8d"),
+        ("detection_latency_ms", "Context read", "#7f8c8d"),
     )
     bottom = np.zeros(len(times))
     for field, label, color in components:
@@ -194,9 +214,11 @@ def plot_dynamic_adaptation(root: Path) -> list[Path]:
     twin = axes[2].twinx()
     twin.plot(centers, sampling, color="#111111", marker="D", linestyle="--", label="Sampling interval")
     twin.set_ylabel("Sampling interval (s)")
+    axes[2].set_ylim(0, max(float(bottom.max()), 1e-9) * 1.35)
+    twin.set_ylim(0, max(max(sampling), 1e-9) * 1.35)
     twin.spines["top"].set_visible(False)
     axes[2].set_ylabel("Latency components (ms)")
-    axes[2].set_xlabel(f"Context state ({interval:g} s between transitions)")
+    axes[2].set_xlabel(f"Simulated context timeline ({interval:g} s between transitions)")
     axes[2].set_title("Adaptation cost and sampling response")
     handles, labels = axes[2].get_legend_handles_labels()
     twin_handles, twin_labels = twin.get_legend_handles_labels()
@@ -273,7 +295,7 @@ def plot_computational_cost(root: Path) -> list[Path]:
     _header(
         figure,
         4,
-        "Functional benefit and computational cost",
+        "Controlled monitoring plans and computational cost",
         "Static and policy-driven strategies execute the same scenarios and resources; network traffic is an explicit payload-size estimate.",
     )
     strategies = ("static", "policy_driven")
@@ -305,7 +327,7 @@ def plot_computational_cost(root: Path) -> list[Path]:
     bars = axes[0, 1].bar(names, ram, yerr=ram_sd, capsize=4, color=colors)
     axes[0, 1].bar_label(bars, fmt="%.1f", fontsize=8)
     axes[0, 1].set_ylabel("Resident memory (MiB)")
-    axes[0, 1].set_title("Peak memory")
+    axes[0, 1].set_title("Sampled peak memory (scenario/repetition SD)")
 
     observations, observations_sd = values("observations_generated")
     observation_error = np.vstack(
@@ -315,23 +337,23 @@ def plot_computational_cost(root: Path) -> list[Path]:
     axes[1, 0].set_ylim(bottom=0)
     axes[1, 0].bar_label(bars, fmt="%.0f", fontsize=8)
     axes[1, 0].set_ylabel("Observations per scenario window")
-    axes[1, 0].set_title("Monitoring volume")
+    axes[1, 0].set_title("Estimated monitoring volume")
 
     policy_rows = [row for row in rows if row["strategy"] == "policy_driven"]
     breakdown_fields = (
-        ("reasoning_ms", "Internal reasoning", COLORS["reasoning"]),
+        ("reasoning_ms", "Separate reasoning probe", COLORS["reasoning"]),
         ("policy_evaluation_ms", "Policy evaluation", COLORS["evaluation"]),
         ("monitoring_plan_generation_ms", "Plan generation", COLORS["plan"]),
     )
     scenarios = list(dict.fromkeys(row["scenario_id"] for row in policy_rows))
     bottom = np.zeros(len(scenarios))
     for field, label, color in breakdown_fields:
-        component = np.array([mean(float(row[field]) for row in policy_rows if row["scenario_id"] == scenario) for scenario in scenarios])
+        component = np.array([mean(_per_decision_cost(row, field) for row in policy_rows if row["scenario_id"] == scenario) for scenario in scenarios])
         axes[1, 1].bar(range(len(scenarios)), component, bottom=bottom, label=label, color=color)
         bottom += component
     axes[1, 1].set_xticks(range(len(scenarios)), [scenario.split("-", 1)[1].title() for scenario in scenarios], rotation=12)
-    axes[1, 1].set_ylabel("Latency (ms)")
-    axes[1, 1].set_title("Policy-driven decision cost")
+    axes[1, 1].set_ylabel("Amortized cost per decision (ms)")
+    axes[1, 1].set_title("Decision cost plus amortized reasoning probe")
     axes[1, 1].legend(frameon=False, fontsize=8)
     for axis in axes.flat:
         _style(axis)

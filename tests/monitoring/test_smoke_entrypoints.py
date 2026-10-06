@@ -1,6 +1,6 @@
 import csv
 
-from continuum_bench import smoke
+from continuum_bench.monitoring import smoke
 
 
 def _write_summary(path, statuses):

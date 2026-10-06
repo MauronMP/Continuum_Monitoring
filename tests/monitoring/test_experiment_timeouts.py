@@ -3,8 +3,8 @@ from __future__ import annotations
 import csv
 from dataclasses import replace
 
-from continuum_bench import experiments
-from continuum_bench.experiment_config import load_experiment_config
+from continuum_bench.monitoring import experiments
+from continuum_bench.monitoring.experiment_config import load_experiment_config
 
 
 def test_scale_out_timeout_skips_repetitions_but_continues_reasoners(
@@ -17,8 +17,8 @@ def test_scale_out_timeout_skips_repetitions_but_continues_reasoners(
         repetitions=3,
         scale_out_node_counts=(1,),
     )
-    selected_config = replace(config, reasoners=("rdfs", "owlrl"))
-    from continuum_bench.distributed import Endpoint
+    selected_config = replace(config, reasoners=("rdfs", "hermit"))
+    from continuum_bench.monitoring.distributed import Endpoint
     monkeypatch.setattr(experiments, "discover", lambda *_: [Endpoint("http://worker:8391", "cloud")])
     monkeypatch.setattr(experiments, "_metadata", lambda *args: {})
     calls = []

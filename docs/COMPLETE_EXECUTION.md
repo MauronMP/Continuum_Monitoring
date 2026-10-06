@@ -2,6 +2,8 @@
 
 This guide starts from a clean coordinator, prepares the physical workers and
 runs every active test family. Run project commands from the repository root.
+For the purpose, evidence files and generated figures of each family, see
+[Test, experiment and figure reference](TESTS_AND_FIGURES.md).
 
 ## 1. Coordinator system packages
 
@@ -156,15 +158,15 @@ continuum-bench campaign \
 `owl-validate --require-all` requires HermiT, Openllet, JFact and Konclude. A
 failed reasoner prerequisite must be fixed before a complete run.
 
-## 6. Complete unlimited suite
+## 6. Recommended complete bounded suite
 
-The recommended command records configured budgets but never cancels a slow
-benchmark point. `--keep-going` also allows independent later work to continue
-after a real failure:
+The recommended command enforces the configured request, phase and point
+budgets. `--keep-going` records a timeout or real failure and attempts later
+independent work:
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   suite
 ```
@@ -191,11 +193,19 @@ Each invocation creates an isolated directory:
 outputs/suites/<UTC timestamp>-<run identifier>/
 ```
 
+Long physical phases print the active family, reasoner, load, repetition and
+stage. Worker heartbeats appear every 15 seconds, and each family updates
+`progress.json` plus its checkpointed `summary.csv`. A deadline is recorded as
+`timeout`; a native reasoner or implementation error is recorded as `failed`.
+Both remain visible in the suite manifest and final report. The suite returns a
+nonzero status when evidence is incomplete even though it continues through its
+planned top-level steps.
+
 Inspect the planned commands without contacting a worker:
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   suite \
   --dry-run
@@ -207,7 +217,7 @@ Override repetitions when a larger sample is required:
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   --repetitions 5 \
   suite
@@ -217,7 +227,7 @@ For a larger publication campaign:
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   --repetitions 10 \
   suite
@@ -250,18 +260,25 @@ CONTINUUM_TEST_NATIVE_OWL=1 \
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   physical all \
   --layout distributed \
   --output-dir outputs/monitoring
 ```
 
+Bounded execution records slow points as timeouts. It does not turn a reasoner
+crash or a semantic validation failure into success. The coordinator continues
+with independent points, checkpoints each outcome and reports
+`unvalidated_results` when physical timing completed without a completed
+canonical reference. Publication reports use only `completed` points with exact
+reference validation.
+
 ### Replicated physical monitoring
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   physical all \
   --layout replicated \
@@ -272,14 +289,14 @@ continuum-bench \
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   physical cumulative \
   --layout distributed \
   --output-dir outputs/monitoring
 
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   physical cumulative \
   --layout replicated \
@@ -290,14 +307,14 @@ continuum-bench \
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   physical scalability \
   --layout distributed \
   --output-dir outputs/monitoring
 
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   physical scalability \
   --layout replicated \
@@ -308,7 +325,7 @@ continuum-bench \
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   load physical \
   --load-config configs/load-benchmark.toml \
@@ -319,7 +336,7 @@ continuum-bench \
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   experiment all physical \
   --experiment-config configs/experiments.toml \
@@ -331,7 +348,7 @@ continuum-bench \
 
 ```bash
 continuum-bench \
-  --unlimited \
+  --timeout-mode bounded \
   --keep-going \
   campaign \
   --campaign-config configs/campaign.toml \
@@ -349,11 +366,11 @@ continuum-bench policy-evaluation plot \
   --output-dir outputs/policy-evaluation
 ```
 
-## 9. Bounded timeout execution
+## 9. Timeout strategy and optional unlimited execution
 
-Use bounded mode only when timeout censoring is part of the experiment. The
-following example permits 300 seconds per worker request, 600 seconds per phase
-and 1,800 seconds per point:
+Bounded mode is the normal execution strategy. The following example permits
+300 seconds per worker request, 600 seconds per phase and 1,800 seconds per
+point while attempting every configured observation:
 
 ```bash
 continuum-bench \
@@ -380,6 +397,36 @@ Persistent defaults are stored in:
 
 Command-line values override the configuration files for one invocation.
 
+`--unlimited` is optional. It disables coordinator, HTTP, worker and native
+reasoner deadlines. Use it only for a supervised, reduced profile whose runtime
+is already understood:
+
+```bash
+continuum-bench \
+  --unlimited \
+  --keep-going \
+  --repetitions 1 \
+  physical scalability \
+  --reasoner rdfs \
+  --layout distributed \
+  --output-dir outputs/diagnostic-unlimited
+```
+
+`--keep-going` cannot recover control while an unbounded native call is still
+running. In particular, HermiT, Openllet, JFact or Konclude may continue for
+hours on constrained nodes. An unlimited run can therefore remain on one point
+without reaching the next reasoner, repetition or family.
+
+Do not use `Ctrl+Z` to leave a physical campaign in the background. The current
+coordinator ignores that suspend signal while it holds the physical lease and
+prints a warning. Use `Ctrl+C`, then stop and restart the workers before a new
+campaign if a native child remains active.
+
+The worker service handles one request at a time so that its Unix phase timer
+can interrupt bounded CPU work. During a long native reasoner request,
+`/health` also waits and may time out. Check the worker and Java/Konclude child
+over SSH before classifying that node as offline.
+
 ## 10. Stop the workers
 
 Stop the remote services after all output has been written:
@@ -388,6 +435,10 @@ Stop the remote services after all output has been written:
 continuum-bench physical stop --ssh-user pi
 ```
 
+This command removes stale PID files and terminates project-owned native Java
+materializers left by an interrupted worker. Current workers also clean their
+active Java or Konclude process group when they receive `SIGTERM`.
+
 The shortest complete sequence after installation is:
 
 ```bash
@@ -395,10 +446,33 @@ cd /home/dsdservidor/Documentos/Continuum_Monitoring
 . .venv/bin/activate
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
-continuum-bench --unlimited --keep-going suite
+continuum-bench --timeout-mode bounded --keep-going suite
 continuum-bench physical stop --ssh-user pi
 ```
 
 Do not start a physical suite while another campaign holds the physical lease.
 Do not interpret results from a run whose workers failed release, source-build
-or topology compatibility checks.
+or topology compatibility checks. Metadata from current runs contains
+`software_build_id` and `topology_fingerprint`; missing values are treated as
+historical, incompatible evidence.
+
+## Optional comparative policy evaluation
+
+The independent [comparative evaluation module](COMPARATIVE_EVALUATION.md) runs paired static,
+procedural and semantic policy strategies on the physical hosts. It provides
+its own bounded configuration, four experiments, durable JSON/CSV evidence and
+per-node PNG figures. Published systems are methodological references, not
+claimed reproductions. Mist is excluded by default.
+
+```bash
+.venv/bin/python -m continuum_bench.monitoring.comparison check
+.venv/bin/python -m continuum_bench.monitoring.comparison run --smoke
+.venv/bin/python -m continuum_bench.monitoring.comparison run
+```
+
+## Five-node operation while Mist is offline
+
+Use the explicit topology and bounded smoke profile described in
+[Audit remediation](REMEDIATION.md#operating-while-mist-is-offline). Deploy, start
+and run with the same `--topology-file` selection. Do not combine five-node and
+six-node outputs or silently remove Mist from the standard topology.

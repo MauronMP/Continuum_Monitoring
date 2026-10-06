@@ -1,150 +1,147 @@
 # Project Audit
 
-Audit date: 2026-09-29. Active release: 0.5.0.
+Audit date: 6 October 2026. Active release: 0.5.0.
 
-## Scope and verified boundary
+## Conclusion and scope
 
-The repository implements reproducible evaluation of policy-driven monitoring
-on a physical Cloud–Fog–Mist–Edge continuum. The ontology is an internal,
-modular knowledge mechanism. Monitoring effectiveness, adaptation, scalability
-and computational cost are the primary outcomes.
+The local software checks and modular ontology validation pass. The initial physical snapshot below found no running HTTP workers. The authorized
+follow-up has redeployed and started Cloud, Fog and the three Edge workers using
+an explicit five-node topology; Mist remains offline. See
+[Remediation](REMEDIATION.md) for the corrected Konclude conversion, lifecycle
+isolation, execution profiles and current verification evidence. The initial
+snapshot and test counts below are retained as dated audit evidence.
 
-The audit covers Python source, command-line interfaces, configuration loaders,
-ontology modules and SHACL shapes, SPARQL catalogs, external reasoner setup,
-physical topology, result contracts, plotting, documentation, packaging, tests
-and continuous integration.
+The audit inventories every existing tracked and unignored repository file,
+including untracked source changes. It checks parseable formats, module and query
+relations, configuration contracts, execution paths, generated documentation and
+local runtimes. Generated outputs and installed dependencies are evaluated
+separately. Inventory coverage does not imply a manual proof of every line or
+of every ontology axiom. No complete paper manuscript is present in this checkout;
+`ontology/diagrams/paper-example.tex` is only a diagram example.
 
-## Architecture
+Evidence is stored under `outputs/audit/2026-10-06/` (intentionally ignored by Git).
 
-| Area | Responsibility | Audit result |
-| --- | --- | --- |
-| `src/continuum_bench/core` | Infrastructure-neutral domain contracts | Reusable and independent of experiment runners. |
-| `src/continuum_bench/monitoring` | Physical orchestration, experiments, metrics and reporting | Owns benchmark-specific behavior. |
-| `src/continuum_bench/monitoring/policy_evaluation` | Four policy-monitoring evaluations | Separates decisions, sampling, CSV output and plotting. |
-| `ontology` | Foundation, domain, task and application modules | Validated as an internal semantic model. |
-| `queries` | Categorized SPARQL catalog and execution plan | Traceable to requirements and policy categories. |
-| `configs` | Workloads, budgets, reasoners and topology | Parsed and validated outside experiment code. |
-| `tests` | Unit, integration, infrastructure and reporting checks | Does not require a monolithic deployment. |
+## Corrections made
 
-Top-level modules such as `continuum_bench.config`, `distributed`, `experiments`
-and `study` are public compatibility facades. The maintained implementations
-remain under `monitoring`; the facades contain no second benchmark engine.
-
-## Placement and reasoning contracts
-
-Physical placement has two unambiguous modes:
-
-- `replicated` prepares a complete logical graph on each selected worker and
-  routes a request to one replica.
-- `distributed` assigns authority-aware fragments to workers, executes against
-  those fragments and merges source results at the coordinator.
-
-The previous `shared` campaign alias was removed because it executed with the
-same branch as `distributed` and could therefore mislabel evidence. The active
-reasoner matrix is RDFS, HermiT, Openllet, JFact and Konclude. Experiment logic
-uses a common reasoner interface and records the selected implementation.
-
-## Reproducibility and evidence
-
-TOML files hold workload sizes, repetitions, warm-up, seeds, reasoners,
-concurrency, placement, request budgets and skip policy. Structured outputs are
-written under `outputs/` as CSV or JSON before any PNG is generated. Metadata
-records the release, configuration, source revision, topology and runtime.
-
-Release 0.5.0 uses the distribution name `continuum-monitoring-benchmark`.
-Publication readers retain read-only support for historical metadata created
-under `continuum-ontology-benchmark`; new runs emit only the current name.
-
-The clean-install workflow covers Python 3.11 through 3.14 on Linux and macOS.
-It runs the complete software test suite, ontology validation, preflight checks,
-the four policy-evaluation smoke experiments, PNG generation and documentation
-validation.
-
-## Audit evidence
-
-| Check | Result on 2026-09-29 |
+| Finding | Correction |
 | --- | --- |
-| Editable package and dependencies | 0.5.0 installed; `pip check` reports no broken requirements. |
-| Python compilation | Source, tools and tests compile without errors. |
-| Structured configuration | Project TOML and JSON parse; the 115-row query catalog is rectangular. |
-| Software suite | 415 tests collected: 403 passed, 12 optional tests skipped, 0 failed. |
-| Documentation | 12 Markdown files checked; links and generated references are current. |
-| Topology and preflight | Six nodes parsed; 7,966 base triples, 115 queries, 16 categories and all configured targets validated. |
-| Internal semantic validation | RDFS, HermiT, Openllet, JFact and Konclude completed with no contradiction, datatype or violation-query error. |
-| External OWL gate | HermiT, Openllet, JFact and Konclude report a consistent ontology; OWLAPI reports OWL 2 DL with no unsatisfiable class. |
-| Policy evaluation | 120 publication-profile rows completed with no timeout or failure; four nonblank 300 dpi PNG files regenerated. |
-| Physical workers | Not executed: all five remote Tailscale peers were offline. |
+| A cost figure stacked batch reasoning time with per-decision policy/plan time. | Reasoning is divided by `decision_iterations`; labels identify the separate probe and amortized units. |
+| Effectiveness uncertainty pooled scenarios while claiming repetition uncertainty. | Scenario means are calculated within each repetition before summarizing repetitions. |
+| Simulated contexts were described as observed transitions or physical detection. | Figures, metadata and documentation identify supplied contexts, context-read timing and estimated observation volumes. |
+| The original evaluator was described as consuming semantic context. | It is explicitly documented as procedural; the independent comparison module consumes semantic tier membership. |
+| Missing RSS could appear as zero; non-Linux measurements were ambiguous. | Missing values remain missing; memory provenance distinguishes Linux current RSS and Darwin lifetime peak RSS. Physical comparison requires Linux procfs; CI measurement tests have explicit platform requirements. |
+| Topology and load configuration could admit non-finite numerical values. | Domain validation runs on loaded nodes; rate and duration must be finite. |
+| JFact provenance contained a Java object address. | The OWLAPI version components are serialized explicitly. A backend-reported zero version remains unknown, not a claimed artifact version. |
+| Markdown validation omitted root documents other than README. | All root Markdown files are checked, including CHANGELOG. |
+| Audit documentation asserted an obsolete healthy deployment. | Current health and SSH observations replace the stale snapshot. |
 
-The policy-driven effectiveness rows match declared ground truth with zero
-over-monitoring and under-monitoring. Every dynamic transition matches its
-ground truth, and recovery has no stale policy. Scalability progresses from
-24 resources, 12 policies and 100 events to 1,536 resources, 768 policies and
-8,000 events. All paired computational-cost scenarios completed.
+Regression tests cover cost units, repetition aggregation, missing RSS and invalid
+node capacity/location. Existing scientific CSV/JSON records are not rewritten.
 
-## Physical inventory state
+## Architecture and measurement contracts
 
-The manifest declares one local Cloud coordinator, one Fog node, one Mist node
-and three Edge nodes on Tailscale. At audit time the five remote workers were
-reported offline by Tailscale, so deployment compatibility and live physical
-execution could not be revalidated. Local topology parsing, protocol contracts,
-reasoner prerequisites and physical preflight checks remain verifiable.
+The reusable `core` owns nodes, capacity, geographic location, policies,
+requirements and reasoner interfaces. `monitoring` owns experiment orchestration,
+measurement and reporting. Ontology foundation, topology, governance,
+observability, orchestration, federation, deployment and optional wellbeing
+modules remain separate. No active Docker deployment or retired monolithic
+experiment path was found.
 
-Workers must be redeployed before the next physical run because release and
-source-build compatibility checks intentionally reject stale worker code.
+`replicated` gives each worker the complete logical graph and distributes queries.
+`distributed` places authority-aware fragments, selects sources and merges
+answers; shared schema triples may occur in several fragments. This does not
+make arbitrary fragment-local OWL DL reasoning equivalent to global closure.
+RDFS, HermiT, Openllet, JFact and Konclude retain distinct reasoning contracts.
 
-## Scientific and operational limitations
+The comparison module contains controlled static, procedural and semantic
+baselines. They are not reproductions of published systems. Its completed smoke
+runs verify mechanics; a full comparative campaign has not been run. The older
+four-block evaluator measures procedural plan conformance plus a separate
+reasoning probe. Its quality score includes policy identifiers alongside
+operational items and cannot establish clinical efficacy or semantic benefit.
+CPU/RSS sampling covers the Python process, not native reasoner child processes.
 
-- Node locations currently contain region labels but no verified latitude,
-  longitude or inter-site distance. The project must not present physical
-  distance results until measured or configured locations are available.
-- Policy-effectiveness ground truth is controlled by the experiment
-  configuration. It validates decision correctness against declared scenarios;
-  it is not independent clinical evidence of stress-detection effectiveness.
-- Network traffic in the policy computational-cost experiment is estimated from
-  observation count and configured payload bytes. It is not an interface-level
-  packet measurement.
-- CPU and resident-memory fields in local policy evaluations measure the
-  coordinator process. Physical campaigns record worker telemetry separately.
-- Operating-system scheduling, VPN routing and native reasoner startup make
-  elapsed-time and resource measurements host-dependent despite deterministic
-  workload generation.
-- Konclude may warn about unsupported annotation handling. Assertions and query
-  results remain the comparable semantic contract; annotations are not used as
-  inferred facts.
-- Structural validation passes, but the reference ontology's scientific
-  acceptance profile remains a draft. `EXT-Q76` reports nine incomplete
-  acceptance-profile items and `EXT-Q77` reports six of the seven required
-  readiness records. SHACL also reports warning-level gaps for acceptance
-  thresholds, model timestamps, AHP scores and historical trust windows. These
-  warnings prohibit a blanket compliance claim but do not invalidate the four
-  configured policy-monitoring experiments.
-- Query traceability currently covers 102 of 116 declared requirements and 69
-  of 79 policies. There are no unknown identifiers, but the remaining declared
-  entities require either query coverage or an explicit out-of-scope decision.
-- Mobility types are represented by extension points only. Random Waypoint,
-  Random Walk, Manhattan/Grid and Gauss–Markov simulations are not implemented.
+## Verification evidence
 
-## Revalidation commands
+- `repository.json`: 380 maintained files inventoried with SHA-256 hashes;
+  Python, TOML, JSON, XML/SVG/GraphML, Turtle, SPARQL and rectangular CSV checks.
+  No unresolved internal ontology IRIs or object/datatype-property collisions.
+- `pytest.xml`: full suite, 459 cases: 448 passed and 11 expected skips.
+  `regression-tests.xml`: 19 final checks passed, including four subsequently
+  added non-finite workload cases (463 cases now collected).
+- `native-tests.xml`: all 28 separately enabled native reasoner tests passed.
+- `validation.json`: `ok=true`, 7,966 base triples, 115 query contracts pass,
+  SHACL conforms with 57 warning-level findings. Fragment reconstruction and
+  cloud/fog privacy checks pass.
+- `owl-validation.json`: all four native backends available and consistent;
+  OWLAPI profile checks pass and no unsatisfiable named class is reported.
+- Local RDFS and four native materializations introduce no contradiction or
+  violation-query failures. Dependency integrity and documentation checks pass.
 
-Run from a clean checkout after following `docs/INSTALLATION.md`:
+The machine-readable test reports are authoritative for counts. Platform-specific
+and opt-in skips are not evidence of a successful physical measurement.
+
+## Initial physical-node snapshot (before remediation)
+
+| Node | Tailscale IP | Host access | HTTP worker, port 8391 |
+| --- | --- | --- | --- |
+| Cloud | 100.86.63.53 | Local host available | Connection refused |
+| Fog | 100.93.73.27 | SSH available | Connection refused |
+| Edge 1 | 100.101.178.35 | SSH available | Connection refused |
+| Edge 2 | 100.70.9.117 | SSH available | Connection refused |
+| Edge 3 | 100.121.135.60 | SSH available | Connection refused |
+| Mist | 100.72.111.107 | SSH timeout | HTTP timeout |
+
+Evidence: `nodes-health.json` and `nodes-ssh.json`. The four reachable Raspberry
+Pis expose four cores, about 8 GB RAM, a 64-bit kernel but 32-bit Python user space,
+Python 3.11.2, Java and Konclude. Available root storage is approximately
+12.5–13.4 GiB. They share the OS hostname `raspberrypi`; configured node IDs
+disambiguate the protocol, but unique hostnames would improve operations.
+
+Mist remains declared in the main topology: silently excluding it would change
+the experiment. The separate comparison configuration explicitly excludes Mist.
+A refused port is different from a busy worker: during a long request the
+single-threaded worker can also delay health responses. Use SSH inspection when
+that distinction matters. This snapshot alone does not diagnose service shutdown.
+
+## Remaining scientific and operational limits
+
+1. SHACL's 57 warnings and incomplete acceptance evidence remain. Nine acceptance
+   thresholds require justified measurements; reproducibility records also need
+   completion. Scientific acceptance is not ready. Do not invent values to pass.
+2. Query traceability covers 102/116 requirements and 69/79 policies. The remaining
+   items need explicit coverage decisions, not automatically generated claims.
+3. Historical distributed Konclude outputs contain semantic mismatches. The
+   follow-up reproduced and fixed relative-IRI loss in the OWLlink bridge;
+   [Observed failures](OBSERVED_FAILURES.md) explains the cause and evidence.
+   Historical invalid rows still cannot support speedup claims.
+4. A 32-bit native process can exhaust its address space despite free host RAM.
+   Larger physical campaigns still need bounded limits and failure analysis.
+5. `--unlimited` can block indefinitely. Prefer bounded campaigns with explicit
+   timeout/failure records. Do not treat skipped or censored rows as zero cost.
+6. Tailscale supplies connectivity, not geographic distances or controlled WAN
+   latency. No clinical stress-detection or mobility validation was performed.
+7. Source changes invalidate exact build identity for new physical campaigns.
+   Redeploy the same build to selected nodes and recheck readiness before running.
+   Preserve historical metadata; do not relabel old results as new executions.
+8. Linux checks were executed locally; the configured macOS CI matrix was not
+   executed on this machine. Cross-platform fixes still require CI confirmation.
+
+## Repeatable audit
+
+Run from the repository with its virtual environment active:
 
 ```bash
-.venv/bin/python -m pytest -q
-.venv/bin/python tools/check_documentation.py
-continuum-bench topology validate
+python tools/audit_repository.py --output outputs/audit/repository.json
+python -m compileall -q src tools tests
+python -m pip check
+python tools/check_documentation.py
+pytest -q --junitxml=outputs/audit/pytest.xml
+CONTINUUM_TEST_NATIVE_OWL=1 pytest tests/core/test_native_reasoners.py -q
 continuum-bench validate
-continuum-bench preflight
 continuum-bench owl-validate --require-all
-continuum-bench policy-evaluation all \
-  --evaluation-config configs/policy-evaluation-smoke.toml \
-  --output-dir outputs/policy-evaluation-smoke
-continuum-bench policy-evaluation plot \
-  --output-dir outputs/policy-evaluation-smoke
-```
-
-Once every remote node is online and redeployed, run:
-
-```bash
 continuum-bench physical status --ssh-user pi
-continuum-bench --unlimited --keep-going suite
 ```
+
+Follow [Complete execution](COMPLETE_EXECUTION.md) to deploy and verify workers
+before launching a campaign. The audit did not run a new full physical campaign.

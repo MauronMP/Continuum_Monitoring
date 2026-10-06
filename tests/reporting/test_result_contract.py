@@ -41,3 +41,12 @@ def test_result_contract_rejects_ontology_before_english_correction(tmp_path, re
     (tmp_path / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
     with pytest.raises(ValueError, match="ontology_revision"):
         require_release_metadata(tmp_path)
+
+
+def test_result_contract_rejects_results_from_another_source_build(tmp_path):
+    metadata = release_identity()
+    metadata["software_build_id"] = "continuum-benchmark-stale-source"
+    (tmp_path / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="software_build_id"):
+        require_release_metadata(tmp_path)

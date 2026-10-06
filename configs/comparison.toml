@@ -1,0 +1,20 @@
+# Isolated policy-decision comparison. Existing campaigns are unchanged.
+[comparison]
+policy_config = "policy-evaluation.toml"
+topology = "topologies/physical/topology.toml"
+output = "outputs/comparison"
+exclude_nodes = ["mist"]
+exclude_resources = ["mist"]
+strategies = ["static", "procedural", "semantic"]
+experiments = ["effectiveness", "adaptation", "scalability", "cumulative"]
+repetitions = 5
+warmup = 2
+seed = 2026
+# Per isolated strategy/node/experiment/size/repetition job, including setup.
+timeout_seconds = 120
+connect_timeout_seconds = 8
+# Scales logical resources and policy copies, not physical hosts.
+multipliers = [1, 4, 16]
+events_per_context = 10
+# Cumulative evaluation retains the prepared model and processes longer traces.
+cumulative_cycles = [1, 4, 16]

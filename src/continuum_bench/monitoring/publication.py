@@ -58,6 +58,49 @@ def write_csv(path, rows):
         writer.writeheader(); writer.writerows(rows)
 
 
+def _validation_key(row):
+    """Identify one measured point independently of its individual queries."""
+
+    return (
+        row.get('reasoner', ''),
+        str(row.get('synthetic_users', 0) or 0),
+        str(row.get('repetition', '') or ''),
+        str(row.get('stage', '') or ''),
+    )
+
+
+def validated_evidence_rows(rows, validations=()):
+    """Return report rows with exact semantic acceptance applied per point.
+
+    Physical timings remain in the raw CSV. A point is eligible for performance
+    curves only when its canonical reference completed and every recorded query
+    projection matched that reference.
+    """
+
+    invalid_points = {
+        _validation_key(row) for row in validations
+        if row.get('valid', '').lower() != 'true'
+    }
+    normalized = []
+    for source in rows:
+        row = dict(source)
+        if outcome(row) == 'completed':
+            reference_status = row.get('reference_status', '')
+            if reference_status and reference_status not in {'completed', 'disabled'}:
+                row['status'] = 'unvalidated_results'
+                row['error'] = (
+                    'Canonical reference did not complete; physical timing is '
+                    'retained but excluded from validated performance evidence'
+                )
+            elif _validation_key(row) in invalid_points:
+                row['status'] = 'invalid_results'
+                row['error'] = (
+                    'Distributed query results differ from canonical reference'
+                )
+        normalized.append(row)
+    return normalized
+
+
 def figure_group(name):
     if name.startswith(('node-', 'continuum-layer-', 'hardware-')): return 'nodes-and-layers'
     if name.startswith(('query-', 'expensive-')): return 'queries'
@@ -78,6 +121,7 @@ class Report:
 
     def _evidence_context(self):
         """Compare recorded evidence with the active software and topology."""
+        from ..protocol import SOFTWARE_BUILD_ID
         from ..topology import load_topology
         topology=load_topology(
             self.root/'configs/topologies/physical/topology.toml', 'physical'
@@ -93,7 +137,9 @@ class Report:
                              'distributed-reasoning-scalability')
             ),
         ]
-        versions=set(); node_counts=set(); reconstructed=[]; records=[]
+        versions=set(); build_ids=set(); node_counts=set(); fingerprints=set()
+        missing_build_ids=[]; missing_fingerprints=[]
+        reconstructed=[]; records=[]
         for path in metadata_paths:
             if not path.is_file():
                 continue
@@ -109,20 +155,43 @@ class Report:
                        value.get('topology',{}).get('endpoint_override') or [])
             count=value.get('node_count') or (len(endpoints) if endpoints else None)
             if version: versions.add(str(version))
+            build_id=value.get('software_build_id')
+            if build_id:
+                build_ids.add(str(build_id))
+            else:
+                missing_build_ids.append(str(path.resolve()))
             if count: node_counts.add(int(count))
+            fingerprint=value.get('topology_fingerprint')
+            if fingerprint:
+                fingerprints.add(str(fingerprint))
+            else:
+                missing_fingerprints.append(str(path.resolve()))
             if value.get('metadata_reconstructed_after_failed_validation'):
                 reconstructed.append(str(path.resolve()))
             records.append(str(path.resolve()))
         return {
             'current_benchmark_version':__version__,
+            'current_software_build_id':SOFTWARE_BUILD_ID,
             'current_topology_node_count':len(topology.active_nodes),
             'current_topology_fingerprint':topology.fingerprint,
             'recorded_benchmark_versions':sorted(versions),
+            'recorded_software_build_ids':sorted(build_ids),
             'recorded_topology_node_counts':sorted(node_counts),
+            'recorded_topology_fingerprints':sorted(fingerprints),
+            'metadata_missing_build_id':missing_build_ids,
+            'metadata_missing_topology_fingerprint':missing_fingerprints,
             'reconstructed_metadata':reconstructed,
             'metadata_records':records,
             'version_compatible':not versions or versions=={__version__},
+            'build_compatible':(
+                bool(records) and not missing_build_ids
+                and build_ids=={SOFTWARE_BUILD_ID}
+            ),
             'topology_compatible':not node_counts or node_counts=={len(topology.active_nodes)},
+            'topology_fingerprint_compatible':(
+                bool(records) and not missing_fingerprints
+                and fingerprints=={topology.fingerprint}
+            ),
         }
 
     def read(self,path):
@@ -143,11 +212,13 @@ class Report:
         fig.suptitle(title[:1].upper()+title[1:],fontsize=12,fontweight='bold')
         incompatible = (
             not self.evidence_context['version_compatible']
+            or not self.evidence_context['build_compatible']
             or not self.evidence_context['topology_compatible']
+            or not self.evidence_context['topology_fingerprint_compatible']
         )
         if incompatible:
             caption=(
-                'Historical evidence: recorded release/topology differs from the active '
+                'Historical evidence: recorded software build or topology differs from the active '
                 f"{self.evidence_context['current_benchmark_version']} "
                 f"{self.evidence_context['current_topology_node_count']}-node configuration. "
                 + caption
@@ -339,6 +410,19 @@ class Report:
 
     def audit(self,datasets):
         for name,rows in datasets.items():
+            incomplete_references = sum(
+                outcome(row) == 'failed'
+                and row.get('status') == 'unvalidated_results'
+                for row in rows
+            )
+            if incomplete_references:
+                self.checks.append({
+                    'dataset': name,
+                    'check': 'canonical reference completed',
+                    'rows': len(rows),
+                    'invalid': incomplete_references,
+                    'status': 'failed',
+                })
             for index,row in enumerate(rows):
                 if outcome(row)=='skipped':continue
                 offered,processed,lost=(number(row,key) for key in ('events_offered','events_processed','events_lost'))
@@ -473,11 +557,21 @@ class Report:
                 f"{self.evidence_context['recorded_benchmark_versions']} do not match "
                 f"active version {self.evidence_context['current_benchmark_version']}"
             )
+        if not self.evidence_context['build_compatible']:
+            blockers.append(
+                'recorded software build identifiers are missing or differ '
+                'from the active source tree'
+            )
         if not self.evidence_context['topology_compatible']:
             blockers.append(
                 'recorded topology sizes '
                 f"{self.evidence_context['recorded_topology_node_counts']} do not match "
                 f"the active {self.evidence_context['current_topology_node_count']}-node inventory"
+            )
+        if not self.evidence_context['topology_fingerprint_compatible']:
+            blockers.append(
+                'recorded topology fingerprints are missing or differ from '
+                'the active physical topology'
             )
         if self.evidence_context['reconstructed_metadata']:
             blockers.append('one or more active datasets use reconstructed metadata after a failed run')
@@ -668,21 +762,24 @@ class Report:
                 rows=self.read(self.inputs/f'monitoring/{layout}/{suite}/summary.csv')
                 validation_path = self.inputs/f'monitoring/{layout}/{suite}/result-validation.csv'
                 validations = self.read(validation_path) if validation_path.is_file() else []
-                invalid_reasoners = {
-                    row.get('reasoner') for row in validations
+                rows = validated_evidence_rows(rows, validations)
+                invalid_points = {
+                    _validation_key(row) for row in validations
                     if row.get('valid', '').lower() != 'true'
                 }
-                if invalid_reasoners:
-                    rows = [
-                        ({**row, 'status': 'invalid_results',
-                          'error': 'At least one distributed result differs from the canonical reference'}
-                         if row.get('reasoner') in invalid_reasoners and outcome(row) == 'completed'
-                         else row)
-                        for row in rows
-                    ]
+                if invalid_points:
                     self.findings.append(
-                        f'{layout}/{suite}: excluded semantically invalid profiles '
-                        f'{sorted(invalid_reasoners)} from performance curves.'
+                        f'{layout}/{suite}: excluded {len(invalid_points)} '
+                        'semantically invalid point(s) from performance curves.'
+                    )
+                unvalidated = sum(
+                    row.get('status') == 'unvalidated_results' for row in rows
+                )
+                if unvalidated:
+                    self.findings.append(
+                        f'{layout}/{suite}: retained raw timing for {unvalidated} '
+                        'point(s) whose canonical reference did not complete; '
+                        'those points are excluded from performance curves.'
                     )
                 if rows:
                     datasets[f'{layout}/{suite}']=rows
@@ -705,7 +802,7 @@ class Report:
             else:
                 self.findings.append(
                     'distributed-reasoning-scalability: comparisons are grouped by reasoning_task; '
-                    'identity, RDFS, OWL RL, OWL EL and OWL DL timings are not treated as interchangeable.'
+                    'RDFS and OWL DL timings are not treated as interchangeable.'
                 )
         if not datasets: raise ValueError(f"No physical result summaries below {self.inputs}")
         self.coverage(datasets)

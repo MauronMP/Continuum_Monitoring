@@ -28,8 +28,7 @@ class MaterializeOntology {
         // of entities already recognized by OWLAPI before structural validation.
         for (OWLEntity entity : ontology.getSignature())
             manager.addAxiom(ontology, df.getOWLDeclarationAxiom(entity));
-        OWLProfile profile = args[2].contains("ElkReasonerFactory")
-            ? new OWL2ELProfile() : new OWL2DLProfile();
+        OWLProfile profile = new OWL2DLProfile();
         String violations = profile.checkOntology(ontology).toString();
         if (!profile.checkOntology(ontology).isInProfile())
             throw new IllegalArgumentException("Input is outside the required OWL profile: " + violations);

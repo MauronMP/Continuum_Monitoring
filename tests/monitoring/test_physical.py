@@ -1,5 +1,5 @@
-from continuum_bench.distributed import Endpoint
-from continuum_bench.physical import (
+from continuum_bench.monitoring.distributed import Endpoint
+from continuum_bench.monitoring.physical import (
     balanced_assignment,
     inventory_endpoints,
 )

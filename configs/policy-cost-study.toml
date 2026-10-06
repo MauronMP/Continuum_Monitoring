@@ -52,7 +52,7 @@ packet_loss_per_meter = 0.0005
 jitter_ms = 1.0
 
 [placement]
-strategy = "partitioned_selective_replication"
+strategy = "distributed_selective_replication"
 
 [scheduler]
 strategy = "data_locality_aware"

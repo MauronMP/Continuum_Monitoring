@@ -55,3 +55,16 @@ def test_domain_capacity_accepts_all_supported_memory_suffixes(config):
                              "1024m": 1024, "1t": 1048576,
                              "1024k": 1, "1048576b": 1}.items():
         assert replace(node, memory=memory).to_domain().capacity.ram_mib == expected
+
+
+def test_topology_rejects_nonfinite_capacity_and_incomplete_coordinates(config):
+    from dataclasses import replace
+    import pytest
+    from continuum_bench.topology import _validate_topology
+    topology = load_topology(config.resolve(config.topology_file), "physical")
+    node = topology.nodes[0]
+    for changes in ({"cpus": float("nan")}, {"network_mbps": float("inf")},
+                    {"processing_capacity": float("nan")}, {"latitude": 40.0}):
+        invalid = replace(topology, nodes=(replace(node, **changes), *topology.nodes[1:]))
+        with pytest.raises(ValueError):
+            _validate_topology(invalid)

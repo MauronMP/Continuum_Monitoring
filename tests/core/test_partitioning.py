@@ -9,8 +9,8 @@ from continuum_bench.partitioning import (
     privacy_violations,
 )
 from continuum_bench.queries import execute_query_detailed, load_catalog
-from continuum_bench.distributed import Endpoint
-from continuum_bench.distributed_ontology import _sources
+from continuum_bench.monitoring.distributed import Endpoint
+from continuum_bench.monitoring.distributed_ontology import _sources
 from continuum_bench.synthetic import add_synthetic_data
 from continuum_bench.topology import load_topology
 

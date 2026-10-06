@@ -1,7 +1,7 @@
 """Three non-confounded experiments for continuum ontology evaluation.
 
 The module deliberately separates replicated query scale-out, isolated
-hardware reasoning, and authority-partitioned ontology execution.  A result
+hardware reasoning, and authority-distributed ontology execution. A result
 from one family must not be used as a measurement of another family.
 """
 
@@ -25,13 +25,14 @@ from .budget import (
     is_boundary_failure,
     remaining_seconds,
 )
-from .config import BenchmarkConfig
+from ..config import BenchmarkConfig
 from ..csv_utils import write_dict_rows
 from .distributed import Endpoint, _parallel, _request, discover
 from .experiment_config import ExperimentConfig, ReasoningProfile
 from .load_benchmark import _local_timeout
 from ..queries import QuerySpec, execute_query_detailed, load_catalog
 from ..specification import release_identity
+from ..topology import Topology
 from .budget import execution_metadata
 from .distributed_ontology import (
     _prepare as distributed_prepare,
@@ -61,6 +62,7 @@ def _metadata(
     config: BenchmarkConfig,
     workload: ExperimentConfig,
     endpoints: list[Endpoint],
+    topology: Topology | None = None,
 ) -> dict[str, Any]:
     endpoint_hardware = []
     for endpoint in endpoints:
@@ -94,10 +96,19 @@ def _metadata(
                     "cpu_count",
                     "pointer_bits",
                     "total_memory_kib",
+                    "build_id",
+                    "topology_fingerprint",
                 )
             }
             | {"url": endpoint.url}
         )
+    topology_fingerprints = sorted(
+        {
+            str(item["topology_fingerprint"])
+            for item in endpoint_hardware
+            if item.get("topology_fingerprint")
+        }
+    )
     return {
         **release_identity(),
         "execution_policy": execution_metadata(),
@@ -113,6 +124,22 @@ def _metadata(
         "stop_after_timeout": workload.stop_after_timeout,
         "seed": workload.seed,
         "node_count": len(endpoints),
+        "topology_fingerprint": (
+            topology.fingerprint
+            if topology
+            else (
+                topology_fingerprints[0]
+                if len(topology_fingerprints) == 1
+                else None
+            )
+        ),
+        "worker_build_ids": sorted(
+            {
+                str(item["build_id"])
+                for item in endpoint_hardware
+                if item.get("build_id")
+            }
+        ),
         "endpoints": [
             {
                 "url": endpoint.url,
@@ -138,10 +165,15 @@ def _target_endpoints(
     config: BenchmarkConfig,
     target: str,
     endpoint_urls: list[str] | None,
+    topology: Topology | None = None,
 ) -> list[Endpoint]:
     if target not in {"physical"}:
         raise ValueError("Experiment target must be physical")
-    return discover(endpoint_urls or [])
+    return discover(
+        endpoint_urls or [],
+        topology.active_nodes if topology else None,
+        topology.fingerprint if topology else None,
+    )
 
 
 def _phase_payload(
@@ -345,10 +377,13 @@ def run_scale_out(
     target: str,
     output_root: Path,
     endpoint_urls: list[str] | None = None,
+    topology: Topology | None = None,
 ) -> Path:
     """Measure query scale-out after an explicitly excluded prepare phase."""
 
-    all_endpoints = _target_endpoints(config, target, endpoint_urls)
+    all_endpoints = _target_endpoints(
+        config, target, endpoint_urls, topology
+    )
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     summary_rows: list[dict[str, Any]] = []
     query_rows: list[dict[str, Any]] = []
@@ -620,7 +655,7 @@ def run_scale_out(
     if query_rows:
         _write(output / "query-runs.csv", query_rows)
     metadata = _metadata(
-        target, "scale-out", config, workload, all_endpoints
+        target, "scale-out", config, workload, all_endpoints, topology
     )
     metadata.update(
         {
@@ -652,10 +687,11 @@ def run_reasoning_hardware(
     target: str,
     output_root: Path,
     endpoint_urls: list[str] | None = None,
+    topology: Topology | None = None,
 ) -> Path:
     """Measure each hardware endpoint independently, never as a cluster."""
 
-    endpoints = _target_endpoints(config, target, endpoint_urls)
+    endpoints = _target_endpoints(config, target, endpoint_urls, topology)
     rows: list[dict[str, Any]] = []
     timeout = min(
         workload.request_timeout_seconds,
@@ -766,7 +802,7 @@ def run_reasoning_hardware(
     output = output_root / "reasoning-hardware"
     _write(output / "summary.csv", rows)
     metadata = _metadata(
-        target, "reasoning-hardware", config, workload, endpoints
+        target, "reasoning-hardware", config, workload, endpoints, topology
     )
     metadata.update(
         {
@@ -796,10 +832,11 @@ def run_distributed_ontology(
     target: str,
     output_root: Path,
     endpoint_urls: list[str] | None = None,
+    topology: Topology | None = None,
 ) -> Path:
     """Compare one logical graph with an elastic authority partition."""
 
-    endpoints = _target_endpoints(config, target, endpoint_urls)
+    endpoints = _target_endpoints(config, target, endpoint_urls, topology)
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     summary_rows: list[dict[str, Any]] = []
     query_rows: list[dict[str, Any]] = []
@@ -979,12 +1016,12 @@ def run_distributed_ontology(
     if validation_rows:
         _write(output / "result-validation.csv", validation_rows)
     metadata = _metadata(
-        target, "distributed-ontology", config, workload, endpoints
+        target, "distributed-ontology", config, workload, endpoints, topology
     )
     metadata.update(
         {
             "layout": (
-                "authority-and-privacy-partitioned"
+                "authority-and-privacy-distributed"
             ),
             "logical_dataset_is_equal_to_reference_graph": True,
             "distributed_reasoning": (
@@ -1011,6 +1048,7 @@ def run_experiment(
     target: str,
     output_root: Path,
     endpoint_urls: list[str] | None = None,
+    topology: Topology | None = None,
 ) -> Path:
     runners = {
         "scale-out": run_scale_out,
@@ -1021,4 +1059,6 @@ def run_experiment(
         runner = runners[name]
     except KeyError as error:
         raise ValueError(f"Unknown experiment {name!r}") from error
-    return runner(config, workload, target, output_root, endpoint_urls)
+    return runner(
+        config, workload, target, output_root, endpoint_urls, topology
+    )

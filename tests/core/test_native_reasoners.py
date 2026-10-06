@@ -32,14 +32,11 @@ def fixture():
 
 
 def test_public_defaults_and_contracts():
-    assert available_reasoners() == (
-        "none", "rdfs", "owlrl", "rdfs_owlrl", "elk", *NAMES,
-    )
+    assert available_reasoners() == ("rdfs", *NAMES)
     assert reasoner_contract("rdfs") == REASONING_CONTRACT
     assert {reasoner_contract(n) for n in NAMES} == {"named-class-individual-v1"}
     assert native.NativeOWLReasoner("hermit").timeout is None
-    assert materialize(Graph(), "owlrl").graph is not None
-    assert reasoner_contract("elk") == "named-class-individual-v1"
+    assert materialize(Graph(), "rdfs").graph is not None
 
 
 @pytest.mark.parametrize("name", NAMES)
@@ -167,3 +164,32 @@ def test_konclude_unsupported_key_and_datatypes():
         source = Graph().parse(data=PREFIX + data, format="turtle")
         with pytest.raises(native.MaterializationError, match=message):
             materialize(source, "konclude")
+
+
+def test_konclude_owllink_preserves_relative_and_prefixed_owlxml_iris():
+    import xml.etree.ElementTree as ET
+    root = ET.fromstring('''<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+        xml:base="http://example.org/model" ontologyIRI="http://example.org/model">
+        <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+        <Prefix name="ex:" IRI="http://example.org/model#"/>
+        <ClassAssertion><Class IRI="#State"/><NamedIndividual IRI="#a"/></ClassAssertion>
+        <Declaration><Class abbreviatedIRI="ex:State"/></Declaration>
+        <AnnotationAssertion><AnnotationProperty IRI="#label"/><IRI>#a</IRI>
+          <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">value</Literal></AnnotationAssertion>
+        <DataPropertyRange><DataProperty IRI="#value"/><Datatype abbreviatedIRI="xsd:decimal"/></DataPropertyRange>
+        <AnnotationAssertion><AnnotationProperty IRI="#label"/><AbbreviatedIRI>ex:a</AbbreviatedIRI>
+          <Literal>value</Literal></AnnotationAssertion>
+        </Ontology>''')
+    native._absolute_owlxml_iris(root)
+    ns = '{http://www.w3.org/2002/07/owl#}'
+    assert {e.get('IRI') for e in root.iter(ns+'Class')} == {'http://example.org/model#State'}
+    assert next(root.iter(ns+'Datatype')).get('IRI') == 'http://www.w3.org/2001/XMLSchema#decimal'
+    assert {e.text for e in root.iter(ns+'IRI')} == {'http://example.org/model#a'}
+    assert not any('abbreviatedIRI' in e.attrib for e in root.iter())
+
+
+def test_konclude_rejects_unresolved_relative_iri():
+    import xml.etree.ElementTree as ET
+    root = ET.fromstring('<Ontology xmlns="http://www.w3.org/2002/07/owl#"><Class IRI="#MissingBase"/></Ontology>')
+    with pytest.raises(native.MaterializationError, match='relative'):
+        native._absolute_owlxml_iris(root)

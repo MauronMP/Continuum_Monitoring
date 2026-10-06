@@ -13,20 +13,23 @@ from typing import Any
 
 from rdflib import Graph
 
-from .config import BenchmarkConfig
+from ..config import BenchmarkConfig
 from .resource_summary import native_resources
 from ..reasoners import reasoner_provenance
 from .budget import (
     PhaseBudgetTimeout,
     error_text,
     is_timeout_failure,
+    keep_going_execution,
     TimeoutSkipState,
     skip_metadata,
     local_phase_timeout,
 )
+from .progress import PointProgress
 from .distributed import (
     Endpoint,
     _combine_query_responses,
+    _deadline_log,
     _interleaved_query_batches,
     _parallel,
     _write_csv,
@@ -44,7 +47,7 @@ from ..reasoners import materialize
 from ..specification import release_identity
 from .budget import execution_metadata, unlimited_execution
 from ..synthetic import add_synthetic_data, add_synthetic_rules, pad_to_target_triples
-from ..topology import TIER_ORDER, authority_index
+from ..topology import TIER_ORDER, Topology, authority_index
 
 
 def _sources(
@@ -186,7 +189,9 @@ def _prepare(
     print(
         f"[distributed-budget] phase=distributed-prepare "
         f"nodes={len(endpoints)} placement_ms={placement_ms:.2f} "
-        f"request_limit_s={timeout:.1f}", flush=True,
+        + _deadline_log(
+            timeout, timeout - transport.worker_timeout_margin_seconds
+        ), flush=True,
     )
     transport_wall_ms, prepared = _parallel(
         endpoints, "/prepare", payloads, phase="distributed-prepare",
@@ -242,7 +247,7 @@ def _query(
         request_timeout = min(transport.request_timeout_seconds, remaining)
         if not unlimited_execution() and request_timeout <= transport.worker_timeout_margin_seconds:
             raise PhaseBudgetTimeout(
-                "partitioned queries exceeded their "
+                "distributed queries exceeded their "
                 f"{point_timeout:.1f}s point budget"
             )
         payloads: dict[str, dict[str, Any]] = {}
@@ -265,13 +270,16 @@ def _query(
                 f"{endpoint_by_url[url].role}:{len(query_ids)}"
             )
         print(
-            "[distributed-batch] phase=partitioned-queries "
+            "[distributed-batch] phase=distributed-queries "
             f"batch={batch_index + 1}/{batch_rounds} "
+            f"percent={100 * batch_index / batch_rounds:.1f} "
             f"nodes={','.join(descriptions)} "
             f"point_remaining_s={remaining:.1f} "
-            f"request_limit_s={request_timeout:.1f} "
-            "worker_limit_s="
-            f"{request_timeout - transport.worker_timeout_margin_seconds:.1f} "
+            + _deadline_log(
+                request_timeout,
+                request_timeout - transport.worker_timeout_margin_seconds,
+            )
+            + " "
             "status=running",
             flush=True,
         )
@@ -280,7 +288,7 @@ def _query(
             "/queries",
             payloads,
             phase=(
-                "partitioned-queries-"
+                "distributed-queries-"
                 f"batch-{batch_index + 1}-of-{batch_rounds}"
             ),
             timeout=request_timeout,
@@ -290,8 +298,10 @@ def _query(
         for url, response in responses.items():
             collected[url].append(response)
         print(
-            "[distributed-batch] phase=partitioned-queries "
-            f"batch={batch_index + 1}/{batch_rounds} status=done "
+            "[distributed-batch] phase=distributed-queries "
+            f"batch={batch_index + 1}/{batch_rounds} "
+            f"percent={100 * (batch_index + 1) / batch_rounds:.1f} "
+            "status=done "
             f"wall_ms={batch_wall_ms:.2f}",
             flush=True,
         )
@@ -631,14 +641,15 @@ def _censored_summary(
     elapsed_seconds: float,
 ) -> dict[str, Any]:
     lower_bound_ms = min(max(elapsed_seconds, 0.0), timeout_seconds) * 1000
+    censored = status in {"timeout", "skipped_after_timeout"}
     return {
         **common,
         "status": status,
-        "censored": True,
+        "censored": censored,
         "failed_phase": phase,
         "error": error,
         "timeout_seconds": timeout_seconds,
-        "censored_lower_bound_ms": lower_bound_ms,
+        "censored_lower_bound_ms": lower_bound_ms if censored else "",
         "node_count": node_count,
         "query_count": query_count,
         "prepare_wall_ms": "",
@@ -654,6 +665,7 @@ def _censored_detail(
     error: str,
     timeout_seconds: float,
 ) -> dict[str, Any]:
+    censored = status in {"timeout", "skipped_after_timeout"}
     return {
         **common,
         "query_id": "__phase__",
@@ -664,7 +676,7 @@ def _censored_detail(
         "ask_result": "",
         "result_digest": "",
         "status": status,
-        "censored": True,
+        "censored": censored,
         "failed_phase": phase,
         "timeout_seconds": timeout_seconds,
         "error": error,
@@ -677,6 +689,7 @@ def _metadata(
     target: str,
     suite: str,
     validate_results: bool,
+    topology: Topology | None,
 ) -> dict[str, Any]:
     return {
         **release_identity(),
@@ -688,6 +701,7 @@ def _metadata(
         "suite": suite,
         "mode": f"{target}-elastic-authority-distributed",
         "node_count": len(endpoints),
+        "topology_fingerprint": topology.fingerprint if topology else None,
         "endpoints": [
             {
                 "url": item.url,
@@ -782,7 +796,10 @@ def run_distributed_scalability(
 
 def _run_distributed(config, *args, **kwargs):
     from .budget import execution_policy
-    with execution_policy(unlimited_execution() or config.limits.timeout_mode == "unlimited"):
+    with execution_policy(
+        unlimited_execution() or config.limits.timeout_mode == "unlimited",
+        keep_going_execution(),
+    ):
         return _run_distributed_impl(config, *args, **kwargs)
 
 
@@ -799,6 +816,15 @@ def _run_distributed_impl(config, endpoint_urls, output_root, *, target, validat
     validations: list[dict[str, Any]] = []
     skips = TimeoutSkipState(config.limits)
     cumulative = suite == "cumulative"
+    output = output_root / suite
+    total_points = (
+        len(config.reasoners)
+        * config.repetitions
+        * (len(config.category_order) if cumulative else len(config.scale_users))
+    )
+    progress = PointProgress(
+        output, f"{target}-distributed-{suite}", total_points
+    )
     for users in ((0,) if cumulative else config.scale_users):
         for reasoner in config.reasoners:
             baseline = None
@@ -809,10 +835,16 @@ def _run_distributed_impl(config, endpoint_urls, output_root, *, target, validat
                     with local_phase_timeout(config.limits.point_timeout_seconds):
                         baseline = _baseline_counts(config, specs, reasoner, users)
                         reference_status = "completed"
-                except TimeoutError:
-                    reference_status = "timeout"
+                except Exception as error:
+                    timeout_failure = is_timeout_failure(error)
+                    if not timeout_failure and not keep_going_execution():
+                        raise
+                    reference_status = (
+                        "timeout" if timeout_failure else "failed"
+                    )
                     print(f"[{target}-distributed-{suite}] reasoner={reasoner} "
-                          "phase=reference-validation status=timeout; "
+                          f"phase=reference-validation status={reference_status} "
+                          f"error={error_text(error)}; "
                           "physical timing will continue without reference results", flush=True)
             for repetition in range(1, config.repetitions + 1):
                 prepared_data = None
@@ -831,8 +863,13 @@ def _run_distributed_impl(config, endpoint_urls, output_root, *, target, validat
                     if stop_reason is None:
                         print(f"[{target}-distributed-{suite}] reasoner={reasoner} users={users} "
                               f"repetition={repetition} stage={stage} status=running", flush=True)
+                        progress.start(
+                            reasoner=reasoner, users=users,
+                            repetition=repetition, stage=stage,
+                            phase="distributed-prepare",
+                        )
                         started = monotonic()
-                        phase = "partitioned-prepare"
+                        phase = "distributed-prepare"
                         try:
                             if prepared_data is None:
                                 prepared_data = _prepare(
@@ -841,7 +878,7 @@ def _run_distributed_impl(config, endpoint_urls, output_root, *, target, validat
                                 )
                             prepare_wall_ms, prepared = prepared_data
                             assignment = _assignment(active_specs, endpoints)
-                            phase = "partitioned-queries"
+                            phase = "distributed-queries"
                             query_started = monotonic()
                             budget = config.limits.point_timeout_seconds - prepare_wall_ms / 1000
                             if budget <= 0 and not unlimited_execution():
@@ -850,13 +887,17 @@ def _run_distributed_impl(config, endpoint_urls, output_root, *, target, validat
                                 config, endpoints, assignment, timeout_seconds=max(budget, 0.001),
                             )
                         except Exception as error:
-                            if not is_timeout_failure(error):
+                            timeout_failure = is_timeout_failure(error)
+                            if not timeout_failure and not keep_going_execution():
                                 raise
-                            skips.timeout(reasoner, users, repetition, stage, error)
+                            if timeout_failure:
+                                skips.timeout(
+                                    reasoner, users, repetition, stage, error
+                                )
                             stop_reason = error_text(error)
-                            status = "timeout"
+                            status = "timeout" if timeout_failure else "failed"
                             elapsed = monotonic() - started
-                            if phase == "partitioned-queries":
+                            if phase == "distributed-queries":
                                 elapsed = prepare_wall_ms / 1000 + monotonic() - query_started
                         else:
                             skips.completed(reasoner)
@@ -865,11 +906,25 @@ def _run_distributed_impl(config, endpoint_urls, output_root, *, target, validat
                             merged, raw = _merge_responses(active_specs, endpoints, responses, common)
                             details.extend(merged)
                             node_details.extend(raw)
-                            summaries.append(_summary(common, len(active_specs), prepare_wall_ms, query_wall_ms, prepared, responses))
+                            summary = _summary(common, len(active_specs), prepare_wall_ms, query_wall_ms, prepared, responses)
+                            point_status = "completed"
+                            if validate_results and baseline is None:
+                                point_status = "unvalidated_results"
+                                summary["status"] = point_status
+                                summary["error"] = (
+                                    "Canonical reference did not complete; physical timing "
+                                    "is retained but is not validated performance evidence"
+                                )
+                            summaries.append(summary)
                             if baseline is not None:
                                 validations.extend(_validation_rows(merged, baseline))
-                            print(f"[{target}-distributed-{suite}] reasoner={reasoner} stage={stage} status=done "
+                            print(f"[{target}-distributed-{suite}] reasoner={reasoner} stage={stage} status={point_status} "
                                   f"wall_ms={prepare_wall_ms + query_wall_ms:.2f}", flush=True)
+                            _write_csv(output / "summary.csv", summaries)
+                            progress.finish(
+                                point_status, reasoner=reasoner, users=users,
+                                repetition=repetition, stage=stage,
+                            )
                             continue
                     summaries.append(_censored_summary(
                         common, len(endpoints), len(active_specs), status, phase,
@@ -880,11 +935,17 @@ def _run_distributed_impl(config, endpoint_urls, output_root, *, target, validat
                     node_details.append(detail)
                     print(f"[{target}-distributed-{suite}] reasoner={reasoner} users={users} "
                           f"repetition={repetition} stage={stage} status={status}", flush=True)
-    output = output_root / suite
+                    _write_csv(output / "summary.csv", summaries)
+                    progress.finish(
+                        status, reasoner=reasoner, users=users,
+                        repetition=repetition, stage=stage, phase=phase,
+                    )
     _write_csv(output / "query-runs.csv", details)
     _write_csv(output / "node-query-runs.csv", node_details)
     _write_csv(output / "summary.csv", summaries)
-    metadata = _metadata(config, endpoints, target, suite, validate_results)
+    metadata = _metadata(
+        config, endpoints, target, suite, validate_results, topology
+    )
     metadata["category_order" if cumulative else "scale_users"] = list(config.category_order if cumulative else config.scale_users)
     (output / "metadata.json").write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     if validations:
@@ -909,12 +970,28 @@ def _run_distributed_impl(config, endpoint_urls, output_root, *, target, validat
         _write_csv(output / "result-validation.csv", validations)
         if invalid:
             sample = ", ".join(f"{item['reasoner']}:{item['query_id']}" for item in invalid[:8])
-            raise RuntimeError(f"Distributed result validation failed ({len(invalid)} rows): {sample}")
+            message = (
+                f"Distributed result validation failed ({len(invalid)} rows): "
+                f"{sample}"
+            )
+            if keep_going_execution():
+                print(
+                    f"[{target}-distributed-{suite}] status=invalid_results "
+                    f"error={message}; remaining families will continue",
+                    flush=True,
+                )
+            else:
+                raise RuntimeError(message)
     completed = sum(row.get("status") == "completed" for row in summaries)
     censored = sum(row.get("status") == "timeout" for row in summaries)
     skipped = sum(row.get("status") == "skipped_after_timeout" for row in summaries)
+    failed = sum(row.get("status") == "failed" for row in summaries)
+    unvalidated = sum(row.get("status") == "unvalidated_results" for row in summaries)
+    invalid = sum(row.get("status") == "invalid_results" for row in summaries)
     print(f"[{target}-distributed-{suite}] status=completed completed_points={completed} "
-          f"timeout_points={censored} skipped_points={skipped} output={output}", flush=True)
+          f"timeout_points={censored} skipped_points={skipped} "
+          f"failed_points={failed} unvalidated_points={unvalidated} "
+          f"invalid_points={invalid} output={output}", flush=True)
     return output
 
 

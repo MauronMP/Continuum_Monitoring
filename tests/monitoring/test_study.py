@@ -7,11 +7,11 @@ import random
 
 import pytest
 
-from continuum_bench.study import analyze_category_costs, generate_study_trace
-from continuum_bench.study.config import load_study_config
-from continuum_bench.study.mobility import build_mobility_strategy
-from continuum_bench.study.workload import _arrival_times, _choose_category
-from continuum_bench.study.sparql import characterize_query
+from continuum_bench.monitoring.study import analyze_category_costs, generate_study_trace
+from continuum_bench.monitoring.study.config import load_study_config
+from continuum_bench.monitoring.study.mobility import build_mobility_strategy
+from continuum_bench.monitoring.study.workload import _arrival_times, _choose_category
+from continuum_bench.monitoring.study.sparql import characterize_query
 from continuum_bench.queries import load_catalog
 
 

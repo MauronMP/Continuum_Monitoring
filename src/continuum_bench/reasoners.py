@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from itertools import combinations
 from time import perf_counter_ns
-from typing import Type
 from .core.contracts import Reasoner, ReasoningResult
 from .owl_materialization import (
     NativeOWLReasoner, MaterializationError, InconsistentOntologyError,
@@ -12,15 +11,12 @@ from .owl_materialization import (
 
 from owlrl import (
     DeductiveClosure,
-    OWLRL_Semantics,
-    RDFS_OWLRL_Semantics,
     RDFS_Semantics,
 )
 from rdflib import Graph, Literal
 
 
 REASONING_CONTRACT = "rdfs-literal-value-space-v1"
-IDENTITY_CONTRACT = "identity-graph-v1"
 PHYSICAL_REASONERS = ("rdfs", "hermit", "openllet", "jfact", "konclude")
 
 
@@ -73,22 +69,10 @@ class ReasonerEngine:
     replacement: str = ""
 
 
-_PROFILES: dict[str, Type] = {
-    "rdfs": DatatypeAwareRDFSSemantics,
-    "owlrl": OWLRL_Semantics,
-    "rdfs_owlrl": RDFS_OWLRL_Semantics,
-}
+_PROFILES = {"rdfs": DatatypeAwareRDFSSemantics}
 
 
 REASONER_ENGINES: dict[str, ReasonerEngine] = {
-    "none": ReasonerEngine(
-        name="Identity / no inference",
-        profile="rdf",
-        implementation="In-process graph copy",
-        owl_fragment="RDF graph",
-        supported=True,
-        suitability="Infrastructure-only baseline with no semantic inference.",
-    ),
     "rdfs": ReasonerEngine(
         name="RDFLib RDFS",
         profile="rdfs",
@@ -98,27 +82,6 @@ REASONER_ENGINES: dict[str, ReasonerEngine] = {
         suitability=(
             "Portable Python baseline suitable for low-resource physical "
             "nodes and deterministic bounded experiments."
-        ),
-    ),
-    "owlrl": ReasonerEngine(
-        name="OWL RL",
-        profile="owlrl",
-        implementation="owlrl.OWLRL_Semantics",
-        owl_fragment="OWL 2 RL",
-        supported=True,
-        suitability=(
-            "Rule-based OWL profile suitable for materialisation on constrained "
-            "physical nodes."
-        ),
-    ),
-    "rdfs_owlrl": ReasonerEngine(
-        name="RDFS + OWL RL",
-        profile="rdfs_owlrl",
-        implementation="owlrl.RDFS_OWLRL_Semantics",
-        owl_fragment="RDFS plus OWL 2 RL",
-        supported=True,
-        suitability=(
-            "Combined closure used to quantify the cost of richer semantics."
         ),
     ),
     **{
@@ -132,22 +95,11 @@ REASONER_ENGINES: dict[str, ReasonerEngine] = {
         )
         for name, label in (("hermit", "HermiT"), ("openllet", "Openllet"), ("jfact", "JFact"), ("konclude", "Konclude"))
     },
-    "elk": ReasonerEngine(
-        name="ELK",
-        profile="owl_el",
-        implementation="Isolated Java OWLAPI with ELK",
-        owl_fragment="OWL 2 EL; named-class-individual-v1 output",
-        supported=True,
-        suitability="Specialized OWL 2 EL classification and realization reference.",
-    ),
 }
 
 
 def available_reasoners() -> tuple[str, ...]:
-    return (
-        "none", "rdfs", "owlrl", "rdfs_owlrl", "elk",
-        "hermit", "openllet", "jfact", "konclude",
-    )
+    return PHYSICAL_REASONERS
 
 
 def reasoner_catalog() -> tuple[ReasonerEngine, ...]:
@@ -156,7 +108,7 @@ def reasoner_catalog() -> tuple[ReasonerEngine, ...]:
     return tuple(REASONER_ENGINES.values())
 
 
-def _materialize_owlrl(source: Graph, reasoner: str) -> ReasoningMeasurement:
+def _materialize_rdfs(source: Graph, reasoner: str) -> ReasoningMeasurement:
     try:
         semantics = _PROFILES[reasoner]
     except KeyError as error:
@@ -185,35 +137,20 @@ def _materialize_owlrl(source: Graph, reasoner: str) -> ReasoningMeasurement:
 
 
 @dataclass(frozen=True)
-class OwlrlReasoner:
+class RDFSReasoner:
     name: str
 
     def materialize(self, source: Graph) -> ReasoningResult:
-        return _materialize_owlrl(source, self.name)
+        return _materialize_rdfs(source, self.name)
 
 
-@dataclass(frozen=True)
-class IdentityReasoner:
-    name: str = "none"
-
-    def materialize(self, source: Graph) -> ReasoningResult:
-        started = perf_counter_ns()
-        graph = Graph()
-        for prefix, namespace in source.namespaces():
-            graph.bind(prefix, namespace)
-        for triple in source:
-            graph.add(triple)
-        return ReasoningResult(
-            graph=graph,
-            duration_ms=(perf_counter_ns() - started) / 1_000_000,
-            input_triples=len(source),
-            output_triples=len(graph),
-        )
-
-
-_BACKENDS: dict[str, Reasoner] = {name: OwlrlReasoner(name) for name in _PROFILES}
-_BACKENDS["none"] = IdentityReasoner()
-_BACKENDS.update({name: NativeOWLReasoner(name) for name in ("hermit", "openllet", "jfact", "konclude", "elk")})
+_BACKENDS: dict[str, Reasoner] = {
+    name: RDFSReasoner(name) for name in _PROFILES
+}
+_BACKENDS.update({
+    name: NativeOWLReasoner(name)
+    for name in ("hermit", "openllet", "jfact", "konclude")
+})
 
 
 def register_reasoner(backend: Reasoner, *, replace: bool = False) -> None:
@@ -237,10 +174,8 @@ def materialize(source: Graph, reasoner: str) -> ReasoningMeasurement:
 def reasoner_contract(name: str) -> str:
     """Version of the output semantics, independent of worker wire protocol."""
     get_reasoner(name)
-    if name in ("hermit", "openllet", "jfact", "konclude", "elk"):
+    if name in ("hermit", "openllet", "jfact", "konclude"):
         return OWL_MATERIALIZATION_CONTRACT
-    if name == "none":
-        return IDENTITY_CONTRACT
     if name == "rdfs":
         return REASONING_CONTRACT
     return f"{name}-closure-v1"
@@ -261,11 +196,7 @@ def reasoner_semantics(name: str) -> dict[str, str | bool]:
     """Return the task/profile contract used to form comparable groups."""
     engine = REASONER_ENGINES[name]
     task = {
-        "none": "identity",
         "rdfs": "rdfs_closure",
-        "owlrl": "owl_rl_materialization",
-        "rdfs_owlrl": "rdfs_owl_rl_materialization",
-        "elk": "owl_el_classification_realization",
         "hermit": "owl_dl_classification_realization",
         "openllet": "owl_dl_classification_realization",
         "jfact": "owl_dl_classification_realization",

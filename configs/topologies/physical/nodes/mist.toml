@@ -10,8 +10,8 @@ local = false
 port = 8391
 authority = true
 
-# Hardware values follow the declared Raspberry Pi 500 class. CPU architecture
-# must be confirmed on this host when SSH becomes available.
+# Hardware values were checked on the physical Raspberry Pi 500. The kernel is
+# aarch64; the current operating-system user space is 32-bit.
 [nodes.resources]
 cpu_cores = 4
 cpu_architecture = "aarch64"

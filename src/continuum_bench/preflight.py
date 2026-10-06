@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Iterable
 
 from .config import BenchmarkConfig
-from .experiment_config import ExperimentConfig, load_experiment_config
-from .load_config import LoadBenchmarkConfig, load_load_config
+from .monitoring.experiment_config import ExperimentConfig, load_experiment_config
+from .monitoring.load_config import LoadBenchmarkConfig, load_load_config
 from .ontology import load_graph
 from .queries import load_catalog
 from .synthetic import synthetic_triple_count

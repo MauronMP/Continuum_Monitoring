@@ -14,6 +14,7 @@ import csv
 from dataclasses import dataclass
 from pathlib import Path
 import re
+import tomllib
 from typing import Iterable
 
 from rdflib import Graph, Literal, Namespace, RDF, RDFS, URIRef
@@ -21,10 +22,11 @@ from rdflib.namespace import OWL
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ONTOLOGY = ROOT / "ontology/legacy/smartcity_continuum-v3.0.0.ttl"
+BENCHMARK_CONFIG = ROOT / "configs/benchmark.toml"
 CATALOG = ROOT / "queries/catalog.csv"
 REFERENCE = ROOT / "docs/reference"
 EX = Namespace("http://example.org/smartcity#")
+MODULAR_SOURCE = "configs/benchmark.toml [paths.ontology_files]"
 
 REQUIREMENT_GROUPS = (
     ("Functional requirements", "RF-", EX.FunctionalRequirement),
@@ -137,6 +139,17 @@ def _queries() -> list[QueryRow]:
         ]
 
 
+def _ontology_graph() -> Graph:
+    """Load the exact modular graph used by the benchmark runtime."""
+
+    with BENCHMARK_CONFIG.open("rb") as handle:
+        configured = tomllib.load(handle)["paths"]["ontology_files"]
+    graph = Graph()
+    for relative in configured:
+        graph.parse(ROOT / str(relative), format="turtle")
+    return graph
+
+
 def _codes(values: Iterable[str], empty: str = "None declared") -> str:
     items = list(values)
     return ", ".join(f"`{item}`" for item in items) if items else empty
@@ -158,7 +171,7 @@ def _front_matter(title: str, source: str) -> list[str]:
 def requirements_document(graph: Graph, queries: list[QueryRow]) -> str:
     lines = _front_matter(
         "Functional, non-functional and validation requirements",
-        "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+        MODULAR_SOURCE,
     )
     lines.extend(
         [
@@ -220,7 +233,7 @@ def requirements_document(graph: Graph, queries: list[QueryRow]) -> str:
 def policies_document(graph: Graph, queries: list[QueryRow]) -> str:
     lines = _front_matter(
         "Policies and enforcement mechanisms",
-        "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+        MODULAR_SOURCE,
     )
     lines.extend(
         [
@@ -384,7 +397,7 @@ def ontology_document(graph: Graph) -> str:
     ontologies = _term_rows(graph, OWL.Ontology)
     lines = _front_matter(
         "Continuum Monitoring Ontology v3.0.0 reference",
-        "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+        MODULAR_SOURCE,
     )
     lines.extend(
         [
@@ -420,7 +433,7 @@ def ontology_document(graph: Graph) -> str:
             "| SHACL constraints | `ontology/shapes/*.ttl` |",
             "| Reference individuals | `ontology/examples/reference-system.ttl` |",
             "| Tier profiles | `ontology/profiles/*.ttl` |",
-            "| Release migration source | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |",
+            "| Active release manifest | `configs/benchmark.toml` |",
             "",
             "## Release inventory",
             "",
@@ -483,7 +496,7 @@ def ontology_document(graph: Graph) -> str:
 
 
 def generate(output: Path) -> list[Path]:
-    graph = Graph().parse(ONTOLOGY)
+    graph = _ontology_graph()
     queries = _queries()
     documents = {
         "REQUIREMENTS.md": requirements_document(graph, queries),

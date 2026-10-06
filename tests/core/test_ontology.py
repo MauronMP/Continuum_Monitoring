@@ -50,34 +50,32 @@ def test_datatype_guard_respects_subproperties_and_string_subtypes():
     assert len(datatype_range_errors(graph)) == 1
 
 
-def test_canonical_and_generated_ontology_are_english_and_datatype_safe(config, root):
-    source = Graph().parse(root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl")
-    runtime = load_graph(config.resolve(path) for path in config.ontology_files)
-    for graph in (source, runtime):
-        assert datatype_range_errors(graph) == []
-        assert (URIRef("http://example.org/smartcity"), DCTERMS.language,
-                Literal("en")) in graph
-        assert {value.language for value in graph.objects()
-                if isinstance(value, Literal)} <= {None, "en"}
-        for property_, expected in (
-            (EX.requirementStatement, 116),
-            (EX.hasPolicyStatement, 79),
-            (EX.mechanismDescription, 55),
-        ):
-            values = list(graph.objects(None, property_))
-            assert len(values) == expected
-            assert all(value.language is None and value.datatype in (None, XSD.string)
+def test_modular_ontology_is_english_and_datatype_safe(config):
+    graph = load_graph(config.resolve(path) for path in config.ontology_files)
+    assert datatype_range_errors(graph) == []
+    assert (URIRef("http://example.org/smartcity"), DCTERMS.language,
+            Literal("en")) in graph
+    assert {value.language for value in graph.objects()
+            if isinstance(value, Literal)} <= {None, "en"}
+    for property_, expected in (
+        (EX.requirementStatement, 116),
+        (EX.hasPolicyStatement, 79),
+        (EX.mechanismDescription, 55),
+    ):
+        values = list(graph.objects(None, property_))
+        assert len(values) == expected
+        assert all(value.language is None and value.datatype in (None, XSD.string)
+                   for value in values)
+        assert not any(str(value).startswith(("El sistema", "Toda ", "Todo ",
+                                              "La ", "Las ", "Los ", "Debe "))
                        for value in values)
-            assert not any(str(value).startswith(("El sistema", "Toda ", "Todo ",
-                                                  "La ", "Las ", "Los ", "Debe "))
-                           for value in values)
-        assert str(graph.value(EX["RF-22"], EX.requirementStatement)) == (
-            "The system must support federated or hierarchical learning between "
-            "devices and Edge, Fog and Cloud nodes."
-        )
-        assert str(graph.value(EX["P-CONS-04"], RDFS.label)) == (
-            "Effective authorization and inconsistencies"
-        )
+    assert str(graph.value(EX["RF-22"], EX.requirementStatement)) == (
+        "The system must support federated or hierarchical learning between "
+        "devices and Edge, Fog and Cloud nodes."
+    )
+    assert str(graph.value(EX["P-CONS-04"], RDFS.label)) == (
+        "Effective authorization and inconsistencies"
+    )
 
 
 def test_validation_rejects_inferred_datatype_clash_without_bottom(config, monkeypatch):
@@ -111,11 +109,7 @@ def test_policy_zone_types_use_explicit_owl2_punning(config):
             assert (predicate, RDF.type, OWL.AnnotationProperty) in graph
 
 
-def test_modular_graph_preserves_legacy_terms_and_abox(config, root):
-    legacy = Graph().parse(
-        root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
-        format="turtle",
-    )
+def test_modular_graph_contains_schema_and_reference_data(config):
     modular = load_graph(config.resolve(path) for path in config.ontology_files)
     schema_types = {
         OWL.Class,
@@ -124,38 +118,17 @@ def test_modular_graph_preserves_legacy_terms_and_abox(config, root):
         OWL.AnnotationProperty,
         OWL.NamedIndividual,
     }
-    legacy_terms = {
-        subject
-        for subject, type_ in legacy.subject_objects(RDF.type)
-        if type_ in schema_types and isinstance(subject, URIRef)
-    }
     modular_terms = {
         subject
         for subject, type_ in modular.subject_objects(RDF.type)
         if type_ in schema_types and isinstance(subject, URIRef)
     }
-    assert legacy_terms <= modular_terms
-
-    # Stable skolemization changes anonymous node identifiers. Compatibility is
-    # therefore checked as an API/ABox contract rather than raw bnode labels.
-    meta_types = schema_types | {
-        OWL.Ontology,
-        SH.NodeShape,
-        SH.PropertyShape,
-        SH.SPARQLConstraint,
-    }
-    legacy_individuals = {
-        subject
-        for subject, type_ in legacy.subject_objects(RDF.type)
-        if isinstance(subject, URIRef) and type_ not in meta_types
-    }
-    missing_abox = {
-        triple
-        for subject in legacy_individuals
-        for triple in legacy.triples((subject, None, None))
-        if triple not in modular
-    }
-    assert missing_abox == set()
+    assert EX.ComputationalNode in modular_terms
+    assert EX.Policy in modular_terms
+    assert EX.Requirement in modular_terms
+    assert EX.QuerySpecification in modular_terms
+    assert (EX.UserA, RDF.type, EX.User) in modular
+    assert (EX["P-CONS-01"], RDF.type, EX.Policy) in modular
 
 
 def test_reference_data_conforms_to_shacl(config):

@@ -4,7 +4,7 @@
 > entries by hand. Regenerate with
 > `.venv/bin/python tools/generate_reference_docs.py`.
 
-Authoritative release source: `ontology/legacy/smartcity_continuum-v3.0.0.ttl`.
+Authoritative release source: `configs/benchmark.toml [paths.ontology_files]`.
 
 ## Scope
 
@@ -38,14 +38,14 @@ policies, trust evidence and resulting action can be audited.
 | SHACL constraints | `ontology/shapes/*.ttl` |
 | Reference individuals | `ontology/examples/reference-system.ttl` |
 | Tier profiles | `ontology/profiles/*.ttl` |
-| Release migration source | `ontology/legacy/smartcity_continuum-v3.0.0.ttl` |
+| Active release manifest | `configs/benchmark.toml` |
 
 ## Release inventory
 
-- Ontology declarations: **1**
-- OWL classes: **142**
-- Object properties: **162**
-- Datatype properties: **95**
+- Ontology declarations: **14**
+- OWL classes: **157**
+- Object properties: **165**
+- Datatype properties: **98**
 - Annotation properties: **14**
 - Requirements: **116** (`72 RF + 39 RNF + 5 RV`)
 - Policies: **79**
@@ -90,6 +90,7 @@ and native Konclude.
 | `AIModel` | AI Model |
 | `AnonymousIdentifier` | Anonymous Identifier |
 | `Artifact` | Artifact |
+| `AuthorityScope` | Authority scope |
 | `AuthorizationDecision` | Authorization Decision |
 | `AuthorizationOutcome` | Authorization Outcome |
 | `AvailabilityLevel` | Availability Level |
@@ -112,6 +113,7 @@ and native Konclude.
 | `DecisionMethod` | Decision Method |
 | `DegradationEvent` | Degradation Event |
 | `DelegationEvent` | Delegation Event |
+| `DeploymentFragment` | Deployment fragment |
 | `Device` | Device |
 | `DeviceConnectionStatus` | Device Connection Status |
 | `DeviceState` | Device State |
@@ -170,6 +172,7 @@ and native Konclude.
 | `PolicyType` | Policy Type |
 | `PopulationDensity` | Population Density |
 | `PrivacyBudgetAccount` | Privacy Budget Account |
+| `PrivacyClass` | Privacy class |
 | `PrivacyMechanism` | Privacy Mechanism |
 | `ProcessingLevel` | Processing Level |
 | `ProcessingPurpose` | Processing Purpose |
@@ -194,6 +197,7 @@ and native Konclude.
 | `ScenarioArtifact` | Scenario Artifact |
 | `SecurityMechanism` | Security Mechanism |
 | `SemanticContract` | Semantic Contract |
+| `SemanticNodeProfile` | Semantic node profile |
 | `Sensor` | Sensor |
 | `Service` | Service |
 | `ServiceState` | Service State |
@@ -217,6 +221,17 @@ and native Konclude.
 | `TrustEvidence` | Trust Evidence |
 | `UrbanEnvironment` | Urban Environment |
 | `UrbanZone` | Urban Zone |
+| `urn:continuum:ontology:3.0.0:node:100` | urn:continuum:ontology:3.0.0:node:100 |
+| `urn:continuum:ontology:3.0.0:node:106` | urn:continuum:ontology:3.0.0:node:106 |
+| `urn:continuum:ontology:3.0.0:node:126` | urn:continuum:ontology:3.0.0:node:126 |
+| `urn:continuum:ontology:3.0.0:node:129` | urn:continuum:ontology:3.0.0:node:129 |
+| `urn:continuum:ontology:3.0.0:node:132` | urn:continuum:ontology:3.0.0:node:132 |
+| `urn:continuum:ontology:3.0.0:node:140` | urn:continuum:ontology:3.0.0:node:140 |
+| `urn:continuum:ontology:3.0.0:node:143` | urn:continuum:ontology:3.0.0:node:143 |
+| `urn:continuum:ontology:3.0.0:node:83` | urn:continuum:ontology:3.0.0:node:83 |
+| `urn:continuum:ontology:3.0.0:node:91` | urn:continuum:ontology:3.0.0:node:91 |
+| `urn:continuum:ontology:3.0.0:node:94` | urn:continuum:ontology:3.0.0:node:94 |
+| `urn:continuum:ontology:3.0.0:node:97` | urn:continuum:ontology:3.0.0:node:97 |
 | `User` | User |
 | `UserState` | User State |
 | `ValidationCampaign` | Validation Campaign |
@@ -244,6 +259,7 @@ and native Konclude.
 | `appliesTo` | applies to |
 | `appliesToZoneType` | applies to zone type |
 | `auditsContract` | audits contract |
+| `authoritativeFor` | authoritativeFor |
 | `authorizedByEvaluation` | authorized by evaluation |
 | `basedOnConsentRecord` | based on consent record |
 | `basedOnContract` | based on contract |
@@ -324,6 +340,7 @@ and native Konclude.
 | `hasPopulationDensity` | has population density |
 | `hasPredictedStressLevel` | has predicted stress level |
 | `hasPrivacyBudgetAccount` | has privacy budget account |
+| `hasPrivacyClass` | hasPrivacyClass |
 | `hasPrivacyMechanism` | has privacy mechanism |
 | `hasProcessingLevel` | has processing level |
 | `hasProcessingPurpose` | has processing purpose |
@@ -342,6 +359,7 @@ and native Konclude.
 | `hasValidationResult` | has validation result |
 | `hasWearable` | has wearable |
 | `hasWorkload` | has workload |
+| `hostedAt` | hostedAt |
 | `hostedOnNode` | hosted on node |
 | `hostsModel` | hosts model |
 | `hostsService` | hosts service |
@@ -417,6 +435,7 @@ and native Konclude.
 | `evaluationOrder` | evaluation order |
 | `evidenceContribution` | evidence contribution |
 | `evidenceFactor` | evidence factor |
+| `graphIRI` | graphIRI |
 | `hasAHPScore` | has AHP / multicriteria score |
 | `hasAnonymizationApplied` | has anonymization applied |
 | `hasConsistencyRatio` | has consistency ratio |
@@ -452,6 +471,7 @@ and native Konclude.
 | `name` | name |
 | `noiseLevel` | noise level |
 | `observedModelQuality` | observed model quality |
+| `ontologyDigest` | ontologyDigest |
 | `pairwiseValue` | pairwise comparison value |
 | `parametrizedDataReady` | parametrized data ready |
 | `plannedExpiry` | planned expiry |
@@ -490,6 +510,7 @@ and native Konclude.
 | `trustWindowEnd` | trust window end |
 | `trustWindowStart` | trust window start |
 | `userFeedbackScore` | user feedback score |
+| `usesEntailmentProfile` | usesEntailmentProfile |
 | `validFrom` | valid from |
 | `validTo` | valid to |
 

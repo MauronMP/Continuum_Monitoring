@@ -288,7 +288,7 @@ def _local_name(value: URIRef) -> str:
 
 def _authority_for(value: object, authority_nodes: tuple[str, ...]) -> str:
     if not authority_nodes:
-        raise ValueError("Partitioned topology requires an authority node")
+        raise ValueError("Distributed topology requires an authority node")
     return authority_nodes[authority_index(value, len(authority_nodes))]
 
 

@@ -36,11 +36,7 @@ class DistributedReasoningConfig:
 
 
 REASONING_TASKS = {
-    "none": "identity",
     "rdfs": "rdfs_closure",
-    "owlrl": "owl_rl_materialization",
-    "rdfs_owlrl": "rdfs_owl_rl_materialization",
-    "elk": "owl_el_classification_realization",
     "hermit": "owl_dl_classification_realization",
     "openllet": "owl_dl_classification_realization",
     "jfact": "owl_dl_classification_realization",

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import csv
 
-from continuum_bench.experiment_reporting import plot_experiment_coverage
+from continuum_bench.monitoring.experiment_reporting import plot_experiment_coverage
 
 
 def test_experiment_coverage_keeps_timeouts_and_failures(tmp_path):

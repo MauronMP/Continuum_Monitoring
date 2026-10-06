@@ -22,21 +22,22 @@ resource use are measured separately and do not overwrite static capacity.
 `replicated` sends a complete input graph to every active worker. `distributed`
 assigns authority-aware ontology and data fragments to workers and merges source
 query results at the coordinator. Shared schema triples may be repeated where a
-fragment requires them; distributed placement does not mean shared memory. The
-retired term `sharded` is not accepted for new runs.
+fragment requires them; distributed placement does not mean shared memory.
+Only these two explicit layout names are accepted for new runs.
 
 ## Complete execution
 
 ```bash
 . .venv/bin/activate
 continuum-bench physical status --ssh-user pi
-continuum-bench --unlimited --keep-going suite
+continuum-bench --timeout-mode bounded --keep-going suite
 ```
 
 The complete suite runs software checks, documentation checks, ontology
 validation, physical monitoring, load tests, physical experiments, configurable
-campaigns, the four policy evaluations and report generation. Use a bounded run
-only when cancellation is part of the protocol:
+campaigns, the four policy evaluations and report generation. Bounded execution
+is recommended because it preserves the complete outcome matrix without giving
+a native reasoner unlimited control of a worker:
 
 ```bash
 continuum-bench \
@@ -56,11 +57,65 @@ The defaults are in `configs/benchmark.toml`: worker request limits are in
 `[distributed]`; phase, point and skip behavior are in `[limits]`. The dedicated
 load and physical experiment files contain family-specific sizes and repetitions.
 
+`--keep-going` allows independent work to continue after a recorded timeout or
+failure. Without it, non-timeout runtime, ontology and programming errors remain
+fail-fast inside the current command.
+
+`--unlimited` is an optional diagnostic mode. It disables coordinator, socket,
+worker and native-process deadlines. A slow worker remains active for as long as
+the backend needs, but `--keep-going` cannot start another point until that call
+returns. Native DL reasoners can therefore consume a worker for hours or remain
+blocked indefinitely. Use unlimited mode only with a reduced, supervised
+profile; do not use it as the default complete-suite command.
+
+On 30 September 2026, an unlimited replicated HermiT point with 2,500 users
+demonstrated this risk: the coordinator remained at point 64/90, five Raspberry
+Pi workers stayed inside Java materialization for more than ten hours, and their
+health endpoints could not respond. See
+[Observed failures and remediation](OBSERVED_FAILURES.md).
+
+The worker HTTP service is deliberately single-threaded because bounded native
+reasoning uses a main-thread Unix timer. While a worker handles a long request,
+its `/health` endpoint cannot answer. A health timeout during an active native
+process therefore means `busy or blocked`, not necessarily `offline`; confirm
+the worker and child-process state through SSH. A separate liveness control
+plane remains future work.
+
+Do not suspend a physical campaign with `Ctrl+Z`. Current commands ignore the
+suspend signal while they hold the physical lease and print a warning; use
+`Ctrl+C` for a controlled interruption. A command started from older source may
+still be suspended by the shell and must be recovered manually before another
+campaign can acquire the lease.
+
+The Raspberry Pi workers currently run a 32-bit user space, and their native
+Konclude build is also 32-bit. The replicated 5,000-user graph contains about
+359,000 asserted triples. Konclude has reached `std::bad_alloc` on that point,
+despite host RAM remaining available, because one 32-bit process cannot address
+all physical memory. This is a measured replicated-layout capacity boundary.
+The distributed layout completed the physical timing at the corresponding
+scale because each node materializes only its assigned fragment. That timing is
+not sufficient to claim semantic equivalence: the 5,000-user canonical
+Konclude reference timed out, and lower Konclude scales produced recorded query
+mismatches. Those rows remain available as `unvalidated_results` or
+`invalid_results`, but reports exclude them from performance comparisons. The
+replicated `failed` point still records the 32-bit resource ceiling, and later
+reasoners and families continue under `--keep-going`.
+
 Stop workers after the campaign:
 
 ```bash
 continuum-bench physical stop --ssh-user pi
 ```
+
+The stop operation also removes project-owned native Java materializers left
+after an interrupted worker. Current workers translate `SIGTERM` into a
+controlled interruption so their isolated Java or Konclude process group is
+terminated before the HTTP service exits.
+
+After any source change, deploy again before restarting the workers. New result
+metadata records the exact source-build identifier and topology fingerprint;
+reports reject absent or different values instead of mixing experiments from
+different code or placement definitions.
 
 The architecture reserves structured locations and node tiers for future
 mobility models. Random Waypoint, Random Walk, Manhattan/Grid and Gauss–Markov
@@ -68,3 +123,17 @@ simulation are not implemented by the four policy experiments.
 
 See [Complete installation and test execution](COMPLETE_EXECUTION.md) for the
 clean-host setup and every complete or per-family command.
+
+
+## Native IRI preservation and worker ownership
+
+The Konclude bridge expands relative and abbreviated OWL/XML IRIs using the
+original base and Prefix declarations before moving axioms into OWLlink. Losing
+that context changes entity identity; a consistent output alone would not detect
+the error. Canonical-versus-fragment checks compare query counts, ASK values and
+result digests, including the formerly failing serialization seed.
+
+Worker stop/restart targets only processes descended from the verified managed
+worker. Independent native tests using the same checkout are not worker children.
+Unattributed orphans require explicit inspection. For current five-node deployment
+commands and evidence, see [Audit remediation](REMEDIATION.md).

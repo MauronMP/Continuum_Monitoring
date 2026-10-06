@@ -85,3 +85,28 @@ def test_four_policy_evaluations_export_reproducible_csv_and_png(config, tmp_pat
     images = plot_policy_evaluation(tmp_path)
     assert len(images) == 4
     assert all(path.suffix == ".png" and path.stat().st_size > 10_000 for path in images)
+
+
+def test_cost_breakdown_uses_consistent_per_decision_units():
+    from continuum_bench.monitoring.policy_evaluation.reporting import _per_decision_cost
+    row = {"reasoning_ms": "120", "decision_iterations": "60", "policy_evaluation_ms": "3"}
+    assert _per_decision_cost(row, "reasoning_ms") == 2
+    assert _per_decision_cost(row, "policy_evaluation_ms") == 3
+
+
+def test_effectiveness_uncertainty_uses_repetitions_not_scenarios():
+    from continuum_bench.monitoring.policy_evaluation.reporting import _repetition_means
+    rows = [{"strategy": "static", "repetition": rep, "score": score}
+            for rep in ("1", "2") for score in ("0", "1")]
+    assert _repetition_means(rows, "static", "score") == [0.5, 0.5]
+
+
+def test_missing_memory_is_not_reported_as_zero(monkeypatch):
+    from continuum_bench.monitoring.policy_evaluation import resources
+    monkeypatch.setattr(resources, "memory_measurement_kind", lambda: "unavailable")
+    with resources.ResourceSampler() as sampler:
+        pass
+    result = sampler.measurement()
+    assert result.ram_mean_mib is None
+    assert result.ram_max_mib is None
+    assert result.memory_measurement_kind == "unavailable"

@@ -1,6 +1,6 @@
 """Shared benchmark deadlines and right-censoring helpers.
 
-Timeouts are observations (the response exceeded an acceptance threshold),
+Timeouts are observations (the response exceeded an execution budget),
 not harness crashes.  This module keeps that distinction consistent across
 the physical coordinator and workers.
 """
@@ -17,6 +17,7 @@ from urllib.error import HTTPError, URLError
 
 
 _UNLIMITED = False
+_KEEP_GOING = False
 
 
 def unlimited_execution() -> bool:
@@ -24,21 +25,32 @@ def unlimited_execution() -> bool:
     return _UNLIMITED
 
 
+def keep_going_execution() -> bool:
+    """Return whether independent benchmark points survive real failures."""
+
+    return _KEEP_GOING
+
+
 @contextmanager
-def execution_policy(unlimited: bool = False) -> Iterator[None]:
-    """Scope the CLI policy without changing configured acceptance budgets."""
-    global _UNLIMITED
-    previous = _UNLIMITED
+def execution_policy(
+    unlimited: bool = False,
+    keep_going: bool = False,
+) -> Iterator[None]:
+    """Scope deadline and failure-continuation policy for one invocation."""
+    global _UNLIMITED, _KEEP_GOING
+    previous = _UNLIMITED, _KEEP_GOING
     _UNLIMITED = unlimited
+    _KEEP_GOING = keep_going
     try:
         yield
     finally:
-        _UNLIMITED = previous
+        _UNLIMITED, _KEEP_GOING = previous
 
 
 def execution_metadata() -> dict:
     return {"timeout_mode": "unlimited" if _UNLIMITED else "bounded",
-            "configured_budgets_enforced": not _UNLIMITED}
+            "configured_budgets_enforced": not _UNLIMITED,
+            "continue_after_point_failure": _KEEP_GOING}
 
 
 def wait_timeout(seconds: float) -> float | None:

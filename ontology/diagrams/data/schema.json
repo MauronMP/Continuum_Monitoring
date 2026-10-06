@@ -13,7 +13,7 @@
   "sources": [
     {
       "path": "ontology/core/schema.ttl",
-      "sha256": "c0f95d1992d25c386bf2d846b4efbe0edad40fad4955a53dc553b0c3dacf7757"
+      "sha256": "9f113738ed7a39ec42b134766078378e9282daf955469778b689a8d3720923cd"
     },
     {
       "path": "ontology/modules/foundation.ttl",
@@ -57,7 +57,7 @@
     },
     {
       "path": "ontology/examples/reference-system.ttl",
-      "sha256": "46241ed1fc2583c8627c5949ff681b61fd1e02e91a77ff476b88c240c6af50aa"
+      "sha256": "a29d8e2bce486836d42f566662adcc3ba098dc5bbb877e7ae4fad32399a83683"
     },
     {
       "path": "ontology/shapes/core-compliance.ttl",
@@ -106,7 +106,7 @@
       "3.0.0"
     ],
     "revisions": [
-      "3.0.0-en-datatypes-v1"
+      "3.0.0-en-audit-v2"
     ],
     "languages": [
       "en"
@@ -13872,7 +13872,7 @@
     }
   ],
   "ontology_version": "3.0.0",
-  "ontology_revision": "3.0.0-en-datatypes-v1",
+  "ontology_revision": "3.0.0-en-audit-v2",
   "modules": {
     "foundation": [
       "Foundation",

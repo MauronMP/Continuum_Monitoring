@@ -25,12 +25,15 @@ jobs:
           key: pip-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('requirements/*.txt', 'pyproject.toml') }}
       - run: python tools/bootstrap.py
       - run: .venv/bin/python -m pytest
-      - run: .venv/bin/continuum-bench validate
+      # Portable CI has no native HermiT/Openllet/JFact/Konclude installation.
+      # The physical deployment gate verifies those runtimes separately.
+      - run: .venv/bin/continuum-bench --config configs/smoke-vpn.toml validate
       - run: .venv/bin/continuum-bench preflight
       - run: .venv/bin/continuum-bench preflight --load-config configs/load-smoke.toml --experiment-config configs/experiments-smoke.toml
       - run: .venv/bin/continuum-bench policy-evaluation all --evaluation-config configs/policy-evaluation-smoke.toml --output-dir outputs/ci-policy-evaluation
       - run: .venv/bin/continuum-bench policy-evaluation plot --output-dir outputs/ci-policy-evaluation
       - run: .venv/bin/python tools/check_documentation.py
+      - run: .venv/bin/python tools/review_validation_debt.py
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

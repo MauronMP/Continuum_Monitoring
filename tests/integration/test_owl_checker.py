@@ -5,6 +5,9 @@ import subprocess
 import zipfile
 
 import pytest
+from rdflib import Graph, OWL
+
+from continuum_bench.ontology import load_graph
 
 
 @pytest.fixture
@@ -105,7 +108,9 @@ def test_checker_uses_configured_heap(checker, tmp_path, monkeypatch):
 
 
 @pytest.mark.owl_consistency
-def test_canonical_ontology_with_installed_protege_hermit(checker, tmp_path):
+def test_modular_ontology_with_installed_protege_hermit(
+    checker, config, tmp_path
+):
     try:
         protege = checker.find_protege(None)
     except ValueError:
@@ -124,7 +129,13 @@ def test_canonical_ontology_with_installed_protege_hermit(checker, tmp_path):
     if version.returncode or not match or int(match.group(1)) < 11:
         pytest.skip("Optional HermiT integration requires a working Java 11+")
     output = tmp_path / "hermit.json"
-    ontology = checker.ROOT / "ontology/legacy/smartcity_continuum-v3.0.0.ttl"
+    source = load_graph(config.resolve(path) for path in config.ontology_files)
+    compiled = Graph()
+    for triple in source:
+        if triple[1] != OWL.imports:
+            compiled.add(triple)
+    ontology = tmp_path / "modular-ontology.nt"
+    compiled.serialize(ontology, format="nt")
     assert checker.main([str(ontology), "--protege-home", str(protege), "--require-dl-profile",
                          "--output", str(output)]) == 0
     result = json.loads(output.read_text())

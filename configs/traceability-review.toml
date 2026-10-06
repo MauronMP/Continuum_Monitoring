@@ -1,0 +1,122 @@
+# Review dispositions do not increase query coverage or prove domain compliance.
+version = 1
+
+[items."RF-07"]
+status = "deferred"
+rationale = "Energy, connectivity and consent must be tested together on a physical device; configured plan scenarios are only partial evidence."
+evidence = "tests/monitoring/test_policy_evaluation.py"
+
+[items."RF-41"]
+status = "partial"
+rationale = "Governing-policy links are queryable; a complete assertion of governedBy for every governed entity still needs a domain coverage test."
+evidence = "queries/core/policy_governance"
+
+[items."RF-44"]
+status = "partial"
+rationale = "Evaluation and action reports expose policy links; physical migration and degradation audit trails are not implemented end to end."
+evidence = "queries/core"
+
+[items."RF-52"]
+status = "deferred"
+rationale = "Privacy-weight dominance requires independently reviewed decision inputs and model-selection evidence."
+evidence = "ontology/examples/reference-system.ttl"
+
+[items."RF-69"]
+status = "deferred"
+rationale = "Workers accept catalog query IDs, not arbitrary SPARQL 1.1 protocol requests. A standards-compliant endpoint is not implemented."
+evidence = "src/continuum_bench/node.py"
+
+[items."RNF-03"]
+status = "deferred"
+rationale = "Load tests exist, but operational acceptance thresholds and physical degradation evidence are missing."
+evidence = "tests/monitoring/test_load_benchmark.py"
+
+[items."RNF-10"]
+status = "partial"
+rationale = "Synthetic instances and modular imports are checked; arbitrary future extensions are not certified."
+evidence = "tests/core/test_synthetic.py"
+
+[items."RNF-11"]
+status = "partial"
+rationale = "Catalog parsing and baseline expectations are tested; the release inventory is intentionally fixed and requires a versioned update for new IDs."
+evidence = "tests/core/test_catalog.py"
+
+[items."RNF-23"]
+status = "deferred"
+rationale = "Modular schema supports specialization, but a real new wearable adapter has not been validated."
+evidence = "ontology/domains/wellbeing/schema.ttl"
+
+[items."RNF-24"]
+status = "software-check"
+rationale = "RDF/Turtle parsing and SPARQL execution are exercised; this does not certify a network SPARQL endpoint."
+evidence = "tests/core/test_catalog.py"
+
+[items."RNF-26"]
+status = "partial"
+rationale = "Four native reasoners are tested; external standards-compliant SPARQL endpoint interoperability remains untested."
+evidence = "tests/core/test_native_reasoners.py"
+
+[items."RNF-31"]
+status = "software-check"
+rationale = "Query kinds and interpretation expectations are validated in the catalog contract."
+evidence = "tests/core/test_catalog.py"
+
+[items."RNF-37"]
+status = "partial"
+rationale = "Observation provenance exists in the schema; completeness for all measured runtime states is not established."
+evidence = "ontology/modules/observability.ttl"
+
+[items."RNF-38"]
+status = "partial"
+rationale = "Baseline and release-contract regressions run; compatibility across arbitrary downstream integrations is outside this evidence."
+evidence = "tests/core/test_v3_release.py"
+
+[items."P-ADAPT-08"]
+status = "deferred"
+rationale = "Transport retries do not prove end-to-end critical-event idempotency; fault injection and durable event accounting are required."
+evidence = "src/continuum_bench/monitoring/distributed.py"
+
+[items."P-CONS-06"]
+status = "deferred"
+rationale = "Generic-model download authorization needs model payload and contract checks beyond catalog queries."
+evidence = "ontology/modules/governance.ttl"
+
+[items."P-GOV-02"]
+status = "partial"
+rationale = "Policy provenance can be inspected; complete governance of every physical action is not measured."
+evidence = "queries/core/policy_governance"
+
+[items."P-MODEL-09"]
+status = "deferred"
+rationale = "Context transitions are modeled; physical invalidation and reselection deadline enforcement need a real event source."
+evidence = "tests/monitoring/test_policy_evaluation.py"
+
+[items."P-NODE-06"]
+status = "partial"
+rationale = "Reference scenarios describe no eligible alternatives; adversarial operational fallback needs execution evidence."
+evidence = "ontology/examples/reference-system.ttl"
+
+[items."P-OPS-04"]
+status = "deferred"
+rationale = "No physical fault-injection campaign has verified critical-function continuity or durable synchronization."
+evidence = "docs/EXPERIMENTS.md"
+
+[items."P-OPS-06"]
+status = "partial"
+rationale = "Controlled recovery checks stale policies; per-item physical buffer-drain authorization is not validated."
+evidence = "tests/monitoring/test_policy_evaluation.py"
+
+[items."P-VAL-02"]
+status = "software-check"
+rationale = "Catalog checks enforce declared query types and interpretation expectations."
+evidence = "tests/core/test_catalog.py"
+
+[items."P-VAL-05"]
+status = "partial"
+rationale = "Versioned release contracts and regression tests protect the maintained baseline, not every possible extension."
+evidence = "tests/core/test_v3_release.py"
+
+[items."P-ZONE-04"]
+status = "deferred"
+rationale = "Actual mobility-triggered invalidation is not implemented; future mobility interfaces are insufficient evidence."
+evidence = "src/continuum_bench/core/domain.py"

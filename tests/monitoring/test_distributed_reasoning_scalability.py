@@ -4,7 +4,6 @@ import csv
 from pathlib import Path
 
 import pytest
-from rdflib import Graph, URIRef
 from rdflib.compare import to_isomorphic
 
 from continuum_bench.monitoring.distributed_reasoning_config import (
@@ -25,19 +24,9 @@ from continuum_bench.monitoring.experiment_reporting import (
 )
 from continuum_bench.monitoring.distributed_ontology import _full_source
 from continuum_bench.partitioning import build_fragments
-from continuum_bench.reasoners import materialize, reasoner_semantics
 from continuum_bench.reasoners import PHYSICAL_REASONERS
 from continuum_bench.topology import load_topology
 from continuum_bench.cli import _family_timeout_updates, _parser
-
-
-def test_identity_reasoner_preserves_the_exact_graph():
-    source = Graph()
-    source.add((URIRef("urn:s"), URIRef("urn:p"), URIRef("urn:o")))
-    result = materialize(source, "none")
-    assert set(result.graph) == set(source)
-    assert result.inferred_triples == 0
-    assert reasoner_semantics("none")["reasoning_task"] == "identity"
 
 
 def test_unlimited_policy_disables_worker_alarm(root):

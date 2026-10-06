@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from http.client import RemoteDisconnected
@@ -14,7 +14,7 @@ from typing import Any, Iterable
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from .config import BenchmarkConfig
+from ..config import BenchmarkConfig
 from .budget import (
     PhaseBudgetTimeout,
     error_text,
@@ -90,13 +90,41 @@ DISTRIBUTED_REQUEST_RETRIES = 0
 
 
 def _payload_hint(payload: dict[str, Any]) -> str:
+    context = "".join(
+        f" {key}={payload[key]}"
+        for key in ("reasoner", "users", "mode")
+        if key in payload
+    )
     query_ids = payload.get("query_ids")
     if isinstance(query_ids, list):
         values = [str(value) for value in query_ids]
         shown = ",".join(values[:12])
         suffix = f",...(+{len(values) - 12})" if len(values) > 12 else ""
-        return f" query_ids={shown}{suffix}"
-    return ""
+        return f"{context} query_ids={shown}{suffix}"
+    return context
+
+
+def _worker_error_body(body: str, limit: int = 4000) -> str:
+    """Keep both the cause prefix and native-runtime tail in HTTP errors."""
+
+    if len(body) <= limit:
+        return body
+    half = (limit - 40) // 2
+    return f"{body[:half]} ...<worker response truncated>... {body[-half:]}"
+
+
+def _deadline_log(nominal: float, worker: float) -> str:
+    """Describe effective and configured limits without implying enforcement."""
+
+    if unlimited_execution():
+        return (
+            "request_limit_s=none worker_limit_s=none "
+            f"nominal_request_limit_s={nominal:.1f} "
+            f"nominal_worker_limit_s={worker:.1f}"
+        )
+    return (
+        f"request_limit_s={nominal:.1f} worker_limit_s={worker:.1f}"
+    )
 
 
 def _request(
@@ -140,7 +168,7 @@ def _request(
                 raise HTTPError(
                     error.url,
                     error.code,
-                    f"{error.reason}; worker_response={body[:1000]}",
+                    f"{error.reason}; worker_response={_worker_error_body(body)}",
                     error.headers,
                     None,
                 ) from error
@@ -260,39 +288,59 @@ def _parallel(
         }
         for endpoint in futures.values():
             submitted_at[endpoint.url] = perf_counter_ns()
-        for future in as_completed(futures):
-            endpoint = futures[future]
-            endpoint_ms = (
-                perf_counter_ns() - submitted_at[endpoint.url]
-            ) / 1_000_000
-            try:
-                results[endpoint.url] = future.result()
-            except Exception as error:
-                hint = _payload_hint(payloads[endpoint.url])
-                detail = f";{hint}" if hint else ""
-                status = failure_status(error)
+        pending = set(futures)
+        completed = 0
+        while pending:
+            done, pending = wait(
+                pending,
+                timeout=15.0,
+                return_when=FIRST_COMPLETED,
+            )
+            if not done:
+                elapsed_s = (perf_counter_ns() - started) / 1_000_000_000
+                roles = ",".join(sorted(futures[item].role for item in pending))
+                print(
+                    "[distributed-progress] "
+                    f"phase={phase_name} completed={completed}/{len(futures)} "
+                    f"percent={100 * completed / max(len(futures), 1):.1f} "
+                    f"elapsed_s={elapsed_s:.1f} pending={roles}",
+                    flush=True,
+                )
+                continue
+            for future in done:
+                endpoint = futures[future]
+                endpoint_ms = (
+                    perf_counter_ns() - submitted_at[endpoint.url]
+                ) / 1_000_000
+                completed += 1
+                try:
+                    results[endpoint.url] = future.result()
+                except Exception as error:
+                    hint = _payload_hint(payloads[endpoint.url])
+                    detail = f";{hint}" if hint else ""
+                    status = failure_status(error)
+                    print(
+                        "[distributed-node] "
+                        f"phase={phase_name} role={endpoint.role} "
+                        f"endpoint={endpoint.url} status={status} "
+                        f"elapsed_ms={endpoint_ms:.2f} "
+                        f"error={type(error).__name__}: {error}{hint}",
+                        flush=True,
+                    )
+                    failures.append((error, (
+                        f"Distributed phase {phase_name!r} failed on "
+                        f"role={endpoint.role} endpoint={endpoint.url} after "
+                        f"{endpoint_ms:.2f} ms: {type(error).__name__}: {error}"
+                        f"{detail}"
+                    )))
+                    continue
                 print(
                     "[distributed-node] "
                     f"phase={phase_name} role={endpoint.role} "
-                    f"endpoint={endpoint.url} status={status} "
-                    f"elapsed_ms={endpoint_ms:.2f} "
-                    f"error={type(error).__name__}: {error}{hint}",
+                    f"endpoint={endpoint.url} status=done "
+                    f"elapsed_ms={endpoint_ms:.2f}",
                     flush=True,
                 )
-                failures.append((error, (
-                    f"Distributed phase {phase_name!r} failed on "
-                    f"role={endpoint.role} endpoint={endpoint.url} after "
-                    f"{endpoint_ms:.2f} ms: {type(error).__name__}: {error}"
-                    f"{detail}"
-                )))
-                continue
-            print(
-                "[distributed-node] "
-                f"phase={phase_name} role={endpoint.role} "
-                f"endpoint={endpoint.url} status=done "
-                f"elapsed_ms={endpoint_ms:.2f}",
-                flush=True,
-            )
     if failures:
         # Observe every worker before deciding: a deadline must never hide a
         # simultaneously reported invalid ontology, runtime or programming error.
@@ -406,8 +454,9 @@ def _prepare(
     }
     print(
         f"[distributed-budget] phase=prepare nodes={len(endpoints)} "
-        f"request_limit_s={timeout:.1f} "
-        f"worker_limit_s={timeout - transport.worker_timeout_margin_seconds:.1f}",
+        + _deadline_log(
+            timeout, timeout - transport.worker_timeout_margin_seconds
+        ),
         flush=True,
     )
     return _parallel(
@@ -546,11 +595,15 @@ def _query(
             labels.append(f"{endpoint_by_url[url].role}:{len(query_ids)}")
         print(
             f"[distributed-batch] phase={phase} "
-            f"batch={index + 1}/{rounds} nodes={','.join(labels)} "
+            f"batch={index + 1}/{rounds} "
+            f"percent={100 * index / rounds:.1f} "
+            f"nodes={','.join(labels)} "
             f"point_remaining_s={remaining:.1f} "
-            f"request_limit_s={request_timeout:.1f} "
-            "worker_limit_s="
-            f"{request_timeout - transport.worker_timeout_margin_seconds:.1f} "
+            + _deadline_log(
+                request_timeout,
+                request_timeout - transport.worker_timeout_margin_seconds,
+            )
+            + " "
             "status=running",
             flush=True,
         )
@@ -565,6 +618,13 @@ def _query(
         wall_ms += batch_wall_ms
         for url, response in responses.items():
             collected[url].append(response)
+        print(
+            f"[distributed-batch] phase={phase} "
+            f"batch={index + 1}/{rounds} "
+            f"percent={100 * (index + 1) / rounds:.1f} status=done "
+            f"wall_ms={batch_wall_ms:.2f}",
+            flush=True,
+        )
     return wall_ms, {
         url: _combine_query_responses(items)
         for url, items in collected.items()
@@ -605,6 +665,7 @@ def _censored_summary(
     elapsed_seconds: float,
 ) -> dict[str, Any]:
     lower_bound_ms = min(max(elapsed_seconds, 0.0), timeout_seconds) * 1000
+    censored = status in {"timeout", "skipped_after_timeout"}
     return {
         **common,
         "node_count": node_count,
@@ -613,8 +674,8 @@ def _censored_summary(
         "query_wall_ms": "",
         "total_wall_ms": lower_bound_ms if status == "timeout" else "",
         "status": status,
-        "censored": True,
-        "censored_lower_bound_ms": lower_bound_ms,
+        "censored": censored,
+        "censored_lower_bound_ms": lower_bound_ms if censored else "",
         "failed_phase": phase,
         "timeout_seconds": timeout_seconds,
         "error": error,
@@ -628,6 +689,7 @@ def _censored_detail(
     error: str,
     timeout_seconds: float,
 ) -> dict[str, Any]:
+    censored = status in {"timeout", "skipped_after_timeout"}
     return {
         **common,
         "query_id": "__phase__",
@@ -638,7 +700,7 @@ def _censored_detail(
         "ask_result": "",
         "result_digest": "",
         "status": status,
-        "censored": True,
+        "censored": censored,
         "failed_phase": phase,
         "timeout_seconds": timeout_seconds,
         "error": error,

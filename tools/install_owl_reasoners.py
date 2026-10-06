@@ -19,13 +19,12 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / ".runtime"
-JAVA_REASONERS = ("hermit", "openllet", "jfact", "elk")
+JAVA_REASONERS = ("hermit", "openllet", "jfact")
 CLASSPATH_FILES = {
     name: RUNTIME / f"owl-validation-{name}.classpath"
     for name in JAVA_REASONERS
 }
-# Kept as the OWLAPI conversion classpath used by the Konclude adapter and for
-# compatibility with installations made before reasoner isolation.
+# OWLAPI conversion classpath used by the Konclude adapter.
 CLASSPATH_FILE = RUNTIME / "owl-validation.classpath"
 ENV_FILE = RUNTIME / "owl-reasoners.env"
 
@@ -188,7 +187,6 @@ def write_environment(classpaths: dict[str, str], konclude: str) -> None:
         f"export CONTINUUM_HERMIT_CLASSPATH={shlex.quote(classpaths['hermit'])}",
         f"export CONTINUUM_OPENLLET_CLASSPATH={shlex.quote(classpaths['openllet'])}",
         f"export CONTINUUM_JFACT_CLASSPATH={shlex.quote(classpaths['jfact'])}",
-        f"export CONTINUUM_ELK_CLASSPATH={shlex.quote(classpaths['elk'])}",
     ]
     if konclude.startswith("native:"):
         lines.append(
@@ -231,6 +229,10 @@ def main(argv: list[str] | None = None) -> int:
     if not re.fullmatch(r"[1-9][0-9]*[kKmMgG]?", args.java_heap):
         parser.error("--java-heap must be a Java heap size such as 512m or 2g")
     os.environ["CONTINUUM_OWL_JAVA_HEAP"] = args.java_heap
+    expected_classpaths = {path.name for path in CLASSPATH_FILES.values()}
+    for path in RUNTIME.glob("owl-validation-*.classpath"):
+        if path.name not in expected_classpaths:
+            path.unlink()
     try:
         classpaths = (
             {name: path.read_text(encoding="utf-8").strip() for name, path in CLASSPATH_FILES.items()}

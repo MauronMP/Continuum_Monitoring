@@ -16,10 +16,12 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 class CheckOntology {
     private static String reasonerVersion(OWLReasoner reasoner) {
         try {
-            return reasoner.getReasonerVersion().toString();
+            org.semanticweb.owlapi.util.Version version = reasoner.getReasonerVersion();
+            return version.getMajor() + "." + version.getMinor() + "." +
+                version.getPatch() + "." + version.getBuild();
         } catch (RuntimeException incompatibleVersionMetadata) {
-            // ELK 0.4.3 parses a build timestamp as an integer on newer JDKs.
-            // Reasoning remains usable; retain an explicit unavailable value.
+            // Version metadata is diagnostic and must not invalidate a
+            // completed consistency check.
             return "unavailable";
         }
     }

@@ -22,7 +22,7 @@ from .budget import (
     error_text, execution_metadata, failure_status, is_boundary_failure,
     unlimited_execution,
 )
-from .config import BenchmarkConfig
+from ..config import BenchmarkConfig
 from .distributed import Endpoint, _parallel, _request, discover
 from .distributed_ontology import (
     _assignment as distributed_assignment,
@@ -32,6 +32,7 @@ from .distributed_ontology import (
 )
 from .distributed_reasoning_config import DistributedReasoningConfig, REASONING_TASKS
 from ..queries import QuerySpec, load_catalog
+from ..topology import Topology
 
 
 def _select_endpoints(endpoints: list[Endpoint], count: int) -> list[Endpoint]:
@@ -521,10 +522,15 @@ def _capacity(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 def run_distributed_reasoning_scalability(
     benchmark: BenchmarkConfig, experiment: DistributedReasoningConfig,
     target: str, output_root: Path, endpoint_urls: list[str] | None = None,
+    topology: Topology | None = None,
 ) -> Path:
     if target != "physical":
         raise ValueError("Distributed reasoning scalability requires physical workers")
-    all_endpoints = discover(endpoint_urls or [])
+    all_endpoints = discover(
+        endpoint_urls or [],
+        topology.active_nodes if topology else None,
+        topology.fingerprint if topology else None,
+    )
     effective = replace(
         benchmark,
         distributed=replace(benchmark.distributed, request_timeout_seconds=experiment.request_timeout_seconds),
@@ -635,6 +641,7 @@ def run_distributed_reasoning_scalability(
     metadata = {
         **release_identity(), "generated_at": datetime.now(timezone.utc).isoformat(),
         "experiment": "distributed-reasoning-scalability", "configuration": asdict(experiment),
+        "topology_fingerprint": topology.fingerprint if topology else None,
         "execution_policy": execution_metadata(), "semantic_tasks": REASONING_TASKS,
         "timeout_is_right_censoring": True,
         "comparison_contract": "same target graph, seed, repetition, reasoner and selected endpoints across layouts",

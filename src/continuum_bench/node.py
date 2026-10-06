@@ -246,7 +246,7 @@ class NodeRuntime:
                 generation_ms = (
                     perf_counter_ns() - generated_at
                 ) / 1_000_000
-            elif mode in {"distributed", "partitioned"}:
+            elif mode == "distributed":
                 if rule_count or target_triples:
                     raise ValueError(
                         "Distributed fragments must include coordinator-generated data"
@@ -270,7 +270,7 @@ class NodeRuntime:
                     fragments.sensitive_resources,
                     authority=getattr(self, "authority", None),
                 )
-                if mode in {"distributed", "partitioned"}
+                if mode == "distributed"
                 else []
             )
             if violations:
@@ -672,15 +672,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--node-id",
-        default=os.environ.get(
-            "CONTINUUM_NODE_ID",
-            os.environ.get("CONTINUUM_ROLE"),
-        ),
-    )
-    parser.add_argument(
-        "--role",
-        dest="legacy_role",
-        help=argparse.SUPPRESS,
+        default=os.environ.get("CONTINUUM_NODE_ID"),
     )
     parser.add_argument(
         "--tier",
@@ -699,7 +691,7 @@ def main(argv: list[str] | None = None) -> int:
         default=os.environ.get("CONTINUUM_TOPOLOGY_NAME"),
     )
     args = parser.parse_args(argv)
-    node_id = args.legacy_role or args.node_id
+    node_id = args.node_id
     if not node_id:
         parser.error(
             "set --node-id (or CONTINUUM_NODE_ID); worker identities come "
@@ -713,6 +705,15 @@ def main(argv: list[str] | None = None) -> int:
         topology_file=args.topology_file,
     )
     server = NodeServer((args.host, args.port), runtime)
+    previous_sigterm = signal.getsignal(signal.SIGTERM)
+
+    def terminate_worker(signum, frame):  # noqa: ARG001
+        # Raising through an active native request lets _run terminate the
+        # reasoner's isolated process group before the worker exits.
+        raise KeyboardInterrupt
+
+    if current_thread() is main_thread():
+        signal.signal(signal.SIGTERM, terminate_worker)
     print(
         f"[node] id={node_id} tier={runtime.tier} "
         f"listening={args.host}:{args.port} "
@@ -725,6 +726,8 @@ def main(argv: list[str] | None = None) -> int:
         pass
     finally:
         server.server_close()
+        if current_thread() is main_thread():
+            signal.signal(signal.SIGTERM, previous_sigterm)
     return 0
 
 

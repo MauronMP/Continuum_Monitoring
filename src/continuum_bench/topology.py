@@ -385,6 +385,8 @@ def _parse_node(raw: dict[str, Any], topology_name: str) -> TopologyNode:
 
 
 def _validate_topology(topology: Topology) -> None:
+    for node in topology.nodes:
+        node.to_domain()  # Enforce finite capacity and paired/finite coordinates at load time.
     configured_ids = [node.node_id for node in topology.nodes]
     if len(configured_ids) != len(set(configured_ids)):
         raise ValueError(

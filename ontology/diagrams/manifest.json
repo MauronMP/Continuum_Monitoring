@@ -1,7 +1,7 @@
 {
   "status": "complete",
   "ontology_version": "3.0.0",
-  "ontology_revision": "3.0.0-en-datatypes-v1",
+  "ontology_revision": "3.0.0-en-audit-v2",
   "scope": "Asserted conceptual schema (TBox), not an ABox instance graph",
   "counts": {
     "named_classes": 146,
@@ -15,7 +15,7 @@
   "sources": [
     {
       "path": "ontology/core/schema.ttl",
-      "sha256": "c0f95d1992d25c386bf2d846b4efbe0edad40fad4955a53dc553b0c3dacf7757"
+      "sha256": "9f113738ed7a39ec42b134766078378e9282daf955469778b689a8d3720923cd"
     },
     {
       "path": "ontology/modules/foundation.ttl",
@@ -59,7 +59,7 @@
     },
     {
       "path": "ontology/examples/reference-system.ttl",
-      "sha256": "46241ed1fc2583c8627c5949ff681b61fd1e02e91a77ff476b88c240c6af50aa"
+      "sha256": "a29d8e2bce486836d42f566662adcc3ba098dc5bbb877e7ae4fad32399a83683"
     },
     {
       "path": "ontology/shapes/core-compliance.ttl",
@@ -70,8 +70,8 @@
       "sha256": "d5d705a937bb7fa9a58391c48dd6253fe98078af7af8df96f27169a9b0cb6652"
     }
   ],
-  "schema_sha256": "496db800101780433272068b9a957db07b5a07e85b85419eb234f6f6cc88ee26",
-  "graphviz": "dot - graphviz version 14.1.5 (20260411.2331)",
+  "schema_sha256": "a3c52b03b5974328f17b9db88ba1c2f3f7c7d88ed341a1dac762d8f0a239e4fb",
+  "graphviz": "dot - graphviz version 14.1.2 (0)",
   "rendered": true,
   "simplified": {
     "classes": 15,
@@ -104,88 +104,88 @@
   },
   "figures": {
     "ontology-simplified": {
-      "width_pt": 476.0,
-      "height_pt": 776.0,
+      "width_pt": 514.0,
+      "height_pt": 805.0,
       "minimum_font_pt": 10.0,
-      "minimum_font_at_180mm_pt": 10.719248329252961,
-      "minimum_font_fit_180x230mm_pt": 8.40165597856969
+      "minimum_font_at_180mm_pt": 9.926774717362665,
+      "minimum_font_fit_180x230mm_pt": 8.098987626546682
     },
     "ontology-complete": {
-      "width_pt": 10645.0,
-      "height_pt": 2236.0,
+      "width_pt": 11546.0,
+      "height_pt": 2359.0,
       "minimum_font_pt": 8.0,
-      "minimum_font_at_180mm_pt": 0.383456060477175,
-      "minimum_font_fit_180x230mm_pt": 0.383456060477175
+      "minimum_font_at_180mm_pt": 0.3535328047617814,
+      "minimum_font_fit_180x230mm_pt": 0.3535328047617814
     },
     "modules/foundation": {
-      "width_pt": 1978.0,
-      "height_pt": 458.0,
+      "width_pt": 2165.0,
+      "height_pt": 469.0,
       "minimum_font_pt": 9.0,
-      "minimum_font_at_180mm_pt": 2.3216005987118145,
-      "minimum_font_fit_180x230mm_pt": 2.3216005987118145
+      "minimum_font_at_180mm_pt": 2.121074357622157,
+      "minimum_font_fit_180x230mm_pt": 2.1210743576221565
     },
     "modules/topology": {
-      "width_pt": 1497.0,
-      "height_pt": 604.0,
+      "width_pt": 1667.0,
+      "height_pt": 627.0,
       "minimum_font_pt": 8.0,
-      "minimum_font_at_180mm_pt": 2.726713269057801,
-      "minimum_font_fit_180x230mm_pt": 2.726713269057801
+      "minimum_font_at_180mm_pt": 2.4486441294418286,
+      "minimum_font_fit_180x230mm_pt": 2.4486441294418286
     },
     "modules/observability": {
-      "width_pt": 1795.0,
-      "height_pt": 724.0,
+      "width_pt": 1994.0,
+      "height_pt": 760.0,
       "minimum_font_pt": 9.0,
-      "minimum_font_at_180mm_pt": 2.558287456407782,
-      "minimum_font_fit_180x230mm_pt": 2.5582874564077827
+      "minimum_font_at_180mm_pt": 2.302971907849533,
+      "minimum_font_fit_180x230mm_pt": 2.302971907849533
     },
     "modules/governance": {
-      "width_pt": 4440.0,
-      "height_pt": 1344.0,
+      "width_pt": 4797.0,
+      "height_pt": 1413.0,
       "minimum_font_pt": 9.0,
-      "minimum_font_at_180mm_pt": 1.034262609065759,
-      "minimum_font_fit_180x230mm_pt": 1.0342626090657587
+      "minimum_font_at_180mm_pt": 0.9572912203985761,
+      "minimum_font_fit_180x230mm_pt": 0.957291220398576
     },
     "modules/orchestration": {
-      "width_pt": 3892.0,
-      "height_pt": 1262.0,
+      "width_pt": 4251.0,
+      "height_pt": 1320.0,
       "minimum_font_pt": 9.0,
-      "minimum_font_at_180mm_pt": 1.1798884851623765,
-      "minimum_font_fit_180x230mm_pt": 1.1798884851623765
+      "minimum_font_at_180mm_pt": 1.0802460560460996,
+      "minimum_font_fit_180x230mm_pt": 1.0802460560460996
     },
     "modules/federation": {
-      "width_pt": 1001.0,
-      "height_pt": 762.0,
+      "width_pt": 1099.0,
+      "height_pt": 798.0,
       "minimum_font_pt": 9.0,
-      "minimum_font_at_180mm_pt": 4.587538445806163,
-      "minimum_font_fit_180x230mm_pt": 4.587538445806163
+      "minimum_font_at_180mm_pt": 4.178458584396696,
+      "minimum_font_fit_180x230mm_pt": 4.178458584396696
     },
     "modules/deployment": {
-      "width_pt": 514.0,
-      "height_pt": 278.0,
+      "width_pt": 569.0,
+      "height_pt": 290.0,
       "minimum_font_pt": 9.0,
-      "minimum_font_at_180mm_pt": 8.934097245626399,
-      "minimum_font_fit_180x230mm_pt": 8.934097245626399
+      "minimum_font_at_180mm_pt": 8.07052018321963,
+      "minimum_font_fit_180x230mm_pt": 8.07052018321963
     },
     "modules/wellbeing": {
-      "width_pt": 2220.0,
-      "height_pt": 450.0,
+      "width_pt": 2484.0,
+      "height_pt": 461.0,
       "minimum_font_pt": 9.0,
-      "minimum_font_at_180mm_pt": 2.068525218131518,
-      "minimum_font_fit_180x230mm_pt": 2.0685252181315175
+      "minimum_font_at_180mm_pt": 1.8486819582334821,
+      "minimum_font_fit_180x230mm_pt": 1.848681958233482
     },
     "modules/standards": {
-      "width_pt": 1564.0,
-      "height_pt": 453.0,
+      "width_pt": 1733.0,
+      "height_pt": 482.0,
       "minimum_font_pt": 9.0,
-      "minimum_font_at_180mm_pt": 2.936141933664942,
-      "minimum_font_fit_180x230mm_pt": 2.936141933664942
+      "minimum_font_at_180mm_pt": 2.6498130318822675,
+      "minimum_font_fit_180x230mm_pt": 2.649813031882267
     },
     "ontology-simplified-monochrome": {
-      "width_pt": 573.0,
-      "height_pt": 811.0,
+      "width_pt": 514.0,
+      "height_pt": 858.0,
       "minimum_font_pt": 10.0,
-      "minimum_font_at_180mm_pt": 8.904646081543472,
-      "minimum_font_fit_180x230mm_pt": 8.039069099099974
+      "minimum_font_at_180mm_pt": 9.926774717362665,
+      "minimum_font_fit_180x230mm_pt": 7.59870051208634
     }
   },
   "atlas_pages": 17

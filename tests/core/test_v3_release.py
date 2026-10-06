@@ -1,8 +1,3 @@
-from collections import defaultdict
-from importlib.util import module_from_spec, spec_from_file_location
-from pathlib import Path
-import tomllib
-
 from rdflib import OWL, URIRef
 
 from continuum_bench.ontology import load_graph
@@ -12,21 +7,6 @@ from continuum_bench.specification import (
     acceptance_status,
     validate_release_contract,
 )
-
-
-def _load_migration_tool():
-    """Load the repository tool without depending on pytest's import path."""
-
-    path = Path(__file__).resolve().parents[2] / "tools/migrate_assets.py"
-    spec = spec_from_file_location("continuum_migrate_assets", path)
-    assert spec is not None and spec.loader is not None
-    module = module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-migrate_assets = _load_migration_tool()
-
 
 def test_v3_release_inventory_and_traceability(config):
     graph = load_graph(config.resolve(path) for path in config.ontology_files)
@@ -88,7 +68,7 @@ def test_acceptance_debt_is_reported_without_hiding_structural_validity(config):
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     measurements = [execute_query(graph, spec) for spec in specs]
 
-    status = acceptance_status(specs, measurements)
+    status = acceptance_status(specs, measurements, graph=graph)
 
     assert status["checks"]["EXT-Q01"]
     assert status["checks"]["EXT-Q02"]
@@ -100,34 +80,31 @@ def test_acceptance_debt_is_reported_without_hiding_structural_validity(config):
     assert not status["compliance_claim_permitted"]
 
 
-def test_v3_migration_regenerates_the_elastic_execution_plan(config):
-    source = migrate_assets.QUERY_SOURCE.read_text(encoding="utf-8")
-    generated: dict[str, list[str]] = defaultdict(list)
-    for match in migrate_assets.QUERY_RE.finditer(source):
-        query_id = match.group(1)
-        query = match.group(3).strip() + "\n"
-        tier = (
-            "domain" if migrate_assets.is_domain_query(query) else "core"
-        )
-        generated[
-            migrate_assets.query_scope(
-                query_id,
-                tier,
-                migrate_assets.category_for(query_id),
-            )
-        ].append(query_id)
+def test_v3_catalog_and_execution_plan_are_complete(config):
+    specs = load_catalog(config.resolve(config.query_catalog), config.root)
 
-    with (config.root / "queries/execution-plan.toml").open("rb") as handle:
-        current = tomllib.load(handle)["scopes"]
-
-    assert {
-        scope: set(query_ids) for scope, query_ids in generated.items()
-    } == {
-        scope: set(query_ids) for scope, query_ids in current.items()
+    assert len(specs) == 115
+    assert {spec.id for spec in specs} == {
+        *(f"BASE-Q{index:02d}" for index in range(1, 36)),
+        *(f"EXT-Q{index:02d}" for index in range(1, 81)),
     }
-    assert not {
-        "edges",
-        "edge1",
-        "edge2",
-        "edge3",
-    }.intersection(generated)
+    assert all(spec.path.is_file() for spec in specs)
+    assert all(
+        spec.execution_scope not in {"edges", "edge1", "edge2", "edge3"}
+        for spec in specs
+    )
+
+
+def test_acceptance_rejects_inflated_readiness_count_and_empty_campaign(config):
+    from dataclasses import replace
+    from rdflib import Namespace, RDF
+    ex = Namespace("http://example.org/smartcity#")
+    graph = load_graph(config.resolve(path) for path in config.ontology_files)
+    specs = load_catalog(config.resolve(config.query_catalog), config.root)
+    measured = [execute_query(graph, spec) for spec in specs]
+    measured = [replace(row, result_count=7) if row.query_id == "EXT-Q77" else row for row in measured]
+    graph.add((ex.EmptyCampaign, RDF.type, ex.ValidationCampaign))
+    status = acceptance_status(specs, measured, graph=graph)
+    assert status["query_catalog_structurally_ready"]
+    assert not status["checks"]["EXT-Q77"]
+    assert not status["compliance_claim_permitted"]

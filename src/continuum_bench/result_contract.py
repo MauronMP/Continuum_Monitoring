@@ -8,6 +8,7 @@ from typing import Any
 
 from .specification import EXPECTED_QUERY_IDS, ONTOLOGY_REVISION, ONTOLOGY_VERSION
 from .reasoners import REASONING_CONTRACT
+from .protocol import SOFTWARE_BUILD_ID
 
 
 def require_release_metadata(directory: Path) -> dict[str, Any]:
@@ -51,5 +52,12 @@ def require_release_metadata(directory: Path) -> dict[str, Any]:
             f"{metadata.get('ontology_revision')!r}; expected "
             f"{ONTOLOGY_REVISION!r}. Re-run each architecture with the "
             "English, datatype-corrected ontology; do not relabel old results."
+        )
+    if metadata.get("software_build_id") != SOFTWARE_BUILD_ID:
+        raise ValueError(
+            f"{directory}: incompatible software_build_id="
+            f"{metadata.get('software_build_id')!r}; expected "
+            f"{SOFTWARE_BUILD_ID!r}. Re-run the benchmark with the active "
+            "source tree instead of mixing outputs from different builds."
         )
     return metadata

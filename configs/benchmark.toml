@@ -33,7 +33,8 @@ query_batch_size = 4
 worker_timeout_margin_seconds = 2
 
 [limits]
-# bounded enforces budgets; unlimited records nominal budgets without cancellation.
+# Bounded is recommended and enforces budgets. Unlimited is optional and can
+# block indefinitely when a native reasoner does not return.
 timeout_mode = "bounded"
 # Independent timeout-only skip triggers. Real errors remain errors.
 consecutive_timeout_threshold = 1

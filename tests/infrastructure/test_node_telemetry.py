@@ -9,7 +9,7 @@ from rdflib import Graph, URIRef
 
 from continuum_bench import node
 from continuum_bench.queries import QueryMeasurement
-from continuum_bench.distributed_ontology import _summary
+from continuum_bench.monitoring.distributed_ontology import _summary
 
 
 def _runtime() -> node.NodeRuntime:
@@ -64,7 +64,7 @@ def test_worker_reports_cpu_and_peak_rss_for_prepare_and_queries(monkeypatch):
         assert result["peak_rss_kib"] > 0
 
 
-def test_partitioned_prepare_reports_placement_profile(monkeypatch):
+def test_distributed_prepare_reports_placement_profile(monkeypatch):
     runtime = _runtime()
     source = Graph()
     source.add(

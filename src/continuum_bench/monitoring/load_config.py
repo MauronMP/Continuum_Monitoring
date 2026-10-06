@@ -77,8 +77,13 @@ def load_load_config(path: str | Path) -> LoadBenchmarkConfig:
             raise ValueError(
                 f"{profile.name}: unknown dimension {profile.dimension!r}"
             )
-        if profile.events_per_second <= 0 or profile.duration_seconds <= 0:
-            raise ValueError(f"{profile.name}: event rate/duration must be > 0")
+        if (
+            not math.isfinite(profile.events_per_second)
+            or not math.isfinite(profile.duration_seconds)
+            or profile.events_per_second <= 0
+            or profile.duration_seconds <= 0
+        ):
+            raise ValueError(f"{profile.name}: event rate/duration must be finite and > 0")
         if profile.users < 0 or profile.rule_count < 0:
             raise ValueError(f"{profile.name}: users/rules must be >= 0")
         if profile.target_triples < 0:

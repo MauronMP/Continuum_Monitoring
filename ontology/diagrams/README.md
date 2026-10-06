@@ -1,7 +1,7 @@
 # Ontology diagrams for publication
 
 English conceptual views of release **3.0.0**, revision
-`3.0.0-en-datatypes-v1`. The figures are generated from the actual ontology
+`3.0.0-en-audit-v2`. The figures are generated from the actual ontology
 files listed in `configs/benchmark.toml`; they are not hand-drawn substitutes
 for the schema.
 
@@ -35,12 +35,11 @@ triple or individual in the ontology:
 | Annotation properties | 14 |
 | Subclass axioms | 70 |
 
-Inputs are the 14 local runtime files, whose union contains 7,966 triples.
-This includes `ontology/modules/deployment.ttl`: its four classes and six
-properties describe benchmark placement. The canonical single-file ontology
-`ontology/legacy/smartcity_continuum-v3.0.0.ttl` has 142 named classes and 271
-properties; the diagrams include that schema **plus the deployment extension**.
-The sources and their SHA-256 hashes are recorded in
+Inputs are the 14 configured ontology files, whose union contains 7,966
+triples. This includes `ontology/modules/deployment.ttl`: its four classes and
+six properties describe benchmark placement. The modular source set is the
+only canonical ontology; no generated monolithic copy is maintained. The
+sources and their SHA-256 hashes are recorded in
 [manifest.json](manifest.json) and [data/schema.json](data/schema.json).
 
 The nine display groups are foundation, topology, observability, governance,
@@ -183,7 +182,7 @@ of shrinking the full map into that figure.
 Suggested caption for the complete map:
 
 > Asserted class/property schema of the continuum monitoring ontology v3.0.0
-> (revision 3.0.0-en-datatypes-v1), including the benchmark deployment extension.
+> (revision 3.0.0-en-audit-v2), including the benchmark deployment extension.
 > The map covers 146 named classes, 165 object properties, 98 datatype properties
 > and 14 annotation properties. Solid arrows project declared domain/range
 > relations; hollow arrows indicate subclass axioms. OR expressions and missing

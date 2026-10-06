@@ -1,0 +1,16 @@
+[manifest]
+version = 2
+
+[topology]
+name = "physical"
+kind = "physical"
+description = "Five-node physical continuum; Mist explicitly excluded while offline"
+ssh_user = "pi"
+remote_dir = "/home/{ssh_user}/continuum-bench"
+remote_python = "/home/{ssh_user}/continuum-bench/.venv-node/bin/python"
+node_files = [
+  "nodes/cloud.toml",
+  "nodes/fog.toml",
+  "nodes/edge.toml",
+  "nodes/iot.toml",
+]

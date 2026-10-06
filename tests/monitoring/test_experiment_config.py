@@ -1,7 +1,7 @@
 import pytest
 
 from continuum_bench import cli
-from continuum_bench.experiment_config import (
+from continuum_bench.monitoring.experiment_config import (
     load_experiment_config,
     select_reasoning_profiles,
 )

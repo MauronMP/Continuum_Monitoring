@@ -107,7 +107,7 @@ def validate_project(config: BenchmarkConfig) -> dict[str, Any]:
             if imported not in known_ontologies
         }
     )
-    acceptance = acceptance_status(specs, query_measurements)
+    acceptance = acceptance_status(specs, query_measurements, graph=graph)
     return {
         "ok": (
             not expectation_errors

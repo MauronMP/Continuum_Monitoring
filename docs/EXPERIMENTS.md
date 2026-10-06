@@ -2,10 +2,12 @@
 
 ## Evaluation boundary
 
-The evaluated system is policy-driven monitoring. The ontology validates policy
-identifiers, supplies semantic context and contributes an internal reasoning
-cost. It is not the outcome being optimized, and the primary figures do not rank
-reasoners.
+This controlled evaluator selects monitoring plans through procedural context
+rules. The ontology validates identifiers; a separately timed synthetic reasoning
+probe does not feed the decision engine. These experiments therefore do not
+establish a semantic advantage over procedural rules. The alternative
+[comparison module](COMPARATIVE_EVALUATION.md) explicitly distinguishes static,
+procedural and semantic decisions.
 
 Scenario generation, decision execution, process sampling, CSV export and figure
 generation are separate components. The configuration is
@@ -32,8 +34,11 @@ continuum-bench policy-evaluation effectiveness
 
 One run processes `normal → overload → failure → recovery`. Every transition
 records the previous and new state, activated and deactivated policies, previous
-and resulting plans, decision time, detection latency, internal reasoning cost,
-policy evaluation latency, plan-generation latency and total adaptation latency.
+and resulting plans, decision time, context-read time, separate reasoning cost,
+policy evaluation and plan-generation time. Contexts and timeline timestamps are
+supplied by configuration. The historical `detection_latency_ms` column times a
+context assignment; `total_adaptation_latency_ms` includes the separate reasoning
+probe. Neither measures physical fault detection or recovery.
 
 Recovery is valid only when its plan matches ground truth and no policy from the
 previous state remains stale.
@@ -71,8 +76,10 @@ The cost runner repeats each decision a configured number of times before
 reporting the mean per-decision cost. This avoids treating sub-millisecond
 process-sampler startup as the workload itself.
 
-Network traffic is an estimate, not a host-interface measurement. It multiplies
-the generated observation count by the configured payload size. The CSV labels
+Observation counts and network traffic are estimates, not emitted sensor events
+or host-interface measurements. Traffic multiplies estimated observations by the
+configured payload size. Cost figures divide the once-per-batch reasoning time
+by `decision_iterations` before combining it with mean per-decision costs. The CSV labels
 this method explicitly.
 
 ```bash
@@ -87,3 +94,13 @@ revision, host, platform, ontology release, internal reasoner and complete publi
 configuration. Timing and operating-system resource measurements vary with the
 host; scenario generation and policy activation are deterministic for a fixed
 configuration and seed.
+
+## Interpretation limits
+
+Effectiveness scores combine policy identifiers with operational plan items;
+they are plan-conformance diagnostics, not clinical effectiveness. Figure error
+bars use scenario-averaged repetition means, not independent scenario samples.
+Resource sampling covers the Python process, excluding native reasoner children.
+Linux reports sampled current RSS; macOS reports explicitly labelled lifetime
+peak RSS and cannot support an equivalent per-experiment memory comparison.
+Use Linux for physical measurements. Missing resource values are never zero.

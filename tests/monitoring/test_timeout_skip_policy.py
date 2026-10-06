@@ -10,7 +10,7 @@ from continuum_bench.monitoring import physical, distributed_ontology as distrib
 from continuum_bench.monitoring.budget import (
     TimeoutSkipState, execution_policy, is_timeout_failure,
 )
-from continuum_bench.monitoring.config import load_config
+from continuum_bench.config import load_config
 from continuum_bench.monitoring.distributed import Endpoint
 from continuum_bench.topology import load_topology
 
@@ -85,14 +85,14 @@ def test_streak_reset_reasoner_isolation_and_latched_scopes(config):
     assert state.skipped('rdfs', 5, 2, 3)
     assert state.skipped('rdfs', 5, 3, 1)
     assert state.skipped('rdfs', 10, 1, 1)
-    assert state.skipped('owlrl', 10, 1, 1) is None
+    assert state.skipped('hermit', 10, 1, 1) is None
     state.completed('rdfs')
     assert state.skipped('rdfs', 10, 1, 1)
     with execution_policy(True):
         assert state.skipped('rdfs', 10, 1, 1) is None
 
 
-@pytest.fixture(params=[physical, distributed], ids=['balanced', 'partitioned'])
+@pytest.fixture(params=[physical, distributed], ids=['replicated', 'distributed'])
 def coordinator(request, config, tmp_path, monkeypatch):
     module = request.param
     selected = replace(config, reasoners=('rdfs',), scale_users=(5, 25), repetitions=3,
@@ -172,6 +172,27 @@ def test_real_errors_propagate(coordinator, monkeypatch, suite, error):
     monkeypatch.setattr(module, '_prepare', fail)
     with pytest.raises(type(error)):
         run(suite)
+
+
+@pytest.mark.parametrize('suite', ['cumulative', 'scalability'])
+def test_keep_going_records_real_point_failures(coordinator, monkeypatch, suite):
+    module, config, run = coordinator
+    calls = []
+
+    def fail(*args, **kwargs):
+        calls.append(1)
+        raise RuntimeError('native reasoner exhausted memory')
+
+    monkeypatch.setattr(module, '_prepare', fail)
+    with execution_policy(False, keep_going=True):
+        rows = run(suite)
+
+    expected = 9 if suite == 'cumulative' else 6
+    assert len(calls) == expected
+    assert len(rows) == expected
+    assert all(row['status'] == 'failed' for row in rows)
+    assert all(row['censored'] == 'False' for row in rows)
+    assert all('exhausted memory' in row['error'] for row in rows)
 
 
 @pytest.mark.parametrize('suite,count', [('cumulative', 9), ('scalability', 6)])
@@ -319,7 +340,7 @@ def test_setup_recovery_when_skips_disabled(query_coordinator, monkeypatch, suit
 def test_calibration_retry_and_reuse(query_coordinator, monkeypatch, suite):
     module, config, run, calls, install = query_coordinator
     if module is not physical:
-        pytest.skip('partitioned coordinator does not calibrate')
+        pytest.skip('distributed coordinator does not calibrate')
     install([])
     calibrate = module._calibrate
     attempts = []

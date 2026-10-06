@@ -84,8 +84,13 @@ def run_suite(root,config,output,**options):
     from .provenance import snapshot
     manifest["provenance"]=snapshot(root,directory)
     path.write_text(json.dumps(manifest,indent=2)+"\n")
-    for step in plan:
-        print(f"[suite] {step['name']} starting; evidence={directory}",flush=True)
+    for index, step in enumerate(plan, 1):
+        print(
+            f"[suite-progress] step={index}/{len(plan)} "
+            f"percent={100 * (index - 1) / len(plan):.1f} "
+            f"name={step['name']} status=running evidence={directory}",
+            flush=True,
+        )
         step['started_at']=datetime.now(timezone.utc).isoformat()
         with (directory/(step['name']+'.log')).open('w') as log:
             environment = {**os.environ, **step.get('environment', {})}
@@ -120,5 +125,11 @@ def run_suite(root,config,output,**options):
                 step['status']='skipped'
 
         path.write_text(json.dumps(manifest,indent=2)+'\n')
-        print(f"[suite] {step['name']} {step['status']}; log={step['name']}.log",flush=True)
+        print(
+            f"[suite-progress] step={index}/{len(plan)} "
+            f"percent={100 * index / len(plan):.1f} "
+            f"name={step['name']} status={step['status']} "
+            f"log={step['name']}.log",
+            flush=True,
+        )
     return manifest

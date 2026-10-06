@@ -5,8 +5,8 @@ from dataclasses import replace
 import pytest
 
 from continuum_bench.config import _validate_benchmark
-from continuum_bench.experiment_config import load_experiment_config
-from continuum_bench.load_config import load_load_config
+from continuum_bench.monitoring.experiment_config import load_experiment_config
+from continuum_bench.monitoring.load_config import load_load_config
 
 
 def test_benchmark_scale_must_be_strictly_increasing(config):

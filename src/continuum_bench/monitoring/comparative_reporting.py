@@ -8,7 +8,9 @@ from matplotlib.lines import Line2D
 from matplotlib.ticker import LogLocator, NullFormatter, ScalarFormatter
 import numpy as np
 
-from .publication import COLORS, LABELS, number, outcome, write_csv
+from .publication import (
+    COLORS, LABELS, number, outcome, validated_evidence_rows, write_csv,
+)
 
 from .report_profiles import LAYOUTS, CURRENT_LAYOUTS, observed_profiles
 
@@ -38,16 +40,7 @@ def generate_comparisons(report):
             rows = report.read(report.inputs / f'monitoring/{layout}/{suite}/summary.csv')
             validation_path = report.inputs / f'monitoring/{layout}/{suite}/result-validation.csv'
             validations = report.read(validation_path) if validation_path.is_file() else []
-            invalid_reasoners = {
-                row.get('reasoner') for row in validations
-                if row.get('valid', '').lower() != 'true'
-            }
-            summaries[layout, suite] = [
-                ({**row, 'status': 'invalid_results'}
-                 if row.get('reasoner') in invalid_reasoners and outcome(row) == 'completed'
-                 else row)
-                for row in rows
-            ]
+            summaries[layout, suite] = validated_evidence_rows(rows, validations)
     layouts = [layout for layout in CURRENT_LAYOUTS if any(summaries[layout, suite] for suite in ('scalability', 'cumulative'))]
     reasoners = observed_profiles([r for rows in summaries.values() for r in rows])
     # Cross-layout panels include only profiles with at least one population

@@ -1,19 +1,15 @@
-"""Display identities; historical profiles are never aliases for current engines."""
+"""Display identities for the active physical reasoner matrix."""
 
 CURRENT_PROFILES = (
-    "none", "rdfs", "owlrl", "rdfs_owlrl", "elk",
-    "hermit", "openllet", "jfact", "konclude",
+    "rdfs", "hermit", "openllet", "jfact", "konclude",
 )
 LABELS = {
-    "none": "Identity", "rdfs": "RDFS", "owlrl": "OWL RL",
-    "rdfs_owlrl": "RDFS + OWL RL", "elk": "ELK",
-    "hermit": "HermiT", "openllet": "Openllet", "jfact": "JFact",
+    "rdfs": "RDFS", "hermit": "HermiT", "openllet": "Openllet", "jfact": "JFact",
     "konclude": "Konclude",
 }
 COLORS = dict(zip(
     CURRENT_PROFILES,
-    ("#999999", "#0072B2", "#009E73", "#CC79A7", "#F0E442",
-     "#E69F00", "#56B4E9", "#D55E00", "#000000"),
+    ("#0072B2", "#E69F00", "#56B4E9", "#D55E00", "#000000"),
 ))
 LAYOUTS = {"distributed": "Distributed", "replicated": "Replicated"}
 CURRENT_LAYOUTS = dict(LAYOUTS)

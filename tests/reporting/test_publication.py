@@ -1,12 +1,40 @@
 import csv
 from pathlib import Path
-from continuum_bench.monitoring.publication import outcome, Report
+from continuum_bench.monitoring.publication import (
+    outcome, Report, validated_evidence_rows,
+)
 from continuum_bench.monitoring.suite import suite_plan
 
 
 def test_skipped_points_are_not_observed_timeouts():
     assert outcome({'status':'skipped_after_timeout'}) == 'skipped'
     assert outcome({'status':'prepare_timeout'}) == 'timeout'
+
+
+def test_reference_timeout_retains_timing_but_excludes_point_from_curves():
+    rows = validated_evidence_rows([
+        {'reasoner':'konclude', 'synthetic_users':'5000', 'repetition':'1',
+         'status':'completed', 'reference_status':'timeout', 'total_wall_ms':'42'},
+    ])
+    assert rows[0]['status'] == 'unvalidated_results'
+    assert rows[0]['total_wall_ms'] == '42'
+    assert outcome(rows[0]) == 'failed'
+
+
+def test_validation_mismatch_excludes_only_its_exact_point():
+    rows = validated_evidence_rows(
+        [
+            {'reasoner':'konclude', 'synthetic_users':'100', 'repetition':'1',
+             'status':'completed', 'reference_status':'completed'},
+            {'reasoner':'konclude', 'synthetic_users':'500', 'repetition':'1',
+             'status':'completed', 'reference_status':'completed'},
+        ],
+        [
+            {'reasoner':'konclude', 'synthetic_users':'100', 'repetition':'1',
+             'stage':'', 'valid':'False'},
+        ],
+    )
+    assert [row['status'] for row in rows] == ['invalid_results', 'completed']
 
 
 def test_patient_suite_applies_budget_and_preserves_all_families(root,tmp_path):
@@ -132,19 +160,26 @@ def test_report_rejects_stale_release_and_topology(root, tmp_path):
 
 def test_report_accepts_current_distribution_metadata(root, tmp_path):
     import json
-    from continuum_bench import __version__
+    from continuum_bench.specification import release_identity
+    from continuum_bench.topology import load_topology
 
     metadata = tmp_path / 'load/metadata.json'
     metadata.parent.mkdir(parents=True)
-    metadata.write_text(json.dumps({
-        'runtime_versions': {'continuum-monitoring-benchmark': __version__},
+    identity = release_identity()
+    topology = load_topology(
+        root / 'configs/topologies/physical/topology.toml', 'physical'
+    )
+    metadata.write_text(json.dumps(identity | {
         'available_endpoints': [
             {'url': f'http://node-{index}'} for index in range(6)
         ],
+        'topology_fingerprint': topology.fingerprint,
     }))
     report = Report(root, tmp_path, tmp_path / 'paper')
     assert report.evidence_context['version_compatible'] is True
+    assert report.evidence_context['build_compatible'] is True
     assert report.evidence_context['topology_compatible'] is True
+    assert report.evidence_context['topology_fingerprint_compatible'] is True
 
 
 def test_evidence_readiness_is_a_normalized_png(root, tmp_path):
@@ -212,8 +247,8 @@ def test_comparative_statistics_preserve_zero_and_exclude_missing():
 
 def test_figure_groups_keep_query_and_node_panels_distinct():
     from continuum_bench.monitoring.publication import figure_group
-    assert figure_group('expensive-queries-sharded') == 'queries'
-    assert figure_group('node-category-sharded-rdfs') == 'nodes-and-layers'
+    assert figure_group('expensive-queries-distributed') == 'queries'
+    assert figure_group('node-category-distributed-rdfs') == 'nodes-and-layers'
     assert figure_group('placement-scalability-rdfs') == 'scalability-and-placement'
 
 
@@ -294,7 +329,7 @@ def test_comparisons_render_all_observed_profiles_for_current_layouts(root, tmp_
     from continuum_bench.monitoring.comparative_reporting import generate_comparisons
     from continuum_bench.monitoring.report_profiles import CURRENT_PROFILES, LABELS
     report = Report(root, tmp_path, tmp_path/'paper')
-    profiles = tuple(dict.fromkeys((*CURRENT_PROFILES, 'owlrl', 'rdfs_owlrl')))
+    profiles = CURRENT_PROFILES
     def read(path):
         if path.name == 'summary.csv':
             return [dict(reasoner=r, status='completed', synthetic_users='10', stage='1', repetition='1', total_wall_ms='12') for r in profiles]
@@ -310,7 +345,6 @@ def test_comparisons_render_all_observed_profiles_for_current_layouts(root, tmp_
     generate_comparisons(report)
     assert [title for title in captured['category-evaluation-methods'] if title] == [LABELS[r] for r in profiles]
     assert 'expensive-queries-distributed' in captured
-    assert 'expensive-queries-sharded' not in captured
     rows = list(csv.DictReader((report.output/'placement-comparison.csv').open()))
     assert {r['layout'] for r in rows} == {'distributed', 'replicated'}
     assert {r['reasoner'] for r in rows} == set(profiles)
@@ -383,24 +417,21 @@ def test_suite_unspecified_policy_preserves_config(root, tmp_path):
         assert '--keep-going' not in step['command']
 
 
-def test_archived_summary_read_preserves_labels_and_bytes(root, tmp_path):
+def test_summary_read_preserves_labels_and_bytes(root, tmp_path):
     import json
-    from continuum_bench.reasoners import REASONING_CONTRACT
-    from continuum_bench.specification import ONTOLOGY_VERSION, ONTOLOGY_REVISION, EXPECTED_QUERY_IDS
-    directory=tmp_path/'monitoring/sharded/scalability'
+    from continuum_bench.specification import release_identity
+    directory=tmp_path/'monitoring/distributed/scalability'
     directory.mkdir(parents=True)
     summary=directory/'summary.csv'
-    summary.write_text('reasoner,status,profile\nowlrl,completed,old-profile\nrdfs_owlrl,timeout,old-profile\n')
+    summary.write_text('reasoner,status,profile\nrdfs,completed,current-profile\nhermit,timeout,current-profile\n')
     metadata=directory/'metadata.json'
-    metadata.write_text(json.dumps(dict(ontology_version=ONTOLOGY_VERSION,
-                                       ontology_revision=ONTOLOGY_REVISION,
-                                       query_count=len(EXPECTED_QUERY_IDS),
-                                       reasoning_contract=REASONING_CONTRACT,
-                                       mode='physical-elastic-authority-sharded')))
+    metadata.write_text(json.dumps(
+        release_identity()
+        | {'mode': 'physical-elastic-authority-distributed'}
+    ))
     original={p:p.read_bytes() for p in (summary, metadata)}
     report=Report(root,tmp_path,tmp_path/'paper')
     rows=report.read(summary)
-    assert [r['reasoner'] for r in rows]==['owlrl','rdfs_owlrl']
-    assert {r['profile'] for r in rows}=={'old-profile'}
+    assert [r['reasoner'] for r in rows]==['rdfs','hermit']
+    assert {r['profile'] for r in rows}=={'current-profile'}
     assert all(p.read_bytes()==content for p,content in original.items())
-    assert not (tmp_path/'monitoring/distributed').exists()

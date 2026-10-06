@@ -1,14 +1,17 @@
 import json
 import time
-from continuum_bench.monitoring.normalize import normalize_completed_outputs
+import os
+from continuum_bench.monitoring.normalize import normalize_completed_outputs, snapshot_summaries
 
 def test_only_new_summaries_receive_a_canonical_envelope(config, tmp_path):
     old=tmp_path/'old';old.mkdir()
     (old/'summary.csv').write_text('status,reasoner\ncompleted,rdfs\n')
+    previous = snapshot_summaries(tmp_path)
     started=time.time_ns()
     current=tmp_path/'current';current.mkdir()
     (current/'summary.csv').write_text('status,reasoner,reasoning_ms\ncompleted,rdfs,12.5\n')
-    normalize_completed_outputs(config,tmp_path,started)
+    os.utime(current/'summary.csv', ns=(started-10_000_000, started-10_000_000))
+    normalize_completed_outputs(config,tmp_path,started, previous_summaries=previous)
     assert not (old/'results.jsonl').exists()
     row=json.loads((current/'results.jsonl').read_text())
     assert row['schema_version']=='continuum.monitoring.v1'
@@ -17,12 +20,12 @@ def test_only_new_summaries_receive_a_canonical_envelope(config, tmp_path):
     assert row['configuration']['seed']==config.seed
 
 
-def test_envelope_preserves_historical_identity_and_censoring(config, tmp_path):
-    (tmp_path/'summary.csv').write_text('status,reasoner,layout,profile\nskipped_after_timeout,owlrl,sharded,legacy-profile\n')
+def test_envelope_preserves_identity_and_censoring(config, tmp_path):
+    (tmp_path/'summary.csv').write_text('status,reasoner,layout,profile\nskipped_after_timeout,rdfs,distributed,current-profile\n')
     normalize_completed_outputs(config, tmp_path, 0)
     row=json.loads((tmp_path/'results.jsonl').read_text())
-    assert row['reasoner']=='owlrl'
-    assert row['layout']=='sharded'
-    assert row['profile']=='legacy-profile'
+    assert row['reasoner']=='rdfs'
+    assert row['layout']=='distributed'
+    assert row['profile']=='current-profile'
     assert row['status']=='skipped_after_timeout'
     assert row['outcome']=='skipped'

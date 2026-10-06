@@ -4,8 +4,8 @@ import pytest
 from io import BytesIO
 from urllib.error import HTTPError, URLError
 
-from continuum_bench import distributed
-from continuum_bench.distributed import Endpoint, _assignment
+from continuum_bench.monitoring import distributed
+from continuum_bench.monitoring.distributed import Endpoint, _assignment
 from continuum_bench.protocol import worker_health_error
 from continuum_bench.queries import load_catalog
 from continuum_bench.reasoners import REASONING_CONTRACT
@@ -101,7 +101,7 @@ def test_parallel_timeout_reports_the_exact_query_batch(monkeypatch, capsys):
             [endpoint],
             "/queries",
             {endpoint.url: {"query_ids": ["Q071", "Q076"]}},
-            phase="partitioned-queries-batch-1-of-1",
+            phase="distributed-queries-batch-1-of-1",
             timeout=1,
             retries=0,
         )
@@ -130,6 +130,15 @@ def test_http_application_error_preserves_worker_response(monkeypatch):
             timeout=1,
         )
 
+
+def test_worker_error_truncation_keeps_cause_and_native_tail():
+    body = 'cause-prefix:' + 'x' * 6000 + ':std::bad_alloc'
+
+    value = distributed._worker_error_body(body, limit=400)
+
+    assert value.startswith('cause-prefix:')
+    assert value.endswith(':std::bad_alloc')
+    assert 'worker response truncated' in value
 
 def test_query_batches_spread_lpt_expensive_prefix_across_rounds(config):
     specs = load_catalog(config.resolve(config.query_catalog), config.root)[:10]

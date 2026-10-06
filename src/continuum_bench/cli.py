@@ -50,7 +50,14 @@ def _parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     parser.add_argument("--timeout-seconds", type=float, help="Override request, phase and point budgets for physical benchmarks")
-    parser.add_argument("--unlimited", action="store_true", help="Disable benchmark deadlines and timeout pruning; preserve configured budgets as metadata")
+    parser.add_argument(
+        "--unlimited",
+        action="store_true",
+        help=(
+            "Optionally disable all benchmark deadlines and timeout pruning; "
+            "a non-terminating reasoner may block the run indefinitely"
+        ),
+    )
     parser.add_argument("--keep-going", action="store_true", help="Attempt later points even after a timeout")
     parser.add_argument("--repetitions", type=int, help="Override experiment repetitions")
     parser.add_argument("--timeout-mode", choices=("bounded", "unlimited"), help="Override limits.timeout_mode")
@@ -582,12 +589,12 @@ def _dispatch(args) -> int:
         return 0
 
     if args.command == "load":
-        from .load_benchmark import run_load_benchmark
-        from .load_config import load_load_config, select_load_profiles
+        from .monitoring.load_benchmark import run_load_benchmark
+        from .monitoring.load_config import load_load_config, select_load_profiles
 
         output_root = config.root / args.output_dir
         if args.target == "plot":
-            from .load_reporting import plot_load_comparison
+            from .monitoring.load_reporting import plot_load_comparison
 
             paths = plot_load_comparison(output_root)
             if args.show:
@@ -616,20 +623,21 @@ def _dispatch(args) -> int:
             args.target,
             output_root,
             endpoints,
+            topology,
         )
         print(json.dumps({args.target: str(output)}, indent=2, ensure_ascii=False))
         return 0
 
     if args.command == "experiment":
-        from .experiment_config import (
+        from .monitoring.experiment_config import (
             load_experiment_config,
             select_reasoning_profiles,
         )
-        from .experiments import EXPERIMENTS, run_experiment
+        from .monitoring.experiments import EXPERIMENTS, run_experiment
 
         output_root = config.root / args.output_dir
         if args.experiment_name == "plot":
-            from .experiment_reporting import plot_experiments
+            from .monitoring.experiment_reporting import plot_experiments
 
             selected = EXPERIMENTS if args.suite == "all" else (args.suite,)
             paths = plot_experiments(output_root, selected)
@@ -644,8 +652,8 @@ def _dispatch(args) -> int:
             )
             return 0
         if args.experiment_name == "analyze":
-            from .experiment_analysis import analyze_experiments
-            from .experiment_reporting import plot_claim_analysis
+            from .monitoring.experiment_analysis import analyze_experiments
+            from .monitoring.experiment_reporting import plot_claim_analysis
 
             paths = analyze_experiments(output_root)
             paths.extend(plot_claim_analysis(output_root))
@@ -690,6 +698,7 @@ def _dispatch(args) -> int:
                 run_distributed_reasoning_scalability(
                     config, distributed_workload, args.target, output_root,
                     endpoint_urls=topology.endpoints(),
+                    topology=topology,
                 )
             )
             if args.experiment_name == "distributed-reasoning-scalability":
@@ -727,6 +736,7 @@ def _dispatch(args) -> int:
                     args.target,
                     output_root,
                     endpoint_urls=endpoints,
+                    topology=topology,
                 )
             )
             for name in selected
@@ -735,8 +745,8 @@ def _dispatch(args) -> int:
         return 0
 
     if args.command == "study":
-        from .study import analyze_category_costs, generate_study_trace
-        from .study.config import load_study_config
+        from .monitoring.study import analyze_category_costs, generate_study_trace
+        from .monitoring.study.config import load_study_config
 
         output_root = config.root / args.output_dir
         if args.action == "trace":
@@ -811,18 +821,34 @@ def main(argv: list[str] | None = None) -> int:
         or args.command in {"load", "experiment"} and getattr(args, "target", None) == "physical"
     )
     from contextlib import nullcontext
-    from .monitoring.lease import physical_lease
+    from .monitoring.lease import (
+        physical_lease,
+        prevent_coordinator_suspension,
+    )
     lease = physical_lease(load_config(args.config).root) if physical_work else nullcontext()
     from .monitoring.budget import execution_policy
     effective_unlimited = args.unlimited or (args.timeout_mode or load_config(args.config).limits.timeout_mode) == "unlimited"
-    with execution_policy(effective_unlimited), lease:
+    with (
+        execution_policy(
+            effective_unlimited,
+            keep_going=args.keep_going or effective_unlimited,
+        ),
+        lease,
+        prevent_coordinator_suspension(physical_work),
+    ):
         if effective_unlimited:
             print("[execution-policy] unlimited: benchmark budgets are recorded but not enforced", flush=True)
+        normalizes_outputs = args.command in {"physical", "load", "experiment"} and hasattr(args, "output_dir")
+        previous_summaries = None
+        if normalizes_outputs:
+            from .monitoring.normalize import snapshot_summaries
+            config = load_config(args.config)
+            previous_summaries = snapshot_summaries(config.resolve(Path(args.output_dir)))
         status = _dispatch(args)
-        if args.command in {"physical", "load", "experiment"} and hasattr(args, "output_dir"):
+        if normalizes_outputs:
             from .monitoring.normalize import normalize_completed_outputs
             config = load_config(args.config)
-            normalize_completed_outputs(config, config.resolve(Path(args.output_dir)), started_ns)
+            normalize_completed_outputs(config, config.resolve(Path(args.output_dir)), started_ns, previous_summaries=previous_summaries)
         return status
 
 

@@ -19,12 +19,13 @@ import statistics
 from time import perf_counter_ns, sleep
 from typing import Any, Callable, Iterator
 
-from .config import BenchmarkConfig
+from ..config import BenchmarkConfig
 from ..csv_utils import write_dict_rows
 from .distributed import Endpoint, _parallel, _request, discover
 from .load_config import LoadBenchmarkConfig, LoadProfile
 from ..queries import QuerySpec, load_catalog
 from ..specification import release_identity
+from ..topology import Topology
 from .budget import execution_metadata
 
 
@@ -63,8 +64,15 @@ def _is_timeout(error: str) -> bool:
     )
 
 
-def discover_load_endpoints(urls: list[str]) -> list[Endpoint]:
-    return discover(urls)
+def discover_load_endpoints(
+    urls: list[str],
+    topology: Topology | None = None,
+) -> list[Endpoint]:
+    return discover(
+        urls,
+        topology.active_nodes if topology else None,
+        topology.fingerprint if topology else None,
+    )
 
 
 def _workload_specs(config: BenchmarkConfig) -> list[QuerySpec]:
@@ -526,12 +534,13 @@ def run_load_benchmark(
     architecture: str,
     output_root: Path,
     endpoint_urls: list[str] | None = None,
+    topology: Topology | None = None,
 ) -> Path:
     if architecture not in {"physical"}:
         raise ValueError(
             "Load benchmark target must be physical"
         )
-    all_endpoints = discover_load_endpoints(endpoint_urls or [])
+    all_endpoints = discover_load_endpoints(endpoint_urls or [], topology)
     specs = _workload_specs(benchmark_config)
     summary_rows: list[dict[str, Any]] = []
     event_rows: list[dict[str, Any]] = []
@@ -998,6 +1007,7 @@ def run_load_benchmark(
         "execution_policy": execution_metadata(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "architecture": architecture,
+        "topology_fingerprint": topology.fingerprint if topology else None,
         "topology": {"endpoint_override": list(endpoint_urls or [])},
         "python": platform.python_version(),
         "platform": platform.platform(),

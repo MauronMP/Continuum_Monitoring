@@ -72,13 +72,12 @@ def test_worker_materializes_and_recovers_only_transport(fragments, monkeypatch,
     assert len(materialized) == 2
 
 
-@pytest.mark.parametrize("mode", ["distributed", "partitioned"])
-def test_worker_rejects_missing_fragment_without_local_fallback(mode):
+def test_worker_rejects_missing_fragment_without_local_fallback():
     runtime = node.NodeRuntime.__new__(node.NodeRuntime)
     runtime.role = "edge1"
     runtime.lock = RLock()
     with pytest.raises(ValueError, match="requires a serialized fragment"):
-        runtime.prepare("rdfs", 5, 2026, mode=mode)
+        runtime.prepare("rdfs", 5, 2026, mode="distributed")
 
 
 def test_http_prepare_decodes_only_assigned_fragment(fragments, monkeypatch):
@@ -125,7 +124,7 @@ def test_transport_checks_triple_count_after_hash_validation(fragments):
 def test_coordinator_transports_fragments_and_times_placement(config, monkeypatch):
     from types import SimpleNamespace
     from continuum_bench.monitoring import distributed_ontology as distributed
-    from continuum_bench.distributed import Endpoint
+    from continuum_bench.monitoring.distributed import Endpoint
 
     endpoints = [Endpoint("http://" + role, role) for role in
                  ("cloud", "fog", "edge1", "edge2", "edge3")]
@@ -177,7 +176,7 @@ def test_coordinator_transports_fragments_and_times_placement(config, monkeypatc
 
 def test_coordinator_rejects_unconfirmed_worker_placement(config, monkeypatch):
     from continuum_bench.monitoring import distributed_ontology as distributed
-    from continuum_bench.distributed import Endpoint
+    from continuum_bench.monitoring.distributed import Endpoint
 
     endpoints = [Endpoint("http://cloud", "cloud"), Endpoint("http://edge1", "edge1")]
     monkeypatch.setattr(distributed, "_parallel", lambda *args, **kwargs:
@@ -189,7 +188,7 @@ def test_coordinator_rejects_unconfirmed_worker_placement(config, monkeypatch):
 def test_placement_exhaustion_prevents_transport(config, monkeypatch):
     from continuum_bench.monitoring import distributed_ontology as distributed
     from continuum_bench.monitoring.budget import PhaseBudgetTimeout
-    from continuum_bench.distributed import Endpoint
+    from continuum_bench.monitoring.distributed import Endpoint
 
     clock = [100.0]
     original_build = partitioning.build_fragments

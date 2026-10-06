@@ -279,6 +279,7 @@ def run_dynamic_adaptation(config: PolicyEvaluationConfig) -> list[dict[str, Any
                     "cpu_mean_percent": resources.cpu_mean_percent,
                     "cpu_max_percent": resources.cpu_max_percent,
                     "process_cpu_time_ms": resources.process_cpu_time_ms,
+                    "memory_measurement_kind": resources.memory_measurement_kind,
                     "ram_mean_mib": resources.ram_mean_mib,
                     "ram_max_mib": resources.ram_max_mib,
                     "stale_policy_count": len(stale),
@@ -344,6 +345,7 @@ def run_scalability(config: PolicyEvaluationConfig) -> list[dict[str, Any]]:
                     "cpu_mean_percent": resources.cpu_mean_percent,
                     "cpu_max_percent": resources.cpu_max_percent,
                     "process_cpu_time_ms": resources.process_cpu_time_ms,
+                    "memory_measurement_kind": resources.memory_measurement_kind,
                     "ram_mean_mib": resources.ram_mean_mib,
                     "ram_max_mib": resources.ram_max_mib,
                     "explicit_triples": explicit_triples,
@@ -425,6 +427,7 @@ def run_computational_cost(config: PolicyEvaluationConfig) -> list[dict[str, Any
                     "cpu_max_percent": resources.cpu_max_percent,
                     "process_cpu_time_ms": resources.process_cpu_time_ms,
                     "cpu_time_per_decision_ms": resources.process_cpu_time_ms / config.cost_decisions_per_scenario,
+                    "memory_measurement_kind": resources.memory_measurement_kind,
                     "ram_mean_mib": resources.ram_mean_mib,
                     "ram_max_mib": resources.ram_max_mib,
                     "explicit_triples": explicit_triples,
@@ -483,7 +486,12 @@ def _metadata(root: Path, benchmark_config, config: PolicyEvaluationConfig, sele
         "experiments": list(selected),
         "policy_evaluation": config.public(),
         "reasoner": reasoner_provenance(config.reasoner),
-        "ontology_role": "internal_policy_decision_mechanism",
+        "ontology_role": "identifier_validation_and_separate_reasoning_probe",
+        "decision_mechanism": "procedural_context_rule_evaluation",
+        "context_source": "configured_synthetic_contexts",
+        "quality_contract": "mixed_plan_items_including_policy_identifiers",
+        "volume_measurement": "estimated_from_plan_and_configured_window",
+        "resource_scope": "current_python_process_excluding_native_reasoner_children",
     }
 
 

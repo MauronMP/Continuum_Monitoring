@@ -59,7 +59,7 @@ def test_identifier_inventory_preserves_result_bag_with_bound_types(config):
     types = "  VALUES ?identifierType {\n    :PseudonymousIdentifier :AnonymousIdentifier :DirectIdentifier\n  }\n"
     original = optimized.replace(types + user, user + types)
     assert original != optimized
-    for reasoner in ("rdfs", "owlrl", "rdfs_owlrl"):
+    for reasoner in ("rdfs",):
         closure = materialize(graph, reasoner).graph
         assert Counter(tuple(row) for row in closure.query(optimized)) == Counter(
             tuple(row) for row in closure.query(original)

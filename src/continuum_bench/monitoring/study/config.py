@@ -223,8 +223,7 @@ def _validate(config: PolicyCostStudyConfig) -> None:
         "partial_replication",
         "selective_replication",
         "distributed",
-        "partitioned",
-        "partitioned_selective_replication",
+        "distributed_selective_replication",
         "hybrid",
     }:
         raise ValueError("Unsupported ontology placement strategy")

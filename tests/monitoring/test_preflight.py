@@ -2,8 +2,8 @@ from dataclasses import replace
 
 import pytest
 
-from continuum_bench.experiment_config import load_experiment_config
-from continuum_bench.load_config import load_load_config
+from continuum_bench.monitoring.experiment_config import load_experiment_config
+from continuum_bench.monitoring.load_config import load_load_config
 from continuum_bench.preflight import (
     WorkloadTarget,
     validate_experiment_workload,

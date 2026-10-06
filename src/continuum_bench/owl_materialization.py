@@ -17,6 +17,7 @@ import subprocess
 import tempfile
 from time import perf_counter
 import xml.etree.ElementTree as ET
+from urllib.parse import urljoin, urlsplit
 
 from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import OWL, RDF, RDFS, XSD
@@ -29,7 +30,6 @@ FACTORIES = {
     "hermit": "org.semanticweb.HermiT.ReasonerFactory",
     "openllet": "openllet.owlapi.OpenlletReasonerFactory",
     "jfact": "uk.ac.manchester.cs.jfact.JFactFactory",
-    "elk": "org.semanticweb.elk.owlapi.ElkReasonerFactory",
 }
 LINK = "http://www.owllink.org/owllink#"
 OWL_NS = str(OWL)
@@ -102,11 +102,58 @@ def _run(command: list[str], deadline: float | None) -> subprocess.CompletedProc
     return result
 
 
+def _absolute_owlxml_iris(ontology: ET.Element) -> None:
+    """Preserve OWL/XML identity when moving axioms into an OWLlink Tell.
+
+    OWLAPI may emit fragment IRIs relative to xml:base and abbreviated IRIs
+    relative to Prefix declarations. OWLlink has a different document root;
+    expand both before removing the original header/prefix declarations.
+    """
+    xml_base = "{http://www.w3.org/XML/1998/namespace}base"
+    root_base = ontology.get(xml_base) or ontology.get("ontologyIRI", "")
+
+    def absolute(value: str, base: str) -> str:
+        result = value if urlsplit(value).scheme else urljoin(base, value)
+        if not urlsplit(result).scheme:
+            raise MaterializationError(f"Unresolved relative OWL/XML IRI: {value!r}")
+        return result
+
+    prefixes = {
+        item.attrib["name"].rstrip(":"): absolute(item.attrib["IRI"], root_base)
+        for item in ontology.findall(f"{{{OWL_NS}}}Prefix")
+    }
+
+    def expanded(value: str) -> str:
+        prefix, separator, local = value.partition(":")
+        if not separator or prefix not in prefixes:
+            raise MaterializationError(f"Unknown OWL/XML prefix: {value!r}")
+        return prefixes[prefix] + local
+
+    def visit(element: ET.Element, base: str) -> None:
+        if xml_base in element.attrib:
+            base = absolute(element.attrib[xml_base], base)
+        for name in ("IRI", "datatypeIRI"):
+            if name in element.attrib:
+                element.set(name, absolute(element.attrib[name], base))
+        if "abbreviatedIRI" in element.attrib:
+            element.set("IRI", expanded(element.attrib.pop("abbreviatedIRI")))
+        if element.tag == f"{{{OWL_NS}}}IRI" and element.text is not None:
+            element.text = absolute(element.text.strip(), base)
+        elif element.tag == f"{{{OWL_NS}}}AbbreviatedIRI" and element.text is not None:
+            element.tag = f"{{{OWL_NS}}}IRI"
+            element.text = expanded(element.text.strip())
+        for child in element:
+            visit(child, base)
+
+    visit(ontology, root_base)
+
+
 def _konclude(converted: Path, directory: Path, deadline: float | None) -> Graph:
     native = shutil.which(os.environ.get("CONTINUUM_KONCLUDE_EXECUTABLE", "Konclude"))
     if not native:
         raise MaterializationError("Native Konclude unavailable; install Konclude or set CONTINUUM_KONCLUDE_EXECUTABLE")
     ontology = ET.parse(converted).getroot()
+    _absolute_owlxml_iris(ontology)
     classes = sorted({e.attrib["IRI"] for e in ontology.iter(f"{{{OWL_NS}}}Class")})
     individuals = sorted({e.attrib["IRI"] for e in ontology.iter(f"{{{OWL_NS}}}NamedIndividual")})
     request = ET.Element(f"{{{LINK}}}RequestMessage")

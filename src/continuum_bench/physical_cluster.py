@@ -13,17 +13,14 @@ import shutil
 import subprocess
 import sys
 import time
-import tomllib
 from typing import Any
 from urllib.error import URLError
 
-from .distributed import _request
+from .monitoring.distributed import _request
 from .protocol import worker_health_error
 from .environment import physical_checks, require_checks
 from .topology import (
     Topology,
-    default_categories,
-    infer_tier,
     load_topology,
     render_flat_topology,
 )
@@ -74,73 +71,30 @@ def load_physical_inventory(
     ssh_user: str | None = None,
     topology_name: str = "physical",
 ) -> PhysicalInventory:
-    with path.open("rb") as handle:
-        document = tomllib.load(handle)
-    configured_topology: Topology | None = None
-    manifest_metadata = document.get("manifest", {})
-    is_topology_manifest = (
-        "topologies" in document
-        or "topology" in document
-        or "topology_files" in manifest_metadata
+    configured_topology = load_topology(path, topology_name)
+    if configured_topology.kind != "physical":
+        raise ValueError(
+            f"Topology {topology_name!r} is not a physical topology"
+        )
+    nodes = tuple(
+        PhysicalNode(
+            role=item.node_id,
+            tier=item.tier,
+            host=item.host,
+            endpoint=item.endpoint,
+            local=item.local,
+            port=item.port,
+            authority=item.authority,
+            categories=item.categories,
+        )
+        for item in configured_topology.active_nodes
     )
-    project_root = path.parent
-    if is_topology_manifest:
-        configured_topology = load_topology(path, topology_name)
-        if configured_topology.kind != "physical":
-            raise ValueError(
-                f"Topology {topology_name!r} is not a physical topology"
-            )
-        nodes = tuple(
-            PhysicalNode(
-                role=item.node_id,
-                tier=item.tier,
-                host=item.host,
-                endpoint=item.endpoint,
-                local=item.local,
-                port=item.port,
-                authority=item.authority,
-                categories=item.categories,
-            )
-            for item in configured_topology.active_nodes
-        )
-        user = ssh_user or configured_topology.ssh_user
-        # Preserve placeholders until the optional command-line SSH user is
-        # known. Otherwise --ssh-user would leave /home/{old-user} paths.
-        remote_dir_template = configured_topology.remote_dir_template
-        remote_python_template = configured_topology.remote_python_template
-        project_root = configured_topology.project_root or path.parent
-    else:
-        # Backward-compatible reader for old experiment inventories. New
-        # deployments should use the composed topology catalogue.
-        cluster = document.get("cluster", {})
-        nodes = tuple(
-            PhysicalNode(
-                role=str(item["role"]),
-                tier=str(item.get("tier", infer_tier(str(item["role"])))),
-                host=str(item["host"]),
-                endpoint=str(item["endpoint"]).rstrip("/"),
-                local=bool(item.get("local", False)),
-                port=int(item.get("port", 8080)),
-                authority=bool(
-                    item.get(
-                        "authority",
-                        infer_tier(str(item["role"])) in {"edge", "iot"},
-                    )
-                ),
-                categories=tuple(
-                    item.get(
-                        "categories",
-                        default_categories(
-                            str(item.get("tier", infer_tier(str(item["role"]))))
-                        ),
-                    )
-                ),
-            )
-            for item in document.get("nodes", [])
-        )
-        user = ssh_user or str(cluster.get("ssh_user", "")).strip()
-        remote_dir_template = str(cluster.get("remote_dir", ""))
-        remote_python_template = str(cluster.get("remote_python", ""))
+    user = ssh_user or configured_topology.ssh_user
+    # Preserve placeholders until the optional command-line SSH user is
+    # known. Otherwise --ssh-user would leave /home/{old-user} paths.
+    remote_dir_template = configured_topology.remote_dir_template
+    remote_python_template = configured_topology.remote_python_template
+    project_root = configured_topology.project_root or path.parent
     if not nodes:
         raise ValueError("Physical inventory must define at least one node")
     roles = [node.role for node in nodes]
@@ -163,15 +117,7 @@ def load_physical_inventory(
     )
     if not remote_dir.startswith("/") or not remote_python.startswith("/"):
         raise ValueError("remote_dir and remote_python must be absolute paths")
-    directory = PurePosixPath(remote_dir)
-    if (
-        len(directory.parts) < 3
-        or ".." in directory.parts
-        or str(directory) in {f"/home/{user}", f"/Users/{user}", "/root", "/tmp", "/var/tmp"}
-        or not PurePosixPath(remote_python).is_relative_to(directory)
-        or ".." in PurePosixPath(remote_python).parts
-    ):
-        raise ValueError("Use a dedicated remote_dir below the user's home and a remote_python inside that directory; broad deployment targets are unsafe")
+    _validate_remote_install_paths(remote_dir, remote_python, user)
     return PhysicalInventory(
         path=path,
         ssh_user=user,
@@ -183,9 +129,33 @@ def load_physical_inventory(
     )
 
 
+def _validate_remote_install_paths(
+    remote_dir: str,
+    remote_python: str,
+    user: str,
+) -> None:
+    """Reject deployment roots that could delete broad host directories."""
+
+    directory = PurePosixPath(remote_dir)
+    python_path = PurePosixPath(remote_python)
+    if (
+        len(directory.parts) < 3
+        or ".." in directory.parts
+        or str(directory)
+        in {f"/home/{user}", f"/Users/{user}", "/root", "/tmp", "/var/tmp"}
+        or not python_path.is_relative_to(directory)
+        or ".." in python_path.parts
+    ):
+        raise ValueError(
+            "Use a dedicated remote_dir below the user's home and a "
+            "remote_python inside that directory; broad deployment targets "
+            "are unsafe"
+        )
+
+
 # Shared with tools/install_owl_reasoners.py. These files contain host-local
 # absolute Maven paths and must never be copied from the coordinator.
-_JAVA_REASONERS = ("hermit", "openllet", "jfact", "elk")
+_JAVA_REASONERS = ("hermit", "openllet", "jfact")
 _DL_ASSETS = ("tools/install_owl_reasoners.py", "tools/check_owl_consistency.py", "tools/owl")
 
 
@@ -670,6 +640,7 @@ def _safe_local_stop(root: Path, role: str) -> None:
     tokens = shlex.split(command)
     if str(root) not in tokens:
         raise RuntimeError(f"Refusing to stop PID {pid}: worker belongs to another project")
+    _stop_local_native_children(pid)
     os.kill(pid, signal.SIGTERM)
     deadline = time.monotonic() + 5.0
     while True:
@@ -683,6 +654,57 @@ def _safe_local_stop(root: Path, role: str) -> None:
             )
         time.sleep(0.05)
     pid_path.unlink(missing_ok=True)
+
+
+def _stop_local_native_children(worker_pid: int) -> None:
+    """Stop only descendants of a worker whose identity was already verified.
+
+    Matching a checkout path also matches independent validation/test processes;
+    those must survive worker restarts. Unattributed orphans require manual review.
+    """
+    result = subprocess.run(
+        ["ps", "-eo", "pid=,ppid="], check=False, capture_output=True, text=True,
+    )
+    parents = {}
+    for line in result.stdout.splitlines():
+        try:
+            child, parent = map(int, line.split())
+        except ValueError:
+            continue
+        parents[child] = parent
+    descendants = {worker_pid}
+    while True:
+        expanded = descendants | {child for child, parent in parents.items() if parent in descendants}
+        if expanded == descendants:
+            break
+        descendants = expanded
+    pids = sorted(descendants - {worker_pid}, reverse=True)
+    for pid in pids:
+        try:
+            group = os.getpgid(pid)
+            if group == pid:
+                os.killpg(group, signal.SIGTERM)
+            else:
+                os.kill(pid, signal.SIGTERM)
+        except ProcessLookupError:
+            continue
+    deadline = time.monotonic() + 5.0
+    for pid in pids:
+        while time.monotonic() < deadline:
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                break
+            time.sleep(0.05)
+        else:
+            try:
+                group = os.getpgid(pid)
+                if group == pid:
+                    os.killpg(group, signal.SIGKILL)
+                else:
+                    os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
 
 
 def _safe_remote_stop(
@@ -702,10 +724,21 @@ def _safe_remote_stop(
     )
     command = (
         f"pids=$(pgrep -f {shlex.quote(worker_pattern)} 2>/dev/null || true); "
-        'for pid in $pids; do kill "$pid"; '
+        'for pid in $pids; do '
+        # Native invocations are direct children with their own process group.
+        # Capture ownership before stopping the parent; never match all Java
+        # processes using the same checkout, including independent diagnostics.
+        'children=$(pgrep -P "$pid" 2>/dev/null || true); '
+        'for child in $children; do '
+        'kill -TERM -- "-$child" 2>/dev/null || kill "$child" 2>/dev/null || true; '
+        'done; '
+        'kill "$pid"; '
         'attempt=0; while kill -0 "$pid" 2>/dev/null; do '
         'attempt=$((attempt + 1)); '
         'if test "$attempt" -ge 50; then exit 22; fi; sleep 0.1; '
+        'done; '
+        'for child in $children; do '
+        'kill -KILL -- "-$child" 2>/dev/null || kill -KILL "$child" 2>/dev/null || true; '
         'done; done; '
         f"rm -f {shlex.quote(pid_path)}"
     )

@@ -6,7 +6,7 @@ from continuum_bench.monitoring.load_reporting import plot_load_comparison
 from continuum_bench.monitoring.report_profiles import CURRENT_PROFILES
 
 
-@pytest.mark.parametrize('profiles', [CURRENT_PROFILES, ('owlrl', 'rdfs_owlrl'), ('konclude',)])
+@pytest.mark.parametrize('profiles', [CURRENT_PROFILES, ('rdfs', 'hermit'), ('konclude',)])
 def test_load_plots_use_only_recorded_profiles(tmp_path, monkeypatch, profiles):
     from continuum_bench.monitoring import load_reporting
     import matplotlib.pyplot as plt

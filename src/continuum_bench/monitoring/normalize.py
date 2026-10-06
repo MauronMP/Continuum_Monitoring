@@ -9,10 +9,22 @@ from .budget import execution_metadata
 from .report_profiles import outcome
 
 
-def normalize_completed_outputs(config, output: Path, started_ns: int) -> None:
+def snapshot_summaries(output: Path) -> dict[Path, tuple[int, int, str]]:
+    """Capture existing summaries without relying on wall-clock precision."""
+    return {path.resolve(): (path.stat().st_mtime_ns, path.stat().st_size,
+            hashlib.sha256(path.read_bytes()).hexdigest())
+            for path in output.rglob('summary.csv')} if output.is_dir() else {}
+
+
+def normalize_completed_outputs(config, output: Path, started_ns: int, *, previous_summaries=None) -> None:
     """Add canonical JSONL to newly written summaries; preserve historical CSV schemas."""
     for summary in output.rglob('summary.csv') if output.is_dir() else ():
-        if summary.stat().st_mtime_ns < started_ns:
+        if previous_summaries is not None:
+            fingerprint = (summary.stat().st_mtime_ns, summary.stat().st_size,
+                           hashlib.sha256(summary.read_bytes()).hexdigest())
+            if previous_summaries.get(summary.resolve()) == fingerprint:
+                continue
+        elif summary.stat().st_mtime_ns < started_ns:
             continue
         meta_path = summary.with_name('metadata.json')
         metadata = json.loads(meta_path.read_text()) if meta_path.is_file() else {}

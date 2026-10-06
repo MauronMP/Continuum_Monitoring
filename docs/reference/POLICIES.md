@@ -4,7 +4,7 @@
 > entries by hand. Regenerate with
 > `.venv/bin/python tools/generate_reference_docs.py`.
 
-Authoritative release source: `ontology/legacy/smartcity_continuum-v3.0.0.ttl`.
+Authoritative release source: `configs/benchmark.toml [paths.ontology_files]`.
 
 The release declares 79 policies in 12 categories and 55
 enforcement mechanisms. Hard constraints are applied before

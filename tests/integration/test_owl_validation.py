@@ -81,7 +81,7 @@ def test_owlapi_adapter_preserves_machine_readable_consistency(
 
     result = owl_validation._run_owlapi(
         root,
-        root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+        root / "ontology/core/schema.ttl",
         "openllet",
         {"classpath_env": "CONTINUUM_OPENLLET_CLASSPATH"},
         10,
@@ -110,7 +110,7 @@ def test_owlapi_adapter_uses_installed_project_classpath(
     try:
         owl_validation._run_owlapi(
             root,
-            root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+            root / "ontology/core/schema.ttl",
             "jfact",
             {"classpath_env": "CONTINUUM_JFACT_CLASSPATH"},
             10,
@@ -163,7 +163,7 @@ def test_command_reasoner_timeout_is_bounded_and_reported(root):
     started = time.perf_counter()
     result = owl_validation._run_command(
         root,
-        root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+        root / "ontology/core/schema.ttl",
         "fixture",
         {
             "command": [
@@ -185,7 +185,7 @@ def test_command_reasoner_timeout_is_bounded_and_reported(root):
 def test_command_reasoner_accepts_konclude_native_consistency_wording(root):
     result = owl_validation._run_command(
         root,
-        root / "ontology/legacy/smartcity_continuum-v3.0.0.ttl",
+        root / "ontology/core/schema.ttl",
         "konclude-fixture",
         {
             "command": [

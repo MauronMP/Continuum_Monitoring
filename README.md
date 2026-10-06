@@ -5,6 +5,8 @@ Cloud–Fog–Mist–Edge continuum. The modular ontology is an internal knowled
 mechanism: the primary outcomes are monitoring coverage, adaptation latency,
 scalability and computational cost.
 
+Read the [research method and system guide](docs/RESEARCH_METHOD.md) for the proposal, hypotheses, experimental procedure, measurement boundaries and interpretation.
+
 ## Install
 
 The coordinator requires Python 3.11 or newer. Physical deployment additionally
@@ -24,10 +26,16 @@ continuum-bench doctor --physical --owl
 See [Installation](docs/INSTALLATION.md) for clean-host and worker instructions.
 The complete ordered command sequence is in
 [Complete installation and test execution](docs/COMPLETE_EXECUTION.md).
+The purpose of every software and physical test, together with the exact CSV to
+PNG provenance, is documented in
+[Test, experiment and figure reference](docs/TESTS_AND_FIGURES.md).
 
 ## Four policy evaluation experiments
 
-The main evaluation has four independently executable blocks:
+The controlled evaluator has four independently executable blocks. Decisions
+use procedural context rules; ontology validation and a separate reasoning probe
+do not establish a semantic advantage. The [comparison module](docs/COMPARATIVE_EVALUATION.md)
+implements a distinct semantic decision strategy.
 
 1. **Policy effectiveness** compares a static plan with policy-driven decisions
    against explicit scenario ground truth.
@@ -46,7 +54,7 @@ continuum-bench policy-evaluation all \
 continuum-bench policy-evaluation plot
 ```
 
-Run the publication configuration:
+Run the larger configured evaluation (publication requires checking its interpretation limits):
 
 ```bash
 continuum-bench policy-evaluation all \
@@ -71,13 +79,25 @@ continuum-bench physical authorize --ssh-user pi
 continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
-continuum-bench --unlimited --keep-going suite
+continuum-bench --timeout-mode bounded --keep-going suite
 continuum-bench physical stop --ssh-user pi
 ```
 
-Use `--unlimited` to record nominal budgets without cancelling slow benchmark
-points. Timeout and skip controls are in `configs/benchmark.toml` under
-`[distributed]` and `[limits]`. See [Physical continuum](docs/PHYSICAL_CONTINUUM.md).
+Bounded execution with `--keep-going` is the recommended mode: deadlines remain
+active, while timeout and failed observations are recorded and independent work
+continues. `--unlimited` is optional and should be restricted to supervised
+diagnosis or a known small profile. It disables coordinator, socket, worker and
+native-process deadlines; a DL reasoner can therefore occupy a worker
+indefinitely and prevent the remaining matrix from starting. The runner prints
+point percentages and pending workers, and checkpoints `progress.json` and
+`summary.csv` throughout the run. Timeout and skip controls are in
+`configs/benchmark.toml` under `[distributed]` and `[limits]`. See
+[Physical continuum](docs/PHYSICAL_CONTINUUM.md) and the
+[observed failure review](docs/OBSERVED_FAILURES.md).
+
+Raw timing is retained when canonical validation cannot finish, but those rows
+are labelled `unvalidated_results` and excluded from scientific performance
+curves. Exact distributed/reference mismatches are labelled `invalid_results`.
 
 ## Modules
 
@@ -92,9 +112,10 @@ points. Timeout and skip controls are in `configs/benchmark.toml` under
 | `configs/policy-evaluation*.toml` | Reproducible policy scenarios and scalability levels. |
 | `tests` | Unit, integration, infrastructure, monitoring and reporting checks. |
 
-The small top-level configuration and experiment modules preserve the public
-import API. Their maintained implementations live under `monitoring`; they are
-compatibility facades rather than a second benchmark architecture.
+Shared configuration lives at `continuum_bench.config`. Experiment runners,
+budgets, result normalization, analysis and reporting live only under
+`continuum_bench.monitoring`; retired top-level experiment facades are not part
+of the supported API.
 
 Run the software and documentation checks with:
 
@@ -105,3 +126,17 @@ Run the software and documentation checks with:
 
 Generated benchmark data, figures, logs and local runtime files are excluded by
 `.gitignore` and belong under `outputs/`.
+
+## Optional comparative policy evaluation
+
+The independent [comparative evaluation module](docs/COMPARATIVE_EVALUATION.md) runs paired static,
+procedural and semantic policy strategies on the physical hosts. It provides
+its own bounded configuration, four experiments, durable JSON/CSV evidence and
+per-node PNG figures. Published systems are methodological references, not
+claimed reproductions. Mist is excluded by default.
+
+```bash
+.venv/bin/python -m continuum_bench.monitoring.comparison check
+.venv/bin/python -m continuum_bench.monitoring.comparison run --smoke
+.venv/bin/python -m continuum_bench.monitoring.comparison run
+```

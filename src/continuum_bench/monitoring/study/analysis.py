@@ -7,7 +7,7 @@ from typing import Any
 
 from ...csv_utils import write_dict_rows
 from ...queries import load_catalog
-from ..config import BenchmarkConfig
+from ...config import BenchmarkConfig
 from .sparql import characterize_query
 
 

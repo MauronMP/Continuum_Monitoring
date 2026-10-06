@@ -5,7 +5,7 @@
 
 <http://example.org/smartcity> a owl:Ontology ;
     rdfs:label "SmartCity Continuum Stress Ontology v3.0.0" ;
-    dcterms:identifier "3.0.0-en-datatypes-v1" ;
+    dcterms:identifier "3.0.0-en-audit-v2" ;
     dcterms:language "en" ;
     dcterms:modified "2026-08-28"^^xsd:date ;
     dcterms:replaces "2.1.1" ;

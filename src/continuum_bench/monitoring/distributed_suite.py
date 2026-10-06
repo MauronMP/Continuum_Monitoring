@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from ..config import BenchmarkConfig
-from ..physical import run_physical_cumulative, run_physical_scalability
+from .physical import run_physical_cumulative, run_physical_scalability
 from .distributed_ontology import run_distributed_cumulative, run_distributed_scalability
 from ..topology import Topology
 

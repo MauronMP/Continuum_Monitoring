@@ -25,7 +25,7 @@ GENERATED_NAMES = (
 
 
 def documentation_files(root: Path = ROOT) -> list[Path]:
-    paths = [root / "README.md"]
+    paths = list(root.glob("*.md"))
     paths.extend((root / "docs").rglob("*.md"))
     paths.append(root / "ontology/diagrams/README.md")
     return sorted({path.resolve() for path in paths if path.is_file()})

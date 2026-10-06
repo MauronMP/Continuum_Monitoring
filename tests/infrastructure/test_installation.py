@@ -72,3 +72,11 @@ def test_package_version_matches_metadata(root):
         __version__
         == tomllib.loads((root / "pyproject.toml").read_text())["project"]["version"]
     )
+
+
+def test_portability_ci_does_not_require_native_reasoners(root):
+    workflow = (root / ".github/workflows/portability.yml").read_text()
+    assert (
+        "continuum-bench --config configs/smoke-vpn.toml validate" in workflow
+    )
+    assert "run: .venv/bin/continuum-bench validate" not in workflow

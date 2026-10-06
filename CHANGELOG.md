@@ -1,5 +1,22 @@
 # Changelog
 
+## Audit follow-up: 6 October 2026
+
+- Preserve OWL/XML base and prefix semantics in the Konclude OWLlink bridge;
+  reject unresolved entity IRIs and verify the failing serialization seed.
+- Restrict native-process cleanup to verified worker descendants.
+- Detect new/changed result summaries through a pre-run snapshot rather than
+  relying on filesystem/wall-clock timestamp precision.
+- Add explicit five-node deployment and full experiment profiles while Mist is
+  offline, without changing the standard six-node inventory.
+- Update the ontology query-catalog artifact and revision to
+  `3.0.0-en-audit-v2`; regenerate references and diagrams.
+- Require actual readiness evidence instead of accepting an inflated campaign
+  inventory count; add machine-checked dispositions for traceability gaps.
+- Document the complete research method, experiment interpretation, known
+  acceptance debt and reproducible remediation checks.
+
+
 ## 0.5.0 — 2026-09-29
 
 - Added four policy-driven monitoring evaluations for functional effectiveness,
@@ -18,6 +35,17 @@
   now explicitly either replicated or distributed.
 - Added a current project audit with reproducible validation evidence and
   explicit scientific and operational limitations.
+- Consolidated benchmark behavior under `continuum_bench.monitoring`, moved
+  shared configuration outside that module and removed retired compatibility,
+  monolithic ontology/query and migration paths.
+- Added exact source-build and topology-fingerprint provenance to result
+  metadata and publication gates so same-version outputs from different source
+  trees or physical placements cannot be mixed.
+- Added progress checkpoints and percentages, optional unlimited execution and
+  protection against suspending an active physical coordinator with `Ctrl+Z`.
+- Restricted the executable reasoner registry and remote installer to RDFS,
+  HermiT, Openllet, JFact and Konclude; OWL RL combinations, identity and ELK
+  remain historical 0.4.x entries only.
 
 ## 0.4.1 — 2026-09-25
 
@@ -74,3 +102,22 @@
 
 - Established physical-only monitoring, native reasoner execution, modular
   ontology workloads and structured publication reporting.
+
+## Optional physical comparative evaluation
+
+- Add an isolated monitoring/comparison module with static, procedural and RDFS
+  semantic decision adapters, paired traces and a separately supplied oracle.
+- Execute bounded source-snapshotted jobs locally and over SSH; exclude unavailable
+  Mist and preserve existing workers and experiment paths.
+- Record all outcomes, resource costs and operational plans; generate per-node PNGs
+  and paired repetition-level summaries. Document literature scope and limitations.
+
+## Comparative publication reporting audit
+
+- Add context-specific four-panel figures, numeric workload spacing, paired cost
+  differences, outcome coverage, point-level provenance and English captions.
+- Require at least five process repetitions for bootstrap intervals; identify
+  smaller samples as exploratory and leave gaps at failed workload sizes.
+- Validate raw measurement consistency and paired inputs before rendering.
+- Version the complete-context warm-up and preparation timing correction while
+  retaining earlier evidence under its original measurement contract.
