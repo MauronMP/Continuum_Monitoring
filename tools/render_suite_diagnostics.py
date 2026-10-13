@@ -55,8 +55,11 @@ def main():
         report['archived_source_sha256'] = hashlib.sha256(archive.read_bytes()).hexdigest()
         report['renderer_sha256'] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
         # Correct obsolete geographical prose without altering source or data.
+        old_location = 'Nodes are colocated in one room (operator confirmation).'
+        location = 'Node co-location is not established by this dataset; do not infer geographical distance from VPN addresses.'
+        report['findings'] = [finding.replace(old_location, location) for finding in report.get('findings', [])]
         index = output / 'README.md'
-        text = index.read_text().replace('Nodes are colocated in one room (operator confirmation).', 'Node co-location is not established by this dataset; do not infer geographical distance from VPN addresses.')
+        text = index.read_text().replace(old_location, location)
         index.write_text('# Diagnostic catalogue — incomplete campaign\n\nThis is not the publication report. Performance charts describe completed observations from an incomplete run and may exhibit survivor bias. Missing experiment families cannot be reconstructed.\n\n' + text)
         (output / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
         print(json.dumps({'output': str(output), 'figures': len(report['figures']), 'acceptance': report['acceptance']}, indent=2))

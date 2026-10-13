@@ -17,6 +17,9 @@ Addresses, ports, CPU, RAM, storage, processing capacity, network capacity and
 region are declared in `configs/topologies/physical/nodes/`. Runtime health and
 resource use are measured separately and do not overwrite static capacity.
 
+For the exact file matrix, data ownership and query routing, see
+[Ontology distribution](ONTOLOGY_DISTRIBUTION.md).
+
 ## Placement modes
 
 `replicated` sends a complete input graph to every active worker. `distributed`
