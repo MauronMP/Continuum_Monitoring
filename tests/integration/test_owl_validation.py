@@ -32,10 +32,10 @@ def test_missing_external_reasoners_are_not_reported_as_success(
     assert by_name["openllet"]["status"] == "unavailable"
     assert by_name["jfact"]["status"] == "unavailable"
     assert report["all_available"] is False
-    assert report["source_ontology_triples"] == 7966
-    assert report["compiled_ontology_triples"] == 7938
-    assert len(report["resolved_imports"]) == 28
-    assert len(report["ontology_files"]) == 14
+    assert report["source_ontology_triples"] == 8289
+    assert report["compiled_ontology_triples"] == 8253
+    assert len(report["resolved_imports"]) == 36
+    assert len(report["ontology_files"]) == 15
     assert not any("/legacy/" in path for path in report["ontology_files"])
     assert len(report["compiled_ontology_sha256"]) == 64
 

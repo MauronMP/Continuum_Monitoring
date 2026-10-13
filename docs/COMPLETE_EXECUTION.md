@@ -136,8 +136,10 @@ continuum-bench physical status --ssh-user pi
 Initial authorization may prompt for the remote account password. The project
 does not store passwords or private keys. All benchmark runs use key-based SSH.
 
-Redeploy workers after a project version or source-build change. The worker
-protocol intentionally rejects stale code.
+Redeploy and restart workers after changes to Python code, ontology, shapes,
+queries, profiles or placement. Protocol 10 checks their semantic file digest in
+addition to version and topology. A same-version file edit can make a worker stale;
+`physical status` reports the mismatch. See [Ontology review](ONTOLOGY_REVIEW.md).
 
 ## 5. Mandatory pre-run validation
 
@@ -476,3 +478,30 @@ Use the explicit topology and bounded smoke profile described in
 [Audit remediation](REMEDIATION.md#operating-while-mist-is-offline). Deploy, start
 and run with the same `--topology-file` selection. Do not combine five-node and
 six-node outputs or silently remove Mist from the standard topology.
+
+## VPN prechecks timing out
+
+If deployment stops before copying files because Mist or another peer times out,
+see [VPN lifecycle probe budgets](PHYSICAL_CONTINUUM.md#vpn-lifecycle-probe-budgets).
+Use the documented finite connectivity overrides rather than `--unlimited`.
+Run deployment, startup and status with `&&` so a failed deployment does not
+silently proceed into startup with stale workers. Do not launch the suite until
+all workers pass the compatibility and health checks.
+
+## Inspecting incomplete historical suites
+
+An incomplete suite may contain valid completed measurements while failing the
+full publication acceptance contract. To inspect those measurements, generate
+a separate, explicitly diagnostic catalogue using its archived implementation:
+
+```bash
+python tools/render_suite_diagnostics.py outputs/suites/RUN_ID
+```
+
+Replace `RUN_ID` with the actual directory name. The tool requires the suite's
+`source.tar.gz`, extracts it into a temporary directory and validates result
+metadata against that source. It writes `diagnostic-figures/`, labels every figure
+as diagnostic, and preserves the rejected publication status. It does not change
+raw records, metadata, the original report, or the normal publication gate.
+Successful-only curves may have survivor bias; always read coverage alongside
+performance. Unrecorded experiment families cannot be reconstructed by plotting.

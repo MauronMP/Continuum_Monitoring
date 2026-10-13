@@ -16,9 +16,9 @@ def test_catalog_contains_every_query_once(config):
         "cloud",
         "fog",
         "authorities",
-        "authority_key:http://example.org/smartcity#UserA",
-        "authority_key:http://example.org/smartcity#UserB",
-        "authority_key:http://example.org/smartcity#UserD",
+        "authority_key:http://example.org/monitoringcontinuum#UserA",
+        "authority_key:http://example.org/monitoringcontinuum#UserB",
+        "authority_key:http://example.org/monitoringcontinuum#UserD",
     }
     assert all(spec.purpose for spec in specs)
     assert all(spec.requirements for spec in specs)

@@ -31,6 +31,7 @@ from .distributed import Endpoint, _parallel, _request, discover
 from .experiment_config import ExperimentConfig, ReasoningProfile
 from .load_benchmark import _local_timeout
 from ..queries import QuerySpec, execute_query_detailed, load_catalog
+from ..semantic_assets import semantic_assets_digest
 from ..specification import release_identity
 from ..topology import Topology
 from .budget import execution_metadata
@@ -110,7 +111,7 @@ def _metadata(
         }
     )
     return {
-        **release_identity(),
+        **release_identity(), "semantic_assets_digest": semantic_assets_digest(config),
         "execution_policy": execution_metadata(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "experiment": experiment,
@@ -173,6 +174,7 @@ def _target_endpoints(
         endpoint_urls or [],
         topology.active_nodes if topology else None,
         topology.fingerprint if topology else None,
+        config,
     )
 
 

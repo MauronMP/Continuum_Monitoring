@@ -2,8 +2,8 @@
 # Purpose: Evaluate violation: direct identifiers in external flows using the declared query contract.
 # Requirements: RF-61, RNF-17
 # Policies: P-DATA-02
-# Current v3.0.0 result: 0 rows
-PREFIX : <http://example.org/smartcity#>
+# Current v4.0.0 result: 0 rows
+PREFIX : <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>

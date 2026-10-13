@@ -44,6 +44,7 @@ from ..queries import (
     result_digest,
 )
 from ..reasoners import materialize
+from ..semantic_assets import semantic_assets_digest
 from ..specification import release_identity
 from .budget import execution_metadata, unlimited_execution
 from ..synthetic import add_synthetic_data, add_synthetic_rules, pad_to_target_triples
@@ -692,7 +693,7 @@ def _metadata(
     topology: Topology | None,
 ) -> dict[str, Any]:
     return {
-        **release_identity(),
+        **release_identity(), "semantic_assets_digest": semantic_assets_digest(config),
         "execution_policy": execution_metadata(),
         "reasoner_backends": {name: reasoner_provenance(name) for name in config.reasoners},
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -808,6 +809,7 @@ def _run_distributed_impl(config, endpoint_urls, output_root, *, target, validat
         endpoint_urls,
         topology.active_nodes if topology is not None else None,
         topology.fingerprint if topology is not None else None,
+        config,
     )
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     details: list[dict[str, Any]] = []
@@ -1008,7 +1010,7 @@ def export_fragments(
     fragments = build_fragments(config, users, topology=topology)
     paths = write_fragments(fragments, output_dir)
     manifest = {
-        **release_identity(),
+        **release_identity(), "semantic_assets_digest": semantic_assets_digest(config),
         "execution_policy": execution_metadata(),
         "reasoner_backends": {name: reasoner_provenance(name) for name in config.reasoners},
         "generated_at": datetime.now(timezone.utc).isoformat(),

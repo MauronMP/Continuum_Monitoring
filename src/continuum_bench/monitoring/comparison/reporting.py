@@ -91,8 +91,10 @@ def report(directory: Path):
         outcomes[(r["node"], r["experiment"], r["strategy"], r["status"])] += 1
     write_dict_rows(directory / "outcomes.csv", [dict(zip(("node", "experiment", "strategy", "status", "jobs"), (*k, v))) for k, v in sorted(outcomes.items())], empty_message="No outcomes")
     paths = figures(directory, records, rows)
-    from .figures import paired_cost_figure
+    from .figures import paired_cost_figure, infrastructure_figures, cross_node_summary
     paths.extend(paired_cost_figure(directory, paired))
+    paths.extend(infrastructure_figures(directory, records, rows))
+    paths.extend(cross_node_summary(directory, rows))
     planned = None
     config_path, metadata_path = directory / "configuration.json", directory / "metadata.json"
     if config_path.is_file() and metadata_path.is_file():

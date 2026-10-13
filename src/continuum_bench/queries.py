@@ -75,9 +75,9 @@ def load_catalog(catalog_path: Path, root: Path) -> list[QuerySpec]:
     if plan_path.is_file():
         with plan_path.open("rb") as handle:
             plan = tomllib.load(handle)
-        if str(plan.get("version", "")) != "3.0.0":
+        if str(plan.get("version", "")) != "4.0.0":
             raise ValueError(
-                f"{plan_path}: expected execution plan version '3.0.0', "
+                f"{plan_path}: expected execution plan version '4.0.0', "
                 f"got {plan.get('version')!r}"
             )
     def invert(section: str) -> dict[str, str]:

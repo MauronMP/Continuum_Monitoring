@@ -121,3 +121,18 @@
 - Validate raw measurement consistency and paired inputs before rendering.
 - Version the complete-context warm-up and preparation timing correction while
   retaining earlier evidence under its original measurement contract.
+
+## Ontology 4.0.0 — Monitoring Continuum
+
+- Replace the generic SmartCity entity namespace with monitoringcontinuum and `mc:`.
+- Separate shared contracts from optional wellbeing and federation modules.
+- Align physical placement with acyclic, complete profile import closures.
+- Correct consent domains, deployment replica ownership, identifier constraints,
+  controlled-vocabulary identity and SOSA example typing.
+- Preserve missing historical evidence and record unknown measurement units.
+- Add module auditing, migration safeguards and a complete ontology review guide.
+
+- Support multiple policy categories without losing memberships in reference docs;
+  minimum membership and category typing remain mandatory.
+- Worker protocol 10 verifies semantic file digests before experiment discovery
+  and rejects local input changes after worker startup.

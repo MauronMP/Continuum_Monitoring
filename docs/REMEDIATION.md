@@ -1,3 +1,10 @@
+# Current ontology release
+
+The active ontology is now version 4.0.0 (`monitoringcontinuum`). See the
+[ontology review and migration guide](ONTOLOGY_REVIEW.md) for the breaking
+namespace change, corrected module boundaries and current validation procedure.
+The version-3 evidence below documents the preceding remediation stage.
+
 # Audit Remediation and Five-Node Operation
 
 This follow-up separates fixes, reproducible verification and evidence that
@@ -41,7 +48,7 @@ sudo. Workers are explicitly started and are not installed as reboot services.
 
 ## Ontology and acceptance evidence
 
-Revision `3.0.0-en-audit-v2` corrects the query-catalog artifact: its real location
+The earlier revision `3.0.0-en-audit-v2` corrected the query-catalog artifact: its real location
 is `queries/catalog.csv`, and its status is `validated-structural`. The catalog's
 115 executable contracts are no longer described as nonexistent. Reference
 manuals and ontology diagrams are regenerated with this revision.

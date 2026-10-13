@@ -39,12 +39,19 @@ physical actuator, migration or sampling-frequency change was executed.
 
 ## 3. Ontology modules and policies
 
-Foundation reuses general vocabulary. Topology describes continuum nodes and
+Foundation reuses general vocabulary. Shared contracts define the small set of
+entity types needed across modules without importing their complete implementations.
+Topology describes continuum nodes and
 relationships. Governance represents policies, requirements, consent and
 authorization. Observability describes measured or recorded state. Orchestration
 represents decisions and adaptation. Deployment links fragments to nodes.
-Federation describes federated-learning concepts. The optional wellbeing module
+The optional federation module describes federated-learning concepts. The optional wellbeing module
 adds users' devices and physiological/stress-related concepts.
+
+Version 4 uses `mc:` (`http://example.org/monitoringcontinuum#`). The core import
+closure excludes wellbeing and federation; application profiles opt into them.
+The placement manifest matches each profile's transitive imports. See the
+[ontology review and migration guide](ONTOLOGY_REVIEW.md).
 
 The source of truth is the maintained Turtle model, not a diagram. See the
 [ontology reference](reference/ONTOLOGY_REFERENCE.md),
@@ -55,8 +62,16 @@ Policy categories organize concerns such as consent, data handling, node
 eligibility and adaptation. Categories are not ontology modules: one operational
 policy may depend on several modules and address several concerns. For example,
 a change in processing location requires topology, context and governance evidence
-before a new monitoring plan can be authorized. Category labels alone neither
-implement a conflict resolver nor demonstrate that a policy was enforced.
+before a new monitoring plan can be authorized. The model permits one or more categories per policy. The current reference
+catalog assigns one category to each policy; new memberships require explicit
+domain justification. Cross-cutting concerns also appear in requirements and
+mechanisms. Category labels alone neither implement a conflict
+resolver nor demonstrate that a policy was enforced.
+
+The 12 ontology policy categories and the 16 query-catalog groups serve different
+purposes. Cumulative stages use the query groups; they are not a measurement of
+12 independent policy implementations. A query can support several policies,
+so attributing its entire cost to each policy would double-count shared work.
 
 A category cost is meaningful only when its workload, queries, input scale,
 reasoner and placement are stated. Categories with more queries naturally have

@@ -49,7 +49,7 @@ def test_konclude_configuration_runs_a_bounded_consistency_operation(root):
         config = tomllib.load(handle)
 
     konclude = config["reasoners"]["konclude"]
-    assert len(config["validation"]["ontology_files"]) == 14
+    assert len(config["validation"]["ontology_files"]) == 15
     assert not any(
         "/legacy/" in path
         for path in config["validation"]["ontology_files"]

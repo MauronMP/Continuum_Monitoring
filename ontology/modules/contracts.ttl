@@ -1,0 +1,66 @@
+@prefix mc: <http://example.org/monitoringcontinuum#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+mc:AIModel a owl:Class ;
+    rdfs:label "AI Model" ;
+    rdfs:comment "A computational model offered by a continuum service. The optional wellbeing application specializes its use for stress prediction."@en .
+
+mc:EvaluationState a owl:Class ;
+    rdfs:label "Evaluation State" ;
+    rdfs:comment "Recorded evaluation of context and policy evidence used to select a monitoring or adaptation decision. Its presence alone does not prove that an inference or an action was executed."@en ;
+    rdfs:subClassOf mc:State .
+
+mc:FederatedLearningSession a owl:Class ;
+    rdfs:label "Federated Learning Session" ;
+    rdfs:comment "A record of a coordinated model-learning session; the federation module supplies its participants, transfers and validation properties."@en .
+
+mc:ModelTier a owl:Class ;
+    rdfs:label "Model Tier" ;
+    rdfs:comment "A named model capability level used in model selection and consent requirements."@en .
+
+mc:PayloadType a owl:Class ;
+    rdfs:label "Payload Type" ;
+    rdfs:comment "Payload Type is a federation concept in the monitoring model. Its operational properties are defined by the modules that use it." .
+
+mc:ProcessingPurpose a owl:Class ;
+    rdfs:label "Processing Purpose" ;
+    rdfs:comment "Purpose for which data, model parameters or predictions are processed." .
+
+mc:RecoveryCondition a owl:Class ;
+    rdfs:label "Recovery Condition" ;
+    rdfs:comment "An explicit condition under which a temporary delegation or degraded operation may end."@en .
+
+mc:Service a owl:Class ;
+    rdfs:label "Service" ;
+    rdfs:comment "Stress prediction or any other continuum service." .
+
+mc:ServiceState a owl:Class ;
+    rdfs:label "Service State" ;
+    rdfs:comment "Service State is a contracts concept in the monitoring model. It specializes State." ;
+    rdfs:subClassOf mc:State .
+
+mc:TransferEvent a owl:Class ;
+    rdfs:label "Transfer Event" ;
+    rdfs:comment "Auditable transfer of data, model updates or other payloads." ;
+    rdfs:subClassOf mc:TemporalEntity .
+
+mc:ValidationCampaign a owl:Class ;
+    rdfs:label "Validation Campaign" ;
+    rdfs:comment "Validation Campaign is a contracts concept in the monitoring model. It specializes Artifact." ;
+    rdfs:subClassOf mc:Artifact .
+
+<http://example.org/monitoringcontinuum/modules/contracts> a owl:Ontology ;
+    rdfs:label "Shared cross-module contracts"@en ;
+    rdfs:comment "Minimal shared entity types used by independent modules. Detailed lifecycle, governance and federation properties remain in their owning modules."@en ;
+    owl:imports <http://example.org/monitoringcontinuum/modules/foundation> ;
+    owl:versionInfo "4.0.0" .
+
+mc:Artifact a owl:Class ;
+    rdfs:label "Artifact" ;
+    rdfs:comment "Versionable project artifact." .
+
+mc:State a owl:Class ;
+    rdfs:label "State" ;
+    rdfs:comment "Dynamic state of an entity; temporal and distinguishable from instantaneous observations." ;
+    rdfs:subClassOf mc:TemporalEntity .

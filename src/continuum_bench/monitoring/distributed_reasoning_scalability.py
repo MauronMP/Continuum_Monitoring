@@ -17,6 +17,7 @@ import numpy as np
 
 from ..csv_utils import write_dict_rows
 from ..reasoners import reasoner_semantics
+from ..semantic_assets import semantic_assets_digest
 from ..specification import release_identity
 from .budget import (
     error_text, execution_metadata, failure_status, is_boundary_failure,
@@ -530,6 +531,7 @@ def run_distributed_reasoning_scalability(
         endpoint_urls or [],
         topology.active_nodes if topology else None,
         topology.fingerprint if topology else None,
+        benchmark,
     )
     effective = replace(
         benchmark,
@@ -639,7 +641,7 @@ def run_distributed_reasoning_scalability(
     write_dict_rows(output / "distributed-reasoning-statistics.csv", _statistics(rows, experiment), empty_message="No distributed reasoning statistics")
     write_dict_rows(output / "capacity-summary.csv", _capacity(rows), empty_message="No capacity observations")
     metadata = {
-        **release_identity(), "generated_at": datetime.now(timezone.utc).isoformat(),
+        **release_identity(), "semantic_assets_digest": semantic_assets_digest(benchmark), "generated_at": datetime.now(timezone.utc).isoformat(),
         "experiment": "distributed-reasoning-scalability", "configuration": asdict(experiment),
         "topology_fingerprint": topology.fingerprint if topology else None,
         "execution_policy": execution_metadata(), "semantic_tasks": REASONING_TASKS,

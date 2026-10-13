@@ -7,6 +7,7 @@ from time import sleep
 import pytest
 from rdflib import Graph, URIRef
 
+from pathlib import Path
 from continuum_bench import node
 from continuum_bench.queries import QueryMeasurement
 from continuum_bench.monitoring.distributed_ontology import _summary
@@ -14,8 +15,9 @@ from continuum_bench.monitoring.distributed_ontology import _summary
 
 def _runtime() -> node.NodeRuntime:
     runtime = node.NodeRuntime.__new__(node.NodeRuntime)
+    runtime.config = node.load_config(Path(__file__).resolve().parents[2] / "configs/benchmark.toml")
+    runtime.semantic_digest = node.semantic_assets_digest(runtime.config)
     runtime.role = "edge1"
-    runtime.config = object()
     runtime.base_graph = Graph()
     runtime.base_graph.add(
         (URIRef("urn:test:s"), URIRef("urn:test:p"), URIRef("urn:test:o"))

@@ -46,12 +46,11 @@ def _header(figure, number: int, title: str, subtitle: str) -> None:
         0.02,
         0.965,
         f"Fig. {number}. {title}",
-        color="white",
-        fontsize=15,
+        color="#222222",
+        fontsize=12,
         fontweight="bold",
         ha="left",
         va="top",
-        bbox={"facecolor": "#34495e", "edgecolor": "none", "boxstyle": "square,pad=0.55"},
     )
     figure.text(0.02, 0.905, subtitle, color="#3c4858", fontsize=9, ha="left", va="top")
 
@@ -152,7 +151,7 @@ def plot_effectiveness(root: Path) -> list[Path]:
     for row_index in range(matrix.shape[0]):
         for column in range(matrix.shape[1]):
             axes[1].text(column, row_index, f"{matrix[row_index, column]:.1f}%", ha="center", va="center", color="white" if matrix[row_index, column] > 55 else "#222")
-    figure.colorbar(image, ax=axes[1], label="Ground-truth agreement (%)", fraction=0.046, pad=0.04)
+    figure.colorbar(image, ax=axes[1], label="Configured-plan agreement (%)", fraction=0.046, pad=0.04)
     figure.subplots_adjust(top=0.82, bottom=0.16, left=0.07, right=0.96, wspace=0.28)
     return save_png(figure, root / "effectiveness" / "policy-effectiveness")
 

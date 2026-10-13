@@ -15,7 +15,7 @@ from continuum_bench.synthetic import add_synthetic_data
 from continuum_bench.topology import load_topology
 
 
-EX = Namespace("http://example.org/smartcity#")
+EX = Namespace("http://example.org/monitoringcontinuum#")
 
 SH = Namespace("http://www.w3.org/ns/shacl#")
 
@@ -156,8 +156,8 @@ def test_single_authority_aggregates_are_exact_without_synthetic_data(config):
         assert sorted(actual.result_keys) == sorted(expected.result_keys)
 
 
-def test_v3_execution_plan_preserves_all_canonical_results(config):
-    """Every v3 query must keep its result under authority fragmentation."""
+def test_release_execution_plan_preserves_all_canonical_results(config):
+    """Every release query must keep its result under authority fragmentation."""
 
     canonical = load_graph(
         config.resolve(path) for path in config.ontology_files

@@ -465,7 +465,7 @@ def _dispatch(args) -> int:
         if args.validate_only:
             print(json.dumps(campaign.public(), indent=2))
             return 0
-        directory, failures = run_campaign(campaign, PhysicalInfrastructure(topology), config.resolve(Path(args.output_dir)))
+        directory, failures = run_campaign(campaign, PhysicalInfrastructure(topology, config), config.resolve(Path(args.output_dir)))
         print(json.dumps({"output": str(directory), "failed_points": failures}, indent=2))
         return 1 if failures else 0
 

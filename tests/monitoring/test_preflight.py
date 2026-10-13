@@ -33,7 +33,7 @@ def test_preflight_rejects_target_that_would_shrink_graph(config):
         rule_count=25,
     )
 
-    with pytest.raises(ValueError, match=r"minimum=43097"):
+    with pytest.raises(ValueError, match=r"minimum=43420"):
         validate_workload_targets(config, [target])
 
 

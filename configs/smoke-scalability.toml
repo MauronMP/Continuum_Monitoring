@@ -2,6 +2,7 @@
 ontology_files = [
   "ontology/core/schema.ttl",
   "ontology/modules/foundation.ttl",
+  "ontology/modules/contracts.ttl",
   "ontology/modules/topology.ttl",
   "ontology/modules/observability.ttl",
   "ontology/modules/governance.ttl",

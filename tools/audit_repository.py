@@ -53,7 +53,7 @@ def audit(root: Path) -> dict:
                     raise ValueError("Non-rectangular CSV")
         except Exception as error:
             errors.append({"path": relative, "error": f"{type(error).__name__}: {error}"})
-    namespace = "http://example.org/smartcity#"
+    namespace = "http://example.org/monitoringcontinuum#"
     subjects = set(combined.subjects())
     unresolved = sorted({str(term) for triple in combined for term in triple if isinstance(term, URIRef)
                          and str(term).startswith(namespace) and term not in subjects})

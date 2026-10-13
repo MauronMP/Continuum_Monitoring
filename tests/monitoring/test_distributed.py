@@ -172,11 +172,11 @@ def test_worker_health_rejects_an_old_ontology_release():
 
     assert "ontology_version" in worker_health_error(health)
 
-    health.update(ontology_version="3.0.0", query_count=115)
+    health.update(ontology_version="4.0.0", query_count=115)
     assert "reasoning_contract" in worker_health_error(health)
     health["reasoning_contract"] = REASONING_CONTRACT
     assert "ontology_revision" in worker_health_error(health)
-    health["ontology_revision"] = "3.0.0-before-english"
+    health["ontology_revision"] = "4.0.0-before-english"
     assert "ontology_revision" in worker_health_error(health)
     health["ontology_revision"] = ONTOLOGY_REVISION
     assert worker_health_error(health, expected_role="fog") is None

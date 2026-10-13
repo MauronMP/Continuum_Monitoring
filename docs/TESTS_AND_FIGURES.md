@@ -49,7 +49,12 @@ above is `outputs/software-tests.xml`.
 | `tests/core/test_partitioning.py` | Exact reconstruction of the canonical graph from authority fragments, privacy placement, query-result equivalence, role-specific fragment builds and preservation of aggregate values. |
 | `tests/core/test_reasoners.py` | Correct RDFS treatment of distinct and equivalent literal value spaces. |
 | `tests/core/test_synthetic.py` | Deterministic monotonic graph growth, streamed/materialized equivalence, exact target sizes, neutral padding and invalid-growth rejection. |
-| `tests/core/test_v3_release.py` | Release inventory, traceability, reported acceptance debt and regeneration of the elastic execution plan. |
+| `tests/core/test_release.py` | Release inventory, traceability, reported acceptance debt and regeneration of the elastic execution plan. |
+
+Additional ontology boundary checks are implemented in
+`tests/core/test_module_boundaries.py`: import closure and placement agreement,
+consent domains, vocabulary identity, typed observations, safe namespace migration
+and preservation of multiple policy categories in validation, queries and docs.
 
 ### 2.2 Physical infrastructure
 
@@ -64,6 +69,11 @@ above is `outputs/software-tests.xml`.
 | `tests/infrastructure/test_physical_only.py` | Removal of retired nonphysical, monolithic, container and historical comparison paths. |
 | `tests/infrastructure/test_processes.py` | Streaming and logging of subprocess output, actionable failures, silent-process bounds and timeout validation. |
 | `tests/infrastructure/test_topology.py` | Physical layer inventory, node resources, structured locations, topology serialization and memory-capacity parsing. |
+
+`tests/infrastructure/test_semantic_assets.py` verifies path-independent semantic
+fingerprints, same-version file changes, missing inputs, stale worker preparation
+and health compatibility. `tests/infrastructure/test_remediation_profiles.py`
+checks explicit five-node profiles and retained validation debt.
 
 ### 2.3 OWL integration
 
@@ -565,3 +575,17 @@ SHACL debt inventory with actions, while preserving the warnings.
 For objectives, interpretation and the relationship between evaluation paths,
 see [Research method](RESEARCH_METHOD.md). For actual remediation evidence and
 five-node commands, see [Audit remediation](REMEDIATION.md).
+
+### Portable and native validation gates
+
+The default pytest run requires only the Python environment. Native inference
+and canonical-ontology checks are explicitly skipped unless enabled, so the clean
+installation CI does not accidentally require a local Java reasoner installation.
+After installing all native backends, run the mandatory physical deployment gate:
+
+```bash
+CONTINUUM_TEST_NATIVE_OWL=1 .venv/bin/pytest -q   tests/core/test_native_reasoners.py   tests/core/test_ontology.py::test_configured_reasoner_profiles_have_no_explicit_contradictions
+```
+
+This executes all four native backends, including canonical violation queries.
+An enabled gate fails if a backend is unavailable; it does not silently fall back.

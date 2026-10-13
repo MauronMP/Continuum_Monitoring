@@ -140,3 +140,5 @@ claimed reproductions. Mist is excluded by default.
 .venv/bin/python -m continuum_bench.monitoring.comparison run --smoke
 .venv/bin/python -m continuum_bench.monitoring.comparison run
 ```
+
+Ontology version 4 and namespace migration: [Ontology review](docs/ONTOLOGY_REVIEW.md).

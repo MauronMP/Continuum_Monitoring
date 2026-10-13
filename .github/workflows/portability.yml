@@ -34,6 +34,7 @@ jobs:
       - run: .venv/bin/continuum-bench policy-evaluation plot --output-dir outputs/ci-policy-evaluation
       - run: .venv/bin/python tools/check_documentation.py
       - run: .venv/bin/python tools/review_validation_debt.py
+      - run: .venv/bin/python tools/audit_ontology_modules.py
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

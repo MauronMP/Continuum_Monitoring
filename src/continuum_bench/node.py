@@ -31,6 +31,7 @@ from .protocol import SOFTWARE_BUILD_ID, WORKER_PROTOCOL_VERSION, WORKER_SERVICE
 from .queries import execute_query, execute_query_detailed, load_catalog
 from .reasoners import REASONING_CONTRACT, available_reasoners, materialize
 from .specification import ONTOLOGY_REVISION, ONTOLOGY_VERSION
+from .semantic_assets import semantic_assets_digest
 from .synthetic import (
     add_synthetic_data,
     add_synthetic_rules,
@@ -182,6 +183,7 @@ class NodeRuntime:
             self.authority = self.tier in {"edge", "iot"}
             self.categories = default_categories(self.tier)
         self.config = load_config(root / "configs/benchmark.toml")
+        self.semantic_digest = semantic_assets_digest(self.config)
         # The full logical graph is loaded lazily. Distributed workers otherwise
         # paid the memory cost of a replica they never queried.
         self.base_graph: Graph | None = None
@@ -233,6 +235,8 @@ class NodeRuntime:
         fragment: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         with self.lock:
+            if semantic_assets_digest(self.config) != self.semantic_digest:
+                raise ValueError("Semantic assets changed after worker startup; synchronize and restart before preparing a graph")
             io_read_before, io_write_before = _process_io_bytes()
             cpu_started = process_time_ns()
             children_cpu_before, _ = _children_usage()
@@ -503,10 +507,18 @@ class Handler(BaseHTTPRequestHandler):
             self._json(404, {"error": "not found"})
             return
         runtime = self.server.runtime
+        try:
+            assets_unchanged = semantic_assets_digest(runtime.config) == runtime.semantic_digest
+            assets_error = None if assets_unchanged else "Semantic files changed after startup; restart required"
+        except (OSError, ValueError, KeyError) as error:
+            assets_unchanged = False
+            assets_error = str(error)
         self._json(
             200,
             {
-                "status": "ok",
+                "status": "ok" if assets_unchanged else "stale-semantic-assets",
+                "semantic_assets_digest": runtime.semantic_digest,
+                "semantic_assets_error": assets_error,
                 "service": WORKER_SERVICE,
                 "protocol_version": WORKER_PROTOCOL_VERSION,
                 "benchmark_version": __version__,

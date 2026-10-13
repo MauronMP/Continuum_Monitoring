@@ -336,3 +336,27 @@ def test_native_cleanup_preserves_independent_diagnostics(monkeypatch):
     physical_cluster._stop_local_native_children(100)
     assert set(killed) == {101, 102}
     assert 201 not in killed
+
+
+def test_connectivity_timeouts_are_finite_and_configurable(monkeypatch):
+    from continuum_bench.lifecycle_limits import health_timeout, ssh_probe_timeout
+    monkeypatch.setenv('CONTINUUM_HEALTH_TIMEOUT_SECONDS', '30')
+    monkeypatch.setenv('CONTINUUM_SSH_PROBE_TIMEOUT_SECONDS', '120')
+    assert health_timeout() == 30
+    assert ssh_probe_timeout() == 120
+    for invalid in ('0', '-1', 'nan', 'inf', '601'):
+        monkeypatch.setenv('CONTINUUM_HEALTH_TIMEOUT_SECONDS', invalid)
+        with pytest.raises(ValueError):
+            health_timeout()
+
+
+def test_ssh_timeout_is_not_reported_as_missing_credentials(config, monkeypatch):
+    inventory = load_physical_inventory(config.resolve(config.topology_file))
+    monkeypatch.setattr(physical_cluster, 'require_checks', lambda checks: None)
+    def timed_out(*args, **kwargs):
+        raise subprocess.TimeoutExpired(args[0], kwargs['timeout'])
+    monkeypatch.setattr(physical_cluster.subprocess, 'run', timed_out)
+    with pytest.raises(RuntimeError, match='authentication was not established'):
+        physical_cluster._verify_key_auth(inventory)
+    with pytest.raises(RuntimeError, match='installed dependencies are unknown'):
+        physical_cluster._verify_remote_dependencies(inventory)

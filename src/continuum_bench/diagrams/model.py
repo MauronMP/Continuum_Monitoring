@@ -14,10 +14,11 @@ from rdflib.namespace import DCTERMS
 from ..config import BenchmarkConfig
 
 
-EX = "http://example.org/smartcity#"
+EX = "http://example.org/monitoringcontinuum#"
 SKOLEM = "urn:continuum:ontology:"
 MODULES = {
     "foundation": ("Foundation", "#DDEBF7", "#0072B2"),
+    "contracts": ("Shared contracts", "#DCE7E9", "#557C83"),
     "topology": ("Topology", "#E2F1EC", "#009E73"),
     "observability": ("Observability", "#E1F3FB", "#56B4E9"),
     "governance": ("Governance", "#FCEDD2", "#E69F00"),
@@ -147,7 +148,7 @@ def extract_schema(config: BenchmarkConfig) -> Schema:
                 identifier = str(subject)
                 ownership.setdefault(identifier, []).append(str(relative))
                 modules.setdefault(identifier, _module(relative, identifier))
-    graph.bind("ex", URIRef(EX), replace=True)
+    graph.bind("mc", URIRef(EX), replace=True)
     # RDFLib does not prebind the HTTPS SAREF namespace used by this ontology.
     # A display prefix avoids long URI labels without changing the underlying IRI.
     graph.bind("saref", URIRef("https://saref.etsi.org/core/"), replace=True)

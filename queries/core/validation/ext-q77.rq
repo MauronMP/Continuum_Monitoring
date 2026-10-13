@@ -2,8 +2,8 @@
 # Purpose: Evaluate review: reproducible campaign readiness using the declared query contract.
 # Requirements: RF-71, RF-72, RNF-39, RV-02, RV-03
 # Policies: P-VAL-03, P-VAL-04, P-VAL-07
-# Current v3.0.0 result: 6 rows
-PREFIX : <http://example.org/smartcity#>
+# Current v4.0.0 result: 6 rows
+PREFIX : <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -17,7 +17,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?check ?value WHERE {
   {
-    BIND("ontology-version" AS ?check) <http://example.org/smartcity> owl:versionInfo ?value
+    BIND("ontology-version" AS ?check) <http://example.org/monitoringcontinuum> owl:versionInfo ?value
   }
   UNION { BIND("ontology-artifact" AS ?check) ?a a :OntologyArtifact ; :artifactIdentifier ?value }
   UNION { BIND("requirements-artifact" AS ?check) ?a a :RequirementsArtifact ; :artifactIdentifier ?value }

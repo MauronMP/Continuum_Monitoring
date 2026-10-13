@@ -2,8 +2,8 @@
 # Purpose: Evaluate violation: incomplete effective authorization using the declared query contract.
 # Requirements: RF-35, RF-36
 # Policies: P-CONS-04
-# Current v3.0.0 result: 0 rows
-PREFIX : <http://example.org/smartcity#>
+# Current v4.0.0 result: 0 rows
+PREFIX : <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>

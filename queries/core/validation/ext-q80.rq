@@ -2,8 +2,8 @@
 # Purpose: Evaluate global coverage and migration debt dashboard using the declared query contract.
 # Requirements: RF-68, RF-71, RV-01, RV-05
 # Policies: P-VAL-08
-# Current v3.0.0 result: 13 rows
-PREFIX : <http://example.org/smartcity#>
+# Current v4.0.0 result: 13 rows
+PREFIX : <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>

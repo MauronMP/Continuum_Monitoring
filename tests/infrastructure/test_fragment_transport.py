@@ -1,9 +1,10 @@
-"""Workers ingest transported placement, never canonical private source data."""
+"""Workers ingest transported placement, never materialize canonical private source data."""
 from threading import RLock
 
 import pytest
 from rdflib.compare import isomorphic
 
+from pathlib import Path
 from continuum_bench import node, partitioning
 from continuum_bench.partitioning import (
     build_fragments, deserialize_fragment, serialize_fragment,
@@ -41,6 +42,8 @@ def test_transport_rejects_mismatch(fragments, field, value):
 def test_worker_materializes_and_recovers_only_transport(fragments, monkeypatch, role):
     payload = serialize_fragment(fragments, role, users=5, seed=2026)
     runtime = node.NodeRuntime.__new__(node.NodeRuntime)
+    runtime.config = node.load_config(Path(__file__).resolve().parents[2] / "configs/benchmark.toml")
+    runtime.semantic_digest = node.semantic_assets_digest(runtime.config)
     runtime.role = role
     runtime.base_graph = None
     runtime.lock = RLock()
@@ -74,6 +77,8 @@ def test_worker_materializes_and_recovers_only_transport(fragments, monkeypatch,
 
 def test_worker_rejects_missing_fragment_without_local_fallback():
     runtime = node.NodeRuntime.__new__(node.NodeRuntime)
+    runtime.config = node.load_config(Path(__file__).resolve().parents[2] / "configs/benchmark.toml")
+    runtime.semantic_digest = node.semantic_assets_digest(runtime.config)
     runtime.role = "edge1"
     runtime.lock = RLock()
     with pytest.raises(ValueError, match="requires a serialized fragment"):
@@ -91,6 +96,8 @@ def test_http_prepare_decodes_only_assigned_fragment(fragments, monkeypatch):
         "mode": "distributed", "fragment": payload,
     }).encode()
     runtime = node.NodeRuntime.__new__(node.NodeRuntime)
+    runtime.config = node.load_config(Path(__file__).resolve().parents[2] / "configs/benchmark.toml")
+    runtime.semantic_digest = node.semantic_assets_digest(runtime.config)
     runtime.role = "edge1"
     runtime.lock = RLock()
     handler = node.Handler.__new__(node.Handler)
@@ -156,6 +163,8 @@ def test_coordinator_transports_fragments_and_times_placement(config, monkeypatc
         results = {}
         for endpoint in active:
             runtime = node.NodeRuntime.__new__(node.NodeRuntime)
+            runtime.config = node.load_config(Path(__file__).resolve().parents[2] / "configs/benchmark.toml")
+            runtime.semantic_digest = node.semantic_assets_digest(runtime.config)
             runtime.role = endpoint.role
             runtime.lock = RLock()
             payload = payloads[endpoint.url]

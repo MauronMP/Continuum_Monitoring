@@ -117,7 +117,7 @@ def check_generated_references() -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Check local Markdown links and generated v3 manuals"
+        description="Check local Markdown links and generated reference manuals"
     )
     parser.add_argument(
         "--links-only",

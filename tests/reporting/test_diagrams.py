@@ -33,11 +33,11 @@ def test_inventory_covers_the_actual_runtime_schema(config, schema):
                            for term in source.subjects(RDF.type, kind)}
     assert {p.id for p in schema.properties} == expected_properties
     assert schema.export()['counts'] == {
-        'named_classes': 146, 'anonymous_expressions': 11, 'object_properties': 165,
-        'datatype_properties': 98, 'annotation_properties': 14,
-        'subclass_axioms': 70, 'source_triples': 7966,
+        'named_classes': 148, 'anonymous_expressions': 6, 'object_properties': 167,
+        'datatype_properties': 99, 'annotation_properties': 14,
+        'subclass_axioms': 70, 'source_triples': 8289,
     }
-    assert len(schema.sources) == 14
+    assert len(schema.sources) == 15
     assert EX + 'RF-22' not in schema.nodes  # no expansion of the ABox
     assert schema.nodes[EX + 'UrbanZone'].punned
     assert schema.nodes[EX + 'DeploymentFragment'].module == 'deployment'
@@ -73,19 +73,19 @@ def test_simplified_arrows_are_asserted_not_invented(schema):
 def test_union_and_intersection_are_not_conflated(config, tmp_path):
     path = tmp_path / 'schema.ttl'
     path.write_text('''
-        @prefix ex: <http://example.org/smartcity#> .
+        @prefix mc: <http://example.org/monitoringcontinuum#> .
         @prefix owl: <http://www.w3.org/2002/07/owl#> .
         @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-        ex:A a owl:Class . ex:B a owl:Class . ex:C a owl:Class .
-        ex:union a owl:ObjectProperty ; rdfs:domain [a owl:Class; owl:unionOf (ex:A ex:B)];
-            rdfs:range ex:C .
-        ex:multiple a owl:ObjectProperty ; rdfs:domain ex:A, ex:B; rdfs:range ex:C .
-        ex:unknown a owl:ObjectProperty .
+        mc:A a owl:Class . mc:B a owl:Class . mc:C a owl:Class .
+        mc:union a owl:ObjectProperty ; rdfs:domain [a owl:Class; owl:unionOf (mc:A mc:B)];
+            rdfs:range mc:C .
+        mc:multiple a owl:ObjectProperty ; rdfs:domain mc:A, mc:B; rdfs:range mc:C .
+        mc:unknown a owl:ObjectProperty .
     ''', encoding='utf-8')
     schema = extract_schema(replace(config, ontology_files=(path,)))
     props = {p.id: p for p in schema.properties}
-    assert schema.constraints(props[EX + 'union'].domains) == '(ex:A OR ex:B)'
-    assert schema.constraints(props[EX + 'multiple'].domains) == 'ex:A AND ex:B'
+    assert schema.constraints(props[EX + 'union'].domains) == '(mc:A OR mc:B)'
+    assert schema.constraints(props[EX + 'multiple'].domains) == 'mc:A AND mc:B'
     assert schema.constraints(props[EX + 'unknown'].domains) == 'not declared'
     source = dot_view(schema)
     assert 'diagram:intersection:' + EX + 'multiple:domain' in source
@@ -97,10 +97,10 @@ def test_union_and_intersection_are_not_conflated(config, tmp_path):
 def test_unsupported_expression_fails_instead_of_inventing_a_label(config, tmp_path):
     path = tmp_path / 'restriction.ttl'
     path.write_text('''
-        @prefix ex: <http://example.org/smartcity#> .
+        @prefix mc: <http://example.org/monitoringcontinuum#> .
         @prefix owl: <http://www.w3.org/2002/07/owl#> .
         @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-        ex:p a owl:ObjectProperty; rdfs:domain [a owl:Restriction; owl:onProperty ex:p].
+        mc:p a owl:ObjectProperty; rdfs:domain [a owl:Restriction; owl:onProperty mc:p].
     ''', encoding='utf-8')
     with pytest.raises(ValueError, match='Unsupported or ambiguous'):
         extract_schema(replace(config, ontology_files=(path,)))
@@ -109,8 +109,8 @@ def test_unsupported_expression_fails_instead_of_inventing_a_label(config, tmp_p
 def test_complete_coverage_guard_detects_removed_class_and_property(schema):
     source = dot_view(schema)
     coverage = verify_complete_coverage(schema, source)
-    assert coverage['verified_classes'] == 146
-    assert coverage['verified_properties'] == 277
+    assert coverage['verified_classes'] == 148
+    assert coverage['verified_properties'] == 280
     without_class = '\n'.join(line for line in source.splitlines()
                               if not line.startswith('  "' + EX + 'User" [label='))
     with pytest.raises(ValueError, match='Incomplete full diagram'):
@@ -152,7 +152,7 @@ def test_sources_only_needs_no_external_process_and_does_not_modify_ontology(con
     assert manifest['status'] == 'complete'
     assert manifest['rendered'] is False
     assert manifest['complete']['checked'] == 'DOT source only'
-    assert len(list((output / 'sources/modules').glob('*.dot'))) == 9
+    assert len(list((output / 'sources/modules').glob('*.dot'))) == len(MODULES)
     assert not (output / 'figures').exists()
     assert before == {p: sha256(config.resolve(p).read_bytes()).hexdigest() for p in config.ontology_files}
 

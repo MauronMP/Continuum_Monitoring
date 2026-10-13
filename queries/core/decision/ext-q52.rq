@@ -2,8 +2,8 @@
 # Purpose: Evaluate review: alternatives pending recalculation using the declared query contract.
 # Requirements: RF-51, RNF-29, RNF-33
 # Policies: P-MODEL-05
-# Current v3.0.0 result: 32 rows
-PREFIX : <http://example.org/smartcity#>
+# Current v4.0.0 result: 32 rows
+PREFIX : <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>

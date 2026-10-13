@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the English v3 reference manuals from executable artefacts.
+"""Generate the English v4 reference manuals from executable artefacts.
 
 The generated Markdown is deliberately data-driven. Requirement, policy and
 ontology statements come from the canonical Turtle release; query execution
@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BENCHMARK_CONFIG = ROOT / "configs/benchmark.toml"
 CATALOG = ROOT / "queries/catalog.csv"
 REFERENCE = ROOT / "docs/reference"
-EX = Namespace("http://example.org/smartcity#")
+EX = Namespace("http://example.org/monitoringcontinuum#")
 MODULAR_SOURCE = "configs/benchmark.toml [paths.ontology_files]"
 
 REQUIREMENT_GROUPS = (
@@ -159,7 +159,7 @@ def _front_matter(title: str, source: str) -> list[str]:
     return [
         f"# {title}",
         "",
-        "> Generated reference for release v3.0.0. Do not edit individual",
+        "> Generated reference for release v4.0.0. Do not edit individual",
         "> entries by hand. Regenerate with",
         "> `.venv/bin/python tools/generate_reference_docs.py`.",
         "",
@@ -263,7 +263,7 @@ def policies_document(graph: Graph, queries: list[QueryRow]) -> str:
     for resource in policies:
         identifier = _literal(graph, resource, EX.policyIdentifier)
         policy_type = next(graph.objects(resource, EX.hasPolicyType), None)
-        category = next(graph.objects(resource, EX.belongsToPolicyCategory), None)
+        policy_categories = sorted(graph.objects(resource, EX.belongsToPolicyCategory), key=_ident)
         requirements = sorted(
             (_ident(item) for item in graph.objects(resource, EX.relatedRequirement)),
             key=_natural_key,
@@ -279,7 +279,7 @@ def policies_document(graph: Graph, queries: list[QueryRow]) -> str:
                 _literal(graph, resource, EX.hasPolicyStatement),
                 "",
                 f"- Type: {_label(graph, policy_type)}",
-                f"- Category: {_label(graph, category)} (`{_ident(category)}`)",
+                "- Categories: " + "; ".join(f"{_label(graph, category)} (`{_ident(category)}`)" for category in policy_categories),
                 f"- Version: `{_literal(graph, resource, EX.policyVersion)}`",
                 f"- Related requirements: {_codes(requirements)}",
                 f"- Recommended mechanisms: {_codes(mechanisms)}",
@@ -396,7 +396,7 @@ def ontology_document(graph: Graph) -> str:
     annotation_properties = _term_rows(graph, OWL.AnnotationProperty)
     ontologies = _term_rows(graph, OWL.Ontology)
     lines = _front_matter(
-        "Continuum Monitoring Ontology v3.0.0 reference",
+        "Continuum Monitoring Ontology v4.0.0 reference",
         MODULAR_SOURCE,
     )
     lines.extend(
@@ -407,7 +407,7 @@ def ontology_document(graph: Graph) -> str:
             "IoT, mist, edge, fog and cloud. The reusable core covers topology,",
             "temporal state, consent, contracts, authorization, trust, policy",
             "governance, MAPE-K adaptation, delegation, model selection,",
-            "federated learning, audit and validation. The wellbeing domain",
+            "audit and validation. Federated learning is an optional module. The wellbeing domain",
             "adds wearables, physiological observations, stress and sleep.",
             "",
             "Hard constraints are evaluated before optimization. Consent,",
@@ -428,7 +428,9 @@ def ontology_document(graph: Graph) -> str:
             "| Area | Runtime artefacts |",
             "|---|---|",
             "| Core schema | `ontology/core/schema.ttl` |",
-            "| Shared modules | `ontology/modules/*.ttl` |",
+            "| Shared contracts | `ontology/modules/contracts.ttl` |",
+            "| Domain-neutral modules | foundation, topology, observability, governance, orchestration, deployment |",
+            "| Optional federation | `ontology/modules/federation.ttl` |",
             "| Wellbeing extension | `ontology/domains/wellbeing/*.ttl` |",
             "| SHACL constraints | `ontology/shapes/*.ttl` |",
             "| Reference individuals | `ontology/examples/reference-system.ttl` |",
@@ -458,7 +460,7 @@ def ontology_document(graph: Graph) -> str:
             "",
             "The first command validates parsing, release contracts, query",
             "expectations, SHACL, the configured benchmark reasoners and distributed",
-            "fragment reconstruction. The second compiles the same 14 runtime",
+            "fragment reconstruction. The second compiles the same 15 runtime",
             "modules and runs the independent HermiT, Openllet, JFact and Konclude",
             "consistency gate. It requires Java, the installed OWLAPI classpaths",
             "and native Konclude.",
@@ -515,7 +517,7 @@ def generate(output: Path) -> list[Path]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Generate English v3 reference manuals"
+        description="Generate English v4 reference manuals"
     )
     parser.add_argument("--output", type=Path, default=REFERENCE)
     args = parser.parse_args(argv)

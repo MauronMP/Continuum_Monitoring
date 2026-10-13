@@ -8,11 +8,12 @@ class Infrastructure(Protocol):
     def call(self, node: dict, operation: str, payload: dict, timeout: float) -> dict: ...
 
 class PhysicalInfrastructure:
-    def __init__(self, topology: Topology):
+    def __init__(self, topology: Topology, config=None):
+        self.config = config
         self.topology = topology
 
     def inventory(self):
-        discover(self.topology.endpoints(), self.topology.active_nodes, self.topology.fingerprint)
+        discover(self.topology.endpoints(), self.topology.active_nodes, self.topology.fingerprint, self.config)
         return [{'node_id': n.node_id, 'endpoint': n.endpoint, 'static': n.public(),
                  'observed': _request(n.endpoint, '/health', timeout=5)}
                 for n in self.topology.active_nodes]

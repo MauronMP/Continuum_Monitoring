@@ -13,7 +13,7 @@ from .topology import NODE_ID_PATTERN, TIERS
 
 
 WORKER_SERVICE = "continuum-benchmark-node"
-WORKER_PROTOCOL_VERSION = "9"
+WORKER_PROTOCOL_VERSION = "10"
 EXPECTED_QUERY_COUNT = 115
 
 
@@ -46,6 +46,7 @@ def worker_health_error(
     expected_authority: bool | None = None,
     expected_categories: tuple[str, ...] | None = None,
     expected_topology_fingerprint: str | None = None,
+    expected_semantic_digest: str | None = None,
 ) -> str | None:
     """Return an actionable error for an incompatible worker response."""
     if health.get("status") != "ok":
@@ -96,7 +97,7 @@ def worker_health_error(
         return (
             f"ontology_revision must be {ONTOLOGY_REVISION!r}, "
             f"got {health.get('ontology_revision')!r}; rebuild/redeploy "
-            "the worker with the English, datatype-corrected ontology"
+            "the worker with the current ontology release"
         )
     node_id = str(health.get("node_id", health.get("role", ""))).strip()
     if not NODE_ID_PATTERN.fullmatch(node_id):
@@ -135,4 +136,6 @@ def worker_health_error(
             "topology_fingerprint does not match the coordinator manifest; "
             "redeploy or recreate this worker"
         )
+    if expected_semantic_digest is not None and health.get("semantic_assets_digest") != expected_semantic_digest:
+        return "semantic_assets_digest differs from the coordinator; synchronize ontology, queries and placement files, then restart the worker"
     return None

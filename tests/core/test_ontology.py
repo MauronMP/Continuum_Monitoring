@@ -1,4 +1,5 @@
 from dataclasses import replace
+import os
 
 import pytest
 
@@ -17,7 +18,7 @@ from continuum_bench.synthetic import add_synthetic_data
 from continuum_bench import validation
 
 SH = Namespace("http://www.w3.org/ns/shacl#")
-EX = Namespace("http://example.org/smartcity#")
+EX = Namespace("http://example.org/monitoringcontinuum#")
 
 
 @pytest.mark.parametrize("language", ["es", "en"])
@@ -53,7 +54,7 @@ def test_datatype_guard_respects_subproperties_and_string_subtypes():
 def test_modular_ontology_is_english_and_datatype_safe(config):
     graph = load_graph(config.resolve(path) for path in config.ontology_files)
     assert datatype_range_errors(graph) == []
-    assert (URIRef("http://example.org/smartcity"), DCTERMS.language,
+    assert (URIRef("http://example.org/monitoringcontinuum"), DCTERMS.language,
             Literal("en")) in graph
     assert {value.language for value in graph.objects()
             if isinstance(value, Literal)} <= {None, "en"}
@@ -140,7 +141,7 @@ def test_reference_data_conforms_to_shacl(config):
     assert conforms, report
 
 
-def test_v3_synthetic_data_conforms_to_shacl(config):
+def test_release_synthetic_data_conforms_to_shacl(config):
     graph = load_graph(config.resolve(path) for path in config.ontology_files)
     add_synthetic_data(graph, 3, config.seed)
 
@@ -152,7 +153,7 @@ def test_v3_synthetic_data_conforms_to_shacl(config):
     assert conforms, report
 
 
-def test_v3_synthetic_data_does_not_trigger_violation_queries(config):
+def test_release_synthetic_data_does_not_trigger_violation_queries(config):
     graph = load_graph(config.resolve(path) for path in config.ontology_files)
     add_synthetic_data(graph, 3, config.seed)
     specs = load_catalog(
@@ -170,25 +171,31 @@ def test_v3_synthetic_data_does_not_trigger_violation_queries(config):
     assert failures == {}
 
 
-def test_configured_reasoner_profiles_have_no_explicit_contradictions(config):
+@pytest.mark.parametrize("reasoner", [
+    "rdfs",
+    *[pytest.param(name, marks=pytest.mark.skipif(
+        os.environ.get("CONTINUUM_TEST_NATIVE_OWL") != "1",
+        reason="canonical native ontology check requires CONTINUUM_TEST_NATIVE_OWL=1",
+    )) for name in ("hermit", "openllet", "jfact", "konclude")],
+])
+def test_configured_reasoner_profiles_have_no_explicit_contradictions(config, reasoner):
     graph = load_graph(config.resolve(path) for path in config.ontology_files)
     assert len(available_reasoners()) >= 3
-    for reasoner in config.reasoners:
-        result = materialize(graph, reasoner)
-        assert result.output_triples >= result.input_triples
-        assert contradiction_count(result.graph) == 0
-        specs = load_catalog(config.resolve(config.query_catalog), config.root)
-        violations = {
-            spec.id: measurement.result_count
-            for spec in specs
-            if spec.kind == "violation"
-            and (measurement := execute_query(result.graph, spec)).result_count
-        }
-        assert violations == {}, reasoner
+    result = materialize(graph, reasoner)
+    assert result.output_triples >= result.input_triples
+    assert contradiction_count(result.graph) == 0
+    specs = load_catalog(config.resolve(config.query_catalog), config.root)
+    violations = {
+        spec.id: measurement.result_count
+        for spec in specs
+        if spec.kind == "violation"
+        and (measurement := execute_query(result.graph, spec)).result_count
+    }
+    assert violations == {}, reasoner
 
 
 def test_validate_rejects_violation_introduced_only_by_reasoning(config, monkeypatch):
-    ex = Namespace("http://example.org/smartcity#")
+    ex = Namespace("http://example.org/monitoringcontinuum#")
 
     def corrupt_materialization(source, reasoner):
         result = materialize(source, reasoner)

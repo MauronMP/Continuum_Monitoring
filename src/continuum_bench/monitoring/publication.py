@@ -813,7 +813,7 @@ class Report:
         generate_comparisons(self)
         self.network_scenarios()
         self.validation_load()
-        self.findings.append('Nodes are colocated in one room (operator confirmation). Network-distance plots use explicit analytical scenarios; no geographic node positions or mobility trajectories are inferred.')
+        self.findings.append('Physical nodes communicate over the configured network/VPN. Geographic separation is not established by these measurements. Network-distance plots use explicit analytical scenarios; no geographic node positions or mobility trajectories are inferred.')
         for name,rows in datasets.items():
             errors=Counter(r.get('error','') for r in rows if r.get('error') and outcome(r)!='skipped')
             self.findings.append(f'{name}: {dict(Counter(outcome(r) for r in rows))}; frequent errors: {errors.most_common(3)}')

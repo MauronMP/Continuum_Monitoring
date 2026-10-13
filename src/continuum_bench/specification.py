@@ -13,10 +13,10 @@ from .environment import installed_versions
 from . import __version__
 
 
-EX = Namespace("http://example.org/smartcity#")
-ONTOLOGY_IRI = URIRef("http://example.org/smartcity")
-ONTOLOGY_VERSION = "3.0.0"
-ONTOLOGY_REVISION = "3.0.0-en-audit-v2"
+EX = Namespace("http://example.org/monitoringcontinuum#")
+ONTOLOGY_IRI = URIRef("http://example.org/monitoringcontinuum")
+ONTOLOGY_VERSION = "4.0.0"
+ONTOLOGY_REVISION = "4.0.0-monitoringcontinuum-v1"
 EXPECTED_QUERY_IDS = frozenset(
     {
         *{f"BASE-Q{i:02d}" for i in range(1, 36)},
@@ -171,7 +171,7 @@ def acceptance_status(
 ) -> dict[str, Any]:
     """Report whether zero-row violation queries may support compliance claims.
 
-    The v3 reference data intentionally exposes acceptance/campaign debt.  This
+    The reference data intentionally exposes acceptance/campaign debt.  This
     status therefore does not redefine structural validity: it prevents an
     empty violation result from being over-interpreted before EXT-Q01, Q02,
     Q05, Q76 and Q77 meet their acceptance conditions.
@@ -226,7 +226,7 @@ def acceptance_status(
             all(checks.values()) and not any(violation_rows.values())
         ),
         "interpretation": (
-            "Structural v3 validation is separate from scientific acceptance; "
+            "Structural validation is separate from scientific acceptance; "
             "review queries may expose documented migration debt."
         ),
     }

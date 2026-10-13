@@ -8,7 +8,7 @@ from rdflib import Graph, Literal, Namespace, RDF, RDFS
 from rdflib.namespace import XSD
 from rdflib.term import Node
 
-EX = Namespace("http://example.org/smartcity#")
+EX = Namespace("http://example.org/monitoringcontinuum#")
 SYN = Namespace("urn:continuum:synthetic:")
 SOSA = Namespace("http://www.w3.org/ns/sosa/")
 Triple = tuple[Node, Node, Node]
@@ -241,7 +241,7 @@ def pad_to_target_triples(
     """Grow a graph to an exact target using semantic or neutral payload facts.
 
     ``semantic`` preserves the original workload: every added resource is an
-    ``ex:User`` and deliberately activates ontology axioms. ``neutral`` uses a
+    ``mc:User`` and deliberately activates ontology axioms. ``neutral`` uses a
     benchmark-only predicate outside the application vocabulary. RDFS can
     still derive generic RDF/RDFS facts, so callers must report both asserted
     and materialised sizes, but the application class hierarchy is not

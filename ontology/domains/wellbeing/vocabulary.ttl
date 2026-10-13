@@ -1,36 +1,43 @@
-@prefix ex: <http://example.org/smartcity#> .
+@prefix mc: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
 
-ex:Agitated a ex:PersonStatus,
+mc:Agitated a mc:PersonStatus,
         owl:NamedIndividual ;
     rdfs:label "Agitated" .
 
-ex:Asleep a ex:PersonStatus,
+mc:Asleep a mc:PersonStatus,
         owl:NamedIndividual ;
     rdfs:label "Asleep" .
 
-ex:Calm a ex:PersonStatus,
+mc:Calm a mc:PersonStatus,
         owl:NamedIndividual ;
     rdfs:label "Calm" .
 
-ex:StressCritical a ex:StressLevel,
+mc:EDAProperty a sosa:ObservableProperty .
+
+mc:HeartRateProperty a sosa:ObservableProperty .
+
+mc:SleepQualityProperty a sosa:ObservableProperty .
+
+mc:StressCritical a mc:StressLevel,
         owl:NamedIndividual ;
     rdfs:label "Critical" .
 
-ex:StressHigh a ex:StressLevel,
+mc:StressHigh a mc:StressLevel,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-ex:StressLow a ex:StressLevel,
+mc:StressLow a mc:StressLevel,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-ex:StressMedium a ex:StressLevel,
+mc:StressMedium a mc:StressLevel,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-<http://example.org/smartcity/modules/wellbeing-vocabulary> a owl:Ontology ;
+<http://example.org/monitoringcontinuum/modules/wellbeing-vocabulary> a owl:Ontology ;
     rdfs:label "Wellbeing controlled vocabulary"@en ;
-    owl:imports <http://example.org/smartcity/modules/wellbeing> ;
-    owl:versionInfo "3.0.0" .
+    owl:imports <http://example.org/monitoringcontinuum/modules/wellbeing> ;
+    owl:versionInfo "4.0.0" .

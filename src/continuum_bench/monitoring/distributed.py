@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ..lifecycle_limits import health_timeout
+
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -26,6 +28,7 @@ from ..csv_utils import write_dict_rows
 from ..protocol import worker_health_error
 from ..queries import QuerySpec, by_categories, load_catalog
 from ..specification import release_identity
+from ..semantic_assets import semantic_assets_digest
 from .budget import execution_metadata, unlimited_execution
 from ..topology import (
     TIER_ORDER,
@@ -199,7 +202,9 @@ def discover(
     urls: Iterable[str],
     expected_nodes: Iterable[TopologyNode] | None = None,
     expected_topology_fingerprint: str | None = None,
+    config: BenchmarkConfig | None = None,
 ) -> list[Endpoint]:
+    expected_semantics = semantic_assets_digest(config)
     expected_by_url = {
         node.endpoint.rstrip("/"): node for node in (expected_nodes or ())
     }
@@ -207,9 +212,10 @@ def discover(
     for url in urls:
         normalized_url = url.rstrip("/")
         expected = expected_by_url.get(normalized_url)
-        health = _request(url, "/health", timeout=5.0, retries=1)
+        health = _request(url, "/health", timeout=health_timeout(), retries=1)
         contract_error = worker_health_error(
             health,
+            expected_semantic_digest=expected_semantics,
             expected_node_id=expected.node_id if expected else None,
             expected_tier=expected.tier if expected else None,
             expected_authority=expected.authority if expected else None,
@@ -396,6 +402,7 @@ def _metadata(
 ) -> dict[str, Any]:
     return {
         **release_identity(),
+        "semantic_assets_digest": semantic_assets_digest(config),
         "execution_policy": execution_metadata(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "python": platform.python_version(),

@@ -8,7 +8,7 @@ from continuum_bench.specification import (
     validate_release_contract,
 )
 
-def test_v3_release_inventory_and_traceability(config):
+def test_release_release_inventory_and_traceability(config):
     graph = load_graph(config.resolve(path) for path in config.ontology_files)
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
 
@@ -57,7 +57,7 @@ def test_v3_release_inventory_and_traceability(config):
     assert ONTOLOGY_VERSION in {
         str(value)
         for value in graph.objects(
-            URIRef("http://example.org/smartcity"),
+            URIRef("http://example.org/monitoringcontinuum"),
             OWL.versionInfo,
         )
     }
@@ -80,7 +80,7 @@ def test_acceptance_debt_is_reported_without_hiding_structural_validity(config):
     assert not status["compliance_claim_permitted"]
 
 
-def test_v3_catalog_and_execution_plan_are_complete(config):
+def test_release_catalog_and_execution_plan_are_complete(config):
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
 
     assert len(specs) == 115
@@ -98,7 +98,7 @@ def test_v3_catalog_and_execution_plan_are_complete(config):
 def test_acceptance_rejects_inflated_readiness_count_and_empty_campaign(config):
     from dataclasses import replace
     from rdflib import Namespace, RDF
-    ex = Namespace("http://example.org/smartcity#")
+    ex = Namespace("http://example.org/monitoringcontinuum#")
     graph = load_graph(config.resolve(path) for path in config.ontology_files)
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     measured = [execute_query(graph, spec) for spec in specs]

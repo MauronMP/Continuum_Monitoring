@@ -153,6 +153,9 @@ def test_report_preserves_failure_denominator_and_pngs(tmp_path, workload):
     manifest = report(tmp_path)
     assert manifest["completed_jobs"] == 1 and manifest["unsuccessful_jobs"] == 1
     assert (tmp_path / "effectiveness/figures/cloud.png").is_file()
+    assert "effectiveness/figures/all-nodes.png" in manifest["figures"]
+    assert "figures/cross-node-summary.png" in manifest["figures"]
+    assert (tmp_path / "cross-node-summary-data.csv").is_file()
     assert not list(tmp_path.rglob("*.pdf"))
     assert "timeout" in (tmp_path / "summary.csv").read_text()
 
@@ -285,3 +288,13 @@ def test_isolated_worker_protocol_validates_real_response(workload):
                       {"timeout_seconds":20, "connect_timeout_seconds":1}, source_bundle(), payload)
     assert response["status"] == "completed"
     assert response["measurement_contract"] == "comparison-v2-complete-context-warmup"
+
+
+def test_default_comparison_includes_mist():
+    from continuum_bench.monitoring.comparison.config import load
+    from continuum_bench.monitoring.comparison.runner import inventory_for, jobs
+    config = load("configs/comparison.toml")
+    _, nodes = inventory_for(config, None)
+    assert {n.role for n in nodes} == {"cloud", "fog", "mist", "edge1", "edge2", "edge3"}
+    assert config["exclude_resources"] == []
+    assert len(list(jobs(config))) * len(nodes) == 720

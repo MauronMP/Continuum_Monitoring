@@ -69,7 +69,7 @@ evidence = "ontology/modules/observability.ttl"
 [items."RNF-38"]
 status = "partial"
 rationale = "Baseline and release-contract regressions run; compatibility across arbitrary downstream integrations is outside this evidence."
-evidence = "tests/core/test_v3_release.py"
+evidence = "tests/core/test_release.py"
 
 [items."P-ADAPT-08"]
 status = "deferred"
@@ -114,7 +114,7 @@ evidence = "tests/core/test_catalog.py"
 [items."P-VAL-05"]
 status = "partial"
 rationale = "Versioned release contracts and regression tests protect the maintained baseline, not every possible extension."
-evidence = "tests/core/test_v3_release.py"
+evidence = "tests/core/test_release.py"
 
 [items."P-ZONE-04"]
 status = "deferred"

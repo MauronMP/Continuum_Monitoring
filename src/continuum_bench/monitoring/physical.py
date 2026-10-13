@@ -28,6 +28,7 @@ from .distributed import (
     discover,
 )
 from ..queries import QuerySpec, by_categories, load_catalog
+from ..semantic_assets import semantic_assets_digest
 from ..specification import release_identity
 from .budget import execution_metadata
 from ..physical_cluster import load_physical_inventory
@@ -251,7 +252,7 @@ def _metadata(
         else load_physical_inventory(inventory).topology
     )
     return {
-        **release_identity(),
+        **release_identity(), "semantic_assets_digest": semantic_assets_digest(config),
         "execution_policy": execution_metadata(),
         "reasoner_backends": {name: reasoner_provenance(name) for name in config.reasoners},
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -458,6 +459,7 @@ def _run_physical_impl(config, inventory, output_root, topology_name, suite):
         endpoint_urls,
         declared_nodes,
         topology.fingerprint if topology is not None else None,
+        config,
     )
     node_count = len(endpoints)
     endpoint_by_url = {endpoint.url: endpoint for endpoint in endpoints}

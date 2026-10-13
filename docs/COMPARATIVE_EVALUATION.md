@@ -143,8 +143,8 @@ python3 -m venv .venv
 ```
 
 The remote inventory, addresses and Python path are read from the existing
-physical topology. The default full campaign contains 600 jobs across five executor hosts; the smoke
-campaign contains 90. Runtime depends on host and network conditions.
+physical topology. The default full campaign contains 720 jobs across six executor hosts; the smoke
+campaign contains 108. Runtime depends on host and network conditions.
 
 The coordinator transfers an immutable Python source bundle
 over SSH and imports it in a temporary directory; it does not overwrite the
@@ -152,8 +152,8 @@ workers' deployment or restart their services. The bundle is saved with the run.
 A repository-wide physical campaign lease prevents overlap with existing campaigns
 started on this coordinator. There is no cross-coordinator distributed lock.
 
-Mist remains explicitly excluded even if requested with `--nodes`. To include it
-later, remove `mist` from both exclusion lists and verify it with `check`. An
+Mist is included by default as both an executor and a logical resource. Verify
+all six nodes with `check` before acquisition. An
 unreachable selected host generates `unavailable` job records; it does not reduce
 the planned denominator invisibly. Logical Mist exclusion and executor selection
 are separate concepts.
@@ -167,11 +167,11 @@ All fields are required and unknown keys are rejected.
 | `policy_config` | `policy-evaluation.toml` | Rule definitions and explicit scenario oracle; relative to comparison config |
 | `topology` | `topologies/physical/topology.toml` | Existing physical inventory; relative to comparison config |
 | `output` | `outputs/comparison` | Parent of unique run directories; relative to current repository root |
-| `exclude_nodes`, `exclude_resources` | `["mist"]` | Physical executor and logical-resource exclusions |
+| `exclude_nodes`, `exclude_resources` | `[]` | Physical executor and logical-resource exclusions |
 | `strategies`, `experiments` | All built-in entries | Explicit evaluation scope |
 | `repetitions`, `warmup`, `seed` | 5, 2, 2026 | Independent process repetitions, warm-up context cycles, deterministic order |
 | `timeout_seconds` | 120 | **120,000 ms per whole job**, including interpreter/bundle initialization, preparation, warm-up and decisions |
-| `connect_timeout_seconds` | 8 | SSH connection budget |
+| `connect_timeout_seconds` | 30 | SSH connection budget |
 | `multipliers` | `[1, 4, 16]` | Logical workload scaling |
 | `events_per_context` | 10 | Events per context for non-cumulative experiments |
 | `cumulative_cycles` | `[1, 4, 16]` | Complete four-context cycles for cumulative points |
@@ -298,7 +298,7 @@ Fog and all three Edge hosts, with zero timeouts/failures and zero procedural
 or semantic operational-plan mismatches. Mist was excluded. The run produced
 20 PNG figures. Seventeen module tests passed, and fourteen existing policy,
 documentation and physical-only regression tests also passed. An actual local
-process deadline returned GNU timeout status 124 as expected. The 600-job
+process deadline returned GNU timeout status 124 as expected. At that review date, the 600-job
 full campaign has not been executed as part of this implementation check.
 
 These observations establish execution and configured-plan correctness only.
@@ -333,7 +333,7 @@ formatting. No complete multi-repetition performance campaign is implied.
   its v1 measurement contract is retained. A complete five-host report now contains
   20 per-node figures plus outcome coverage and paired-cost comparison (22 PNGs).
 - Raw JSONL hashes were checked before and after regeneration; measurements were
-  unchanged. The full 600-job campaign remains pending.
+  unchanged. At that review date, the full 600-job campaign remained pending; the later run below supersedes that status.
 
 The checks establish code and reporting behavior. All available smoke results
 still have one process repetition per point and must be described as exploratory.
@@ -346,3 +346,40 @@ software checks, but its process-lifetime peak memory is not interchangeable wit
 Linux phase measurements; Linux-only integration tests are explicitly skipped
 there. The isolated worker transport also requires GNU `timeout`. Passing portable
 CI does not establish physical measurement readiness.
+
+## Cross-node overview figures
+
+Reporting also generates `<experiment>/figures/all-nodes.png` for effectiveness,
+adaptation, scalability and cumulative evaluation. Columns show every host
+recorded in the run, with identical vertical scales for each metric row. The
+plots reuse repetition-level values and confidence intervals from
+`figure-data.csv`; hosts are never pooled as experimental repetitions. Excluded
+nodes are not imputed. These independent host replays do not measure simultaneous
+fleet throughput, total peak RAM, network latency or real service recovery.
+Regenerate these figures for an existing run with the `comparison report`
+command above; no benchmark rerun is needed.
+
+
+## Completed five-host campaign and six-host configuration (2026-10-08)
+
+Run `20261007T111333Z-589a4b3c` completed all 600 jobs with five process
+repetitions per point and no adaptive-plan mismatches. It contains four tests:
+quality against configured expected plans, response to supplied contexts,
+joint resource/policy scalability, and accumulated decision work. Static selection
+covered every required pair but averaged 62.857% excess monitoring; procedural and
+semantic selection both achieved exact agreement with the configured oracle.
+This supports equivalent answers with measured semantic overhead, not greater
+accuracy than procedural rules or clinical validation.
+
+The default configuration now includes Mist (six executor hosts and six base
+logical resources), giving 720 full jobs or 108 smoke jobs. The SSH connection
+budget is 30 seconds. Older five-host results retain their acquisition configuration;
+do not append six-host observations to them because adding logical Mist resources
+changes the workload on every host. Run the complete comparison in a new directory
+only after any other physical campaign has finished.
+
+`figures/cross-node-summary.png` provides a compact four-panel overview of all
+recorded hosts. Each panel uses a common workload size across hosts. The four
+`<experiment>/figures/all-nodes.png` panels provide the detailed metric comparisons.
+`cross-node-summary-data.csv` records repetition values, confidence intervals and
+job provenance. These figures are generated automatically by both `run` and `report`.

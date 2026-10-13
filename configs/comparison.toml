@@ -3,8 +3,8 @@
 policy_config = "policy-evaluation.toml"
 topology = "topologies/physical/topology.toml"
 output = "outputs/comparison"
-exclude_nodes = ["mist"]
-exclude_resources = ["mist"]
+exclude_nodes = []
+exclude_resources = []
 strategies = ["static", "procedural", "semantic"]
 experiments = ["effectiveness", "adaptation", "scalability", "cumulative"]
 repetitions = 5
@@ -12,7 +12,7 @@ warmup = 2
 seed = 2026
 # Per isolated strategy/node/experiment/size/repetition job, including setup.
 timeout_seconds = 120
-connect_timeout_seconds = 8
+connect_timeout_seconds = 30
 # Scales logical resources and policy copies, not physical hosts.
 multipliers = [1, 4, 16]
 events_per_context = 10

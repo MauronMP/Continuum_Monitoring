@@ -1,693 +1,820 @@
-@prefix ex: <http://example.org/smartcity#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix mc: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:AHP_consistency_threshold a owl:DatatypeProperty ;
+mc:AHP_consistency_threshold a owl:DatatypeProperty ;
     rdfs:label "AHP consistency threshold" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "AHP consistency threshold records a literal value. Declared domain: Acceptance Profile. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:decimal .
 
-ex:AnonymousIdentifier a owl:Class ;
-    rdfs:label "Anonymous Identifier" ;
-    rdfs:subClassOf ex:Identifier .
-
-ex:D_delegation_max a owl:DatatypeProperty ;
+mc:D_delegation_max a owl:DatatypeProperty ;
     rdfs:label "maximum delegation depth" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "maximum delegation depth records a literal value. Declared domain: Acceptance Profile. Declared range: integer. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:integer .
 
-ex:DifferentialPrivacyMechanism a owl:Class ;
+mc:DifferentialPrivacyMechanism a owl:Class ;
     rdfs:label "Differential Privacy Mechanism" ;
-    rdfs:subClassOf ex:PrivacyMechanism .
+    rdfs:comment "Differential Privacy Mechanism is a governance concept in the monitoring model. It specializes Privacy Mechanism." ;
+    rdfs:subClassOf mc:PrivacyMechanism .
 
-ex:DirectIdentifier a owl:Class ;
+mc:DirectIdentifier a owl:Class ;
     rdfs:label "Direct Identifier" ;
-    rdfs:subClassOf ex:Identifier .
+    rdfs:comment "Direct Identifier is a governance concept in the monitoring model. It specializes Identifier." ;
+    rdfs:subClassOf mc:Identifier ;
+    owl:disjointWith mc:AnonymousIdentifier,
+        mc:PseudonymousIdentifier .
 
-ex:E_device_max a owl:DatatypeProperty ;
+mc:E_device_max a owl:DatatypeProperty ;
     rdfs:label "device energy threshold" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "device energy threshold records a literal value. Declared domain: Acceptance Profile. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:decimal .
 
-ex:EncryptionMechanism a owl:Class ;
+mc:EncryptionMechanism a owl:Class ;
     rdfs:label "Encryption Mechanism" ;
-    rdfs:subClassOf ex:SecurityMechanism .
+    rdfs:comment "Encryption Mechanism is a governance concept in the monitoring model. It specializes Security Mechanism." ;
+    rdfs:subClassOf mc:SecurityMechanism .
 
-ex:FunctionalRequirement a owl:Class ;
+mc:FunctionalRequirement a owl:Class ;
     rdfs:label "Functional Requirement" ;
-    rdfs:subClassOf ex:Requirement .
+    rdfs:comment "Functional Requirement is a governance concept in the monitoring model. It specializes Requirement." ;
+    rdfs:subClassOf mc:Requirement .
 
-ex:N_agents a owl:DatatypeProperty ;
+mc:N_agents a owl:DatatypeProperty ;
     rdfs:label "concurrent agent target" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "concurrent agent target records a literal value. Declared domain: Acceptance Profile. Declared range: integer. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:integer .
 
-ex:NonFunctionalRequirement a owl:Class ;
+mc:NonFunctionalRequirement a owl:Class ;
     rdfs:label "Non-functional Requirement" ;
-    rdfs:subClassOf ex:Requirement .
+    rdfs:comment "Non-functional Requirement is a governance concept in the monitoring model. It specializes Requirement." ;
+    rdfs:subClassOf mc:Requirement .
 
-ex:PseudonymousIdentifier a owl:Class ;
-    rdfs:label "Pseudonymous Identifier" ;
-    rdfs:subClassOf ex:Identifier .
-
-ex:T_decision_max a owl:DatatypeProperty ;
+mc:T_decision_max a owl:DatatypeProperty ;
     rdfs:label "decision threshold" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "decision threshold records a literal value. Declared domain: Acceptance Profile. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:decimal .
 
-ex:T_inference_local a owl:DatatypeProperty ;
+mc:T_inference_local a owl:DatatypeProperty ;
     rdfs:label "local inference latency threshold (ms)" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "local inference latency threshold (ms) records a literal value. Declared domain: Acceptance Profile. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:decimal .
 
-ex:T_migration_max a owl:DatatypeProperty ;
+mc:T_migration_max a owl:DatatypeProperty ;
     rdfs:label "migration interruption threshold" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "migration interruption threshold records a literal value. Declared domain: Acceptance Profile. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:decimal .
 
-ex:T_node_join a owl:DatatypeProperty ;
+mc:T_node_join a owl:DatatypeProperty ;
     rdfs:label "node join threshold" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "node join threshold records a literal value. Declared domain: Acceptance Profile. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:decimal .
 
-ex:T_reselection_max a owl:DatatypeProperty ;
+mc:T_reselection_max a owl:DatatypeProperty ;
     rdfs:label "reselection threshold" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "reselection threshold records a literal value. Declared domain: Acceptance Profile. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:decimal .
 
-ex:T_sparql_monitor a owl:DatatypeProperty ;
+mc:T_sparql_monitor a owl:DatatypeProperty ;
     rdfs:label "SPARQL monitoring threshold" ;
-    rdfs:domain ex:AcceptanceProfile ;
+    rdfs:comment "SPARQL monitoring threshold records a literal value. Declared domain: Acceptance Profile. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AcceptanceProfile ;
     rdfs:range xsd:decimal .
 
-ex:ValidationRequirement a owl:Class ;
+mc:ValidationRequirement a owl:Class ;
     rdfs:label "Validation / Reproducibility Requirement" ;
-    rdfs:subClassOf ex:Requirement .
+    rdfs:comment "Validation / Reproducibility Requirement is a governance concept in the monitoring model. It specializes Requirement." ;
+    rdfs:subClassOf mc:Requirement .
 
-ex:appliedMechanism a owl:ObjectProperty ;
+mc:appliedMechanism a owl:ObjectProperty ;
     rdfs:label "applied mechanism" ;
-    rdfs:domain ex:EvaluationState ;
-    rdfs:range ex:MechanismSpecification .
+    rdfs:comment "applied mechanism links resources. Declared domain: Evaluation State. Declared range: Mechanism Specification. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:EvaluationState ;
+    rdfs:range mc:MechanismSpecification .
 
-ex:appliedPolicy a owl:ObjectProperty ;
+mc:appliedPolicy a owl:ObjectProperty ;
     rdfs:label "applied policy" ;
-    rdfs:domain ex:EvaluationState ;
-    rdfs:range ex:Policy .
+    rdfs:comment "applied policy links resources. Declared domain: Evaluation State. Declared range: Policy. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:EvaluationState ;
+    rdfs:range mc:Policy .
 
-ex:appliedSecurityMechanism a owl:ObjectProperty ;
+mc:appliedSecurityMechanism a owl:ObjectProperty ;
     rdfs:label "applied security mechanism" ;
-    rdfs:range ex:SecurityMechanism .
+    rdfs:comment "applied security mechanism links resources. The domain is intentionally open for reuse across governed resources. Declared range: Security Mechanism. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:range mc:SecurityMechanism .
 
-ex:appliesInZone a owl:ObjectProperty ;
+mc:appliesInZone a owl:ObjectProperty ;
     rdfs:label "applies in zone" ;
-    rdfs:domain ex:Policy ;
-    rdfs:range ex:CityArea .
+    rdfs:comment "applies in zone links resources. Declared domain: Policy. Declared range: City Area. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Policy ;
+    rdfs:range mc:CityArea .
 
-ex:appliesTo a owl:ObjectProperty ;
+mc:appliesTo a owl:ObjectProperty ;
     rdfs:label "applies to" ;
-    rdfs:domain ex:Permission .
+    rdfs:comment "applies to links resources. Declared domain: Permission. Value restrictions are defined by the application validation shapes. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Permission .
 
-ex:appliesToZoneType a owl:ObjectProperty ;
+mc:appliesToZoneType a owl:ObjectProperty ;
     rdfs:label "applies to zone type" ;
-    rdfs:domain ex:Policy ;
-    rdfs:range ex:ZoneType .
+    rdfs:comment "applies to zone type links resources. Declared domain: Policy. Declared range: Zone type. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Policy ;
+    rdfs:range mc:ZoneType .
 
-ex:artifactIdentifier a owl:DatatypeProperty ;
+mc:artifactIdentifier a owl:DatatypeProperty ;
     rdfs:label "artifact identifier" ;
-    rdfs:domain ex:Artifact ;
+    rdfs:comment "artifact identifier records a literal value. Declared domain: Artifact. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Artifact ;
     rdfs:range xsd:string .
 
-ex:artifactStatus a owl:DatatypeProperty ;
+mc:artifactStatus a owl:DatatypeProperty ;
     rdfs:label "artifact status" ;
-    rdfs:domain ex:Artifact ;
+    rdfs:comment "artifact status records a literal value. Declared domain: Artifact. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Artifact ;
     rdfs:range xsd:string .
 
-ex:artifactVersion a owl:DatatypeProperty ;
+mc:artifactVersion a owl:DatatypeProperty ;
     rdfs:label "artifact version" ;
-    rdfs:domain ex:Artifact ;
+    rdfs:comment "artifact version records a literal value. Declared domain: Artifact. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Artifact ;
     rdfs:range xsd:string .
 
-ex:authorizationReason a owl:DatatypeProperty ;
+mc:authorizationReason a owl:DatatypeProperty ;
     rdfs:label "authorization reason" ;
-    rdfs:domain ex:AuthorizationDecision ;
+    rdfs:comment "authorization reason records a literal value. Declared domain: Authorization Decision. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AuthorizationDecision ;
     rdfs:range xsd:string .
 
-ex:basedOnConsentRecord a owl:ObjectProperty ;
+mc:basedOnConsentRecord a owl:ObjectProperty ;
     rdfs:label "based on consent record" ;
-    rdfs:domain ex:AuthorizationDecision ;
-    rdfs:range ex:ConsentRecord .
+    rdfs:comment "based on consent record links resources. Declared domain: Authorization Decision. Declared range: Consent Record. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AuthorizationDecision ;
+    rdfs:range mc:ConsentRecord .
 
-ex:basedOnContract a owl:ObjectProperty ;
+mc:basedOnContract a owl:ObjectProperty ;
     rdfs:label "based on contract" ;
-    rdfs:domain ex:AuthorizationDecision ;
-    rdfs:range ex:SemanticContract .
+    rdfs:comment "based on contract links resources. Declared domain: Authorization Decision. Declared range: Semantic Contract. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AuthorizationDecision ;
+    rdfs:range mc:SemanticContract .
 
-ex:basedOnZone a owl:ObjectProperty ;
+mc:basedOnZone a owl:ObjectProperty ;
     rdfs:label "based on zone" ;
-    rdfs:domain ex:AuthorizationDecision ;
-    rdfs:range ex:CityArea .
+    rdfs:comment "based on zone links resources. Declared domain: Authorization Decision. Declared range: City Area. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AuthorizationDecision ;
+    rdfs:range mc:CityArea .
 
-ex:belongsToPolicyCategory a owl:ObjectProperty ;
+mc:belongsToPolicyCategory a owl:ObjectProperty ;
     rdfs:label "belongs to policy category" ;
-    rdfs:domain ex:Policy ;
-    rdfs:range ex:PolicyCategory .
+    rdfs:comment "Classifies a policy under one or more concerns. Categories may overlap; membership alone does not define precedence or resolve conflicts. SHACL requires at least one category and validates every category type." ;
+    rdfs:domain mc:Policy ;
+    rdfs:range mc:PolicyCategory .
 
-ex:belongsToQueryCatalog a owl:ObjectProperty ;
+mc:belongsToQueryCatalog a owl:ObjectProperty ;
     rdfs:label "belongs to query catalog" ;
-    rdfs:domain ex:QuerySpecification ;
-    rdfs:range ex:QueryCatalog .
+    rdfs:comment "belongs to query catalog links resources. Declared domain: Query Specification. Declared range: Query Catalog. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:QuerySpecification ;
+    rdfs:range mc:QueryCatalog .
 
-ex:categoryCode a owl:DatatypeProperty ;
+mc:categoryCode a owl:DatatypeProperty ;
     rdfs:label "category code" ;
-    rdfs:domain ex:PolicyCategory ;
+    rdfs:comment "category code records a literal value. Declared domain: Policy Category. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:PolicyCategory ;
     rdfs:range xsd:string .
 
-ex:conditionExpression a owl:DatatypeProperty ;
+mc:conditionExpression a owl:DatatypeProperty ;
     rdfs:label "condition expression" ;
-    rdfs:domain ex:RecoveryCondition ;
+    rdfs:comment "condition expression records a literal value. Declared domain: Recovery Condition. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:RecoveryCondition ;
     rdfs:range xsd:string .
 
-ex:configurationStatus a owl:DatatypeProperty ;
+mc:configurationStatus a owl:DatatypeProperty ;
     rdfs:label "configuration status" ;
+    rdfs:comment "configuration status records a literal value. The domain is intentionally open for reuse across governed resources. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
     rdfs:range xsd:string .
 
-ex:consentSubject a owl:ObjectProperty ;
+mc:consentSubject a owl:ObjectProperty ;
     rdfs:label "consent subject" ;
-    rdfs:domain ex:ConsentRecord ;
-    rdfs:range ex:User .
+    rdfs:comment "consent subject links resources. Declared domain: Consent Record. Declared range: User. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ConsentRecord ;
+    rdfs:range mc:User .
 
-ex:containsPersistentIdentifier a owl:DatatypeProperty ;
+mc:containsPersistentIdentifier a owl:DatatypeProperty ;
     rdfs:label "contains persistent identifier" ;
-    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:comment "contains persistent identifier records a literal value. Declared domain: Federated Learning Session. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:FederatedLearningSession ;
     rdfs:range xsd:boolean .
 
-ex:containsPersonalData a owl:DatatypeProperty ;
+mc:containsPersonalData a owl:DatatypeProperty ;
     rdfs:label "contains personal data" ;
-    rdfs:domain ex:FederatedLearningSession ;
+    rdfs:comment "contains personal data records a literal value. Declared domain: Federated Learning Session. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:FederatedLearningSession ;
     rdfs:range xsd:boolean .
 
-ex:contractSubject a owl:ObjectProperty ;
+mc:contractSubject a owl:ObjectProperty ;
     rdfs:label "contract subject" ;
-    rdfs:domain ex:SemanticContract ;
-    rdfs:range ex:User .
+    rdfs:comment "contract subject links resources. Declared domain: Semantic Contract. Declared range: User. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:SemanticContract ;
+    rdfs:range mc:User .
 
-ex:definedInArtifact a owl:ObjectProperty ;
+mc:definedInArtifact a owl:ObjectProperty ;
     rdfs:label "defined in artifact" ;
-    rdfs:range ex:Artifact .
+    rdfs:comment "defined in artifact links resources. The domain is intentionally open for reuse across governed resources. Declared range: Artifact. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:range mc:Artifact .
 
-ex:governedBy a owl:ObjectProperty ;
+mc:governedBy a owl:ObjectProperty ;
     rdfs:label "governed by" ;
     rdfs:comment "Links users, nodes, services, zones or sessions to the applicable policy according to location and processing context." ;
-    rdfs:range ex:Policy .
+    rdfs:range mc:Policy .
 
-ex:hasActiveConsentRange a owl:ObjectProperty ;
+mc:hasActiveConsentRange a owl:ObjectProperty ;
     rdfs:label "has active consent range" ;
     rdfs:comment "Current user-declared range resolved from the active ConsentRecord. It is intentionally independent from the SemanticContract so inconsistencies can be detected." ;
-    rdfs:domain ex:User ;
-    rdfs:range ex:ConsentRange .
+    rdfs:domain mc:User ;
+    rdfs:range mc:ConsentRange .
 
-ex:hasAuthorizationDecision a owl:ObjectProperty ;
+mc:hasAuthorizationDecision a owl:ObjectProperty ;
     rdfs:label "has authorization decision" ;
-    rdfs:range ex:AuthorizationDecision .
+    rdfs:comment "has authorization decision links resources. The domain is intentionally open for reuse across governed resources. Declared range: Authorization Decision. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:range mc:AuthorizationDecision .
 
-ex:hasAuthorizationOutcome a owl:ObjectProperty ;
+mc:hasAuthorizationOutcome a owl:ObjectProperty ;
     rdfs:label "has authorization outcome" ;
-    rdfs:domain ex:AuthorizationDecision ;
-    rdfs:range ex:AuthorizationOutcome .
+    rdfs:comment "has authorization outcome links resources. Declared domain: Authorization Decision. Declared range: Authorization Outcome. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AuthorizationDecision ;
+    rdfs:range mc:AuthorizationOutcome .
 
-ex:hasAuthorizedDataCategory a owl:ObjectProperty ;
+mc:hasAuthorizedDataCategory a owl:ObjectProperty ;
     rdfs:label "authorizes data category" ;
-    rdfs:domain ex:ConsentRecord ;
-    rdfs:range ex:DataCategory .
+    rdfs:comment "authorizes data category links resources. Declared domain: Consent Record. Declared range: Data Category. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ConsentRecord ;
+    rdfs:range mc:DataCategory .
 
-ex:hasConsentRange a owl:ObjectProperty ;
+mc:hasConsentRange a owl:ObjectProperty ;
     rdfs:label "has consent range" ;
-    rdfs:domain <urn:continuum:ontology:3.0.0:node:100> ;
-    rdfs:range ex:ConsentRange .
+    rdfs:comment "has consent range links resources. Declared domain: one of User, Semantic Contract, Policy, FederatedLearningSession, EvaluationState, Consent Record. Declared range: Consent Range. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain <urn:continuum:ontology:4.0.0:node:100> ;
+    rdfs:range mc:ConsentRange .
 
-ex:hasConsentRecord a owl:ObjectProperty ;
+mc:hasConsentRecord a owl:ObjectProperty ;
     rdfs:label "has consent record" ;
-    rdfs:domain ex:User ;
-    rdfs:range ex:ConsentRecord .
+    rdfs:comment "has consent record links resources. Declared domain: User. Declared range: Consent Record. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:User ;
+    rdfs:range mc:ConsentRecord .
 
-ex:hasDataCategory a owl:ObjectProperty ;
+mc:hasDataCategory a owl:ObjectProperty ;
     rdfs:label "has data category" ;
-    rdfs:range ex:DataCategory .
+    rdfs:comment "has data category links resources. The domain is intentionally open for reuse across governed resources. Declared range: Data Category. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:range mc:DataCategory .
 
-ex:hasDataCriticality a owl:ObjectProperty ;
+mc:hasDataCriticality a owl:ObjectProperty ;
     rdfs:label "has data criticality" ;
-    rdfs:range ex:DataCriticality .
+    rdfs:comment "has data criticality links resources. The domain is intentionally open for reuse across governed resources. Declared range: Data Criticality. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:range mc:DataCriticality .
 
-ex:hasDataSensitivity a owl:ObjectProperty ;
+mc:hasDataSensitivity a owl:ObjectProperty ;
     rdfs:label "has data sensitivity" ;
-    rdfs:range ex:DataSensitivity .
+    rdfs:comment "has data sensitivity links resources. The domain is intentionally open for reuse across governed resources. Declared range: Data Sensitivity. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:range mc:DataSensitivity .
 
-ex:hasEffectiveConsentRange a owl:ObjectProperty ;
+mc:hasEffectiveConsentRange a owl:ObjectProperty ;
     rdfs:label "has effective consent range" ;
-    rdfs:domain ex:AuthorizationDecision ;
-    rdfs:range ex:ConsentRange .
+    rdfs:comment "has effective consent range links resources. Declared domain: Authorization Decision. Declared range: Consent Range. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:AuthorizationDecision ;
+    rdfs:range mc:ConsentRange .
 
-ex:hasIdentifier a owl:ObjectProperty ;
+mc:hasIdentifier a owl:ObjectProperty ;
     rdfs:label "has identifier" ;
-    rdfs:domain ex:User ;
-    rdfs:range ex:Identifier .
+    rdfs:comment "has identifier links resources. Declared domain: User. Declared range: Identifier. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:User ;
+    rdfs:range mc:Identifier .
 
-ex:hasPermission a owl:ObjectProperty ;
+mc:hasPermission a owl:ObjectProperty ;
     rdfs:label "has permission" ;
-    rdfs:domain ex:Role ;
-    rdfs:range ex:Permission .
+    rdfs:comment "has permission links resources. Declared domain: Access Role. Declared range: Permission. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Role ;
+    rdfs:range mc:Permission .
 
-ex:hasPolicyAction a owl:DatatypeProperty ;
+mc:hasPolicyAction a owl:DatatypeProperty ;
     rdfs:label "has policy action" ;
     rdfs:comment "Policy action is now described by the normative policy statement and linked mechanisms/actions; retained only for compatibility." ;
-    rdfs:domain ex:Policy ;
+    rdfs:domain mc:Policy ;
     rdfs:range xsd:string ;
     owl:deprecated true .
 
-ex:hasPolicyRelationType a owl:ObjectProperty ;
+mc:hasPolicyRelationType a owl:ObjectProperty ;
     rdfs:label "has policy relation type" ;
-    rdfs:domain ex:PolicyCategoryRelation ;
-    rdfs:range ex:PolicyRelationType .
+    rdfs:comment "has policy relation type links resources. Declared domain: Policy Category Relation. Declared range: Policy Relation Type. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:PolicyCategoryRelation ;
+    rdfs:range mc:PolicyRelationType .
 
-ex:hasPolicyStatement a owl:DatatypeProperty ;
+mc:hasPolicyStatement a owl:DatatypeProperty ;
     rdfs:label "has policy statement" ;
-    rdfs:domain ex:Policy ;
+    rdfs:comment "has policy statement records a literal value. Declared domain: Policy. Declared range: Literal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Policy ;
     rdfs:range rdfs:Literal .
 
-ex:hasPolicyType a owl:ObjectProperty ;
+mc:hasPolicyType a owl:ObjectProperty ;
     rdfs:label "has policy type" ;
-    rdfs:domain ex:Policy ;
-    rdfs:range ex:PolicyType .
+    rdfs:comment "has policy type links resources. Declared domain: Policy. Declared range: Policy Type. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Policy ;
+    rdfs:range mc:PolicyType .
 
-ex:hasProcessingPurpose a owl:ObjectProperty ;
+mc:hasProcessingPurpose a owl:ObjectProperty ;
     rdfs:label "has processing purpose" ;
-    rdfs:domain <urn:continuum:ontology:3.0.0:node:106> ;
-    rdfs:range ex:ProcessingPurpose .
+    rdfs:comment "has processing purpose links resources. Declared domain: one of Semantic Contract, Policy, FederatedLearningSession, EvaluationState, Permission, Consent Record, Service. Declared range: Processing Purpose. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain <urn:continuum:ontology:4.0.0:node:106> ;
+    rdfs:range mc:ProcessingPurpose .
 
-ex:hasProcessingScope a owl:ObjectProperty ;
+mc:hasProcessingScope a owl:ObjectProperty ;
     rdfs:label "has processing scope" ;
-    rdfs:domain ex:ModelTier ;
-    rdfs:range ex:ProcessingScope .
+    rdfs:comment "has processing scope links resources. Declared domain: Model Tier. Declared range: Processing Scope. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ModelTier ;
+    rdfs:range mc:ProcessingScope .
 
-ex:hasQueryType a owl:ObjectProperty ;
+mc:hasQueryType a owl:ObjectProperty ;
     rdfs:label "has query type" ;
-    rdfs:domain ex:QuerySpecification ;
-    rdfs:range ex:QueryType .
+    rdfs:comment "has query type links resources. Declared domain: Query Specification. Declared range: Query Type. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:QuerySpecification ;
+    rdfs:range mc:QueryType .
 
-ex:hasRole a owl:ObjectProperty ;
+mc:hasRole a owl:ObjectProperty ;
     rdfs:label "has role" ;
+    rdfs:comment "has role links resources. Declared domain: http://xmlns.com/foaf/0.1/Person. Declared range: Access Role. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
     rdfs:domain foaf:Person ;
-    rdfs:range ex:Role .
+    rdfs:range mc:Role .
 
-ex:hasSemanticContract a owl:ObjectProperty ;
+mc:hasSemanticContract a owl:ObjectProperty ;
     rdfs:label "has semantic contract" ;
-    rdfs:domain ex:User ;
-    rdfs:range ex:SemanticContract .
+    rdfs:comment "has semantic contract links resources. Declared domain: User. Declared range: Semantic Contract. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:User ;
+    rdfs:range mc:SemanticContract .
 
-ex:hasValidationResult a owl:ObjectProperty ;
+mc:hasValidationResult a owl:ObjectProperty ;
     rdfs:label "has validation result" ;
-    rdfs:domain ex:ValidationCampaign ;
-    rdfs:range ex:ValidationResult .
+    rdfs:comment "has validation result links resources. Declared domain: Validation Campaign. Declared range: Validation Result. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ValidationCampaign ;
+    rdfs:range mc:ValidationResult .
 
-ex:identifierScope a owl:DatatypeProperty ;
+mc:identifierScope a owl:DatatypeProperty ;
     rdfs:label "identifier scope" ;
-    rdfs:domain ex:Identifier ;
+    rdfs:comment "identifier scope records a literal value. Declared domain: Identifier. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Identifier ;
     rdfs:range xsd:string .
 
-ex:identifierValue a owl:DatatypeProperty ;
+mc:identifierValue a owl:DatatypeProperty ;
     rdfs:label "identifier value" ;
-    rdfs:domain ex:Identifier ;
+    rdfs:comment "identifier value records a literal value. Declared domain: Identifier. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Identifier ;
     rdfs:range xsd:string .
 
-ex:mechanismDescription a owl:DatatypeProperty ;
+mc:mechanismDescription a owl:DatatypeProperty ;
     rdfs:label "mechanism description" ;
-    rdfs:domain ex:MechanismSpecification ;
+    rdfs:comment "mechanism description records a literal value. Declared domain: Mechanism Specification. Declared range: Literal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:MechanismSpecification ;
     rdfs:range rdfs:Literal .
 
-ex:mechanismIdentifier a owl:DatatypeProperty ;
+mc:mechanismIdentifier a owl:DatatypeProperty ;
     rdfs:label "mechanism identifier" ;
-    rdfs:domain ex:MechanismSpecification ;
+    rdfs:comment "mechanism identifier records a literal value. Declared domain: Mechanism Specification. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:MechanismSpecification ;
     rdfs:range xsd:string .
 
-ex:policyArtifactUsed a owl:ObjectProperty ;
+mc:policyArtifactUsed a owl:ObjectProperty ;
     rdfs:label "policy artifact used" ;
-    rdfs:domain ex:EvaluationState ;
-    rdfs:range ex:PolicyArtifact .
+    rdfs:comment "policy artifact used links resources. Declared domain: Evaluation State. Declared range: Policy Artifact. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:EvaluationState ;
+    rdfs:range mc:PolicyArtifact .
 
-ex:policyIdentifier a owl:DatatypeProperty ;
+mc:policyIdentifier a owl:DatatypeProperty ;
     rdfs:label "policy identifier" ;
-    rdfs:domain ex:Policy ;
+    rdfs:comment "policy identifier records a literal value. Declared domain: Policy. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Policy ;
     rdfs:range xsd:string .
 
-ex:policyVersion a owl:DatatypeProperty ;
+mc:policyVersion a owl:DatatypeProperty ;
     rdfs:label "policy version" ;
-    rdfs:domain ex:Policy ;
+    rdfs:comment "policy version records a literal value. Declared domain: Policy. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Policy ;
     rdfs:range xsd:string .
 
-ex:protectsAtRest a owl:DatatypeProperty ;
+mc:protectsAtRest a owl:DatatypeProperty ;
     rdfs:label "protects at rest" ;
-    rdfs:domain ex:SecurityMechanism ;
+    rdfs:comment "protects at rest records a literal value. Declared domain: Security Mechanism. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:SecurityMechanism ;
     rdfs:range xsd:boolean .
 
-ex:protectsInTransit a owl:DatatypeProperty ;
+mc:protectsInTransit a owl:DatatypeProperty ;
     rdfs:label "protects in transit" ;
-    rdfs:domain ex:SecurityMechanism ;
+    rdfs:comment "protects in transit records a literal value. Declared domain: Security Mechanism. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:SecurityMechanism ;
     rdfs:range xsd:boolean .
 
-ex:queryIdentifier a owl:DatatypeProperty ;
+mc:queryIdentifier a owl:DatatypeProperty ;
     rdfs:label "query identifier" ;
-    rdfs:domain ex:QuerySpecification ;
+    rdfs:comment "query identifier records a literal value. Declared domain: Query Specification. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:QuerySpecification ;
     rdfs:range xsd:string .
 
-ex:queryInterpretation a owl:DatatypeProperty ;
+mc:queryInterpretation a owl:DatatypeProperty ;
     rdfs:label "query interpretation" ;
-    rdfs:domain ex:QuerySpecification ;
+    rdfs:comment "query interpretation records a literal value. Declared domain: Query Specification. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:QuerySpecification ;
     rdfs:range xsd:string .
 
-ex:queryPurpose a owl:DatatypeProperty ;
+mc:queryPurpose a owl:DatatypeProperty ;
     rdfs:label "query purpose" ;
-    rdfs:domain ex:QuerySpecification ;
+    rdfs:comment "query purpose records a literal value. Declared domain: Query Specification. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:QuerySpecification ;
     rdfs:range xsd:string .
 
-ex:recommendedMechanism a owl:ObjectProperty ;
+mc:recommendedMechanism a owl:ObjectProperty ;
     rdfs:label "recommended mechanism" ;
-    rdfs:domain ex:Policy ;
-    rdfs:range ex:MechanismSpecification .
+    rdfs:comment "recommended mechanism links resources. Declared domain: Policy. Declared range: Mechanism Specification. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Policy ;
+    rdfs:range mc:MechanismSpecification .
 
-ex:relatedRequirement a owl:ObjectProperty ;
+mc:relatedRequirement a owl:ObjectProperty ;
     rdfs:label "related requirement" ;
-    rdfs:domain ex:Policy ;
-    rdfs:range ex:Requirement .
+    rdfs:comment "related requirement links resources. Declared domain: Policy. Declared range: Requirement. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Policy ;
+    rdfs:range mc:Requirement .
 
-ex:relationCode a owl:DatatypeProperty ;
+mc:relationCode a owl:DatatypeProperty ;
     rdfs:label "relation code" ;
-    rdfs:domain ex:PolicyRelationType ;
+    rdfs:comment "relation code records a literal value. Declared domain: Policy Relation Type. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:PolicyRelationType ;
     rdfs:range xsd:string .
 
-ex:relationSourceCategory a owl:ObjectProperty ;
+mc:relationSourceCategory a owl:ObjectProperty ;
     rdfs:label "relation source category" ;
-    rdfs:domain ex:PolicyCategoryRelation ;
-    rdfs:range ex:PolicyCategory .
+    rdfs:comment "relation source category links resources. Declared domain: Policy Category Relation. Declared range: Policy Category. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:PolicyCategoryRelation ;
+    rdfs:range mc:PolicyCategory .
 
-ex:relationTargetCategory a owl:ObjectProperty ;
+mc:relationTargetCategory a owl:ObjectProperty ;
     rdfs:label "relation target category" ;
-    rdfs:domain ex:PolicyCategoryRelation ;
-    rdfs:range ex:PolicyCategory .
+    rdfs:comment "relation target category links resources. Declared domain: Policy Category Relation. Declared range: Policy Category. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:PolicyCategoryRelation ;
+    rdfs:range mc:PolicyCategory .
 
-ex:requirementIdentifier a owl:DatatypeProperty ;
+mc:requirementIdentifier a owl:DatatypeProperty ;
     rdfs:label "requirement identifier" ;
-    rdfs:domain ex:Requirement ;
+    rdfs:comment "requirement identifier records a literal value. Declared domain: Requirement. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Requirement ;
     rdfs:range xsd:string .
 
-ex:requirementStatement a owl:DatatypeProperty ;
+mc:requirementStatement a owl:DatatypeProperty ;
     rdfs:label "requirement statement" ;
-    rdfs:domain ex:Requirement ;
+    rdfs:comment "requirement statement records a literal value. Declared domain: Requirement. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Requirement ;
     rdfs:range xsd:string .
 
-ex:requirementsArtifactUsed a owl:ObjectProperty ;
+mc:requirementsArtifactUsed a owl:ObjectProperty ;
     rdfs:label "requirements artifact used" ;
-    rdfs:domain ex:EvaluationState ;
-    rdfs:range ex:RequirementsArtifact .
+    rdfs:comment "requirements artifact used links resources. Declared domain: Evaluation State. Declared range: Requirements Artifact. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:EvaluationState ;
+    rdfs:range mc:RequirementsArtifact .
 
-ex:requiresConsentRange a owl:ObjectProperty ;
+mc:requiresConsentRange a owl:ObjectProperty ;
     rdfs:label "requires consent range" ;
     rdfs:comment "Minimum consent-aware processing scope required for an action, policy, model tier or FL session." ;
-    rdfs:domain <urn:continuum:ontology:3.0.0:node:83> ;
-    rdfs:range ex:ConsentRange .
+    rdfs:domain <urn:continuum:ontology:4.0.0:node:83> ;
+    rdfs:range mc:ConsentRange .
 
-ex:scenarioIdentifier a owl:DatatypeProperty ;
+mc:scenarioIdentifier a owl:DatatypeProperty ;
     rdfs:label "scenario identifier" ;
-    rdfs:domain ex:Scenario ;
+    rdfs:comment "scenario identifier records a literal value. Declared domain: Scenario. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Scenario ;
     rdfs:range xsd:string .
 
-ex:scenarioMechanism a owl:ObjectProperty ;
+mc:scenarioMechanism a owl:ObjectProperty ;
     rdfs:label "scenario mechanism" ;
-    rdfs:domain ex:Scenario ;
-    rdfs:range ex:MechanismSpecification .
+    rdfs:comment "scenario mechanism links resources. Declared domain: Scenario. Declared range: Mechanism Specification. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Scenario ;
+    rdfs:range mc:MechanismSpecification .
 
-ex:scenarioPolicy a owl:ObjectProperty ;
+mc:scenarioPolicy a owl:ObjectProperty ;
     rdfs:label "scenario policy" ;
-    rdfs:domain ex:Scenario ;
-    rdfs:range ex:Policy .
+    rdfs:comment "scenario policy links resources. Declared domain: Scenario. Declared range: Policy. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Scenario ;
+    rdfs:range mc:Policy .
 
-ex:securityBaselineVersion a owl:DatatypeProperty ;
+mc:securityBaselineVersion a owl:DatatypeProperty ;
     rdfs:label "security baseline version" ;
-    rdfs:domain ex:SecurityMechanism ;
+    rdfs:comment "security baseline version records a literal value. Declared domain: Security Mechanism. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:SecurityMechanism ;
     rdfs:range xsd:string .
 
-ex:strategyCode a owl:DatatypeProperty ;
+mc:strategyCode a owl:DatatypeProperty ;
     rdfs:label "strategy code" ;
-    rdfs:domain ex:ConflictResolutionStrategy ;
+    rdfs:comment "strategy code records a literal value. Declared domain: Conflict Resolution Strategy. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ConflictResolutionStrategy ;
     rdfs:range xsd:string .
 
-ex:supportsPolicy a owl:ObjectProperty ;
+mc:supportsPolicy a owl:ObjectProperty ;
     rdfs:label "supports policy" ;
-    rdfs:domain ex:MechanismSpecification ;
-    rdfs:range ex:Policy .
+    rdfs:comment "supports policy links resources. Declared domain: Mechanism Specification. Declared range: Policy. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:MechanismSpecification ;
+    rdfs:range mc:Policy .
 
-ex:tracedToMechanism a owl:ObjectProperty ;
+mc:tracedToMechanism a owl:ObjectProperty ;
     rdfs:label "traced to mechanism" ;
-    rdfs:domain ex:Requirement ;
-    rdfs:range ex:MechanismSpecification .
+    rdfs:comment "traced to mechanism links resources. Declared domain: Requirement. Declared range: Mechanism Specification. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Requirement ;
+    rdfs:range mc:MechanismSpecification .
 
-ex:tracedToPolicy a owl:ObjectProperty ;
+mc:tracedToPolicy a owl:ObjectProperty ;
     rdfs:label "traced to policy" ;
-    rdfs:domain ex:Requirement ;
-    rdfs:range ex:Policy .
+    rdfs:comment "traced to policy links resources. Declared domain: Requirement. Declared range: Policy. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Requirement ;
+    rdfs:range mc:Policy .
 
-ex:usesAcceptanceProfile a owl:ObjectProperty ;
+mc:usesAcceptanceProfile a owl:ObjectProperty ;
     rdfs:label "uses acceptance profile" ;
-    rdfs:domain ex:ValidationCampaign ;
-    rdfs:range ex:AcceptanceProfile .
+    rdfs:comment "uses acceptance profile links resources. Declared domain: Validation Campaign. Declared range: Acceptance Profile. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ValidationCampaign ;
+    rdfs:range mc:AcceptanceProfile .
 
-ex:usesIdentifier a owl:ObjectProperty ;
+mc:usesIdentifier a owl:ObjectProperty ;
     rdfs:label "uses identifier" ;
-    rdfs:domain ex:TransferEvent ;
-    rdfs:range ex:Identifier .
+    rdfs:comment "uses identifier links resources. Declared domain: Transfer Event. Declared range: Identifier. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:TransferEvent ;
+    rdfs:range mc:Identifier .
 
-ex:usesResolutionStrategy a owl:ObjectProperty ;
+mc:usesResolutionStrategy a owl:ObjectProperty ;
     rdfs:label "uses resolution strategy" ;
-    rdfs:domain ex:PolicyCategoryRelation ;
-    rdfs:range ex:ConflictResolutionStrategy .
+    rdfs:comment "uses resolution strategy links resources. Declared domain: Policy Category Relation. Declared range: Conflict Resolution Strategy. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:PolicyCategoryRelation ;
+    rdfs:range mc:ConflictResolutionStrategy .
 
-ex:usesStandard a owl:ObjectProperty ;
+mc:usesStandard a owl:ObjectProperty ;
     rdfs:label "uses standard" ;
-    rdfs:domain ex:Artifact ;
-    rdfs:range ex:StandardSpecification .
+    rdfs:comment "uses standard links resources. Declared domain: Artifact. Declared range: Standard Specification. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:Artifact ;
+    rdfs:range mc:StandardSpecification .
 
-ex:validationUsesOntology a owl:ObjectProperty ;
+mc:validationUsesOntology a owl:ObjectProperty ;
     rdfs:label "validation uses ontology" ;
-    rdfs:domain ex:ValidationCampaign ;
-    rdfs:range ex:OntologyArtifact .
+    rdfs:comment "validation uses ontology links resources. Declared domain: Validation Campaign. Declared range: Ontology Artifact. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ValidationCampaign ;
+    rdfs:range mc:OntologyArtifact .
 
-ex:validationUsesPolicies a owl:ObjectProperty ;
+mc:validationUsesPolicies a owl:ObjectProperty ;
     rdfs:label "validation uses policies" ;
-    rdfs:domain ex:ValidationCampaign ;
-    rdfs:range ex:PolicyArtifact .
+    rdfs:comment "validation uses policies links resources. Declared domain: Validation Campaign. Declared range: Policy Artifact. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ValidationCampaign ;
+    rdfs:range mc:PolicyArtifact .
 
-ex:validationUsesQueries a owl:ObjectProperty ;
+mc:validationUsesQueries a owl:ObjectProperty ;
     rdfs:label "validation uses queries" ;
-    rdfs:domain ex:ValidationCampaign ;
-    rdfs:range ex:QueryCatalog .
+    rdfs:comment "validation uses queries links resources. Declared domain: Validation Campaign. Declared range: Query Catalog. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ValidationCampaign ;
+    rdfs:range mc:QueryCatalog .
 
-ex:validationUsesScenarios a owl:ObjectProperty ;
+mc:validationUsesScenarios a owl:ObjectProperty ;
     rdfs:label "validation uses scenarios" ;
-    rdfs:domain ex:ValidationCampaign ;
-    rdfs:range ex:ScenarioArtifact .
+    rdfs:comment "validation uses scenarios links resources. Declared domain: Validation Campaign. Declared range: Scenario Artifact. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:domain mc:ValidationCampaign ;
+    rdfs:range mc:ScenarioArtifact .
 
-<http://example.org/smartcity/modules/governance> a owl:Ontology ;
+<http://example.org/monitoringcontinuum/modules/governance> a owl:Ontology ;
     rdfs:label "Continuum policy and governance module"@en ;
-    owl:imports <http://example.org/smartcity/modules/foundation>,
-        <http://example.org/smartcity/modules/observability>,
-        <http://example.org/smartcity/modules/topology> ;
-    owl:versionInfo "3.0.0" .
+    owl:imports <http://example.org/monitoringcontinuum/modules/contracts>,
+        <http://example.org/monitoringcontinuum/modules/foundation>,
+        <http://example.org/monitoringcontinuum/modules/observability>,
+        <http://example.org/monitoringcontinuum/modules/topology> ;
+    owl:versionInfo "4.0.0" .
 
-ex:AuthorizationOutcome a owl:Class ;
-    rdfs:label "Authorization Outcome" .
+mc:AuthorizationOutcome a owl:Class ;
+    rdfs:label "Authorization Outcome" ;
+    rdfs:comment "Authorization Outcome is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:DataCriticality a owl:Class ;
-    rdfs:label "Data Criticality" .
+mc:DataCriticality a owl:Class ;
+    rdfs:label "Data Criticality" ;
+    rdfs:comment "Data Criticality is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:DataSensitivity a owl:Class ;
-    rdfs:label "Data Sensitivity" .
+mc:DataSensitivity a owl:Class ;
+    rdfs:label "Data Sensitivity" ;
+    rdfs:comment "Data Sensitivity is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:OntologyArtifact a owl:Class ;
+mc:OntologyArtifact a owl:Class ;
     rdfs:label "Ontology Artifact" ;
-    rdfs:subClassOf ex:Artifact .
+    rdfs:comment "Ontology Artifact is a governance concept in the monitoring model. It specializes Artifact." ;
+    rdfs:subClassOf mc:Artifact .
 
-ex:PolicyType a owl:Class ;
-    rdfs:label "Policy Type" .
+mc:PolicyType a owl:Class ;
+    rdfs:label "Policy Type" ;
+    rdfs:comment "Policy Type is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:PrivacyMechanism a owl:Class ;
-    rdfs:label "Privacy Mechanism" .
+mc:PrivacyMechanism a owl:Class ;
+    rdfs:label "Privacy Mechanism" ;
+    rdfs:comment "Privacy Mechanism is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:ProcessingPurpose a owl:Class ;
-    rdfs:label "Processing Purpose" ;
-    rdfs:comment "Purpose for which data, model parameters or predictions are processed." .
+mc:ProcessingScope a owl:Class ;
+    rdfs:label "Processing Scope" ;
+    rdfs:comment "Processing Scope is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:ProcessingScope a owl:Class ;
-    rdfs:label "Processing Scope" .
+mc:PseudonymousIdentifier a owl:Class ;
+    rdfs:label "Pseudonymous Identifier" ;
+    rdfs:comment "Pseudonymous Identifier is a governance concept in the monitoring model. It specializes Identifier." ;
+    rdfs:subClassOf mc:Identifier ;
+    owl:disjointWith mc:AnonymousIdentifier .
 
-ex:QueryType a owl:Class ;
-    rdfs:label "Query Type" .
+mc:QueryType a owl:Class ;
+    rdfs:label "Query Type" ;
+    rdfs:comment "Query Type is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:RequirementsArtifact a owl:Class ;
+mc:RequirementsArtifact a owl:Class ;
     rdfs:label "Requirements Artifact" ;
-    rdfs:subClassOf ex:Artifact .
+    rdfs:comment "Requirements Artifact is a governance concept in the monitoring model. It specializes Artifact." ;
+    rdfs:subClassOf mc:Artifact .
 
-ex:ScenarioArtifact a owl:Class ;
+mc:ScenarioArtifact a owl:Class ;
     rdfs:label "Scenario Artifact" ;
-    rdfs:subClassOf ex:Artifact .
+    rdfs:comment "Scenario Artifact is a governance concept in the monitoring model. It specializes Artifact." ;
+    rdfs:subClassOf mc:Artifact .
 
-ex:StandardSpecification a owl:Class ;
-    rdfs:label "Standard Specification" .
+mc:StandardSpecification a owl:Class ;
+    rdfs:label "Standard Specification" ;
+    rdfs:comment "Standard Specification is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:ValidationResult a owl:Class ;
-    rdfs:label "Validation Result" .
+mc:ValidationResult a owl:Class ;
+    rdfs:label "Validation Result" ;
+    rdfs:comment "Validation Result is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-<urn:continuum:ontology:3.0.0:node:100> a owl:Class ;
-    owl:unionOf <urn:continuum:ontology:3.0.0:node:101> .
+<urn:continuum:ontology:4.0.0:node:100> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:4.0.0:node:101> .
 
-<urn:continuum:ontology:3.0.0:node:101> rdf:first ex:User ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:102> .
+<urn:continuum:ontology:4.0.0:node:101> rdf:first mc:User ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:102> .
 
-<urn:continuum:ontology:3.0.0:node:102> rdf:first ex:SemanticContract ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:103> .
+<urn:continuum:ontology:4.0.0:node:102> rdf:first mc:SemanticContract ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:103> .
 
-<urn:continuum:ontology:3.0.0:node:103> rdf:first ex:Policy ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:104> .
+<urn:continuum:ontology:4.0.0:node:103> rdf:first mc:Policy ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:104> .
 
-<urn:continuum:ontology:3.0.0:node:104> rdf:first ex:FederatedLearningSession ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:105> .
+<urn:continuum:ontology:4.0.0:node:104> rdf:first mc:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:105> .
 
-<urn:continuum:ontology:3.0.0:node:105> rdf:first ex:EvaluationState ;
+<urn:continuum:ontology:4.0.0:node:105> rdf:first mc:EvaluationState ;
+    rdf:rest <urn:continuum:ontology:v4:governance:cbde4dbed2433ad48fb4d1f650db3a024feb70a65ee32d2f4089b872cd7358d314> .
+
+<urn:continuum:ontology:4.0.0:node:106> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:4.0.0:node:107> .
+
+<urn:continuum:ontology:4.0.0:node:107> rdf:first mc:SemanticContract ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:108> .
+
+<urn:continuum:ontology:4.0.0:node:108> rdf:first mc:Policy ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:109> .
+
+<urn:continuum:ontology:4.0.0:node:109> rdf:first mc:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:110> .
+
+<urn:continuum:ontology:4.0.0:node:110> rdf:first mc:EvaluationState ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:111> .
+
+<urn:continuum:ontology:4.0.0:node:111> rdf:first mc:Permission ;
+    rdf:rest <urn:continuum:ontology:v4:governance:cb684578d8ada1658739d3f622e555c4f4d334d17c18ed58cc9aeef62a257ab9f> .
+
+<urn:continuum:ontology:4.0.0:node:83> a owl:Class ;
+    owl:unionOf <urn:continuum:ontology:4.0.0:node:84> .
+
+<urn:continuum:ontology:4.0.0:node:84> rdf:first mc:Permission ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:85> .
+
+<urn:continuum:ontology:4.0.0:node:85> rdf:first mc:Policy ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:86> .
+
+<urn:continuum:ontology:4.0.0:node:86> rdf:first mc:Service ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:87> .
+
+<urn:continuum:ontology:4.0.0:node:87> rdf:first mc:ServiceState ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:88> .
+
+<urn:continuum:ontology:4.0.0:node:88> rdf:first mc:AIModel ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:89> .
+
+<urn:continuum:ontology:4.0.0:node:89> rdf:first mc:FederatedLearningSession ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:90> .
+
+<urn:continuum:ontology:4.0.0:node:90> rdf:first mc:EvaluationState ;
+    rdf:rest <urn:continuum:ontology:v4:governance:cbfbfe1093dcb46bd7a274c57057bd0f66641d7efefa42a30323e424572235093e> .
+
+<urn:continuum:ontology:v4:governance:cb1c08100c28b4fab4eb54150e89cdf0897ecbe2524c64267ada863120b7b48694d> rdf:first mc:Service ;
     rdf:rest () .
 
-<urn:continuum:ontology:3.0.0:node:106> a owl:Class ;
-    owl:unionOf <urn:continuum:ontology:3.0.0:node:107> .
+<urn:continuum:ontology:v4:governance:cb684578d8ada1658739d3f622e555c4f4d334d17c18ed58cc9aeef62a257ab9f> rdf:first mc:ConsentRecord ;
+    rdf:rest <urn:continuum:ontology:v4:governance:cb1c08100c28b4fab4eb54150e89cdf0897ecbe2524c64267ada863120b7b48694d> .
 
-<urn:continuum:ontology:3.0.0:node:107> rdf:first ex:SemanticContract ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:108> .
-
-<urn:continuum:ontology:3.0.0:node:108> rdf:first ex:Policy ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:109> .
-
-<urn:continuum:ontology:3.0.0:node:109> rdf:first ex:FederatedLearningSession ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:110> .
-
-<urn:continuum:ontology:3.0.0:node:110> rdf:first ex:EvaluationState ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:111> .
-
-<urn:continuum:ontology:3.0.0:node:111> rdf:first ex:Permission ;
+<urn:continuum:ontology:v4:governance:cbde4dbed2433ad48fb4d1f650db3a024feb70a65ee32d2f4089b872cd7358d314> rdf:first mc:ConsentRecord ;
     rdf:rest () .
 
-<urn:continuum:ontology:3.0.0:node:83> a owl:Class ;
-    owl:unionOf <urn:continuum:ontology:3.0.0:node:84> .
-
-<urn:continuum:ontology:3.0.0:node:84> rdf:first ex:Permission ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:85> .
-
-<urn:continuum:ontology:3.0.0:node:85> rdf:first ex:Policy ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:86> .
-
-<urn:continuum:ontology:3.0.0:node:86> rdf:first ex:Service ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:87> .
-
-<urn:continuum:ontology:3.0.0:node:87> rdf:first ex:ServiceState ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:88> .
-
-<urn:continuum:ontology:3.0.0:node:88> rdf:first ex:AIModel ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:89> .
-
-<urn:continuum:ontology:3.0.0:node:89> rdf:first ex:FederatedLearningSession ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:90> .
-
-<urn:continuum:ontology:3.0.0:node:90> rdf:first ex:EvaluationState ;
+<urn:continuum:ontology:v4:governance:cbfbfe1093dcb46bd7a274c57057bd0f66641d7efefa42a30323e424572235093e> rdf:first mc:ModelTier ;
     rdf:rest () .
 
-ex:ConflictResolutionStrategy a owl:Class ;
-    rdfs:label "Conflict Resolution Strategy" .
+mc:AnonymousIdentifier a owl:Class ;
+    rdfs:label "Anonymous Identifier" ;
+    rdfs:comment "Anonymous Identifier is a governance concept in the monitoring model. It specializes Identifier." ;
+    rdfs:subClassOf mc:Identifier .
 
-ex:DataCategory a owl:Class ;
+mc:ConflictResolutionStrategy a owl:Class ;
+    rdfs:label "Conflict Resolution Strategy" ;
+    rdfs:comment "Conflict Resolution Strategy is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
+
+mc:DataCategory a owl:Class ;
     rdfs:label "Data Category" ;
     rdfs:comment "Semantic category of information governed by consent, privacy and transmission policies." .
 
-ex:PolicyArtifact a owl:Class ;
+mc:PolicyArtifact a owl:Class ;
     rdfs:label "Policy Artifact" ;
-    rdfs:subClassOf ex:Artifact .
+    rdfs:comment "Policy Artifact is a governance concept in the monitoring model. It specializes Artifact." ;
+    rdfs:subClassOf mc:Artifact .
 
-ex:PolicyRelationType a owl:Class ;
-    rdfs:label "Policy Relation Type" .
+mc:PolicyRelationType a owl:Class ;
+    rdfs:label "Policy Relation Type" ;
+    rdfs:comment "Policy Relation Type is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:QueryCatalog a owl:Class ;
+mc:QueryCatalog a owl:Class ;
     rdfs:label "Query Catalog" ;
-    rdfs:subClassOf ex:Artifact .
+    rdfs:comment "Query Catalog is a governance concept in the monitoring model. It specializes Artifact." ;
+    rdfs:subClassOf mc:Artifact .
 
-ex:Role a owl:Class ;
-    rdfs:label "Access Role" .
+mc:Role a owl:Class ;
+    rdfs:label "Access Role" ;
+    rdfs:comment "Access Role is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:Scenario a owl:Class ;
-    rdfs:label "Scenario" .
+mc:Scenario a owl:Class ;
+    rdfs:label "Scenario" ;
+    rdfs:comment "Scenario is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:ConsentRange a owl:Class ;
+mc:ConsentRange a owl:Class ;
     rdfs:label "Consent Range" ;
     rdfs:comment "Maximum processing scope declared by consent/contract. Includes LocalOnly, CommunityAgg, GlobalAgg and Denied/Revoked. Effective authorization is computed independently." .
 
-ex:ConsentRecord a owl:Class ;
-    rdfs:label "Consent Record" ;
-    rdfs:comment "User-declared consent decision independent from the semantic contract." ;
-    rdfs:subClassOf ex:TemporalEntity .
+mc:Permission a owl:Class ;
+    rdfs:label "Permission" ;
+    rdfs:comment "Permission is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:Permission a owl:Class ;
-    rdfs:label "Permission" .
+mc:PolicyCategory a owl:Class ;
+    rdfs:label "Policy Category" ;
+    rdfs:comment "Policy Category is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:PolicyCategory a owl:Class ;
-    rdfs:label "Policy Category" .
+mc:PolicyCategoryRelation a owl:Class ;
+    rdfs:label "Policy Category Relation" ;
+    rdfs:comment "Policy Category Relation is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:PolicyCategoryRelation a owl:Class ;
-    rdfs:label "Policy Category Relation" .
+mc:QuerySpecification a owl:Class ;
+    rdfs:label "Query Specification" ;
+    rdfs:comment "Query Specification is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:QuerySpecification a owl:Class ;
-    rdfs:label "Query Specification" .
+mc:SecurityMechanism a owl:Class ;
+    rdfs:label "Security Mechanism" ;
+    rdfs:comment "Security Mechanism is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:SecurityMechanism a owl:Class ;
-    rdfs:label "Security Mechanism" .
-
-ex:SemanticContract a owl:Class ;
+mc:SemanticContract a owl:Class ;
     rdfs:label "Semantic Contract" ;
     rdfs:comment "Temporal agreement binding user, processing purpose(s), consent range and governing policies. It is independent from the user-declared ConsentRecord." ;
-    rdfs:subClassOf ex:TemporalEntity .
+    rdfs:subClassOf mc:TemporalEntity .
 
-ex:ValidationCampaign a owl:Class ;
-    rdfs:label "Validation Campaign" ;
-    rdfs:subClassOf ex:Artifact .
+mc:ConsentRecord a owl:Class ;
+    rdfs:label "Consent Record" ;
+    rdfs:comment "User-declared consent decision independent from the semantic contract." ;
+    rdfs:subClassOf mc:TemporalEntity .
 
-ex:AuthorizationDecision a owl:Class ;
+mc:AuthorizationDecision a owl:Class ;
     rdfs:label "Authorization Decision" ;
     rdfs:comment "Effective authorization obtained from the intersection of consent record, contract, zone and hard restrictions." ;
-    rdfs:subClassOf ex:TemporalEntity .
+    rdfs:subClassOf mc:TemporalEntity .
 
-ex:Identifier a owl:Class ;
+mc:Identifier a owl:Class ;
     rdfs:label "Identifier" ;
     rdfs:comment "Identifier that may be direct, pseudonymous or anonymous." .
 
-ex:MechanismSpecification a owl:Class ;
-    rdfs:label "Mechanism Specification" .
+mc:MechanismSpecification a owl:Class ;
+    rdfs:label "Mechanism Specification" ;
+    rdfs:comment "Mechanism Specification is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:Requirement a owl:Class ;
-    rdfs:label "Requirement" .
+mc:Requirement a owl:Class ;
+    rdfs:label "Requirement" ;
+    rdfs:comment "Requirement is a governance concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:AcceptanceProfile a owl:Class ;
+mc:AcceptanceProfile a owl:Class ;
     rdfs:label "Acceptance Profile" ;
-    rdfs:subClassOf ex:Artifact .
+    rdfs:comment "Acceptance Profile is a governance concept in the monitoring model. It specializes Artifact." ;
+    rdfs:subClassOf mc:Artifact .
 
-ex:Artifact a owl:Class ;
-    rdfs:label "Artifact" ;
-    rdfs:comment "Versionable project artifact." .
-
-ex:Policy a owl:Class ;
+mc:Policy a owl:Class ;
     rdfs:label "Policy" ;
     rdfs:comment "Normative governance rule from POLICIES-REV-01. Policies are specifications, not execution mechanisms." .

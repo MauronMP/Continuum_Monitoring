@@ -137,3 +137,40 @@ Worker stop/restart targets only processes descended from the verified managed
 worker. Independent native tests using the same checkout are not worker children.
 Unattributed orphans require explicit inspection. For current five-node deployment
 commands and evidence, see [Audit remediation](REMEDIATION.md).
+
+## Semantic input compatibility
+
+Worker protocol 10 compares a content digest of ontology modules, shapes, role
+profiles, placement, query catalog, query text and execution plan. Identical
+version labels cannot hide stale files. Synchronize and restart all participating
+workers after semantic edits, including comment-only changes. Preparation rejects
+files modified after worker startup. The HTTP health response exposes
+`semantic_assets_digest` and `semantic_assets_error`; use `physical status` to
+identify a mismatched deployment. Do not modify inputs during a campaign.
+
+## VPN lifecycle probe budgets
+
+Worker deployment and readiness have finite connectivity budgets separate from
+benchmark request, phase and point limits. The default SSH precheck budget is
+60 seconds; the default HTTP health budget is 10 seconds. For a slow VPN relay:
+
+```bash
+export CONTINUUM_SSH_PROBE_TIMEOUT_SECONDS=120
+export CONTINUUM_HEALTH_TIMEOUT_SECONDS=30
+continuum-bench physical deploy --ssh-user pi &&
+continuum-bench physical start --ssh-user pi &&
+continuum-bench physical status --ssh-user pi
+```
+
+Both environment variables accept finite values from 1 to 600 seconds. The health
+budget applies to lifecycle status and benchmark discovery. SSH transport still
+has its own connection and keepalive limits; increasing the probe budget does not
+repair an unavailable peer. The SSH budget covers authentication and prerequisite
+probes, not arbitrary remote deployment commands. A timed-out prerequisite probe
+cannot establish that dependencies are missing, and an SSH timeout is not proof
+of rejected credentials. Explicit permission-denied errors require checking SSH
+authorization. `--unlimited` does not disable these connectivity checks.
+
+Keep these exports in the coordinator shell when starting a suite. Confirm all
+workers are healthy before launching it. A source-code change, including report
+code, changes the package fingerprint and requires synchronization and restart.

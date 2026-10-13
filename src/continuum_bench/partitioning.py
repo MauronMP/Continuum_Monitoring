@@ -29,7 +29,7 @@ from .topology import (
 )
 
 
-EX = Namespace("http://example.org/smartcity#")
+EX = Namespace("http://example.org/monitoringcontinuum#")
 SYNTHETIC_PREFIX = "urn:continuum:synthetic:"
 _SENSITIVE_CLASS_NAMES = {
     "User",

@@ -1,7 +1,7 @@
 # Ontology diagrams for publication
 
-English conceptual views of release **3.0.0**, revision
-`3.0.0-en-audit-v2`. The figures are generated from the actual ontology
+English conceptual views of release **4.0.0**, revision
+`4.0.0-monitoringcontinuum-v1`. The figures are generated from the actual ontology
 files listed in `configs/benchmark.toml`; they are not hand-drawn substitutes
 for the schema.
 
@@ -28,21 +28,21 @@ triple or individual in the ontology:
 
 | Inventory | Count |
 | --- | ---: |
-| Named classes | 146 |
-| Anonymous union expressions | 11 |
-| Object properties | 165 |
-| Datatype properties | 98 |
+| Named classes | 148 |
+| Anonymous union expressions | 6 |
+| Object properties | 167 |
+| Datatype properties | 99 |
 | Annotation properties | 14 |
 | Subclass axioms | 70 |
 
-Inputs are the 14 configured ontology files, whose union contains 7,966
+Inputs are the 15 configured ontology files, whose union contains 8,289
 triples. This includes `ontology/modules/deployment.ttl`: its four classes and
-six properties describe benchmark placement. The modular source set is the
+seven properties describe benchmark placement. The modular source set is the
 only canonical ontology; no generated monolithic copy is maintained. The
 sources and their SHA-256 hashes are recorded in
 [manifest.json](manifest.json) and [data/schema.json](data/schema.json).
 
-The nine display groups are foundation, topology, observability, governance,
+The ten display groups are foundation, shared contracts, topology, observability, governance,
 orchestration, federated learning, deployment, optional wellbeing, and external
 standards/SHACL declarations. These are visual groupings of the current modules,
 not a proposal to change ontology ownership or placement.
@@ -181,9 +181,9 @@ of shrinking the full map into that figure.
 
 Suggested caption for the complete map:
 
-> Asserted class/property schema of the continuum monitoring ontology v3.0.0
-> (revision 3.0.0-en-audit-v2), including the benchmark deployment extension.
-> The map covers 146 named classes, 165 object properties, 98 datatype properties
+> Asserted class/property schema of the continuum monitoring ontology v4.0.0
+> (revision 4.0.0-monitoringcontinuum-v1), including the benchmark deployment extension.
+> The map covers 148 named classes, 167 object properties, 99 datatype properties
 > and 14 annotation properties. Solid arrows project declared domain/range
 > relations; hollow arrows indicate subclass axioms. OR expressions and missing
 > domain/range declarations remain explicit. Individual instances and inferred

@@ -18,6 +18,9 @@ from urllib.error import URLError
 
 from .monitoring.distributed import _request
 from .protocol import worker_health_error
+from .lifecycle_limits import ssh_probe_timeout, health_timeout
+from .semantic_assets import semantic_assets_digest
+from .config import load_config
 from .environment import physical_checks, require_checks
 from .topology import (
     Topology,
@@ -64,6 +67,7 @@ class PhysicalInventory:
     nodes: tuple[PhysicalNode, ...]
     topology_name: str = "physical"
     topology: Topology | None = None
+    project_root: Path | None = None
 
 
 def load_physical_inventory(
@@ -126,6 +130,7 @@ def load_physical_inventory(
         nodes=nodes,
         topology_name=topology_name,
         topology=configured_topology,
+        project_root=project_root,
     )
 
 
@@ -307,9 +312,12 @@ def _verify_key_auth(inventory: PhysicalInventory) -> None:
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=20,
+                timeout=ssh_probe_timeout(),
             )
-        except (OSError, subprocess.TimeoutExpired) as error:
+        except subprocess.TimeoutExpired as error:
+            failed.append(f"{target}: SSH connectivity probe timed out after {error.timeout}s; authentication was not established. Check VPN connectivity or CONTINUUM_SSH_PROBE_TIMEOUT_SECONDS.")
+            continue
+        except OSError as error:
             failed.append(f"{target}: {error}")
             continue
         if result.returncode != 0:
@@ -317,8 +325,8 @@ def _verify_key_auth(inventory: PhysicalInventory) -> None:
             failed.append(f"{target}: {detail or 'authentication failed'}")
     if failed:
         raise RuntimeError(
-            "Passwordless SSH is required for physical lifecycle commands. "
-            "Run 'continuum-bench physical authorize --ssh-user USER' first. "
+            "SSH preflight failed. Timeouts indicate incomplete connectivity checks, not missing credentials. "
+            "For explicit permission-denied errors, run 'continuum-bench physical authorize --ssh-user USER'. "
             "Failures: "
             + "; ".join(failed)
         )
@@ -346,14 +354,16 @@ def _verify_remote_dependencies(inventory: PhysicalInventory) -> None:
             continue
         seen.add(target)
         try:
-            result = subprocess.run(_ssh(target, command), capture_output=True, text=True, timeout=25, check=False)
+            result = subprocess.run(_ssh(target, command), capture_output=True, text=True, timeout=ssh_probe_timeout(), check=False)
             if result.returncode:
                 failures.append(f"{target}: {(result.stderr or result.stdout).strip()}")
-        except (OSError, subprocess.TimeoutExpired) as error:
+        except subprocess.TimeoutExpired as error:
+            failures.append(f"{target}: prerequisite probe timed out after {error.timeout}s; installed dependencies are unknown. Check VPN connectivity or CONTINUUM_SSH_PROBE_TIMEOUT_SECONDS.")
+        except OSError as error:
             failures.append(f"{target}: {error}")
     if failures:
         raise RuntimeError(
-            "Remote prerequisites failed before copying any files. Install Python >=3.11, python3-venv, rsync and procps on every Raspberry. "
+            "Remote preflight failed before copying any files. A timeout does not establish missing dependencies. Only if the probe reports missing tools, install Python >=3.11, python3-venv, rsync and procps. "
             + "; ".join(failures)
         )
 
@@ -764,12 +774,17 @@ def status_cluster(
     *,
     print_output: bool = True,
 ) -> list[dict[str, Any]]:
+    expected_semantics = semantic_assets_digest(
+        load_config(inventory.project_root / "configs/benchmark.toml")
+        if inventory.project_root is not None else None
+    )
     statuses: list[dict[str, Any]] = []
     for node in inventory.nodes:
         try:
-            health = _request(node.endpoint, "/health", timeout=2.0)
+            health = _request(node.endpoint, "/health", timeout=health_timeout())
             contract_error = worker_health_error(
                 health,
+                expected_semantic_digest=expected_semantics,
                 expected_node_id=node.role,
                 expected_tier=node.tier,
                 expected_authority=node.authority,

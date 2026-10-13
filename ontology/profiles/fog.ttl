@@ -1,14 +1,10 @@
-@prefix ex: <http://example.org/smartcity#> .
+@prefix mc: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<http://example.org/smartcity/profiles/fog>
-    a owl:Ontology, ex:SemanticNodeProfile ;
+<http://example.org/monitoringcontinuum/profiles/fog> a mc:SemanticNodeProfile,
+        owl:Ontology ;
     rdfs:label "Fog semantic profile"@en ;
-    owl:imports
-        <http://example.org/smartcity>,
-        <http://example.org/smartcity/modules/core-vocabulary>,
-        <http://example.org/smartcity/modules/deployment> ;
-    # The benchmark selects the reasoner at runtime; this profile controls only
-    # the modules placed on the fog authority.
-    owl:versionInfo "3.0.0" .
+    owl:imports <http://example.org/monitoringcontinuum>,
+        <http://example.org/monitoringcontinuum/modules/core-vocabulary> ;
+    owl:versionInfo "4.0.0" .

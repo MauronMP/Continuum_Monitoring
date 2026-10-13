@@ -1,660 +1,703 @@
-@prefix ex: <http://example.org/smartcity#> .
+@prefix mc: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:AHPDecisionMethod a ex:DecisionMethod,
+mc:AHPDecisionMethod a mc:DecisionMethod,
         owl:NamedIndividual ;
     rdfs:label "Analytic Hierarchy Process (AHP)" .
 
-ex:AbstentionPolicyType a ex:PolicyType,
-        owl:NamedIndividual ;
-    rdfs:label "Abstention" .
-
-ex:Acceptable a ex:PerformanceLevel,
+mc:Acceptable a mc:PerformanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Acceptable" .
 
-ex:Adequate a ex:ProfitabilityLevel,
+mc:Adequate a mc:ProfitabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Adequate" .
 
-ex:AirplaneMode a ex:DeviceConnectionStatus,
+mc:AirplaneMode a mc:DeviceConnectionStatus,
         owl:NamedIndividual ;
     rdfs:label "Airplane Mode" ;
     rdfs:comment "No communication. Most basic local model active." .
 
-ex:AuthorizationBlocked a ex:AuthorizationOutcome,
+mc:AuthorizationBlocked a mc:AuthorizationOutcome,
         owl:NamedIndividual ;
     rdfs:label "Authorization blocked" .
 
-ex:AuthorizationGranted a ex:AuthorizationOutcome,
+mc:AuthorizationGranted a mc:AuthorizationOutcome,
         owl:NamedIndividual ;
     rdfs:label "Authorization granted" .
 
-ex:AuthorizationInconsistent a ex:AuthorizationOutcome,
+mc:AuthorizationInconsistent a mc:AuthorizationOutcome,
         owl:NamedIndividual ;
     rdfs:label "Authorization inconsistent" .
 
-ex:Available a ex:AvailabilityLevel,
+mc:Available a mc:AvailabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Available" .
 
-ex:BatteryHigh a ex:BatteryLevel,
+mc:BatteryHigh a mc:BatteryLevel,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-ex:BatteryLow a ex:BatteryLevel,
+mc:BatteryLow a mc:BatteryLevel,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-ex:BatteryMedium a ex:BatteryLevel,
+mc:BatteryMedium a mc:BatteryLevel,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-ex:BatteryVeryLow a ex:BatteryLevel,
+mc:BatteryVeryLow a mc:BatteryLevel,
         owl:NamedIndividual ;
     rdfs:label "Very Low" .
 
-ex:Close a ex:DistanceLevel,
+mc:Close a mc:DistanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Close" .
 
-ex:CloudModelTier a ex:ModelTier,
-        owl:NamedIndividual ;
-    rdfs:label "Cloud / Global" ;
-    ex:continuumLevel 3 ;
-    ex:hasProcessingScope ex:ExternalProcessingScope ;
-    ex:requiresConsentRange ex:RangeGlobalAgg ;
-    rdfs:comment "Cloud/global processing tier. Eligibility depends on effective authorization, zone, node status and active policies." .
-
-ex:CommunicationLoss a ex:ModelDegradationCause,
+mc:CommunicationLoss a mc:ModelDegradationCause,
         owl:NamedIndividual ;
     rdfs:label "Communication Loss" .
 
-ex:ComputeOnly a ex:OperationalStatus,
+mc:ComputeOnly a mc:OperationalStatus,
         owl:NamedIndividual ;
     rdfs:label "Compute Only" ;
     rdfs:comment "Disconnected node but still computing. Receives internal delegations." .
 
-ex:Connected a ex:DeviceConnectionStatus,
+mc:Connected a mc:DeviceConnectionStatus,
         owl:NamedIndividual ;
     rdfs:label "Connected" .
 
-ex:CostHigh a ex:MigrationCostLevel,
+mc:CostHigh a mc:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-ex:CostLow a ex:MigrationCostLevel,
+mc:CostLow a mc:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-ex:CostMedium a ex:MigrationCostLevel,
+mc:CostMedium a mc:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-ex:CostVeryHigh a ex:MigrationCostLevel,
+mc:CostVeryHigh a mc:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "Very High" .
 
-ex:CostVeryLow a ex:MigrationCostLevel,
+mc:CostVeryLow a mc:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "Very Low" .
 
-ex:CriticalData a ex:DataCriticality,
+mc:CriticalData a mc:DataCriticality,
         owl:NamedIndividual ;
     rdfs:label "Critical" .
 
-ex:CriticalResidual a ex:ResidualCapacity,
+mc:CriticalResidual a mc:ResidualCapacity,
         owl:NamedIndividual ;
     rdfs:label "Critical" .
 
-ex:Deficient a ex:PerformanceLevel,
+mc:Deficient a mc:PerformanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Deficient" .
 
-ex:Disconnected a ex:DeviceConnectionStatus,
+mc:Disconnected a mc:DeviceConnectionStatus,
         owl:NamedIndividual ;
     rdfs:label "Disconnected" .
 
-ex:EdgeModelTier a ex:ModelTier,
-        owl:NamedIndividual ;
-    rdfs:label "Edge" ;
-    ex:continuumLevel 1 ;
-    ex:hasProcessingScope ex:ExternalProcessingScope ;
-    ex:requiresConsentRange ex:RangeCommunityAgg ;
-    rdfs:comment "Edge processing tier. Eligibility depends on authorization, zone, node status and active policies." .
-
-ex:Far a ex:DistanceLevel,
+mc:Far a mc:DistanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Far" .
 
-ex:FogModelTier a ex:ModelTier,
-        owl:NamedIndividual ;
-    rdfs:label "Fog / Community" ;
-    ex:continuumLevel 2 ;
-    ex:hasProcessingScope ex:ExternalProcessingScope ;
-    ex:requiresConsentRange ex:RangeCommunityAgg ;
-    rdfs:comment "Fog/community processing tier. Eligibility depends on authorization, zone, node status and active policies." .
-
-ex:FullProcessing a ex:ProcessingLevel,
+mc:FullProcessing a mc:ProcessingLevel,
         owl:NamedIndividual ;
     rdfs:label "Full" .
 
-ex:GlobalModelParametersPayload a ex:PayloadType,
+mc:GlobalModelParametersPayload a mc:PayloadType,
         owl:NamedIndividual ;
     rdfs:label "Global model parameters" .
 
-ex:HighDensity a ex:PopulationDensity,
+mc:HighDensity a mc:PopulationDensity,
         owl:NamedIndividual ;
     rdfs:label "High Density" .
 
-ex:HighEnergy a ex:EnergyLevel,
+mc:HighEnergy a mc:EnergyLevel,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-ex:HighPriorityData a ex:DataCriticality,
+mc:HighPriorityData a mc:DataCriticality,
         owl:NamedIndividual ;
     rdfs:label "High priority" .
 
-ex:HighResidual a ex:ResidualCapacity,
+mc:HighResidual a mc:ResidualCapacity,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-ex:ImprovedModelParametersPayload a ex:PayloadType,
+mc:ImprovedModelParametersPayload a mc:PayloadType,
         owl:NamedIndividual ;
     rdfs:label "Improved model parameters" .
 
-ex:InTransport a ex:MobilityLevel,
+mc:InTransport a mc:MobilityLevel,
         owl:NamedIndividual ;
     rdfs:label "In Transport" .
 
-ex:InfrastructureOverload a ex:ModelDegradationCause,
+mc:InfrastructureOverload a mc:ModelDegradationCause,
         owl:NamedIndividual ;
     rdfs:label "Infrastructure Overload" .
 
-ex:Inoperative a ex:OperationalStatus,
+mc:Inoperative a mc:OperationalStatus,
         owl:NamedIndividual ;
     rdfs:label "Inoperative" ;
     rdfs:comment "Total failure. Cannot process or receive requests." .
 
-ex:InspectionQueryType a ex:QueryType,
+mc:InspectionQueryType a mc:QueryType,
         owl:NamedIndividual ;
     rdfs:label "Inspection query" .
 
-ex:IntermittentComm a ex:CommunicationLevel,
+mc:IntermittentComm a mc:CommunicationLevel,
         owl:NamedIndividual ;
     rdfs:label "Intermittent" .
 
-ex:LocalModelTier a ex:ModelTier,
-        owl:NamedIndividual ;
-    rdfs:label "Local / Mist" ;
-    ex:continuumLevel 0 ;
-    ex:hasProcessingScope ex:LocalProcessingScope ;
-    ex:requiresConsentRange ex:RangeLocalOnly ;
-    rdfs:comment "Tier executed on the wearable/mobile device or an authorised personal Mist node. Tier order is not a quality preference." .
-
-ex:LowBattery a ex:ModelDegradationCause,
+mc:LowBattery a mc:ModelDegradationCause,
         owl:NamedIndividual ;
     rdfs:label "Low Battery" .
 
-ex:LowDensity a ex:PopulationDensity,
+mc:LowDensity a mc:PopulationDensity,
         owl:NamedIndividual ;
     rdfs:label "Low Density" .
 
-ex:LowEnergy a ex:EnergyLevel,
+mc:LowEnergy a mc:EnergyLevel,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-ex:LowPriorityData a ex:DataCriticality,
+mc:LowPriorityData a mc:DataCriticality,
         owl:NamedIndividual ;
     rdfs:label "Low priority" .
 
-ex:LowResidual a ex:ResidualCapacity,
+mc:LowResidual a mc:ResidualCapacity,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-ex:MediumDensity a ex:PopulationDensity,
+mc:MediumDensity a mc:PopulationDensity,
         owl:NamedIndividual ;
     rdfs:label "Medium Density" .
 
-ex:MediumEnergy a ex:EnergyLevel,
+mc:MediumEnergy a mc:EnergyLevel,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-ex:MediumResidual a ex:ResidualCapacity,
+mc:MediumResidual a mc:ResidualCapacity,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-ex:Migratable a ex:AdaptabilityLevel,
+mc:Migratable a mc:AdaptabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Migratable" .
 
-ex:MigratableAndScalable a ex:AdaptabilityLevel,
+mc:MigratableAndScalable a mc:AdaptabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Migratable and Scalable" .
 
-ex:MinimalProcessing a ex:ProcessingLevel,
+mc:MinimalProcessing a mc:ProcessingLevel,
         owl:NamedIndividual ;
     rdfs:label "Minimal" .
 
-ex:ModelGradientCategory a ex:DataCategory,
+mc:ModelGradientCategory a mc:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Model gradient update" .
 
-ex:ModelGradientsPayload a ex:PayloadType,
+mc:ModelGradientsPayload a mc:PayloadType,
         owl:NamedIndividual ;
     rdfs:label "Model gradients" .
 
-ex:ModelParametersCategory a ex:DataCategory,
+mc:ModelParametersCategory a mc:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Model parameters" .
 
-ex:MorningWindow a ex:TrafficWindow,
+mc:MorningWindow a mc:TrafficWindow,
         owl:NamedIndividual ;
     rdfs:label "Morning Window" ;
     rdfs:comment "High demand on wake-up: sleep calculation + daily stress prediction." .
 
-ex:Near a ex:DistanceLevel,
+mc:Near a mc:DistanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Near" .
 
-ex:NightWindow a ex:TrafficWindow,
+mc:NightWindow a mc:TrafficWindow,
         owl:NamedIndividual ;
     rdfs:label "Night Window" ;
     rdfs:comment "High demand at night: physiological parametrized data upload to continuum." .
 
-ex:NoConnectionComm a ex:CommunicationLevel,
+mc:NoConnectionComm a mc:CommunicationLevel,
         owl:NamedIndividual ;
     rdfs:label "No Connection" .
 
-ex:NoNearbyNodes a ex:ModelDegradationCause,
+mc:NoNearbyNodes a mc:ModelDegradationCause,
         owl:NamedIndividual ;
     rdfs:label "No Nearby Nodes" .
 
-ex:NonSensitiveData a ex:DataSensitivity,
+mc:NonSensitiveData a mc:DataSensitivity,
         owl:NamedIndividual ;
     rdfs:label "Non-sensitive" .
 
-ex:NormalPriorityData a ex:DataCriticality,
+mc:NormalPriorityData a mc:DataCriticality,
         owl:NamedIndividual ;
     rdfs:label "Normal" .
 
-ex:NotAdaptable a ex:AdaptabilityLevel,
+mc:NotAdaptable a mc:AdaptabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Not Adaptable" .
 
-ex:NotAdequate a ex:ProfitabilityLevel,
+mc:NotAdequate a mc:ProfitabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Not Adequate" .
 
-ex:NotAvailable a ex:AvailabilityLevel,
+mc:NotAvailable a mc:AvailabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Not Available" .
 
-ex:ObligationPolicyType a ex:PolicyType,
-        owl:NamedIndividual ;
-    rdfs:label "Obligation" .
-
-ex:Operational a ex:OperationalStatus,
+mc:Operational a mc:OperationalStatus,
         owl:NamedIndividual ;
     rdfs:label "Operational" .
 
-ex:Optimal a ex:PerformanceLevel,
+mc:Optimal a mc:PerformanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Optimal" .
 
-ex:ParametrizedDataPayload a ex:PayloadType,
+mc:ParametrizedDataPayload a mc:PayloadType,
         owl:NamedIndividual ;
     rdfs:label "Parametrized data" .
 
-ex:Partial a ex:AvailabilityLevel,
+mc:Partial a mc:AvailabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Partial" .
 
-ex:PendingRecalculation a ex:AuthorizationOutcome,
+mc:PendingRecalculation a mc:AuthorizationOutcome,
         owl:NamedIndividual ;
     rdfs:label "Pending recalculation" .
 
-ex:PhysiologicalParametrizedCategory a ex:DataCategory,
+mc:PhysiologicalParametrizedCategory a mc:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Physiological parametrized data" .
 
-ex:PolicyCategory_ADAPT a ex:PolicyCategory,
+mc:PolicyCategory_ADAPT a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Migration, offloading, degradation and continuity" ;
-    ex:categoryCode "ADAPT" ;
-    ex:evaluationOrder 5 .
+    mc:categoryCode "ADAPT" ;
+    mc:evaluationOrder 5 .
 
-ex:PolicyCategory_AUD a ex:PolicyCategory,
+mc:PolicyCategory_AUD a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Temporal delegation, MAPE-K and audit" ;
-    ex:categoryCode "AUD" ;
-    ex:evaluationOrder 6 .
+    mc:categoryCode "AUD" ;
+    mc:evaluationOrder 6 .
 
-ex:PolicyCategory_CONS a ex:PolicyCategory,
+mc:PolicyCategory_CONS a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Consent and semantic contracts" ;
-    ex:categoryCode "CONS" ;
-    ex:evaluationOrder 2 .
+    mc:categoryCode "CONS" ;
+    mc:evaluationOrder 2 .
 
-ex:PolicyCategory_DATA a ex:PolicyCategory,
+mc:PolicyCategory_DATA a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Data, privacy, identity and transmission" ;
-    ex:categoryCode "DATA" ;
-    ex:evaluationOrder 2 .
+    mc:categoryCode "DATA" ;
+    mc:evaluationOrder 2 .
 
-ex:PolicyCategory_FL a ex:PolicyCategory,
+mc:PolicyCategory_FL a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Federated learning and model lifecycle" ;
-    ex:categoryCode "FL" ;
-    ex:evaluationOrder 5 .
+    mc:categoryCode "FL" ;
+    mc:evaluationOrder 5 .
 
-ex:PolicyCategory_GOV a ex:PolicyCategory,
+mc:PolicyCategory_GOV a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Governance, precedence and lifecycle" ;
-    ex:categoryCode "GOV" ;
-    ex:evaluationOrder 1 .
+    mc:categoryCode "GOV" ;
+    mc:evaluationOrder 1 .
 
-ex:PolicyCategory_INT a ex:PolicyCategory,
+mc:PolicyCategory_INT a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Interoperability and semantic extensibility" ;
-    ex:categoryCode "INT" ;
-    ex:evaluationOrder 0 .
+    mc:categoryCode "INT" ;
+    mc:evaluationOrder 0 .
 
-ex:PolicyCategory_MODEL a ex:PolicyCategory,
+mc:PolicyCategory_MODEL a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Model selection and AHP" ;
-    ex:categoryCode "MODEL" ;
-    ex:evaluationOrder 4 .
+    mc:categoryCode "MODEL" ;
+    mc:evaluationOrder 4 .
 
-ex:PolicyCategory_NODE a ex:PolicyCategory,
+mc:PolicyCategory_NODE a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Nodes and dynamic trust" ;
-    ex:categoryCode "NODE" ;
-    ex:evaluationOrder 3 .
+    mc:categoryCode "NODE" ;
+    mc:evaluationOrder 3 .
 
-ex:PolicyCategory_OPS a ex:PolicyCategory,
+mc:PolicyCategory_OPS a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Operations, scalability and QoS" ;
-    ex:categoryCode "OPS" ;
-    ex:evaluationOrder 3 .
+    mc:categoryCode "OPS" ;
+    mc:evaluationOrder 3 .
 
-ex:PolicyCategory_VAL a ex:PolicyCategory,
+mc:PolicyCategory_VAL a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Validation, reproducibility and maintainability" ;
-    ex:categoryCode "VAL" ;
-    ex:evaluationOrder 7 .
+    mc:categoryCode "VAL" ;
+    mc:evaluationOrder 7 .
 
-ex:PolicyCategory_ZONE a ex:PolicyCategory,
+mc:PolicyCategory_ZONE a mc:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Zones and georestriction" ;
-    ex:categoryCode "ZONE" ;
-    ex:evaluationOrder 2 .
+    mc:categoryCode "ZONE" ;
+    mc:evaluationOrder 2 .
 
-ex:PolicyRelationType_CO a ex:PolicyRelationType,
+mc:PolicyRelationType_CO a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Consistent Overlap" ;
-    ex:relationCode "CO" ;
+    mc:relationCode "CO" ;
     rdfs:comment "Policies overlap and can be satisfied simultaneously." .
 
-ex:PolicyRelationType_CON a ex:PolicyRelationType,
+mc:PolicyRelationType_CON a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Contradiction / Direct Conflict" ;
-    ex:relationCode "CON" ;
+    mc:relationCode "CON" ;
     rdfs:comment "Policies require incompatible effects in the same scope." .
 
-ex:PolicyRelationType_COR a ex:PolicyRelationType,
+mc:PolicyRelationType_COR a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Correlation / Partial Conflict" ;
-    ex:relationCode "COR" ;
+    mc:relationCode "COR" ;
     rdfs:comment "Policies partially overlap with different effects in the intersection." .
 
-ex:PolicyRelationType_DEP a ex:PolicyRelationType,
+mc:PolicyRelationType_DEP a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Policy Dependency / Order Dependency" ;
-    ex:relationCode "DEP" ;
+    mc:relationCode "DEP" ;
     rdfs:comment "One policy requires the result of another before evaluation/execution." .
 
-ex:PolicyRelationType_GEN a ex:PolicyRelationType,
+mc:PolicyRelationType_GEN a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Generalization / Exception Conflict" ;
-    ex:relationCode "GEN" ;
+    mc:relationCode "GEN" ;
     rdfs:comment "A specific policy is an exception/restriction to a more general policy." .
 
-ex:PolicyRelationType_IND a ex:PolicyRelationType,
+mc:PolicyRelationType_IND a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Independent / Disjoint" ;
-    ex:relationCode "IND" ;
+    mc:relationCode "IND" ;
     rdfs:comment "Policies regulate independent scopes/actions." .
 
-ex:PolicyRelationType_IRR a ex:PolicyRelationType,
+mc:PolicyRelationType_IRR a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Irrelevance" ;
-    ex:relationCode "IRR" ;
+    mc:relationCode "IRR" ;
     rdfs:comment "Policy cannot activate in any valid state or governs no reachable resource/action." .
 
-ex:PolicyRelationType_RED a ex:PolicyRelationType,
+mc:PolicyRelationType_RED a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Redundancy" ;
-    ex:relationCode "RED" ;
+    mc:relationCode "RED" ;
     rdfs:comment "One policy adds no observable effect beyond another." .
 
-ex:PolicyRelationType_SHD a ex:PolicyRelationType,
+mc:PolicyRelationType_SHD a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Shadowing / Override" ;
-    ex:relationCode "SHD" ;
+    mc:relationCode "SHD" ;
     rdfs:comment "A higher-priority policy makes another ineffective within the overlap." .
 
-ex:PolicyRelationType_SUB a ex:PolicyRelationType,
+mc:PolicyRelationType_SUB a mc:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Subsumption / Specialization" ;
-    ex:relationCode "SUB" ;
+    mc:relationCode "SUB" ;
     rdfs:comment "One policy scope is contained in another and adds compatible restrictions." .
 
-ex:PredictionCategory a ex:DataCategory,
+mc:PredictionCategory a mc:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Prediction output" .
 
-ex:ProhibitionPolicyType a ex:PolicyType,
-        owl:NamedIndividual ;
-    rdfs:label "Prohibition" .
-
-ex:PurposeClinicalMonitoring a ex:ProcessingPurpose,
+mc:PurposeClinicalMonitoring a mc:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Clinical monitoring" .
 
-ex:PurposeCommunityFederatedLearning a ex:ProcessingPurpose,
+mc:PurposeCommunityFederatedLearning a mc:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Community federated learning" .
 
-ex:PurposeGlobalFederatedLearning a ex:ProcessingPurpose,
+mc:PurposeGlobalFederatedLearning a mc:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Global federated learning" .
 
-ex:PurposeInfrastructureAdaptation a ex:ProcessingPurpose,
+mc:PurposeInfrastructureAdaptation a mc:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Infrastructure adaptation" .
 
-ex:PurposeLocalPrediction a ex:ProcessingPurpose,
+mc:PurposeLocalPrediction a mc:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Local stress prediction" .
 
-ex:RangeDenied a ex:ConsentRange,
+mc:RawPhysiologicalDataCategory a mc:DataCategory,
+        owl:NamedIndividual ;
+    rdfs:label "Raw physiological data" .
+
+mc:RawSleepDataCategory a mc:DataCategory,
+        owl:NamedIndividual ;
+    rdfs:label "Raw sleep data" .
+
+mc:ReducedProcessing a mc:ProcessingLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Reduced" .
+
+mc:Resolution_CONSTRAINT_BEFORE_OPT a mc:ConflictResolutionStrategy,
+        owl:NamedIndividual ;
+    rdfs:label "Constraint-before-optimization" ;
+    mc:strategyCode "CONSTRAINT_BEFORE_OPT" .
+
+mc:Resolution_DEFER_REEVALUATE a mc:ConflictResolutionStrategy,
+        owl:NamedIndividual ;
+    rdfs:label "Defer-and-reevaluate" ;
+    mc:strategyCode "DEFER_REEVALUATE" .
+
+mc:Resolution_DENY_OVERRIDES a mc:ConflictResolutionStrategy,
+        owl:NamedIndividual ;
+    rdfs:label "Deny-overrides / Most-restrictive" ;
+    mc:strategyCode "DENY_OVERRIDES" .
+
+mc:Resolution_EXPLICIT_REJECT a mc:ConflictResolutionStrategy,
+        owl:NamedIndividual ;
+    rdfs:label "Explicit conflict rejection" ;
+    mc:strategyCode "EXPLICIT_REJECT" .
+
+mc:Resolution_MOST_SPECIFIC a mc:ConflictResolutionStrategy,
+        owl:NamedIndividual ;
+    rdfs:label "Most-specific-policy" ;
+    mc:strategyCode "MOST_SPECIFIC" .
+
+mc:Resolution_PRIORITY_ORDERED a mc:ConflictResolutionStrategy,
+        owl:NamedIndividual ;
+    rdfs:label "Priority-ordered" ;
+    mc:strategyCode "PRIORITY_ORDERED" .
+
+mc:Running a mc:MobilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Running" .
+
+mc:Scalable a mc:AdaptabilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Scalable" .
+
+mc:SensitiveData a mc:DataSensitivity,
+        owl:NamedIndividual ;
+    rdfs:label "Sensitive" .
+
+mc:SleepParametrizedCategory a mc:DataCategory,
+        owl:NamedIndividual ;
+    rdfs:label "Sleep parametrized data" .
+
+mc:StableComm a mc:CommunicationLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Stable" .
+
+mc:Still a mc:MobilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Still" .
+
+mc:SymptomCommunicationLoss a mc:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Communication loss" .
+
+mc:SymptomConsentLocalOnly a mc:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Consent local only" .
+
+mc:SymptomNodeRecoveryPending a mc:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Node recovery pending" .
+
+mc:SymptomNone a mc:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "No relevant symptom" .
+
+mc:SymptomRestrictedZoneBoundary a mc:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Restricted zone boundary" .
+
+mc:SymptomRuralLowConnectivity a mc:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Rural low connectivity" .
+
+mc:SymptomSaturatedWorkload a mc:MAPESymptom,
+        owl:NamedIndividual ;
+    rdfs:label "Saturated workload" .
+
+mc:TimingHigh a mc:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "High" .
+
+mc:TimingLow a mc:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Low" .
+
+mc:TimingMedium a mc:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Medium" .
+
+mc:TimingVeryHigh a mc:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very High" .
+
+mc:TimingVeryLow a mc:MigrationTimeLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Low" .
+
+mc:VariableComm a mc:CommunicationLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Variable" .
+
+mc:VeryClose a mc:DistanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Close" .
+
+mc:VeryFar a mc:DistanceLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Far" .
+
+mc:VeryLowEnergy a mc:EnergyLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Very Low" .
+
+mc:ViolationQueryType a mc:QueryType,
+        owl:NamedIndividual ;
+    rdfs:label "Violation / non-compliance query" .
+
+mc:Walking a mc:MobilityLevel,
+        owl:NamedIndividual ;
+    rdfs:label "Walking" .
+
+mc:WarningQueryType a mc:QueryType,
+        owl:NamedIndividual ;
+    rdfs:label "Warning query" .
+
+mc:WeightedMulticriteriaMethod a mc:DecisionMethod,
+        owl:NamedIndividual ;
+    rdfs:label "Weighted multicriteria scoring" .
+
+<http://example.org/monitoringcontinuum/modules/core-vocabulary> a owl:Ontology ;
+    rdfs:label "Continuum controlled vocabulary"@en ;
+    owl:imports <http://example.org/monitoringcontinuum> ;
+    owl:versionInfo "4.0.0" .
+
+<urn:continuum:ontology:4.0.0:node:112> a owl:AllDifferent ;
+    owl:distinctMembers <urn:continuum:ontology:4.0.0:node:113> .
+
+<urn:continuum:ontology:4.0.0:node:117> a owl:AllDifferent ;
+    owl:distinctMembers <urn:continuum:ontology:4.0.0:node:118> .
+
+<urn:continuum:ontology:4.0.0:node:122> a owl:AllDifferent ;
+    owl:distinctMembers <urn:continuum:ontology:4.0.0:node:123> .
+
+mc:AbstentionPolicyType a mc:PolicyType,
+        owl:NamedIndividual ;
+    rdfs:label "Abstention" .
+
+mc:CloudModelTier a mc:ModelTier,
+        owl:NamedIndividual ;
+    rdfs:label "Cloud / Global" ;
+    mc:continuumLevel 3 ;
+    mc:hasProcessingScope mc:ExternalProcessingScope ;
+    mc:requiresConsentRange mc:RangeGlobalAgg ;
+    rdfs:comment "Cloud/global processing tier. Eligibility depends on effective authorization, zone, node status and active policies." .
+
+mc:EdgeModelTier a mc:ModelTier,
+        owl:NamedIndividual ;
+    rdfs:label "Edge" ;
+    mc:continuumLevel 1 ;
+    mc:hasProcessingScope mc:ExternalProcessingScope ;
+    mc:requiresConsentRange mc:RangeCommunityAgg ;
+    rdfs:comment "Edge processing tier. Eligibility depends on authorization, zone, node status and active policies." .
+
+mc:FogModelTier a mc:ModelTier,
+        owl:NamedIndividual ;
+    rdfs:label "Fog / Community" ;
+    mc:continuumLevel 2 ;
+    mc:hasProcessingScope mc:ExternalProcessingScope ;
+    mc:requiresConsentRange mc:RangeCommunityAgg ;
+    rdfs:comment "Fog/community processing tier. Eligibility depends on authorization, zone, node status and active policies." .
+
+mc:LocalModelTier a mc:ModelTier,
+        owl:NamedIndividual ;
+    rdfs:label "Local / Mist" ;
+    mc:continuumLevel 0 ;
+    mc:hasProcessingScope mc:LocalProcessingScope ;
+    mc:requiresConsentRange mc:RangeLocalOnly ;
+    rdfs:comment "Tier executed on the wearable/mobile device or an authorised personal Mist node. Tier order is not a quality preference." .
+
+mc:LocalProcessingScope a mc:ProcessingScope,
+        owl:NamedIndividual ;
+    rdfs:label "Local processing scope" .
+
+mc:ObligationPolicyType a mc:PolicyType,
+        owl:NamedIndividual ;
+    rdfs:label "Obligation" .
+
+mc:ProhibitionPolicyType a mc:PolicyType,
+        owl:NamedIndividual ;
+    rdfs:label "Prohibition" .
+
+mc:RangeDenied a mc:ConsentRange,
         owl:NamedIndividual ;
     rdfs:label "Denied / Revoked" ;
     rdfs:comment "No external processing is authorised. Any strictly local functionality must still be allowed by purpose and active contract/policy." .
 
-ex:RawPhysiologicalDataCategory a ex:DataCategory,
-        owl:NamedIndividual ;
-    rdfs:label "Raw physiological data" .
+<urn:continuum:ontology:4.0.0:node:113> rdf:first mc:LocalModelTier ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:114> .
 
-ex:RawSleepDataCategory a ex:DataCategory,
-        owl:NamedIndividual ;
-    rdfs:label "Raw sleep data" .
+<urn:continuum:ontology:4.0.0:node:114> rdf:first mc:EdgeModelTier ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:115> .
 
-ex:ReducedProcessing a ex:ProcessingLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Reduced" .
+<urn:continuum:ontology:4.0.0:node:115> rdf:first mc:FogModelTier ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:116> .
 
-ex:Resolution_CONSTRAINT_BEFORE_OPT a ex:ConflictResolutionStrategy,
-        owl:NamedIndividual ;
-    rdfs:label "Constraint-before-optimization" ;
-    ex:strategyCode "CONSTRAINT_BEFORE_OPT" .
+<urn:continuum:ontology:4.0.0:node:116> rdf:first mc:CloudModelTier ;
+    rdf:rest () .
 
-ex:Resolution_DEFER_REEVALUATE a ex:ConflictResolutionStrategy,
-        owl:NamedIndividual ;
-    rdfs:label "Defer-and-reevaluate" ;
-    ex:strategyCode "DEFER_REEVALUATE" .
+<urn:continuum:ontology:4.0.0:node:118> rdf:first mc:RangeDenied ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:119> .
 
-ex:Resolution_DENY_OVERRIDES a ex:ConflictResolutionStrategy,
-        owl:NamedIndividual ;
-    rdfs:label "Deny-overrides / Most-restrictive" ;
-    ex:strategyCode "DENY_OVERRIDES" .
+<urn:continuum:ontology:4.0.0:node:119> rdf:first mc:RangeLocalOnly ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:120> .
 
-ex:Resolution_EXPLICIT_REJECT a ex:ConflictResolutionStrategy,
-        owl:NamedIndividual ;
-    rdfs:label "Explicit conflict rejection" ;
-    ex:strategyCode "EXPLICIT_REJECT" .
+<urn:continuum:ontology:4.0.0:node:120> rdf:first mc:RangeCommunityAgg ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:121> .
 
-ex:Resolution_MOST_SPECIFIC a ex:ConflictResolutionStrategy,
-        owl:NamedIndividual ;
-    rdfs:label "Most-specific-policy" ;
-    ex:strategyCode "MOST_SPECIFIC" .
+<urn:continuum:ontology:4.0.0:node:121> rdf:first mc:RangeGlobalAgg ;
+    rdf:rest () .
 
-ex:Resolution_PRIORITY_ORDERED a ex:ConflictResolutionStrategy,
-        owl:NamedIndividual ;
-    rdfs:label "Priority-ordered" ;
-    ex:strategyCode "PRIORITY_ORDERED" .
+<urn:continuum:ontology:4.0.0:node:123> rdf:first mc:ObligationPolicyType ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:124> .
 
-ex:Running a ex:MobilityLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Running" .
+<urn:continuum:ontology:4.0.0:node:124> rdf:first mc:AbstentionPolicyType ;
+    rdf:rest <urn:continuum:ontology:4.0.0:node:125> .
 
-ex:Scalable a ex:AdaptabilityLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Scalable" .
+<urn:continuum:ontology:4.0.0:node:125> rdf:first mc:ProhibitionPolicyType ;
+    rdf:rest () .
 
-ex:SensitiveData a ex:DataSensitivity,
-        owl:NamedIndividual ;
-    rdfs:label "Sensitive" .
-
-ex:SleepParametrizedCategory a ex:DataCategory,
-        owl:NamedIndividual ;
-    rdfs:label "Sleep parametrized data" .
-
-ex:StableComm a ex:CommunicationLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Stable" .
-
-ex:Still a ex:MobilityLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Still" .
-
-ex:SymptomCommunicationLoss a ex:MAPESymptom,
-        owl:NamedIndividual ;
-    rdfs:label "Communication loss" .
-
-ex:SymptomConsentLocalOnly a ex:MAPESymptom,
-        owl:NamedIndividual ;
-    rdfs:label "Consent local only" .
-
-ex:SymptomNodeRecoveryPending a ex:MAPESymptom,
-        owl:NamedIndividual ;
-    rdfs:label "Node recovery pending" .
-
-ex:SymptomNone a ex:MAPESymptom,
-        owl:NamedIndividual ;
-    rdfs:label "No relevant symptom" .
-
-ex:SymptomRestrictedZoneBoundary a ex:MAPESymptom,
-        owl:NamedIndividual ;
-    rdfs:label "Restricted zone boundary" .
-
-ex:SymptomRuralLowConnectivity a ex:MAPESymptom,
-        owl:NamedIndividual ;
-    rdfs:label "Rural low connectivity" .
-
-ex:SymptomSaturatedWorkload a ex:MAPESymptom,
-        owl:NamedIndividual ;
-    rdfs:label "Saturated workload" .
-
-ex:TimingHigh a ex:MigrationTimeLevel,
-        owl:NamedIndividual ;
-    rdfs:label "High" .
-
-ex:TimingLow a ex:MigrationTimeLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Low" .
-
-ex:TimingMedium a ex:MigrationTimeLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Medium" .
-
-ex:TimingVeryHigh a ex:MigrationTimeLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Very High" .
-
-ex:TimingVeryLow a ex:MigrationTimeLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Very Low" .
-
-ex:VariableComm a ex:CommunicationLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Variable" .
-
-ex:VeryClose a ex:DistanceLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Very Close" .
-
-ex:VeryFar a ex:DistanceLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Very Far" .
-
-ex:VeryLowEnergy a ex:EnergyLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Very Low" .
-
-ex:ViolationQueryType a ex:QueryType,
-        owl:NamedIndividual ;
-    rdfs:label "Violation / non-compliance query" .
-
-ex:Walking a ex:MobilityLevel,
-        owl:NamedIndividual ;
-    rdfs:label "Walking" .
-
-ex:WarningQueryType a ex:QueryType,
-        owl:NamedIndividual ;
-    rdfs:label "Warning query" .
-
-ex:WeightedMulticriteriaMethod a ex:DecisionMethod,
-        owl:NamedIndividual ;
-    rdfs:label "Weighted multicriteria scoring" .
-
-<http://example.org/smartcity/modules/core-vocabulary> a owl:Ontology ;
-    rdfs:label "Continuum controlled vocabulary"@en ;
-    owl:imports <http://example.org/smartcity> ;
-    owl:versionInfo "3.0.0" .
-
-ex:LocalProcessingScope a ex:ProcessingScope,
-        owl:NamedIndividual ;
-    rdfs:label "Local processing scope" .
-
-ex:RangeGlobalAgg a ex:ConsentRange,
+mc:RangeGlobalAgg a mc:ConsentRange,
         owl:NamedIndividual ;
     rdfs:label "Global Aggregation" ;
     rdfs:comment "Authorises eligible global/cloud processing for permitted data categories and purposes, subject to zone, privacy and other hard constraints." .
 
-ex:RangeLocalOnly a ex:ConsentRange,
+mc:RangeLocalOnly a mc:ConsentRange,
         owl:NamedIndividual ;
     rdfs:label "Local Only" ;
     rdfs:comment "Processing limited to wearable/mobile device and, when authorised, personal Mist. Edge, Fog and Cloud are external to local scope." .
 
-ex:RangeCommunityAgg a ex:ConsentRange,
+mc:ExternalProcessingScope a mc:ProcessingScope,
+        owl:NamedIndividual ;
+    rdfs:label "External processing scope" .
+
+mc:RangeCommunityAgg a mc:ConsentRange,
         owl:NamedIndividual ;
     rdfs:label "Community Aggregation" ;
     rdfs:comment "Authorises eligible community processing such as Edge/Fog for permitted data categories and purposes, subject to zone and other hard constraints." .
-
-ex:ExternalProcessingScope a ex:ProcessingScope,
-        owl:NamedIndividual ;
-    rdfs:label "External processing scope" .

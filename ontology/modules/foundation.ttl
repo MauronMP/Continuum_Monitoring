@@ -1,39 +1,38 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix ex: <http://example.org/smartcity#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix mc: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix saref: <https://saref.etsi.org/core/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:MAPESymptom a owl:Class ;
+mc:MAPESymptom a owl:Class ;
     rdfs:label "MAPE-K Symptom" ;
     rdfs:comment "Symptom detected in the MAPE-K Monitor/Analyse phases and recorded for auditability." .
 
-ex:NonUser a owl:Class ;
+mc:NonUser a owl:Class ;
     rdfs:label "Non-User" ;
     rdfs:comment "Person in the environment without a wearable or active participation." ;
     rdfs:subClassOf foaf:Person .
 
-ex:ProcessingLevel a owl:Class ;
-    rdfs:label "Processing Level" .
+mc:ProcessingLevel a owl:Class ;
+    rdfs:label "Processing Level" ;
+    rdfs:comment "Processing Level is a foundation concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-ex:hasDeviceState a owl:ObjectProperty ;
-    rdfs:label "has device state" ;
-    rdfs:domain ex:Wearable ;
-    rdfs:range ex:DeviceState .
+mc:TemporalEntity a owl:Class ;
+    rdfs:label "Temporal Entity" ;
+    rdfs:comment "Entity with an explicit validity interval. validTo denotes effective closure, never merely planned expiry." .
 
-ex:hasMobileDevice a owl:ObjectProperty ;
-    rdfs:label "has mobile device" ;
-    rdfs:domain ex:User ;
-    rdfs:range ex:MobileDevice .
+mc:User a owl:Class ;
+    rdfs:label "User" ;
+    rdfs:comment "System participant with a wearable device." ;
+    rdfs:subClassOf foaf:Person .
 
-<http://example.org/smartcity/modules/foundation> a owl:Ontology ;
+<http://example.org/monitoringcontinuum/modules/foundation> a owl:Ontology ;
     rdfs:label "Continuum foundation module"@en ;
-    owl:versionInfo "3.0.0" .
+    owl:versionInfo "4.0.0" .
 
 dcterms:identifier a owl:AnnotationProperty .
 
@@ -71,8 +70,6 @@ sosa:Observation a owl:Class .
 
 sosa:Platform a owl:Class .
 
-sosa:Sensor a owl:Class .
-
 sosa:hasFeatureOfInterest a owl:ObjectProperty .
 
 sosa:hasSimpleResult a owl:DatatypeProperty .
@@ -83,87 +80,18 @@ sosa:madeBySensor a owl:ObjectProperty .
 
 sosa:observedProperty a owl:ObjectProperty .
 
+sosa:observes a owl:ObjectProperty ;
+    rdfs:domain sosa:Sensor ;
+    rdfs:range sosa:ObservableProperty .
+
 sosa:resultTime a owl:DatatypeProperty .
 
 foaf:name a owl:DatatypeProperty .
 
 saref:Device a owl:Class .
 
-<urn:continuum:ontology:3.0.0:node:126> a owl:Class ;
-    owl:unionOf <urn:continuum:ontology:3.0.0:node:127> .
+sosa:ObservableProperty a owl:Class .
 
-<urn:continuum:ontology:3.0.0:node:129> a owl:Class ;
-    owl:unionOf <urn:continuum:ontology:3.0.0:node:130> .
-
-<urn:continuum:ontology:3.0.0:node:132> a owl:Class ;
-    owl:unionOf <urn:continuum:ontology:3.0.0:node:133> .
-
-<urn:continuum:ontology:3.0.0:node:140> a owl:Class ;
-    owl:unionOf <urn:continuum:ontology:3.0.0:node:141> .
-
-<urn:continuum:ontology:3.0.0:node:143> a owl:Class ;
-    owl:unionOf <urn:continuum:ontology:3.0.0:node:144> .
-
-<urn:continuum:ontology:3.0.0:node:127> rdf:first ex:NodeState ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:128> .
-
-<urn:continuum:ontology:3.0.0:node:128> rdf:first ex:EvaluationState ;
-    rdf:rest () .
-
-<urn:continuum:ontology:3.0.0:node:130> rdf:first ex:FederatedLearningSession ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:131> .
-
-<urn:continuum:ontology:3.0.0:node:131> rdf:first ex:ParametrizedData ;
-    rdf:rest () .
-
-<urn:continuum:ontology:3.0.0:node:133> rdf:first ex:Permission ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:134> .
-
-<urn:continuum:ontology:3.0.0:node:134> rdf:first ex:Policy ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:135> .
-
-<urn:continuum:ontology:3.0.0:node:135> rdf:first ex:Service ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:136> .
-
-<urn:continuum:ontology:3.0.0:node:136> rdf:first ex:ServiceState ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:137> .
-
-<urn:continuum:ontology:3.0.0:node:137> rdf:first ex:AIModel ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:138> .
-
-<urn:continuum:ontology:3.0.0:node:138> rdf:first ex:FederatedLearningSession ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:139> .
-
-<urn:continuum:ontology:3.0.0:node:139> rdf:first ex:EvaluationState ;
-    rdf:rest () .
-
-<urn:continuum:ontology:3.0.0:node:141> rdf:first ex:FederatedLearningSession ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:142> .
-
-<urn:continuum:ontology:3.0.0:node:142> rdf:first ex:ParametrizedData ;
-    rdf:rest () .
-
-<urn:continuum:ontology:3.0.0:node:144> rdf:first ex:User ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:145> .
-
-<urn:continuum:ontology:3.0.0:node:145> rdf:first ex:ComputationalNode ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:146> .
-
-<urn:continuum:ontology:3.0.0:node:146> rdf:first ex:CityArea ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:147> .
-
-<urn:continuum:ontology:3.0.0:node:147> rdf:first ex:Service ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:148> .
-
-<urn:continuum:ontology:3.0.0:node:148> rdf:first ex:FederatedLearningSession ;
-    rdf:rest <urn:continuum:ontology:3.0.0:node:149> .
-
-<urn:continuum:ontology:3.0.0:node:149> rdf:first ex:SemanticContract ;
-    rdf:rest () .
-
-ex:User a owl:Class ;
-    rdfs:label "User" ;
-    rdfs:comment "System participant with a wearable device." ;
-    rdfs:subClassOf foaf:Person .
+sosa:Sensor a owl:Class .
 
 foaf:Person a owl:Class .

@@ -1,6 +1,6 @@
-# Continuum Monitoring Ontology v3.0.0 reference
+# Continuum Monitoring Ontology v4.0.0 reference
 
-> Generated reference for release v3.0.0. Do not edit individual
+> Generated reference for release v4.0.0. Do not edit individual
 > entries by hand. Regenerate with
 > `.venv/bin/python tools/generate_reference_docs.py`.
 
@@ -12,7 +12,7 @@ The ontology models policy-aware monitoring and adaptation across
 IoT, mist, edge, fog and cloud. The reusable core covers topology,
 temporal state, consent, contracts, authorization, trust, policy
 governance, MAPE-K adaptation, delegation, model selection,
-federated learning, audit and validation. The wellbeing domain
+audit and validation. Federated learning is an optional module. The wellbeing domain
 adds wearables, physiological observations, stress and sleep.
 
 Hard constraints are evaluated before optimization. Consent,
@@ -33,7 +33,9 @@ policies, trust evidence and resulting action can be audited.
 | Area | Runtime artefacts |
 |---|---|
 | Core schema | `ontology/core/schema.ttl` |
-| Shared modules | `ontology/modules/*.ttl` |
+| Shared contracts | `ontology/modules/contracts.ttl` |
+| Domain-neutral modules | foundation, topology, observability, governance, orchestration, deployment |
+| Optional federation | `ontology/modules/federation.ttl` |
 | Wellbeing extension | `ontology/domains/wellbeing/*.ttl` |
 | SHACL constraints | `ontology/shapes/*.ttl` |
 | Reference individuals | `ontology/examples/reference-system.ttl` |
@@ -42,10 +44,10 @@ policies, trust evidence and resulting action can be audited.
 
 ## Release inventory
 
-- Ontology declarations: **14**
-- OWL classes: **157**
-- Object properties: **165**
-- Datatype properties: **98**
+- Ontology declarations: **15**
+- OWL classes: **154**
+- Object properties: **167**
+- Datatype properties: **99**
 - Annotation properties: **14**
 - Requirements: **116** (`72 RF + 39 RNF + 5 RV`)
 - Policies: **79**
@@ -63,7 +65,7 @@ policies, trust evidence and resulting action can be audited.
 
 The first command validates parsing, release contracts, query
 expectations, SHACL, the configured benchmark reasoners and distributed
-fragment reconstruction. The second compiles the same 14 runtime
+fragment reconstruction. The second compiles the same 15 runtime
 modules and runs the independent HermiT, Openllet, JFact and Konclude
 consistency gate. It requires Java, the installed OWLAPI classpaths
 and native Konclude.
@@ -133,6 +135,7 @@ and native Konclude.
 | `HeartRateSensor` | Heart Rate Sensor |
 | `Identifier` | Identifier |
 | `MAPESymptom` | MAPE-K Symptom |
+| `MeasurementUnit` | Measurement unit |
 | `MechanismSpecification` | Mechanism Specification |
 | `MigrationCostLevel` | Migration Cost Level |
 | `MigrationEvent` | Migration Event |
@@ -149,6 +152,7 @@ and native Konclude.
 | `NodeUserRelation` | Node-User Relation |
 | `NonFunctionalRequirement` | Non-functional Requirement |
 | `NonUser` | Non-User |
+| `ObservableProperty` | ObservableProperty |
 | `Observation` | Observation |
 | `OffloadingEvent` | Offloading Event |
 | `OntologyArtifact` | Ontology Artifact |
@@ -221,17 +225,12 @@ and native Konclude.
 | `TrustEvidence` | Trust Evidence |
 | `UrbanEnvironment` | Urban Environment |
 | `UrbanZone` | Urban Zone |
-| `urn:continuum:ontology:3.0.0:node:100` | urn:continuum:ontology:3.0.0:node:100 |
-| `urn:continuum:ontology:3.0.0:node:106` | urn:continuum:ontology:3.0.0:node:106 |
-| `urn:continuum:ontology:3.0.0:node:126` | urn:continuum:ontology:3.0.0:node:126 |
-| `urn:continuum:ontology:3.0.0:node:129` | urn:continuum:ontology:3.0.0:node:129 |
-| `urn:continuum:ontology:3.0.0:node:132` | urn:continuum:ontology:3.0.0:node:132 |
-| `urn:continuum:ontology:3.0.0:node:140` | urn:continuum:ontology:3.0.0:node:140 |
-| `urn:continuum:ontology:3.0.0:node:143` | urn:continuum:ontology:3.0.0:node:143 |
-| `urn:continuum:ontology:3.0.0:node:83` | urn:continuum:ontology:3.0.0:node:83 |
-| `urn:continuum:ontology:3.0.0:node:91` | urn:continuum:ontology:3.0.0:node:91 |
-| `urn:continuum:ontology:3.0.0:node:94` | urn:continuum:ontology:3.0.0:node:94 |
-| `urn:continuum:ontology:3.0.0:node:97` | urn:continuum:ontology:3.0.0:node:97 |
+| `urn:continuum:ontology:4.0.0:node:100` | urn:continuum:ontology:4.0.0:node:100 |
+| `urn:continuum:ontology:4.0.0:node:106` | urn:continuum:ontology:4.0.0:node:106 |
+| `urn:continuum:ontology:4.0.0:node:83` | urn:continuum:ontology:4.0.0:node:83 |
+| `urn:continuum:ontology:4.0.0:node:91` | urn:continuum:ontology:4.0.0:node:91 |
+| `urn:continuum:ontology:4.0.0:node:94` | urn:continuum:ontology:4.0.0:node:94 |
+| `urn:continuum:ontology:4.0.0:node:97` | urn:continuum:ontology:4.0.0:node:97 |
 | `User` | User |
 | `UserState` | User State |
 | `ValidationCampaign` | Validation Campaign |
@@ -259,7 +258,7 @@ and native Konclude.
 | `appliesTo` | applies to |
 | `appliesToZoneType` | applies to zone type |
 | `auditsContract` | audits contract |
-| `authoritativeFor` | authoritativeFor |
+| `authoritativeFor` | authoritative for |
 | `authorizedByEvaluation` | authorized by evaluation |
 | `basedOnConsentRecord` | based on consent record |
 | `basedOnContract` | based on contract |
@@ -322,6 +321,7 @@ and native Konclude.
 | `hasGeometry` | has geometry |
 | `hasGeometry` | hasGeometry |
 | `hasIdentifier` | has identifier |
+| `hasMeasurementUnit` | has Measurement Unit |
 | `hasMigrationCost` | has migration cost |
 | `hasMigrationTime` | has migration time |
 | `hasMobileDevice` | has mobile device |
@@ -340,7 +340,7 @@ and native Konclude.
 | `hasPopulationDensity` | has population density |
 | `hasPredictedStressLevel` | has predicted stress level |
 | `hasPrivacyBudgetAccount` | has privacy budget account |
-| `hasPrivacyClass` | hasPrivacyClass |
+| `hasPrivacyClass` | has privacy class |
 | `hasPrivacyMechanism` | has privacy mechanism |
 | `hasProcessingLevel` | has processing level |
 | `hasProcessingPurpose` | has processing purpose |
@@ -359,7 +359,7 @@ and native Konclude.
 | `hasValidationResult` | has validation result |
 | `hasWearable` | has wearable |
 | `hasWorkload` | has workload |
-| `hostedAt` | hostedAt |
+| `hostedAt` | hosted at |
 | `hostedOnNode` | hosted on node |
 | `hostsModel` | hosts model |
 | `hostsService` | hosts service |
@@ -369,6 +369,7 @@ and native Konclude.
 | `locatedInZone` | located in zone |
 | `madeBySensor` | madeBySensor |
 | `observedProperty` | observedProperty |
+| `observes` | observes |
 | `originatesFromDevice` | originates from device |
 | `parentDelegation` | parent delegation |
 | `partOfScenario` | part of scenario |
@@ -435,7 +436,7 @@ and native Konclude.
 | `evaluationOrder` | evaluation order |
 | `evidenceContribution` | evidence contribution |
 | `evidenceFactor` | evidence factor |
-| `graphIRI` | graphIRI |
+| `graphIRI` | graph IRI |
 | `hasAHPScore` | has AHP / multicriteria score |
 | `hasAnonymizationApplied` | has anonymization applied |
 | `hasConsistencyRatio` | has consistency ratio |
@@ -461,6 +462,7 @@ and native Konclude.
 | `isRedundant` | is redundant |
 | `lastUpdated` | last updated |
 | `legacyDecisionScore` | legacy decision score |
+| `measurementUnitStatus` | measurement Unit Status |
 | `mechanismDescription` | mechanism description |
 | `mechanismIdentifier` | mechanism identifier |
 | `migrationNote` | migration note |
@@ -471,7 +473,7 @@ and native Konclude.
 | `name` | name |
 | `noiseLevel` | noise level |
 | `observedModelQuality` | observed model quality |
-| `ontologyDigest` | ontologyDigest |
+| `ontologyDigest` | ontology digest |
 | `pairwiseValue` | pairwise comparison value |
 | `parametrizedDataReady` | parametrized data ready |
 | `plannedExpiry` | planned expiry |
@@ -510,7 +512,7 @@ and native Konclude.
 | `trustWindowEnd` | trust window end |
 | `trustWindowStart` | trust window start |
 | `userFeedbackScore` | user feedback score |
-| `usesEntailmentProfile` | usesEntailmentProfile |
+| `usesEntailmentProfile` | uses entailment profile |
 | `validFrom` | valid from |
 | `validTo` | valid to |
 

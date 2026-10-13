@@ -3,19 +3,19 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/smartcity> a owl:Ontology ;
-    rdfs:label "SmartCity Continuum Stress Ontology v3.0.0" ;
-    dcterms:identifier "3.0.0-en-audit-v2" ;
+<http://example.org/monitoringcontinuum> a owl:Ontology ;
+    rdfs:label "Monitoring Continuum Ontology v4.0.0" ;
+    dcterms:identifier "4.0.0-monitoringcontinuum-v1" ;
     dcterms:language "en" ;
-    dcterms:modified "2026-08-28"^^xsd:date ;
-    dcterms:replaces "2.1.1" ;
-    rdfs:comment "Major semantic revision aligned with RF-01–RF-72, RNF-01–RNF-39, RV-01–RV-05 and POLICIES-REV-01. Queries are intentionally not assigned in this version." ;
-    owl:imports <http://example.org/smartcity/modules/federation>,
-        <http://example.org/smartcity/modules/foundation>,
-        <http://example.org/smartcity/modules/governance>,
-        <http://example.org/smartcity/modules/observability>,
-        <http://example.org/smartcity/modules/orchestration>,
-        <http://example.org/smartcity/modules/topology>,
-        <http://example.org/smartcity/modules/wellbeing> ;
-    owl:versionIRI <http://example.org/smartcity/3.0.0> ;
-    owl:versionInfo "3.0.0" .
+    dcterms:modified "2026-10-06"^^xsd:date ;
+    dcterms:replaces <http://example.org/smartcity/3.0.0> ;
+    rdfs:comment "Domain-neutral policy-driven continuum monitoring core. Application profiles explicitly add wellbeing, federation, vocabulary and validation shapes. Version 4 changes the entity namespace and resolves module dependencies." ;
+    owl:imports <http://example.org/monitoringcontinuum/modules/contracts>,
+        <http://example.org/monitoringcontinuum/modules/deployment>,
+        <http://example.org/monitoringcontinuum/modules/foundation>,
+        <http://example.org/monitoringcontinuum/modules/governance>,
+        <http://example.org/monitoringcontinuum/modules/observability>,
+        <http://example.org/monitoringcontinuum/modules/orchestration>,
+        <http://example.org/monitoringcontinuum/modules/topology> ;
+    owl:versionIRI <http://example.org/monitoringcontinuum/4.0.0> ;
+    owl:versionInfo "4.0.0" .

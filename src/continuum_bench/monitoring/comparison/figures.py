@@ -260,3 +260,130 @@ def paired_cost_figure(directory, paired):
     with (directory / "figure-captions.md").open("a") as handle:
         handle.write("\n## figures/paired-cost.png\n\nPaired semantic-minus-procedural cost differences at the largest workload multiplier with matched observations. The multiplier is identical across included hosts. Hosts without matched completed runs at that size are absent; consult outcomes.csv. Positive values denote additional cost, not improved performance. Trace and workload hashes must match within each pair. The sample size is paired process repetitions, not events. " + label + "\n")
     return paths
+
+
+def infrastructure_figures(directory, records, rows):
+    """Compare all recorded hosts without pooling hosts or inventing fleet totals."""
+    import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+
+    points = point_table(records, rows)
+    order = {name: i for i, name in enumerate(('cloud', 'fog', 'mist', 'edge1', 'edge2', 'edge3'))}
+    nodes = sorted({r['node'] for r in rows}, key=lambda n: (order.get(n, 99), n))
+    paths = []
+    for experiment in sorted({r['experiment'] for r in rows}):
+        metrics = _metrics(experiment)
+        context = experiment in ('effectiveness', 'adaptation')
+        subset = [p for p in points if p['experiment'] == experiment]
+        xs = list(CONTEXTS) if context else sorted({p['x'] for p in subset})
+        fig, axes = plt.subplots(len(metrics), len(nodes), squeeze=False,
+                                 figsize=(max(7.2, 2.65 * len(nodes)), 9.6))
+        for i, (metric, label) in enumerate(metrics):
+            metric_points = [p for p in subset if p['metric'] == metric]
+            means = [p['mean'] for p in metric_points if p['mean'] is not None]
+            log = bool(means) and min(means) > 0 and max(means) / min(means) >= 20 and metric not in ('coverage', 'over_monitoring', 'plan_correct', 'interval', 'peak_sampled_rss_mib', 'active_policy_count')
+            for j, node in enumerate(nodes):
+                axis = axes[i, j]
+                panel = [p for p in metric_points if p['node'] == node]
+                if panel:
+                    node_xs = list(CONTEXTS) if context else sorted({p['x'] for p in panel})
+                    _draw(axis, panel, metric, node_xs, context)
+                    ns = [p['n'] for p in panel if p['recorded_jobs']]
+                    n_label = str(min(ns)) if min(ns) == max(ns) else f'{min(ns)}–{max(ns)}'
+                    axis.set_title(f'{node} | n={n_label}', fontsize=9)
+                    axis.set_yscale('log' if log else 'linear')
+                    if context:
+                        axis.set_xticks(range(len(xs)), ['Normal', 'Overload', 'Failure', 'Recovery'], rotation=30)
+                    else:
+                        key = 'resource_count' if experiment == 'scalability' else 'event_count'
+                        ticks = [next(p[key] for p in panel if p['x'] == x) for x in node_xs]
+                        axis.set_xticks(ticks, [str(t) for t in ticks])
+                        axis.minorticks_off()
+                    axis.set_xlabel('Supplied context' if context else ('Logical resources' if experiment == 'scalability' else 'Replayed events'), fontsize=8)
+                else:
+                    axis.text(.5, .5, 'No recorded jobs', ha='center', transform=axis.transAxes)
+                from textwrap import fill
+                axis.set_ylabel(fill(label + (' [log]' if log else ''), 32) if j == 0 else '', fontsize=8)
+                axis.tick_params(labelsize=7)
+            # Identical vertical scales across hosts within each metric row.
+            if means:
+                lows = [p['low'] if p['low'] is not None else p['mean'] for p in metric_points if p['mean'] is not None]
+                highs = [p['high'] if p['high'] is not None else p['mean'] for p in metric_points if p['mean'] is not None]
+                limits = (-5, 105) if metric in ('coverage', 'over_monitoring', 'plan_correct') else ((max(min(lows)*.75, min(means)*.1), max(highs)*1.3) if log else (0, max(max(highs)*1.15, .1)))
+                for axis in axes[i]:
+                    axis.set_ylim(*limits)
+        handles = [Line2D([], [], color=COLORS[s], marker=MARKERS[s], label=LABELS[s],
+                          markerfacecolor='white' if s == 'semantic' else COLORS[s]) for s in COLORS]
+        fig.suptitle(f'{TITLES[experiment]} | all participating physical nodes', fontsize=13, y=.995)
+        fig.legend(handles=handles, loc='upper center', bbox_to_anchor=(.5, .97), ncol=3, frameon=False)
+        fig.text(.5, .027, 'Same y scale within each row. Means and 95% bootstrap CI across process repetitions (CI only when n ≥ 5).', ha='center', fontsize=8)
+        fig.text(.5, .010, 'Independent host replays; not simultaneous infrastructure totals. Missing measurements are not zero. Only recorded nodes are shown.', ha='center', fontsize=8)
+        fig.tight_layout(rect=(0, .055, 1, .94), h_pad=2, w_pad=1.3)
+        path = save_png(fig, directory / experiment / 'figures' / 'all-nodes')[0]
+        paths.append(path)
+        with (directory / 'figure-captions.md').open('a') as handle:
+            handle.write(f'\n## {path.relative_to(directory)}\n\n{CAPTIONS[experiment]} All recorded hosts are compared using common metric scales. Hosts are not pooled as repetitions and their RSS, throughput and latencies are not summed into a simultaneous infrastructure measurement. Point values, confidence intervals and job provenance are in figure-data.csv. Nodes excluded from acquisition cannot be reconstructed by reporting.\n')
+    return paths
+
+
+def cross_node_summary(directory, rows):
+    """Compact four-test comparison at a common recorded size across hosts."""
+    import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+    order = {n: i for i, n in enumerate(('cloud', 'fog', 'mist', 'edge1', 'edge2', 'edge3'))}
+    nodes = sorted({r['node'] for r in rows}, key=lambda n: (order.get(n, 99), n))
+    panels = [('effectiveness', 'plan_correct', 'Exact-plan agreement (%)', 100),
+              ('adaptation', 'decision_mean_ms', 'Context-response decision latency (ms)', 1),
+              ('scalability', 'decision_mean_ms', 'Decision latency at largest workload (ms)', 1),
+              ('cumulative', 'cumulative_decision_ms', 'Accumulated decision time at longest trace (ms)', 1)]
+    fig, axes = plt.subplots(2, 2, figsize=(9, 6.6))
+    export = []
+    for axis, (experiment, metric, title, factor) in zip(axes.flat, panels):
+        candidates = [r for r in rows if r['experiment'] == experiment]
+        if not candidates:
+            axis.set_title(title)
+            continue
+        size = max(r['size'] for r in candidates)
+        values_on_axis = []
+        for j, strategy in enumerate(COLORS):
+            for i, node in enumerate(nodes):
+                matched = [r for r in candidates if r['size'] == size and r['node'] == node and r['strategy'] == strategy]
+                completed = [r for r in matched if r['status'] == 'completed']
+                values = [r[metric] * factor for r in completed]
+                stat = estimate(values, ('overview', experiment, node, strategy, size))
+                export.append(dict(experiment=experiment, metric=metric, node=node, strategy=strategy,
+                                   size=size, **stat, recorded_jobs=len(matched),
+                                   values=json.dumps(values), job_ids=json.dumps([r['job_id'] for r in completed])))
+                if stat['mean'] is None:
+                    continue
+                values_on_axis.append(stat['mean'])
+                x = i + (j - 1) * .18
+                axis.plot(x, stat['mean'], marker=MARKERS[strategy], color=COLORS[strategy],
+                          markerfacecolor='white' if strategy == 'semantic' else COLORS[strategy], markersize=5)
+                if stat['low'] is not None:
+                    axis.errorbar(x, stat['mean'], yerr=[[max(0, stat['mean']-stat['low'])], [max(0, stat['high']-stat['mean'])]],
+                                  fmt='none', color=COLORS[strategy], capsize=2)
+        if metric == 'plan_correct':
+            axis.set_ylim(-5, 105)
+        elif values_on_axis and min(values_on_axis) > 0 and max(values_on_axis)/min(values_on_axis) >= 20:
+            axis.set_yscale('log')
+        else:
+            axis.set_ylim(bottom=0)
+        axis.set_title(title, fontsize=9)
+        resource = next((r for r in candidates if r['size'] == size), None)
+        detail = f"{resource['resource_count']} logical resources; {resource['policy_count']} policy copies; {resource['event_count']} events/job"
+        axis.set_xlabel(detail, fontsize=7)
+        axis.set_xticks(range(len(nodes)), nodes)
+        axis.tick_params(labelsize=8)
+        axis.grid(axis='y', alpha=.25)
+        axis.spines[['top', 'right']].set_visible(False)
+    fig.suptitle('Policy evaluation across all participating hosts', fontsize=12)
+    handles = [Line2D([], [], color=COLORS[s], marker=MARKERS[s], linestyle='none', label=LABELS[s]) for s in COLORS]
+    fig.legend(handles=handles, loc='upper center', bbox_to_anchor=(.5, .95), ncol=3, frameon=False)
+    fig.text(.5, .02, 'Independent host replays; mean and 95% bootstrap CI (n ≥ 5). Missing results are not zero.', ha='center', fontsize=8)
+    fig.tight_layout(rect=(0, .05, 1, .89), h_pad=2)
+    write_dict_rows(directory / 'cross-node-summary-data.csv', export, empty_message='No cross-node summary data')
+    paths = save_png(fig, directory / 'figures/cross-node-summary')
+    with (directory / 'figure-captions.md').open('a') as f:
+        f.write('\n## figures/cross-node-summary.png\n\nOne selected metric per experiment across every recorded host. Each panel uses the same largest recorded workload size for all hosts, including missing/failed observations in the selection; it does not choose a different successful size per host. Context-response latency is the mean decision call across the replay, not failure detection or service recovery. Detailed metric-by-host panels remain in each experiment’s figures/all-nodes.png. Source repetitions and job IDs are recorded in cross-node-summary-data.csv.\n')
+    return paths

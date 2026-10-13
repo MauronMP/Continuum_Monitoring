@@ -1,3 +1,7 @@
+> Current ontology follow-up: version 4.0.0 uses `monitoringcontinuum`.
+> See [Ontology review](ONTOLOGY_REVIEW.md) for the module corrections and migration.
+> Version-3 figures and findings below retain their historical scope.
+
 # Project Audit
 
 Audit date: 6 October 2026. Active release: 0.5.0.

@@ -1,6 +1,6 @@
 # SPARQL query battery
 
-> Generated reference for release v3.0.0. Do not edit individual
+> Generated reference for release v4.0.0. Do not edit individual
 > entries by hand. Regenerate with
 > `.venv/bin/python tools/generate_reference_docs.py`.
 
