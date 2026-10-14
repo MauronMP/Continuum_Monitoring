@@ -1,3 +1,4 @@
+# Internal regression fixture; not an executable benchmark profile.
 [experiment]
 repetitions = 1
 request_timeout_seconds = 60

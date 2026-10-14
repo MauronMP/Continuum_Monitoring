@@ -44,7 +44,7 @@ def test_physical_cli_routes_to_monitoring_module(config, tmp_path, monkeypatch)
     status = cli.main(
         [
             "--config",
-            str(config.root / "configs" / "smoke-scalability.toml"),
+            str(config.root / "configs" / "benchmark.toml"),
             "physical",
             "scalability",
             "--output-dir",

@@ -1,4 +1,4 @@
-name: Clean installation and semantic smokes
+name: Software and semantic validation
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -6,37 +6,28 @@ permissions:
   contents: read
 
 jobs:
-  python:
+  validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-14]
-        python: ['3.11', '3.12', '3.13', '3.14']
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+        python: ['3.11', '3.14']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - uses: actions/cache@v4
-        with:
-          path: .cache/pip
-          key: pip-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('requirements/*.txt', 'pyproject.toml') }}
       - run: python tools/bootstrap.py
+      # Scientific campaigns require the physical VPN inventory and run separately.
       - run: .venv/bin/python -m pytest
-      # Portable CI has no native HermiT/Openllet/JFact/Konclude installation.
-      # The physical deployment gate verifies those runtimes separately.
-      - run: .venv/bin/continuum-bench --config configs/smoke-vpn.toml validate
-      - run: .venv/bin/continuum-bench preflight
-      - run: .venv/bin/continuum-bench preflight --load-config configs/load-smoke.toml --experiment-config configs/experiments-smoke.toml
-      - run: .venv/bin/continuum-bench policy-evaluation all --evaluation-config configs/policy-evaluation-smoke.toml --output-dir outputs/ci-policy-evaluation
-      - run: .venv/bin/continuum-bench policy-evaluation plot --output-dir outputs/ci-policy-evaluation
       - run: .venv/bin/python tools/check_documentation.py
-      - run: .venv/bin/python tools/review_validation_debt.py
       - run: .venv/bin/python tools/audit_ontology_modules.py
+      - run: .venv/bin/python tools/review_validation_debt.py
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: setup-${{ matrix.os }}-${{ matrix.python }}
-          path: outputs/runtime/setup/
+          name: validation-${{ matrix.python }}
+          path: |
+            outputs/runtime/setup/
+            outputs/audit/

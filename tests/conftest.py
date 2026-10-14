@@ -1,4 +1,5 @@
 from pathlib import Path
+from dataclasses import replace
 
 import pytest
 
@@ -15,4 +16,4 @@ def root() -> Path:
 
 @pytest.fixture(scope="session")
 def config():
-    return load_config(ROOT / "configs/smoke-cumulative.toml")
+    return replace(load_config(ROOT / "tests/fixtures/benchmark.toml"), root=ROOT)

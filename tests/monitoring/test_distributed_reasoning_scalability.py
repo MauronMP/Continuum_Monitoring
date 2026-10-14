@@ -31,7 +31,7 @@ from continuum_bench.cli import _family_timeout_updates, _parser
 
 def test_unlimited_policy_disables_worker_alarm(root):
     config = load_distributed_reasoning_config(
-        root / "configs/distributed-reasoning-smoke.toml"
+        root / "tests/fixtures/distributed-reasoning.toml"
     )
     with execution_policy(unlimited=True):
         payload = _payload(config, "rdfs", 10000, True)
@@ -39,11 +39,11 @@ def test_unlimited_policy_disables_worker_alarm(root):
 
 
 @pytest.mark.parametrize("name", [
-    "distributed-reasoning-smoke.toml",
-    "distributed-reasoning.toml",
+    "configs/distributed-reasoning.toml",
+    "tests/fixtures/distributed-reasoning.toml",
 ])
 def test_active_distributed_reasoning_matrix_uses_five_backends(root, name):
-    config = load_distributed_reasoning_config(root / "configs" / name)
+    config = load_distributed_reasoning_config(root / name)
     assert config.reasoners == PHYSICAL_REASONERS
     assert config.tasks == (
         "rdfs_closure",
@@ -199,7 +199,7 @@ def test_normalized_inference_uses_equivalent_replicated_closure():
 
 def test_statistics_and_nine_scalability_figures(root, tmp_path):
     config = load_distributed_reasoning_config(
-        root / "configs/distributed-reasoning-smoke.toml"
+        root / "tests/fixtures/distributed-reasoning.toml"
     )
     directory = tmp_path / "distributed-reasoning-scalability"
     directory.mkdir()

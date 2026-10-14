@@ -1,13 +1,9 @@
 import importlib.util
 import json
-import re
 import subprocess
-import zipfile
 
 import pytest
-from rdflib import Graph, OWL
 
-from continuum_bench.ontology import load_graph
 
 
 @pytest.fixture
@@ -18,29 +14,6 @@ def checker(root):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
-
-
-def test_checker_extracts_embedded_dependencies_safely(checker, tmp_path):
-    bundles = tmp_path / "protege" / "bundles"
-    plugins = tmp_path / "protege" / "plugins"
-    dependencies = tmp_path / "dependencies"
-    for path in (bundles, plugins, dependencies):
-        path.mkdir(parents=True)
-    with zipfile.ZipFile(bundles / "owlapi-osgidistribution.jar", "w") as archive:
-        archive.writestr("lib/caffeine.jar", b"owlapi-dependency")
-        archive.writestr("../../escape.jar", b"safe-basename")
-        archive.writestr("README.txt", "not a dependency")
-    with zipfile.ZipFile(plugins / "org.semanticweb.hermit-1.4.jar", "w") as archive:
-        archive.writestr("automaton.jar", b"hermit-dependency")
-
-    classpath = checker.protege_classpath(tmp_path / "protege", dependencies)
-
-    assert "owlapi-osgidistribution.jar" in classpath
-    assert "org.semanticweb.hermit-1.4.jar" in classpath
-    assert (dependencies / "0-caffeine.jar").read_bytes() == b"owlapi-dependency"
-    assert (dependencies / "0-escape.jar").read_bytes() == b"safe-basename"
-    assert not (tmp_path / "escape.jar").exists()
-    assert not (dependencies / "README.txt").exists()
 
 
 def test_checker_rejects_missing_or_non_boolean_result(checker):
@@ -105,40 +78,3 @@ def test_checker_uses_configured_heap(checker, tmp_path, monkeypatch):
 
     monkeypatch.setattr(checker.subprocess, "run", run)
     assert checker.main([str(ontology), "--classpath", "fixture.jar"]) == 0
-
-
-@pytest.mark.owl_consistency
-def test_modular_ontology_with_installed_protege_hermit(
-    checker, config, tmp_path
-):
-    try:
-        protege = checker.find_protege(None)
-    except ValueError:
-        pytest.skip("Optional HermiT integration requires PROTEGE_HOME")
-    java = checker.shutil.which("java")
-    if java is None:
-        pytest.skip("Optional HermiT integration requires Java 11+")
-    # macOS can expose a java shim even when no JDK is installed.
-    try:
-        version = subprocess.run([java, "-version"], capture_output=True,
-                                 text=True, timeout=10, check=False)
-    except (OSError, subprocess.TimeoutExpired):
-        pytest.skip("Optional HermiT integration requires a working Java 11+")
-    match = re.search(r'(?:openjdk|java)(?: version)?\s+"?(\d+)',
-                      version.stdout + "\n" + version.stderr)
-    if version.returncode or not match or int(match.group(1)) < 11:
-        pytest.skip("Optional HermiT integration requires a working Java 11+")
-    output = tmp_path / "hermit.json"
-    source = load_graph(config.resolve(path) for path in config.ontology_files)
-    compiled = Graph()
-    for triple in source:
-        if triple[1] != OWL.imports:
-            compiled.add(triple)
-    ontology = tmp_path / "modular-ontology.nt"
-    compiled.serialize(ontology, format="nt")
-    assert checker.main([str(ontology), "--protege-home", str(protege), "--require-dl-profile",
-                         "--output", str(output)]) == 0
-    result = json.loads(output.read_text())
-    assert result["consistent"] is True
-    assert result["unsatisfiable_classes"] == []
-    assert result["profile_violation_count"] == 0

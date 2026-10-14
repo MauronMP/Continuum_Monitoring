@@ -1,3 +1,4 @@
+# Internal regression fixture; not an executable benchmark profile.
 [experiment]
 repetitions = 1
 warmup = 1
@@ -129,13 +130,13 @@ expected_sampling_interval_seconds = 15
 
 [scalability]
 [[scalability.levels]]
-name = "smoke-small"
+name = "fixture-small"
 resources = 8
 policies = 4
 categories = 2
 events = 16
 [[scalability.levels]]
-name = "smoke-medium"
+name = "fixture-medium"
 resources = 16
 policies = 8
 categories = 4

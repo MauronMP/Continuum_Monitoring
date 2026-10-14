@@ -1,144 +1,118 @@
-# Policy-Driven Continuum Monitoring
+# Policy-driven continuum monitoring
 
-This project evaluates how policies select and adapt monitoring across a physical
-Cloud–Fog–Mist–Edge continuum. The modular ontology is an internal knowledge
-mechanism: the primary outcomes are monitoring coverage, adaptation latency,
-scalability and computational cost.
+A modular architecture for monitoring physical Cloud–Fog–Mist–Edge infrastructure
+through policies and an internal ontology. The health/stress example supplies a
+motivating domain; it does not constitute a clinically validated detector.
+The reusable core models infrastructure, nodes, resources, requirements, policies,
+queries and reasoner configuration. The optional wellbeing vocabulary can evolve
+without turning benchmark logic into the domain core.
 
-Read the [research method and system guide](docs/RESEARCH_METHOD.md) for the proposal, hypotheses, experimental procedure, measurement boundaries and interpretation.
+## Documentation index
 
-## Install
+| Guide | Contents |
+| --- | --- |
+| [Installation](docs/INSTALLATION.md) | Clean OS dependencies, Python/native backends, Tailscale, inventory and worker deployment. |
+| [Complete execution](docs/COMPLETE_EXECUTION.md) | Basic and complementary commands, separated by the two batteries, budgets and recovery. |
+| [Experiments](docs/EXPERIMENTS.md) | Technical methods, scientific questions, metrics, interpretation limits and literature. |
+| [Outputs](docs/OUTPUTS.md) | Result directories, raw evidence, status semantics and PNG provenance. |
+| [Physical continuum](docs/PHYSICAL_CONTINUUM.md) | Six-node inventory, real VPN networking and lifecycle. |
+| [Ontology distribution](docs/ONTOLOGY_DISTRIBUTION.md) | Exact files per tier/node, instance ownership, routing and implementation boundaries. |
+| [Ontology review](docs/ONTOLOGY_REVIEW.md) | External vocabularies, validation commands and remaining model-data debt. |
+| [Python reference](docs/PYTHON_REFERENCE.md) | Every maintained Python file and its responsibility/entry points. |
+| [Query guide](queries/README.md) | Query categories, catalogue and execution-plan semantics. |
+| [All queries](queries/ALL_QUERIES.md) | Consolidated texts of all 115 maintained queries. |
+| [Comparison contract](docs/COMPARATIVE_EVALUATION.md) | Three current adapters, configuration and per-host execution boundaries. |
+| [Research method](docs/RESEARCH_METHOD.md) | Architectural claims, fair comparisons and evidence requirements. |
+| [Operational remediation](docs/REMEDIATION.md) | Diagnosing versions, busy processes, capacity and semantic failures. |
+| [Project audit](docs/AUDIT.md) | Maintained checks and cleanup scope. |
 
-The coordinator requires Python 3.11 or newer. Physical deployment additionally
-requires OpenSSH, `ssh-copy-id`, `rsync`, Java 17 and Maven. Konclude is required
-only when that native backend is selected.
+Generated references: [ontology](docs/reference/ONTOLOGY_REFERENCE.md),
+[policies](docs/reference/POLICIES.md), [requirements](docs/reference/REQUIREMENTS.md),
+[queries and traceability](docs/reference/SPARQL_QUERIES.md).
 
-```bash
-git clone https://github.com/MauronMP/Continuum_Monitoring.git
-cd Continuum_Monitoring
-python3 tools/bootstrap.py --profile coordinator
-. .venv/bin/activate
-python3 tools/install_owl_reasoners.py
-continuum-bench validate
-continuum-bench doctor --physical --owl
-```
+## The two evaluation batteries
 
-See [Installation](docs/INSTALLATION.md) for clean-host and worker instructions.
-The complete ordered command sequence is in
-[Complete installation and test execution](docs/COMPLETE_EXECUTION.md).
-The purpose of every software and physical test, together with the exact CSV to
-PNG provenance, is documented in
-[Test, experiment and figure reference](docs/TESTS_AND_FIGURES.md).
+| Battery | Complete entry point | Scope |
+| --- | --- | --- |
+| Physical architecture | `continuum-bench --timeout-mode bounded --keep-going suite` | Distributed/replicated scalability and cumulative work, load, physical experiments, workload axes, local policy-plan evaluation and reports. |
+| Strategy comparison | `python -m continuum_bench.monitoring.comparison run` | Static, procedural and semantic plans, evaluated individually on all six nodes. |
 
-## Four policy evaluation experiments
+A third four-strategy battery (static, threshold/rule-based, context-aware,
+ontology-plus-policy-aware) is planned, **not implemented**. Current results must
+not be described as that comparison. Regression checks are software maintenance,
+not a third experimental battery. No smoke commands or reduced physical profiles
+are exposed. CI validates software and semantic assets; it does not run VPN campaigns.
 
-The controlled evaluator has four independently executable blocks. Decisions
-use procedural context rules; ontology validation and a separate reasoning probe
-do not establish a semantic advantage. The [comparison module](docs/COMPARATIVE_EVALUATION.md)
-implements a distinct semantic decision strategy.
+## Start here
 
-1. **Policy effectiveness** compares a static plan with policy-driven decisions
-   against explicit scenario ground truth.
-2. **Dynamic adaptation** executes the controlled sequence normal, overload,
-   failure and recovery in one trace.
-3. **Policy scalability** jointly increases continuum resources, evaluable
-   policies, active categories and context events.
-4. **Computational cost** compares static and policy-driven monitoring on the
-   same scenarios and resources.
-
-Run a quick end-to-end verification and generate the four PNG figures:
-
-```bash
-continuum-bench policy-evaluation all \
-  --evaluation-config configs/policy-evaluation-smoke.toml
-continuum-bench policy-evaluation plot
-```
-
-Run the larger configured evaluation (publication requires checking its interpretation limits):
+Follow [Installation](docs/INSTALLATION.md) from a clean machine. Once the environment
+and workers are installed and synchronized, run from the repository root:
 
 ```bash
-continuum-bench policy-evaluation all \
-  --evaluation-config configs/policy-evaluation.toml
-continuum-bench policy-evaluation plot
-```
-
-The runner writes CSV first. Figure generation is a separate operation and never
-changes measured data. See [Experiments](docs/EXPERIMENTS.md) and
-[Outputs](docs/OUTPUTS.md).
-
-## Physical continuum
-
-The inventory in `configs/topologies/physical/` declares one Cloud coordinator,
-one Fog node, one Mist node and three Edge nodes connected through Tailscale.
-The active physical reasoning matrix supports RDFS, HermiT, Openllet, JFact and
-Konclude. RDFS is the portable baseline. The policy evaluation uses one configured
-reasoner only as an internal cost and does not rank reasoners.
-
-```bash
-continuum-bench physical authorize --ssh-user pi
-continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
-continuum-bench physical start --ssh-user pi
+source .venv/bin/activate
+export CONTINUUM_SSH_PROBE_TIMEOUT_SECONDS=120
+export CONTINUUM_HEALTH_TIMEOUT_SECONDS=30
 continuum-bench physical status --ssh-user pi
 continuum-bench --timeout-mode bounded --keep-going suite
-continuum-bench physical stop --ssh-user pi
 ```
 
-Bounded execution with `--keep-going` is the recommended mode: deadlines remain
-active, while timeout and failed observations are recorded and independent work
-continues. `--unlimited` is optional and should be restricted to supervised
-diagnosis or a known small profile. It disables coordinator, socket, worker and
-native-process deadlines; a DL reasoner can therefore occupy a worker
-indefinitely and prevent the remaining matrix from starting. The runner prints
-point percentages and pending workers, and checkpoints `progress.json` and
-`summary.csv` throughout the run. Timeout and skip controls are in
-`configs/benchmark.toml` under `[distributed]` and `[limits]`. See
-[Physical continuum](docs/PHYSICAL_CONTINUUM.md) and the
-[observed failure review](docs/OBSERVED_FAILURES.md).
-
-Raw timing is retained when canonical validation cannot finish, but those rows
-are labelled `unvalidated_results` and excluded from scientific performance
-curves. Exact distributed/reference mismatches are labelled `invalid_results`.
-
-## Modules
-
-| Path | Responsibility |
-| --- | --- |
-| `src/continuum_bench/core` | Infrastructure-neutral domain contracts. |
-| `src/continuum_bench/monitoring` | Physical orchestration, metrics and reporting. |
-| `src/continuum_bench/monitoring/policy_evaluation` | Monitoring-plan engine and four policy experiments. |
-| `ontology` | Modular internal knowledge model and validation shapes. |
-| `queries` | Categorized SPARQL catalog with policy traceability. |
-| `configs/topologies/physical` | Physical node resources, tiers and Tailscale endpoints. |
-| `configs/policy-evaluation*.toml` | Reproducible policy scenarios and scalability levels. |
-| `tests` | Unit, integration, infrastructure, monitoring and reporting checks. |
-
-Shared configuration lives at `continuum_bench.config`. Experiment runners,
-budgets, result normalization, analysis and reporting live only under
-`continuum_bench.monitoring`; retired top-level experiment facades are not part
-of the supported API.
-
-Run the software and documentation checks with:
+Run the separate comparison after the first campaign has finished:
 
 ```bash
-.venv/bin/python -m pytest -q
-.venv/bin/python tools/check_documentation.py
+python -m continuum_bench.monitoring.comparison check
+python -m continuum_bench.monitoring.comparison run
 ```
 
-Generated benchmark data, figures, logs and local runtime files are excluded by
-`.gitignore` and belong under `outputs/`.
+The full command reference, standalone family commands and report regeneration are
+in [Complete execution](docs/COMPLETE_EXECUTION.md). Do not modify code/semantic
+assets or redeploy during a campaign. A nonzero exit and partial output remain
+valid evidence of failure, not successful completion.
 
-## Optional comparative policy evaluation
+## Physical deployment and network
 
-The independent [comparative evaluation module](docs/COMPARATIVE_EVALUATION.md) runs paired static,
-procedural and semantic policy strategies on the physical hosts. It provides
-its own bounded configuration, four experiments, durable JSON/CSV evidence and
-per-node PNG figures. Published systems are methodological references, not
-claimed reproductions. Mist is excluded by default.
+| Tier | Node | Tailscale address |
+| --- | --- | --- |
+| Cloud | cloud | 100.86.63.53 |
+| Fog | fog | 100.93.73.27 |
+| Mist | mist | 100.72.111.107 |
+| Edge | edge1 | 100.101.178.35 |
+| Edge | edge2 | 100.70.9.117 |
+| Edge | edge3 | 100.121.135.60 |
 
-```bash
-.venv/bin/python -m continuum_bench.monitoring.comparison check
-.venv/bin/python -m continuum_bench.monitoring.comparison run --smoke
-.venv/bin/python -m continuum_bench.monitoring.comparison run
+All six nodes belong to the active inventory. Real devices are geographically
+distributed under the same VPN. `network_mbps` is descriptive capacity, not a cap;
+no benchmark command configures traffic shaping. Missing coordinates remain
+unknown. IoT instances can appear in workloads, but no standalone IoT worker is
+configured. Replicated and distributed are the two runtime placement modes.
+
+## Repository structure
+
+```text
+configs/                 Production workloads, reasoners and six-node inventory
+ontology/                Core, optional domain modules, profiles, shapes and examples
+queries/                 Executable queries, catalogue, routing and generated guide
+src/continuum_bench/
+  core/                  Reusable domain contracts and node/resource models
+  monitoring/            Physical evaluation, metrics and reporting
+    comparison/          Independent paired decision comparison
+    policy_evaluation/   Local plan-evaluation component of Battery 1
+tools/                   Installation, semantic validation and documentation utilities
+tests/                   Software regressions; internal fixtures are not campaigns
+docs/                    Maintained guides and generated references
+outputs/                 Ignored, generated measurements, reports and runtime state
 ```
 
-Ontology version 4 and namespace migration: [Ontology review](docs/ONTOLOGY_REVIEW.md).
+RDFS, HermiT, Openllet, JFact and Konclude are explicit backends. The comparison
+module deliberately uses RDFS only to isolate its semantic decision mechanism.
+Distributed workers reason locally on their fragment; merged query responses are
+not a globally complete OWL closure. Author-managed ontology illustrations are
+not generated by this repository's code.
+
+## Evidence and limitations
+
+The reference ontology retains reviewed incomplete records and traceability gaps;
+see [Ontology review](docs/ONTOLOGY_REVIEW.md). Existing Raspberry Pi userspace has
+32-bit capacity limits that can cause native allocation failures at large sizes.
+More time does not remove that limit. Supplied-context plan tests do not measure
+real fault detection or clinical accuracy. Real VPN conditions vary across runs.
+Reports retain failed/missing points and reject unsupported publication claims.

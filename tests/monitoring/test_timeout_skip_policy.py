@@ -30,7 +30,7 @@ def test_policy_validation(config, field, value):
 
 
 def test_toml_loads_policy(config, tmp_path):
-    source = (config.root / "configs/smoke-cumulative.toml").read_text()
+    source = (config.root / "tests/fixtures/benchmark.toml").read_text()
     source = re.sub(
         r"(?m)^(?:skip_repetitions_after_timeout|skip_larger_sizes_after_timeout|"
         r"skip_cumulative_stages_after_timeout|consecutive_timeout_threshold|timeout_mode)\s*=.*\n",
@@ -337,10 +337,9 @@ def test_setup_recovery_when_skips_disabled(query_coordinator, monkeypatch, suit
 
 
 @pytest.mark.parametrize('suite', ['cumulative', 'scalability'])
+@pytest.mark.parametrize('coordinator', [physical], indirect=True)
 def test_calibration_retry_and_reuse(query_coordinator, monkeypatch, suite):
     module, config, run, calls, install = query_coordinator
-    if module is not physical:
-        pytest.skip('distributed coordinator does not calibrate')
     install([])
     calibrate = module._calibrate
     attempts = []

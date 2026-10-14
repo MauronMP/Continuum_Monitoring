@@ -7,22 +7,22 @@ from continuum_bench.monitoring import provenance, suite
 def test_suite_uses_selected_configs_and_topology(root, tmp_path):
     plan = suite.suite_plan(root, root / 'configs/benchmark.toml', tmp_path,
         topology_file='configs/topologies/physical/topology.toml',
-        load_config='configs/load-smoke.toml',
-        experiment_config='configs/experiments-smoke.toml',
-        distributed_reasoning_config='configs/distributed-reasoning-smoke.toml',
-        campaign_config='configs/campaign-smoke.toml')
+        load_config='tests/fixtures/load.toml',
+        experiment_config='tests/fixtures/experiments.toml',
+        distributed_reasoning_config='tests/fixtures/distributed-reasoning.toml',
+        campaign_config='tests/fixtures/campaign.toml')
     steps = {step['name']: step for step in plan}
     for name in ('preflight', 'load'):
         command = steps[name]['command']
-        assert command[command.index('--load-config') + 1] == 'configs/load-smoke.toml'
+        assert command[command.index('--load-config') + 1] == 'tests/fixtures/load.toml'
     for name in ('preflight', 'experiments'):
         command = steps[name]['command']
-        assert command[command.index('--experiment-config') + 1] == 'configs/experiments-smoke.toml'
+        assert command[command.index('--experiment-config') + 1] == 'tests/fixtures/experiments.toml'
     command = steps['experiments']['command']
-    assert command[command.index('--distributed-reasoning-config') + 1] == 'configs/distributed-reasoning-smoke.toml'
+    assert command[command.index('--distributed-reasoning-config') + 1] == 'tests/fixtures/distributed-reasoning.toml'
     for name in ('campaign-preflight', 'campaign'):
         command = steps[name]['command']
-        assert command[command.index('--campaign-config') + 1] == 'configs/campaign-smoke.toml'
+        assert command[command.index('--campaign-config') + 1] == 'tests/fixtures/campaign.toml'
     for name, step in steps.items():
         if name not in {'software', 'documentation'}:
             assert '--topology-file' in step['command']

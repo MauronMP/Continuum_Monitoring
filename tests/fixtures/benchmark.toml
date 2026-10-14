@@ -1,4 +1,4 @@
-# Connectivity acceptance check; not the five-reasoner comparison.
+# Internal regression fixture; not an executable benchmark profile.
 [paths]
 ontology_files = [
   "ontology/core/schema.ttl",
@@ -23,7 +23,7 @@ shape_files = [
 ]
 query_catalog = "queries/catalog.csv"
 topology_file = "configs/topologies/physical/topology.toml"
-output_dir = "outputs/validation/vpn-smoke"
+output_dir = "outputs/fixture-cumulative"
 
 [distributed]
 request_timeout_seconds = 30
@@ -46,8 +46,7 @@ calibration_query_limit = 8
 stop_scaling_after_timeout = true
 
 [benchmark]
-reasoners = ["rdfs"]
-# Required by the shared schema; scalability executes all 115 queries.
+reasoners = ["rdfs", "hermit", "openllet", "jfact", "konclude"]
 category_order = [
   "topology",
   "semantic_schema",
@@ -66,6 +65,7 @@ category_order = [
   "validation",
   "wellbeing",
 ]
+# Required by the shared schema but unused by the cumulative fixture test.
 scale_users = [1]
 repetitions = 1
 seed = 2026

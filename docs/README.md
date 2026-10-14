@@ -1,32 +1,27 @@
-# Documentation
+# Documentation map
 
-- [Installation](INSTALLATION.md): clean coordinator and worker setup.
-- [Experiments](EXPERIMENTS.md): contracts for the four policy evaluations.
-- [Outputs](OUTPUTS.md): CSV schemas, PNG generation and result layout.
-- [Physical continuum](PHYSICAL_CONTINUUM.md): inventory, deployment and complete execution.
-- [Complete execution](COMPLETE_EXECUTION.md): clean installation and every full-suite or per-family command.
-- [Tests and figures](TESTS_AND_FIGURES.md): purpose, evidence files and PNG provenance for every active test family.
-- [Observed failures](OBSERVED_FAILURES.md): current timeout, semantic-validation, ontology-debt and remediation audit.
-- [Project audit](AUDIT.md): verified release state, boundaries and known limitations.
-- [Ontology distribution](ONTOLOGY_DISTRIBUTION.md): exact files per tier/node, instance ownership, routing and implementation limits.
-- [Ontology reference](reference/ONTOLOGY_REFERENCE.md): generated internal model inventory.
-- [Policies](reference/POLICIES.md): generated policy catalog.
-- [Requirements](reference/REQUIREMENTS.md): generated requirement catalog.
-- [SPARQL queries](reference/SPARQL_QUERIES.md): generated query catalog.
+Start with [Installation](INSTALLATION.md), understand the two batteries in
+[Experiments](EXPERIMENTS.md), then use [Complete execution](COMPLETE_EXECUTION.md).
 
-All commands assume the repository root and an activated `.venv` unless stated
-otherwise.
+| Topic | Maintained source |
+| --- | --- |
+| Full project index | [Repository README](../README.md) |
+| Acquisition and optional commands | [Complete execution](COMPLETE_EXECUTION.md) |
+| Scientific methods and references | [Experiments](EXPERIMENTS.md) |
+| Result files and figures | [Outputs](OUTPUTS.md) |
+| Six-node deployment | [Physical continuum](PHYSICAL_CONTINUUM.md) |
+| Per-node ontology files | [Ontology distribution](ONTOLOGY_DISTRIBUTION.md) |
+| Model validation and external elements | [Ontology review](ONTOLOGY_REVIEW.md) |
+| Python responsibilities | [Python reference](PYTHON_REFERENCE.md) |
+| Queries and routing | [Query guide](../queries/README.md) |
+| Decision comparison internals | [Comparison](COMPARATIVE_EVALUATION.md) |
+| Claim boundaries | [Research method](RESEARCH_METHOD.md) |
+| Maintenance and failures | [Remediation](REMEDIATION.md), [observed failures](OBSERVED_FAILURES.md), [audit](AUDIT.md) |
 
-## Optional comparative policy evaluation
+Generated semantic references: [ontology](reference/ONTOLOGY_REFERENCE.md),
+[policies](reference/POLICIES.md), [requirements](reference/REQUIREMENTS.md),
+[SPARQL traceability](reference/SPARQL_QUERIES.md). Maintain source assets and
+regenerate these documents; do not manually edit generated tables.
 
-The independent [comparative evaluation module](COMPARATIVE_EVALUATION.md) runs paired static,
-procedural and semantic policy strategies on the physical hosts. It provides
-its own bounded configuration, four experiments, durable JSON/CSV evidence and
-per-node PNG figures. Published systems are methodological references, not
-claimed reproductions. All six configured hosts, including Mist, are included by default.
-
-```bash
-.venv/bin/python -m continuum_bench.monitoring.comparison check
-.venv/bin/python -m continuum_bench.monitoring.comparison run --smoke
-.venv/bin/python -m continuum_bench.monitoring.comparison run
-```
+Only two evaluation batteries are currently implemented. The proposed third
+comparison is future work, not a hidden command or a renamed existing experiment.

@@ -1,203 +1,112 @@
-# Monitoring Continuum Ontology: Version 4 Review and Migration
+# Ontology validation and external vocabulary review
 
 ## Purpose and identity
 
-The model is the internal knowledge mechanism of a policy-driven continuum
-monitoring architecture. It is not a stress-detection algorithm or a clinical
-validation dataset. The wellbeing extension supplies the motivating application;
-the core describes reusable infrastructure, state, governance and adaptation.
+Monitoring Continuum is the internal knowledge mechanism of policy-driven
+monitoring. The wellbeing extension represents the motivating health domain;
+it is not a clinically validated stress detector. The reusable core does not
+require wellbeing or a federated-learning implementation.
 
-Version **4.0.0**, revision **4.0.0-monitoringcontinuum-v1**, replaces the generic
-SmartCity identity with **Monitoring Continuum**:
-
-| Item | Current value |
+| Item | Value |
 | --- | --- |
+| Version / revision | `4.0.0` / `4.0.0-monitoringcontinuum-v1` |
 | Ontology IRI | `http://example.org/monitoringcontinuum` |
-| Entity namespace | `http://example.org/monitoringcontinuum#` |
-| Turtle/SPARQL prefix | `mc:` |
-| Canonical source | `ontology/core/schema.ttl` and its maintained modules |
-| Full application manifest | `configs/benchmark.toml` |
-| Physical placement | `configs/ontology-placement.toml` |
+| Term namespace / prefix | `http://example.org/monitoringcontinuum#` / `mc:` |
+| Full input manifest | `configs/benchmark.toml` |
+| Shape sources | `ontology/shapes/core-compliance.ttl`, `ontology/shapes/federated-learning.ttl` |
 
-Changing an IRI changes RDF identity; changing only a prefix would not. This is a
-breaking ontology release. There are no `owl:sameAs` bridges that silently merge
-old and new experimental graphs. `example.org` remains an illustrative project
-namespace, not a claim of published or resolvable vocabulary hosting. Registering
-a persistent namespace requires a separately agreed publication location.
+`example.org` is illustrative, not a published persistent vocabulary service.
+The earlier SmartCity migration is complete in maintained semantic assets.
+Historical identifiers containing `v3` denote retained records/contracts, not the
+active ontology release. Do not rename historical outputs to imply new evidence.
 
-## Audit findings and implemented changes
+For module responsibilities, exact per-node files, ownership and inference
+boundaries, see [Ontology distribution](ONTOLOGY_DISTRIBUTION.md). Those tables
+are deliberately maintained in one place rather than repeated here.
 
-| Finding | Resolution and rationale |
+## External elements actually used
+
+| Element | Use and boundary |
 | --- | --- |
-| All profiles effectively imported the entire application | The core excludes wellbeing and federation. Profiles explicitly import optional modules; their file lists equal the transitive import closure. |
-| Undeclared dependencies between modules | Added `contracts.ttl` for minimal shared entity types. Moved general temporal concepts to foundation and device-specific relationships to their owning modules. Imports are explicit and acyclic. |
-| Consent properties excluded actual subject types | Extended union domains: `hasConsentRange` includes `ConsentRecord`; `hasProcessingPurpose` includes `ConsentRecord` and `Service`; `requiresConsentRange` includes `ModelTier`. Existing valid alternatives remain. |
-| `replicaOf` had duplicate ownership | Deployment owns this property, with fragment-to-fragment semantics. Replication events use their own source/target relationships. |
-| Five orphan union expressions | Removed the unreferenced expressions and their list cells. Referenced unions remain explicit. |
-| Transfer/replication properties lacked restrictive ranges | Retained intentionally open ranges and documented why: endpoints or payloads can have different kinds. An arbitrary compute-node range would produce false inferred types. Domain/range is inference, not an input-validation rule. |
-| Deprecated recovery relationship still instantiated | Removed the deprecated example use; the existing explicit `hasRecoveryCondition` relation remains. The deprecated property declaration is retained for interpretation of legacy material. |
-| Full profile lacked its semantic profile type | All profiles, including `full`, are typed as `SemanticNodeProfile`. |
-| Weak contradiction detection | Direct, pseudonymous and anonymous identifier representations are pairwise disjoint. Node roles, policy categories and context-dependent participation are not made globally disjoint. Native consistency and SHACL remain separate gates. |
-| Controlled identity constraints only existed in examples | Moved the three `AllDifferent` declarations and their lists to the controlled core vocabulary. |
-| SOSA observable properties were untyped | Declared observable properties and sensor `sosa:observes` links. Converted the three recorded scalar results to numeric literals. |
-| Measurement units were absent | Added `MeasurementUnit`, `hasMeasurementUnit` and `measurementUnitStatus`. Existing observations explicitly record `not-recorded-in-source`; no unit is invented. |
-| Single-category restriction conflicted with cross-cutting policies | Removed the category maximum cardinality while retaining minimum cardinality and type validation. Reference generation now preserves every category. |
-| Missing labels and comments | All locally declared classes and properties have labels and descriptions. Cross-module and deployment descriptions explain responsibility. Axiom-based descriptions do not constitute new domain requirements or evidence of implementation. |
+| RDF / RDFS / OWL and XSD | Graph representation, class/property axioms, datatypes and reasoning contracts. |
+| SOSA (`http://www.w3.org/ns/sosa/`) | Sensor, observation, observed-property and result relationships. |
+| SAREF (`https://saref.etsi.org/core/`) | Reused device-related vocabulary. |
+| FOAF (`http://xmlns.com/foaf/0.1/`) | Person/name relationships. |
+| GeoSPARQL (`http://www.opengis.net/ont/geosparql#`) | Geographic feature vocabulary; no automatic distance or spatial reasoning service is installed. |
+| Dublin Core Terms (`http://purl.org/dc/terms/`) | Descriptive metadata where present. |
+| SHACL and SPARQL 1.1 | Structural validation and executable query constraints. |
+| RDFLib, owlrl and pySHACL | Parsing/query execution, datatype-aware RDFS materialization and shape validation. |
+| OWLAPI with HermiT, Openllet and JFact; native Konclude | Separate native consistency/materialization backends, installed outside the Python graph stack. |
 
-## Module responsibilities and boundaries
+Prefix declarations alone are not evidence that a complete external ontology is
+imported. The maintained local import closure determines loaded axioms; workers
+do not fetch arbitrary remote vocabularies during a benchmark. Reusing SOSA/SAREF
+terms does not reproduce an external application's implementation or evaluation.
+No ontology image generation dependency is required.
 
-| Module | Responsibility |
-| --- | --- |
-| Foundation | General entities, temporal concepts and reused external vocabulary declarations. |
-| Contracts | Minimal shared types such as state, service, model, purpose, transfer and validation artifacts. A shared type does not import its complete feature implementation. |
-| Topology | Computational nodes, device relationships, geography and continuum structure. |
-| Observability | Recorded node, device and user state and monitoring evidence. |
-| Governance | Policies, requirements, consent, authorization and identity constraints. |
-| Orchestration | Decisions, alternatives, adaptation, delegation and model/service lifecycle relations. |
-| Deployment | Fragment placement, authority, privacy classification and semantic profiles. |
-| Federation — optional | Federated-learning relationships and session details. Its shared session type is declared in contracts. |
-| Wellbeing — optional | Wearables, physiological/stress observations and domain-specific vocabulary. |
+## Validation commands
 
-The core closure has eight files: the core schema and seven general modules.
-The complete benchmark manifest has fifteen files, including vocabularies,
-optional extensions, shapes and reference individuals. Import closure is resolved
-from local maintained files; workers do not fetch these IRIs from the network.
-
-| Profile | Wellbeing | Federation | Validation shapes |
-| --- | --- | --- | --- |
-| Cloud / full | Yes | Yes | Core compliance and federated learning |
-| Fog | No | No | No |
-| Edge / Mist | Yes | Yes | No |
-| IoT | Yes | No | No |
-
-Schema selection and instance-data placement are different. The privacy and
-query-routing code decides which instance statements are sent to a node. A Fog
-profile without wellbeing definitions does not by itself guarantee absence of
-sensitive instance data; privacy tests remain mandatory. Importing a shared
-`FederatedLearningSession` type also does not install a learning algorithm.
-
-## Validation and reproducibility
-
-Run from the repository root with the environment installed:
+From the installed repository environment:
 
 ```bash
-.venv/bin/python tools/audit_ontology_modules.py
-.venv/bin/python tools/review_validation_debt.py
-.venv/bin/pytest -q
-.venv/bin/continuum-bench owl-validate --require-all \
-  --output outputs/validation/owl-reasoners.json
-.venv/bin/python tools/check_distributed_semantics.py \
-  --reasoner konclude --users 100 \
-  --output outputs/audit/konclude-local.json
-.venv/bin/python tools/generate_reference_docs.py
-.venv/bin/python -m continuum_bench.diagrams
+source .venv/bin/activate
+continuum-bench doctor --owl
+python tools/audit_ontology_modules.py
+python tools/review_validation_debt.py
+continuum-bench validate
+continuum-bench owl-validate --require-all --output outputs/validation/owl-reasoners.json
+python tools/check_distributed_semantics.py --reasoner rdfs --users 12 --output outputs/audit/distributed-semantics-rdfs.json
+continuum-bench fragments --users 12 --output-dir outputs/fragments/physical
+python tools/generate_reference_docs.py
+python tools/generate_project_indexes.py
+python tools/check_documentation.py
 ```
 
-The module audit fails on unresolved/cyclic imports, duplicate term ownership,
-missing declared dependencies, orphan unions, missing labels/descriptions,
-optional modules leaking into the core and placement/profile disagreement.
-Regression tests cover consent domains, controlled-vocabulary identity,
-SOSA examples and safe namespace migration. Native OWL checks cover logical
-consistency and the OWL 2 DL profile; the distributed diagnostic compares all
-115 query counts, Boolean answers and result digests. The latter runs locally
-and is not a physical performance measurement.
+`validate` runs the backends selected by `configs/benchmark.toml`, so install the
+native runtimes first. `check_distributed_semantics.py` is an offline comparison
+of canonical and fragment results; it is not a distributed performance campaign.
+Change `--reasoner` explicitly when examining a native backend. Generated manuals
+and the query bundle must be refreshed when their source assets change.
 
-Review evidence is recorded under `outputs/audit/ontology-v4/`. Evidence from
-version 3 remains under its original directory and must not be relabeled as a
-version-4 experiment. New triple counts and logical axioms can change costs, so
-performance comparisons need new, consistently versioned runs.
+| Check | What passing establishes | What it does not establish |
+| --- | --- | --- |
+| Module audit | Import closure, term ownership, labels/comments and profile/manifest agreement. | Application correctness or privacy enforcement. |
+| SHACL/project validation | Configured record constraints and query expectations. | Clinical validity or satisfaction of every prose requirement. |
+| Native OWL consistency | No detected logical contradiction under the selected backend/contract. | Complete support for every ontology feature in every distributed placement. |
+| Canonical/fragment comparison | Agreement for the tested graph, queries and reasoner. | Arbitrary distributed OWL entailment or unseen-query completeness. |
+| Traceability review | Missing requirement/policy coverage is explicitly classified. | That missing evidence has been implemented or measured. |
 
-Some reference individuals, shape identifiers and synthetic rule identifiers retain
-`v3` in their local names. They identify carried-forward records or unchanged
-constraints introduced in the earlier model; they are not the ontology release
-identifier. Renaming them must not imply new historical observations or new rule
-semantics. The ontology version, revision and namespace identify the active release.
+## Resolved structural issues
 
-## Deployment and external-data migration
+Module imports are explicit and acyclic; shared contracts remove duplicated term
+ownership. Optional wellbeing/federation imports are excluded from the core.
+Consent union domains include the intended example subjects. Orphan unions were
+removed; controlled identity constraints are in the reusable vocabulary.
+Reference observation values are numeric and unknown units are explicitly marked.
+Local classes/properties have labels and descriptions. SHACL permits multiple
+policy-category memberships while requiring at least one valid category.
 
-1. Keep old experiment outputs unchanged. The pre-migration local backup is
-   `outputs/audit/ontology-v4/pre-migration.tar.gz`.
-2. Redeploy and restart every participating worker from the same checkout.
-   Worker protocol 10 checks ontology version/revision, Python build, topology
-   and `semantic_assets_digest`. The digest includes ontology, SHACL, selected
-   profiles, placement, query catalog, query texts and execution plan. Relative
-   paths make it independent of the coordinator/worker installation directory.
-   Byte-level edits, including comments, require synchronization and restart.
-   A worker whose files changed after startup reports stale health and rejects
-   preparation. Do not edit sources or data during a running campaign.
-   The preparation integrity check precedes the worker CPU/phase timers;
-   coordinator wall time includes it. Do not interpret the difference as pure
-   network latency.
-   Scalability/cumulative metadata records the digest; plotting rejects a recorded
-   digest that differs from the active semantic inputs.
-3. Use the explicit five-node topology while Mist is offline. Before returning
-   Mist to service, deploy the same release and topology to all participating
-   nodes; do not mix five-node and six-node fingerprints.
-4. Rebuild cached fragments and rerun bounded validation before full campaigns.
+These changes do not make policy categories mutually exclusive or implement
+conflict precedence. `EXT-Q03` produces a row per policy/category association;
+use distinct policy identifiers when computing policy counts.
 
-```bash
-.venv/bin/continuum-bench --topology-file configs/topologies/physical/without-mist.toml physical deploy --ssh-user pi
-.venv/bin/continuum-bench --topology-file configs/topologies/physical/without-mist.toml physical start --ssh-user pi
-.venv/bin/continuum-bench --topology-file configs/topologies/physical/without-mist.toml physical status --ssh-user pi
-.venv/bin/continuum-bench --config configs/smoke-five-nodes.toml --keep-going physical scalability --layout distributed
-.venv/bin/continuum-bench --config configs/smoke-five-nodes.toml --keep-going physical scalability --layout replicated
-```
+## Remaining model and evidence limitations
 
-For external RDF instance data, the optional helper copies a graph and renames
-only RDF URI terms in the old namespace. It preserves literals, including quoted
-historical URIs, and refuses to overwrite an existing destination:
+The maintained reference data still contain 57 reviewed SHACL warnings:
+32 missing historical AHP inputs, 2 model timestamps, 14 trust-window boundaries
+and 9 prospective acceptance parameters. `configs/traceability-review.toml`
+records dispositions. Three observations have unknown source measurement units;
+these are additional data-quality limitations, not part of the 57 warnings.
+Do not invent historical values to remove warnings.
 
-```bash
-.venv/bin/python tools/migrate_ontology_namespace.py legacy-instances.ttl migrated-instances.ttl
-```
+Query traceability covers 102 of 116 requirements and 69 of 79 policies. Missing
+coverage is recorded rather than represented as validated. Some declared concepts
+model future capabilities, including learning and mobility; declarations do not
+establish an operational implementation. Multicategory policy cost attribution
+must account for shared queries rather than double counting their elapsed time.
 
-This helper does **not** upgrade old schema axioms, rewrite embedded SPARQL string
-literals or certify the result as version 4. Use the maintained schema, review any
-embedded queries separately and validate imported instances before use. Do not
-run the helper over historical result directories.
-
-## Verified outcome (reviewed 2026-10-07)
-
-The final portable suite passed 474 cases, with 15 explicit skips: 13 native
-opt-in cases covered by the separate native run, and two calibration cases that
-do not apply to distributed runners. The native suite passed all 35 cases.
-These suites overlap; their counts are not a total of unique tests. The portable
-run used an unavailable Java executable to check that native runtimes are optional.
-HermiT, Openllet, JFact and Konclude passed the native consistency checks.
-
-Bounded physical verification completed eight points: distributed and replicated
-layouts, RDFS and Konclude, and 5 and 100 synthetic users, with one repetition.
-All 460 distributed query results matched the canonical reference; all 460
-corresponding replicated results matched the distributed results. Both layouts
-record the current semantic-file fingerprint. This is functional verification,
-not a statistical performance comparison or a publication campaign.
-
-Cloud, Fog and all three Edge workers passed the final health and fingerprint
-checks. The local Cloud service was found stopped and restarted; its stop cause
-was not established. The four remote services were already healthy. Mist remains
-excluded from this verification.
-
-Local evidence is stored under `outputs/audit/ontology-v4/`: `verification.json`,
-`portable-tests.xml`, `native-tests.xml`, `nodes-final.json`, and
-`verified-physical/{distributed,replicated}/scalability/`. Intermediate results
-remain separately identified in that directory's README. Generated audit outputs
-are local artifacts; the maintained instructions above allow fresh verification.
-
-## Remaining limits
-
-The review retains 57 known SHACL warnings: 32 missing historical AHP inputs,
-2 model timestamps, 14 trust-window boundaries and 9 prospective acceptance
-parameters. Their dispositions are tracked, not waived. Query traceability remains
-102/116 requirements and 69/79 policies. The three missing measurement units are
-additional explicit data-quality limitations, not part of those 57 shape warnings.
-
-Consistency does not prove policy enforcement, privacy compliance, clinical
-accuracy or complete distributed OWL inference. Policy categories are not globally disjoint. SHACL now permits multiple
-`belongsToPolicyCategory` values, requires at least one, and validates each value
-as a category. Reference generation lists every membership deterministically.
-The existing reference assignments remain unchanged: no additional classifications
-have been invented. `EXT-Q03` returns one row per policy/category combination;
-count distinct policy identifiers when computing policy counts. The 12 policy
-categories are distinct from the 16 query groups used by cumulative schedules;
-shared query work must not be counted repeatedly as independent policy cost. Conflict resolution
-needs implemented evaluation mechanisms and context, not category labels alone.
+These limitations are compatible with evaluating architecture cost and configured
+plan conformance. They preclude claims of full policy enforcement, complete
+clinical validation or universal semantic correctness. Distribution-specific
+limits, production privacy boundaries, absent IoT workers and topology changes
+are documented only in [Ontology distribution](ONTOLOGY_DISTRIBUTION.md).

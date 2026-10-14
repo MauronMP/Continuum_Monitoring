@@ -25,7 +25,7 @@ class Sink:
 
 @pytest.fixture
 def campaign(root):
-    c = load_campaign(root/'configs/campaign-smoke.toml')
+    c = load_campaign(root/'tests/fixtures/campaign.toml')
     return replace(c, reasoners=('rdfs',), axes=(Axis('physical_nodes',(1,2)),), warmup=0)
 
 
@@ -71,14 +71,14 @@ def test_structured_results_keep_configuration_and_do_not_overwrite(campaign,tmp
     assert (first/'results.csv').is_file()
 
 def test_unknown_or_decreasing_axes_fail_before_execution(root,tmp_path):
-    source=(root/'configs/campaign-smoke.toml').read_text()
+    source=(root/'tests/fixtures/campaign.toml').read_text()
     p=tmp_path/'campaign.toml'
     p.write_text(source.replace('values = [1, 2, 6]','values = [2, 1]'))
     with pytest.raises(ValueError,match='increasing'):load_campaign(p)
 
 
 def test_campaign_rejects_ambiguous_shared_mode(root, tmp_path):
-    source = (root / "configs/campaign-smoke.toml").read_text()
+    source = (root / "tests/fixtures/campaign.toml").read_text()
     path = tmp_path / "shared.toml"
     path.write_text(source.replace(
         'modes = ["replicated", "distributed"]',
@@ -99,7 +99,7 @@ def test_physical_lease_rejects_overlap_and_releases_after_failure(tmp_path):
 
 
 def test_campaign_rejects_unexecuted_query_variants(root, tmp_path):
-    source = (root / "configs/campaign-smoke.toml").read_text()
+    source = (root / "tests/fixtures/campaign.toml").read_text()
     path = tmp_path / "bad.toml"
     path.write_text(source.replace('query_count = 2', 'query_count = 100'))
     with pytest.raises(ValueError, match="cover every configured query"):

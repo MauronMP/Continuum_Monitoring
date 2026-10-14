@@ -1,149 +1,185 @@
-# Complete Installation and Test Execution
+# Complete execution guide
 
-This guide starts from a clean coordinator, prepares the physical workers and
-runs every active test family. Run project commands from the repository root.
-For the purpose, evidence files and generated figures of each family, see
-[Test, experiment and figure reference](TESTS_AND_FIGURES.md).
+## Index
 
-## 1. Coordinator system packages
+1. [Scope and prerequisites](#scope-and-prerequisites)
+2. [Battery 1: physical architecture evaluation](#battery-1-physical-architecture-evaluation)
+3. [Battery 2: monitoring-strategy comparison](#battery-2-monitoring-strategy-comparison)
+4. [Validation and maintenance](#validation-and-maintenance)
+5. [Timeouts and recovery](#timeouts-and-recovery)
 
-On Ubuntu or Debian, install the required system tools:
+## Scope and prerequisites
 
-```bash
-sudo apt-get update
-sudo apt-get install -y \
-  git \
-  python3 \
-  python3-venv \
-  python3-pip \
-  openssh-client \
-  rsync \
-  openjdk-17-jdk \
-  maven \
-  konclude \
-  graphviz
-```
+There are **two executable evaluation batteries**. The proposed four-strategy
+extension is future work and has no command yet. Software regression tests are
+engineering checks, not an additional scientific battery.
 
-Verify the host before installing the project:
+Complete [Installation](INSTALLATION.md) first. Commands below run from the
+repository root. The default topology includes Cloud, Fog, Mist and three Edge
+nodes. No five-node fallback profile is maintained.
 
 ```bash
-python3 --version
-java -version
-mvn -version
-Konclude --version
-ssh -V
-rsync --version
-tailscale status
-```
-
-Python 3.11 or newer and a 64-bit coordinator runtime are required.
-
-## 2. Clean project installation
-
-Clone and bootstrap the coordinator with all reasoner dependencies:
-
-```bash
-git clone https://github.com/MauronMP/Continuum_Monitoring.git
-cd Continuum_Monitoring
-python3 tools/bootstrap.py \
-  --profile coordinator \
-  --with-owl-reasoners
-. .venv/bin/activate
-```
-
-For an existing checkout:
-
-```bash
-cd /home/dsdservidor/Documentos/Continuum_Monitoring
-python3 tools/bootstrap.py \
-  --profile coordinator \
-  --with-owl-reasoners
-. .venv/bin/activate
-```
-
-Verify the installed Python distribution and isolated Java reasoners:
-
-```bash
-python -m pip check
-python -m pip show continuum-monitoring-benchmark
-python tools/install_owl_reasoners.py --verify-only
-```
-
-The bootstrap installs pinned HermiT, Openllet and JFact classpaths. Konclude is
-a native executable and must be provided by the operating system.
-
-## 3. Physical worker prerequisites
-
-Run the following on each Raspberry Pi worker:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y \
-  python3 \
-  python3-venv \
-  openssh-server \
-  rsync \
-  openjdk-17-jre-headless \
-  maven
-sudo systemctl enable --now ssh
-tailscale status
-```
-
-Install and verify the native Konclude executable separately on every worker
-that will execute the Konclude backend. Package availability depends on the
-worker distribution and CPU architecture:
-
-```bash
-Konclude --version
-```
-
-All workers must belong to the same Tailscale network. The active inventory is:
-
-| Tier | Node | Tailscale address |
-| --- | --- | --- |
-| Cloud | `cloud` | `100.86.63.53` |
-| Fog | `fog` | `100.93.73.27` |
-| Mist | `mist` | `100.72.111.107` |
-| Edge | `edge1` | `100.101.178.35` |
-| Edge | `edge2` | `100.70.9.117` |
-| Edge | `edge3` | `100.121.135.60` |
-
-Check each remote peer from the coordinator:
-
-```bash
-tailscale ping 100.93.73.27
-tailscale ping 100.72.111.107
-tailscale ping 100.101.178.35
-tailscale ping 100.70.9.117
-tailscale ping 100.121.135.60
-```
-
-## 4. Authorize and deploy the workers
-
-Activate the coordinator environment and create key-based SSH access:
-
-```bash
-. .venv/bin/activate
-continuum-bench physical authorize --ssh-user pi
-continuum-bench physical prepare --ssh-user pi
-continuum-bench physical deploy \
-  --with-dl-reasoners \
-  --ssh-user pi
-continuum-bench physical start --ssh-user pi
+source .venv/bin/activate
+export CONTINUUM_SSH_PROBE_TIMEOUT_SECONDS=120
+export CONTINUUM_HEALTH_TIMEOUT_SECONDS=30
 continuum-bench physical status --ssh-user pi
 ```
 
-Initial authorization may prompt for the remote account password. The project
-does not store passwords or private keys. All benchmark runs use key-based SSH.
+Read the [experiment contracts](EXPERIMENTS.md) before interpreting results.
+Do not run the two batteries concurrently. Freeze source, ontology, queries and
+configuration for each campaign; do not redeploy workers during acquisition.
+`network_mbps` is descriptive inventory metadata, not a traffic limiter. The
+physical experiments use actual VPN links without bandwidth shaping.
 
-Redeploy and restart workers after changes to Python code, ontology, shapes,
-queries, profiles or placement. Protocol 10 checks their semantic file digest in
-addition to version and topology. A same-version file edit can make a worker stale;
-`physical status` reports the mismatch. See [Ontology review](ONTOLOGY_REVIEW.md).
+## Battery 1: physical architecture evaluation
 
-## 5. Mandatory pre-run validation
+### Basic command: complete battery
 
-Run every local and semantic gate before starting a long physical campaign:
+```bash
+continuum-bench --timeout-mode bounded --keep-going suite
+```
+
+This executes software/documentation checks, semantic validation, workload
+preflight, worker startup, distributed and replicated monitoring, load,
+physical experiments, configurable campaign axes, local policy evaluation and
+reporting. The distributed-reasoning-scalability family is included by the suite.
+Every suite has its own `outputs/suites/<run-id>/` directory. The independent
+comparison module is not included.
+
+Preview the exact commands without acquiring measurements:
+
+```bash
+continuum-bench --timeout-mode bounded --keep-going suite --dry-run
+```
+
+The following complementary commands execute individual parts of Battery 1.
+Their output paths differ from a complete suite; do not accidentally combine
+independent runs into one accepted campaign.
+
+### Physical monitoring: scalability and cumulative categories
+
+```bash
+continuum-bench --timeout-mode bounded --keep-going physical all --layout distributed
+continuum-bench --timeout-mode bounded --keep-going physical all --layout replicated
+continuum-bench --timeout-mode bounded --keep-going physical scalability --layout distributed
+continuum-bench --timeout-mode bounded --keep-going physical cumulative --layout distributed
+```
+
+Use `--reasoner rdfs`, `--reasoner hermit`, `--reasoner openllet`,
+`--reasoner jfact` or `--reasoner konclude` after `physical` to select a backend;
+omitting it uses all configured backends. Sizes, categories, seed and repetitions
+are in `configs/benchmark.toml`.
+
+### Load
+
+```bash
+continuum-bench --timeout-mode bounded --keep-going load physical
+continuum-bench --timeout-mode bounded --keep-going load physical --dimension users
+continuum-bench load plot --output-dir outputs/load
+```
+
+`configs/load-benchmark.toml` defines named profiles. Other `--dimension` values
+are `events_per_second`, `target_triples`, `rule_count`, and `node_count`.
+`--profile NAME` selects an existing profile, not a newly invented workload.
+
+### Physical experiment families
+
+```bash
+continuum-bench --timeout-mode bounded --keep-going experiment all physical --distributed-reasoning-config configs/distributed-reasoning.toml
+continuum-bench --timeout-mode bounded --keep-going experiment scale-out physical
+continuum-bench --timeout-mode bounded --keep-going experiment reasoning-hardware physical
+continuum-bench --timeout-mode bounded --keep-going experiment distributed-ontology physical
+continuum-bench --timeout-mode bounded --keep-going experiment distributed-reasoning-scalability physical
+continuum-bench experiment plot all --output-dir outputs/experiments
+continuum-bench experiment analyze --output-dir outputs/experiments
+```
+
+The first three families use `configs/experiments.toml`; distributed reasoning
+uses `configs/distributed-reasoning.toml`. For the standalone `experiment all`,
+pass the latter explicitly as shown. The complete `suite` already does so.
+
+### Configurable workload axes
+
+```bash
+continuum-bench campaign --campaign-config configs/campaign.toml --validate-only
+continuum-bench --timeout-mode bounded --keep-going campaign
+continuum-bench --timeout-mode bounded --keep-going campaign --axis physical_nodes
+```
+
+`configs/campaign.toml` controls resource, user, IoT, policy, requirement, query,
+request and concurrency axes. Each campaign creates a unique result directory.
+
+### Local policy-plan evaluation
+
+These are components of Battery 1, not a third battery or a physical recovery test.
+
+```bash
+continuum-bench policy-evaluation all
+continuum-bench policy-evaluation effectiveness
+continuum-bench policy-evaluation dynamic-adaptation
+continuum-bench policy-evaluation scalability
+continuum-bench policy-evaluation computational-cost
+continuum-bench policy-evaluation plot
+```
+
+Configuration: `configs/policy-evaluation.toml`. The separate reasoning probe
+is not part of the procedural decision path; network volumes here are estimates.
+
+### Reports and optional analysis
+
+Replace `RUN_ID` with an existing directory name; the following commands read
+already acquired data and do not create new experimental evidence.
+
+```bash
+continuum-bench report --input-dir outputs/suites/RUN_ID --output-dir outputs/suites/RUN_ID/report
+python tools/render_suite_diagnostics.py outputs/suites/RUN_ID
+continuum-bench study category-cost --events outputs/load/event-runs.csv --output-dir outputs/study
+```
+
+The diagnostic renderer uses the suite's archived source and clearly labels
+partial results. It does not override publication acceptance. `study trace`
+is an optional analytical trace generator, not an additional physical battery:
+
+```bash
+continuum-bench study trace --output-dir outputs/study
+```
+
+Its distance/link models do not throttle real interfaces and must not be confused
+with measured geographical distances. Ontology illustration generation is not
+provided; figures supplied by the author are managed separately.
+
+## Battery 2: monitoring-strategy comparison
+
+### Basic commands: availability and complete battery
+
+```bash
+python -m continuum_bench.monitoring.comparison check
+python -m continuum_bench.monitoring.comparison run
+```
+
+All six nodes participate by default. The full configuration schedules 720 jobs:
+three strategies, four experiment families with their configured size points,
+six hosts and five repetitions. The families are effectiveness, adaptation,
+scalability and cumulative processing. See [Experiments](EXPERIMENTS.md).
+
+### Complementary commands
+
+```bash
+python -m continuum_bench.monitoring.comparison run --config configs/comparison.toml --output outputs/comparison
+python -m continuum_bench.monitoring.comparison report outputs/comparison/RUN_ID
+```
+
+For a deliberately different experiment, copy `configs/comparison.toml`, adjust
+its `experiments`, `strategies`, repetitions or size lists, and pass the copy with
+`--config`. Paths to `policy_config` and `topology` are relative to that config.
+The default has no excluded workers or logical resources. Selective `--nodes`
+execution remains available for fault diagnosis, not as a five-node recipe.
+There is no smoke mode. Whole-job and connection limits are configured separately
+in this module; it does not inherit Battery 1's CLI timeout flags.
+
+## Validation and maintenance
+
+These checks validate software/assets and are not scientific campaigns:
 
 ```bash
 continuum-bench doctor --physical --owl
@@ -151,357 +187,53 @@ continuum-bench topology validate
 continuum-bench validate
 continuum-bench preflight
 continuum-bench owl-validate --require-all
-continuum-bench campaign \
-  --campaign-config configs/campaign.toml \
-  --validate-only
-.venv/bin/python tools/check_documentation.py
+python tools/audit_ontology_modules.py
+python tools/review_validation_debt.py
+python tools/generate_reference_docs.py
+python tools/generate_project_indexes.py
+python tools/check_documentation.py
+python -m pytest
 ```
 
-`owl-validate --require-all` requires HermiT, Openllet, JFact and Konclude. A
-failed reasoner prerequisite must be fixed before a complete run.
-
-## 6. Recommended complete bounded suite
-
-The recommended command enforces the configured request, phase and point
-budgets. `--keep-going` records a timeout or real failure and attempts later
-independent work:
+Set `CONTINUUM_TEST_NATIVE_OWL=1` when running native integration regressions:
 
 ```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  suite
+CONTINUUM_TEST_NATIVE_OWL=1 python -m pytest tests/core/test_native_reasoners.py tests/integration
 ```
 
-The complete suite executes:
-
-1. Python unit and integration tests, including native reasoner tests.
-2. Documentation validation.
-3. Ontology, policy, query and topology validation.
-4. External OWL reasoner consistency checks.
-5. Distributed physical cumulative and scalability benchmarks.
-6. Replicated physical cumulative and scalability benchmarks.
-7. The physical load benchmark.
-8. Scale-out, hardware reasoning, distributed ontology and distributed
-   reasoning scalability experiments.
-9. The configurable multi-axis physical campaign.
-10. Policy effectiveness, dynamic adaptation, policy scalability and
-    computational-cost evaluations.
-11. PNG figure and publication report generation.
-
-Each invocation creates an isolated directory:
-
-```text
-outputs/suites/<UTC timestamp>-<run identifier>/
-```
-
-Long physical phases print the active family, reasoner, load, repetition and
-stage. Worker heartbeats appear every 15 seconds, and each family updates
-`progress.json` plus its checkpointed `summary.csv`. A deadline is recorded as
-`timeout`; a native reasoner or implementation error is recorded as `failed`.
-Both remain visible in the suite manifest and final report. The suite returns a
-nonzero status when evidence is incomplete even though it continues through its
-planned top-level steps.
-
-Inspect the planned commands without contacting a worker:
+After editing code or semantic assets, and only when no campaign is active:
 
 ```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  suite \
-  --dry-run
-```
-
-## 7. Longer campaigns
-
-Override repetitions when a larger sample is required:
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  --repetitions 5 \
-  suite
-```
-
-For a larger publication campaign:
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  --repetitions 10 \
-  suite
-```
-
-Increasing repetitions changes sample size and total duration. It does not
-change the configured scale points, policy categories or reasoner matrix.
-
-## 8. Run each family independently
-
-### Software tests
-
-Enable the installed native reasoner checks explicitly:
-
-```bash
-CONTINUUM_TEST_NATIVE_OWL=1 \
-  .venv/bin/python -m pytest \
-  -o addopts= \
-  -q \
-  -ra
-```
-
-### Documentation
-
-```bash
-.venv/bin/python tools/check_documentation.py
-```
-
-### Distributed physical monitoring
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  physical all \
-  --layout distributed \
-  --output-dir outputs/monitoring
-```
-
-Bounded execution records slow points as timeouts. It does not turn a reasoner
-crash or a semantic validation failure into success. The coordinator continues
-with independent points, checkpoints each outcome and reports
-`unvalidated_results` when physical timing completed without a completed
-canonical reference. Publication reports use only `completed` points with exact
-reference validation.
-
-### Replicated physical monitoring
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  physical all \
-  --layout replicated \
-  --output-dir outputs/monitoring
-```
-
-### Cumulative tests
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  physical cumulative \
-  --layout distributed \
-  --output-dir outputs/monitoring
-
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  physical cumulative \
-  --layout replicated \
-  --output-dir outputs/monitoring
-```
-
-### Scalability tests
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  physical scalability \
-  --layout distributed \
-  --output-dir outputs/monitoring
-
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  physical scalability \
-  --layout replicated \
-  --output-dir outputs/monitoring
-```
-
-### Physical load benchmark
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  load physical \
-  --load-config configs/load-benchmark.toml \
-  --output-dir outputs/load
-```
-
-### Physical experiments
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  experiment all physical \
-  --experiment-config configs/experiments.toml \
-  --distributed-reasoning-config configs/distributed-reasoning.toml \
-  --output-dir outputs/experiments
-```
-
-### Multi-axis physical campaign
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --keep-going \
-  campaign \
-  --campaign-config configs/campaign.toml \
-  --output-dir outputs/campaign
-```
-
-### Four policy evaluations
-
-```bash
-continuum-bench policy-evaluation all \
-  --evaluation-config configs/policy-evaluation.toml \
-  --output-dir outputs/policy-evaluation
-
-continuum-bench policy-evaluation plot \
-  --output-dir outputs/policy-evaluation
-```
-
-## 9. Timeout strategy and optional unlimited execution
-
-Bounded mode is the normal execution strategy. The following example permits
-300 seconds per worker request, 600 seconds per phase and 1,800 seconds per
-point while attempting every configured observation:
-
-```bash
-continuum-bench \
-  --timeout-mode bounded \
-  --request-timeout-seconds 300 \
-  --phase-timeout-seconds 600 \
-  --point-timeout-seconds 1800 \
-  --skip-after-timeouts 2 \
-  --no-skip-repetitions \
-  --no-skip-larger-points \
-  --no-skip-cumulative-stages \
-  --keep-going \
-  suite
-```
-
-Persistent defaults are stored in:
-
-- `configs/benchmark.toml`: global request, phase, point and skip policy.
-- `configs/load-benchmark.toml`: physical load sizes and repetitions.
-- `configs/experiments.toml`: scale-out and hardware experiments.
-- `configs/distributed-reasoning.toml`: distributed reasoning scales.
-- `configs/campaign.toml`: multi-axis physical campaign.
-- `configs/policy-evaluation.toml`: four policy-monitoring evaluations.
-
-Command-line values override the configuration files for one invocation.
-
-`--unlimited` is optional. It disables coordinator, HTTP, worker and native
-reasoner deadlines. Use it only for a supervised, reduced profile whose runtime
-is already understood:
-
-```bash
-continuum-bench \
-  --unlimited \
-  --keep-going \
-  --repetitions 1 \
-  physical scalability \
-  --reasoner rdfs \
-  --layout distributed \
-  --output-dir outputs/diagnostic-unlimited
-```
-
-`--keep-going` cannot recover control while an unbounded native call is still
-running. In particular, HermiT, Openllet, JFact or Konclude may continue for
-hours on constrained nodes. An unlimited run can therefore remain on one point
-without reaching the next reasoner, repetition or family.
-
-Do not use `Ctrl+Z` to leave a physical campaign in the background. The current
-coordinator ignores that suspend signal while it holds the physical lease and
-prints a warning. Use `Ctrl+C`, then stop and restart the workers before a new
-campaign if a native child remains active.
-
-The worker service handles one request at a time so that its Unix phase timer
-can interrupt bounded CPU work. During a long native reasoner request,
-`/health` also waits and may time out. Check the worker and Java/Konclude child
-over SSH before classifying that node as offline.
-
-## 10. Stop the workers
-
-Stop the remote services after all output has been written:
-
-```bash
-continuum-bench physical stop --ssh-user pi
-```
-
-This command removes stale PID files and terminates project-owned native Java
-materializers left by an interrupted worker. Current workers also clean their
-active Java or Konclude process group when they receive `SIGTERM`.
-
-The shortest complete sequence after installation is:
-
-```bash
-cd /home/dsdservidor/Documentos/Continuum_Monitoring
-. .venv/bin/activate
+continuum-bench physical deploy --with-dl-reasoners --ssh-user pi
 continuum-bench physical start --ssh-user pi
 continuum-bench physical status --ssh-user pi
-continuum-bench --timeout-mode bounded --keep-going suite
-continuum-bench physical stop --ssh-user pi
 ```
 
-Do not start a physical suite while another campaign holds the physical lease.
-Do not interpret results from a run whose workers failed release, source-build
-or topology compatibility checks. Metadata from current runs contains
-`software_build_id` and `topology_fingerprint`; missing values are treated as
-historical, incompatible evidence.
+A slow old process can outlast the five-second shutdown wait. If startup reports
+exit 22, inspect the affected worker and retry startup after it has exited;
+already compatible services are retained. Do not blindly kill unrelated processes.
 
-## Optional comparative policy evaluation
+## Timeouts and recovery
 
-The independent [comparative evaluation module](COMPARATIVE_EVALUATION.md) runs paired static,
-procedural and semantic policy strategies on the physical hosts. It provides
-its own bounded configuration, four experiments, durable JSON/CSV evidence and
-per-node PNG figures. Published systems are methodological references, not
-claimed reproductions. Mist is excluded by default.
+Battery 1 defaults: request 300 s, phase 300 s, point 900 s. Configuration lives
+in `[distributed]` and `[limits]` of `configs/benchmark.toml`, with family-specific
+budgets in load, experiment and campaign TOMLs. A longer bounded example is:
 
 ```bash
-.venv/bin/python -m continuum_bench.monitoring.comparison check
-.venv/bin/python -m continuum_bench.monitoring.comparison run --smoke
-.venv/bin/python -m continuum_bench.monitoring.comparison run
+continuum-bench --timeout-mode bounded --request-timeout-seconds 300 --phase-timeout-seconds 600 --point-timeout-seconds 1800 --skip-after-timeouts 2 --no-skip-repetitions --no-skip-larger-points --no-skip-cumulative-stages --keep-going suite
 ```
 
-## Five-node operation while Mist is offline
+`--keep-going` preserves failures and attempts independent later points. Skip
+triggers control whether later repetitions, sizes or stages are omitted after
+timeouts; they do not turn errors into successful measurements. A complete suite
+can finish with a nonzero exit code if some steps fail. Check `suite.json` and
+individual logs, not only the progress percentage.
 
-Use the explicit topology and bounded smoke profile described in
-[Audit remediation](REMEDIATION.md#operating-while-mist-is-offline). Deploy, start
-and run with the same `--topology-file` selection. Do not combine five-node and
-six-node outputs or silently remove Mist from the standard topology.
+`--unlimited` remains optional for supervised diagnosis; a reasoner that never
+returns can block progression indefinitely. It does not fix memory exhaustion.
+Battery 2 instead requires finite limits: default 120 s per isolated job and
+30 s for SSH connection, plus transport termination allowance.
 
-## VPN prechecks timing out
-
-If deployment stops before copying files because Mist or another peer times out,
-see [VPN lifecycle probe budgets](PHYSICAL_CONTINUUM.md#vpn-lifecycle-probe-budgets).
-Use the documented finite connectivity overrides rather than `--unlimited`.
-Run deployment, startup and status with `&&` so a failed deployment does not
-silently proceed into startup with stale workers. Do not launch the suite until
-all workers pass the compatibility and health checks.
-
-## Inspecting incomplete historical suites
-
-An incomplete suite may contain valid completed measurements while failing the
-full publication acceptance contract. To inspect those measurements, generate
-a separate, explicitly diagnostic catalogue using its archived implementation:
-
-```bash
-python tools/render_suite_diagnostics.py outputs/suites/RUN_ID
-```
-
-Replace `RUN_ID` with the actual directory name. The tool requires the suite's
-`source.tar.gz`, extracts it into a temporary directory and validates result
-metadata against that source. It writes `diagnostic-figures/`, labels every figure
-as diagnostic, and preserves the rejected publication status. It does not change
-raw records, metadata, the original report, or the normal publication gate.
-Successful-only curves may have survivor bias; always read coverage alongside
-performance. Unrecorded experiment families cannot be reconstructed by plotting.
+Use Ctrl+C for controlled interruption. Preserve partial output and start a new
+run; do not relabel a partial campaign as complete. Historical results remain
+immutable evidence under their original source and semantic fingerprints.

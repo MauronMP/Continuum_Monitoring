@@ -24,7 +24,7 @@ def _read(path: Path) -> list[dict[str, str]]:
 
 def test_policy_engine_matches_configured_ground_truth(config) -> None:
     evaluation = load_policy_evaluation_config(
-        config.root / "configs/policy-evaluation-smoke.toml"
+        config.root / "tests/fixtures/policy-evaluation.toml"
     )
     engine = PolicyEngine(evaluation.resources, evaluation.rules)
     for scenario in evaluation.scenarios:
@@ -38,7 +38,7 @@ def test_policy_engine_matches_configured_ground_truth(config) -> None:
 
 def test_four_policy_evaluations_export_reproducible_csv_and_png(config, tmp_path) -> None:
     evaluation = load_policy_evaluation_config(
-        config.root / "configs/policy-evaluation-smoke.toml"
+        config.root / "tests/fixtures/policy-evaluation.toml"
     )
     manifest = run_policy_evaluation(config, evaluation, tmp_path, EXPERIMENTS)
     assert set(manifest["results"]) == set(EXPERIMENTS)

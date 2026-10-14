@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 @pytest.fixture
 def workload():
-    config = load_policy_evaluation_config(ROOT / "configs/policy-evaluation-smoke.toml")
+    config = load_policy_evaluation_config(ROOT / "tests/fixtures/policy-evaluation.toml")
     return expand(config, {"mist"}, 2)
 
 

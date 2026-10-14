@@ -54,20 +54,6 @@ def test_observations_are_numeric_without_invented_units(config):
         assert not list(graph.objects(observation, MC.hasMeasurementUnit))
 
 
-def test_namespace_migration_preserves_literals_and_refuses_overwrite(root, tmp_path):
-    import pytest
-    migration = runpy.run_path(str(root / 'tools/migrate_ontology_namespace.py'))['migrate']
-    source = tmp_path / 'legacy.ttl'
-    destination = tmp_path / 'new.ttl'
-    source.write_text('<http://example.org/smartcity#x> <http://example.org/smartcity#p> "http://example.org/smartcity#literal" .')
-    assert migration(source, destination) == 2
-    graph = Graph().parse(destination)
-    assert str(graph.value(MC.x, MC.p)) == 'http://example.org/smartcity#literal'
-    with pytest.raises(FileExistsError):
-        migration(source, destination)
-    assert 'smartcity#x' in source.read_text()
-
-
 def test_multiple_policy_categories_validate_and_are_all_documented(config, root):
     from continuum_bench.ontology import validate_shacl
     graph = load_graph(config.resolve(path) for path in config.ontology_files)

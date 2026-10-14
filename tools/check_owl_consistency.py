@@ -2,9 +2,8 @@
 """Read-only OWLAPI consistency check using an external reasoner classpath.
 
 Release and native runtime validation, separate from timed benchmarks. Requires
-Java 11+ (Java 17 recommended); Python uses only its standard library. Nothing
-is downloaded, installed or modified in Protégé. Nested dependency jars are
-extracted into a temporary directory and removed after the check.
+Java 11+ (Java 17 recommended); Python uses only its standard library. Dependencies are supplied through the isolated installed classpath; no GUI
+installation or implicit application-directory discovery is used.
 """
 
 from __future__ import annotations
@@ -20,7 +19,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,48 +28,6 @@ OWLAPI_FACTORIES = {
     "openllet": "openllet.owlapi.OpenlletReasonerFactory",
     "jfact": "uk.ac.manchester.cs.jfact.JFactFactory",
 }
-
-
-def find_protege(explicit: Path | None) -> Path:
-    if explicit is not None:
-        if not explicit.is_dir():
-            raise ValueError(f"Protégé directory does not exist: {explicit}")
-        return explicit.resolve()
-    configured = os.environ.get("PROTEGE_HOME")
-    if configured:
-        return find_protege(Path(configured))
-    # Handles both accented Unicode spellings of the macOS application name.
-    candidates = sorted(Path("/Applications").glob("Prot*.app"))
-    if len(candidates) == 1:
-        return candidates[0]
-    raise ValueError(
-        "Set --protege-home to the extracted Protégé directory, or pass "
-        "--classpath with OWLAPI, the selected reasoner and its dependencies. "
-        "No reasoner is installed automatically."
-    )
-
-
-def protege_classpath(directory: Path, temporary: Path) -> str:
-    owlapi = sorted(directory.rglob("owlapi-osgidistribution*.jar"))
-    hermit = sorted(directory.rglob("org.semanticweb.hermit*.jar"))
-    if len(owlapi) != 1 or len(hermit) != 1:
-        raise ValueError(
-            f"Expected one OWLAPI bundle and one HermiT plugin in {directory}; "
-            f"found {len(owlapi)} and {len(hermit)}. Use --classpath for a "
-            "different installation layout."
-        )
-    jars = sorted(owlapi[0].parent.glob("*.jar")) + hermit
-    # OSGi resolves embedded jars automatically; a plain JVM needs them on its
-    # classpath. Extract only jars, with basenames in a private temporary folder.
-    for index, bundle in enumerate((owlapi[0], hermit[0])):
-        with zipfile.ZipFile(bundle) as archive:
-            for name in sorted(archive.namelist()):
-                if name.endswith(".jar"):
-                    target = temporary / f"{index}-{Path(name).name}"
-                    with archive.open(name) as source, target.open("wb") as output:
-                        shutil.copyfileobj(source, output)
-                    jars.append(target)
-    return os.pathsep.join(str(path) for path in jars)
 
 
 def parse_report(output: str) -> dict:
@@ -108,7 +64,6 @@ def main(argv: list[str] | None = None) -> int:
             "'continuum-bench owl-validate' for the active modular ontology."
         ),
     )
-    parser.add_argument("--protege-home", type=Path)
     parser.add_argument(
         "--reasoner", choices=tuple(OWLAPI_FACTORIES), default="hermit",
         help="OWLAPI reasoner used for consistency checking",
@@ -139,15 +94,9 @@ def main(argv: list[str] | None = None) -> int:
         with tempfile.TemporaryDirectory(prefix="continuum-hermit-") as temp:
             temporary = Path(temp)
             classpath = args.classpath
-            if not classpath and args.protege_home is not None and args.reasoner == "hermit":
-                classpath = protege_classpath(args.protege_home, temporary)
             if not classpath:
                 environment_name = f"CONTINUUM_{args.reasoner.upper()}_CLASSPATH"
                 classpath = os.environ.get(environment_name)
-            if not classpath and args.reasoner == "hermit":
-                classpath = protege_classpath(
-                    find_protege(args.protege_home), temporary
-                )
             if not classpath:
                 raise ValueError(
                     f"Set --classpath or CONTINUUM_{args.reasoner.upper()}_CLASSPATH "

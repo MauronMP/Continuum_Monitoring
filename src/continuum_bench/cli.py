@@ -82,7 +82,7 @@ def _parser() -> argparse.ArgumentParser:
     suite.add_argument("--policy-evaluation-config", default="configs/policy-evaluation.toml")
     suite.add_argument("--families", nargs="+", choices=("software","validation","monitoring","load","experiments","campaign","policy-evaluation","report"))
     campaign = subparsers.add_parser("campaign", help="Run configurable physical scalability and policy-cost axes")
-    campaign.add_argument("--campaign-config", default="configs/campaign-smoke.toml")
+    campaign.add_argument("--campaign-config", default="configs/campaign.toml")
     campaign.add_argument("--output-dir", default="outputs/campaign")
     campaign.add_argument("--axis", action="append")
     campaign.add_argument("--topology-name", default="physical")

@@ -17,16 +17,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9"]
-diagrams = ["reportlab>=4.4,<5"]
 
 [project.scripts]
 continuum-bench = "continuum_bench.cli:main"
-continuum-smoke-cumulative = "continuum_bench.monitoring.smoke:main_cumulative"
-continuum-smoke-scalability = "continuum_bench.monitoring.smoke:main_scalability"
-continuum-smoke-physical-cumulative = "continuum_bench.monitoring.smoke:main_cumulative"
-continuum-smoke-physical-scalability = "continuum_bench.monitoring.smoke:main_scalability"
-continuum-smoke-physical-load = "continuum_bench.monitoring.smoke:main_physical_load"
-continuum-smoke-physical-experiments = "continuum_bench.monitoring.smoke:main_physical_experiments"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -34,8 +27,3 @@ where = ["src"]
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
-markers = [
-    "smoke_cumulative: verifies the cumulative benchmark workflow",
-    "smoke_scalability: verifies the scalability benchmark workflow",
-    "owl_consistency: optional OWLAPI/HermiT integration using an installed Protege and Java",
-]

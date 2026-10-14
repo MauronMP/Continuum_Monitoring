@@ -74,9 +74,9 @@ def test_package_version_matches_metadata(root):
     )
 
 
-def test_portability_ci_does_not_require_native_reasoners(root):
+def test_ci_keeps_regressions_without_physical_campaigns(root):
     workflow = (root / ".github/workflows/portability.yml").read_text()
-    assert (
-        "continuum-bench --config configs/smoke-vpn.toml validate" in workflow
-    )
-    assert "run: .venv/bin/continuum-bench validate" not in workflow
+    assert "-m pytest" in workflow
+    assert "--smoke" not in workflow and "configs/smoke" not in workflow
+    assert "policy-evaluation all" not in workflow
+    assert "audit_ontology_modules.py" in workflow

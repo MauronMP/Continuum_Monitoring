@@ -242,7 +242,7 @@ skipped rather than silently omitted.
 The records above remain historical. The proposed cause of the Konclude mismatch
 is not established by consistency checks alone. The current implementation is
 being checked with canonical-versus-fragment result digests and an explicitly
-selected five-node physical deployment. See [Audit remediation](REMEDIATION.md)
+historical five-node physical deployment (superseded by the current six-node inventory). See [Audit remediation](REMEDIATION.md)
 and its recorded verification results. The query-catalog artifact is now
 structurally validated rather than pending; campaign and historical measurement
 evidence remain separate prerequisites.

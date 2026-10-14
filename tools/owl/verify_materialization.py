@@ -10,9 +10,9 @@ from continuum_bench.owl_materialization import NativeOWLReasoner, InconsistentO
 
 
 def main():
-    ex = Namespace("urn:continuum:materialization-smoke:")
+    ex = Namespace("urn:continuum:materialization-fixture:")
     graph = Graph().parse(data='''
-@prefix : <urn:continuum:materialization-smoke:> .
+@prefix : <urn:continuum:materialization-fixture:> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 :A a owl:Class; rdfs:subClassOf :B . :B a owl:Class .

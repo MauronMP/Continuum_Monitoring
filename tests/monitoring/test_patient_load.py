@@ -7,7 +7,7 @@ from continuum_bench.monitoring.distributed import Endpoint
 
 @pytest.mark.parametrize('stop,expected',[(True,1),(False,2)])
 def test_patient_load_attempts_later_profiles_after_prepare_timeout(config,tmp_path,monkeypatch,stop,expected):
-    workload=load_load_config(config.root/'configs/load-smoke.toml')
+    workload=load_load_config(config.root/'tests/fixtures/load.toml')
     first=replace(workload.profiles[0],name='first',node_count=1)
     second=replace(first,name='second',events_per_second=first.events_per_second*2)
     workload=replace(workload,profiles=(first,second),repetitions=1,stop_after_timeout=stop)

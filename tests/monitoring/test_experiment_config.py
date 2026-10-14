@@ -15,9 +15,9 @@ def test_full_experiment_config_uses_non_pruning_production_budgets(config):
     assert workload.stop_after_timeout is False
 
 
-def test_experiment_smoke_config_defines_all_three_families(config):
+def test_experiment_fixture_config_defines_all_three_families(config):
     workload = load_experiment_config(
-        config.root / "configs/experiments-smoke.toml"
+        config.root / "tests/fixtures/experiments.toml"
     )
 
     assert workload.scale_out_node_counts == (1, 3, 6)
@@ -34,7 +34,7 @@ def test_experiment_smoke_config_defines_all_three_families(config):
 
 def test_reasoning_profile_selection_is_explicit(config):
     workload = load_experiment_config(
-        config.root / "configs/experiments-smoke.toml"
+        config.root / "tests/fixtures/experiments.toml"
     )
 
     selected = select_reasoning_profiles(workload, ["rules-5"])

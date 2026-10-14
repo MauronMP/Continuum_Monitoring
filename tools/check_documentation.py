@@ -10,6 +10,7 @@ import tempfile
 from urllib.parse import unquote
 
 from generate_reference_docs import generate
+from generate_project_indexes import render
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,7 +28,7 @@ GENERATED_NAMES = (
 def documentation_files(root: Path = ROOT) -> list[Path]:
     paths = list(root.glob("*.md"))
     paths.extend((root / "docs").rglob("*.md"))
-    paths.append(root / "ontology/diagrams/README.md")
+    paths.append(root / "queries/README.md")
     return sorted({path.resolve() for path in paths if path.is_file()})
 
 
@@ -130,6 +131,10 @@ def main(argv: list[str] | None = None) -> int:
     errors = check_links(paths)
     if not args.links_only:
         errors.extend(check_generated_references())
+        for name, text in render().items():
+            path = ROOT / name
+            if not path.is_file() or path.read_text() != text:
+                errors.append(f"{name} is stale; run python tools/generate_project_indexes.py")
     if errors:
         for error in errors:
             print(f"ERROR: {error}")

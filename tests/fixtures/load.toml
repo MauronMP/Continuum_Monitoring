@@ -1,3 +1,4 @@
+# Internal regression fixture; not an executable benchmark profile.
 [load]
 repetitions = 1
 duration_seconds = 0.2
@@ -9,7 +10,7 @@ recovery_timeout_seconds = 45
 seed = 2026
 
 [[profiles]]
-name = "eps-smoke"
+name = "eps-fixture"
 dimension = "events_per_second"
 events_per_second = 10
 users = 5
@@ -18,7 +19,7 @@ rule_count = 2
 node_count = 6
 
 [[profiles]]
-name = "nodes-smoke"
+name = "nodes-fixture"
 dimension = "node_count"
 events_per_second = 10
 users = 5

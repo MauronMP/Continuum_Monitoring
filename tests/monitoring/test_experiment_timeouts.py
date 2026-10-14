@@ -13,7 +13,7 @@ def test_scale_out_timeout_skips_repetitions_but_continues_reasoners(
     monkeypatch,
 ):
     workload = replace(
-        load_experiment_config(config.root / "configs/experiments-smoke.toml"),
+        load_experiment_config(config.root / "tests/fixtures/experiments.toml"),
         repetitions=3,
         scale_out_node_counts=(1,),
     )

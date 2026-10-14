@@ -184,44 +184,19 @@ adding fragment sizes is not the logical graph size.
 The union contains **9,150 distinct triples**. The complete logical substrate
 contains 2,956 triples; 252 resources are marked sensitive by the fragment model.
 These counts are configuration-specific and must be regenerated after changes.
-The 35 targeted partitioning, module-boundary and fragment-transport tests passed.
 The module audit reports 396 owned terms, no duplicate ownership, no unresolved
 imports, no profile/placement mismatch and no optional wellbeing/federation
 imports in the core closure.
 
-## Live worker check on 13 October 2026
+## Deployment freshness
 
-A read-only `physical status` probe was saved in `physical-status.json` alongside
-the fragment export. Cloud refused the HTTP connection on port 8391. Fog, Mist
-and all three Edge services returned `status=ok`, protocol 10, ontology 4.0.0
-and the same semantic asset digest as this checkout, but their source build was
-`d1a272264441b6a0`, while this checkout reports `b1e2a4e3de3b7e0d`.
-The status command therefore marks the remote workers incompatible (`healthy=false`)
-and exits nonzero. This is a code-version mismatch, not evidence that those five
-machines are offline or their ontology imports are broken.
-
-No services were restarted or deployed during this inspection. Before a new
-campaign, ensure no existing campaign is active, synchronize one frozen release,
-start all workers including Cloud and repeat the status check. A matching semantic
-digest alone does not make different software builds valid for one campaign.
-The probe does not expose the currently prepared in-memory graph, so the graph
-allocation documented above is verified from code and freshly generated
-fragments, rather than a remote memory dump.
-
-### Resolved by synchronization later on 13 October
-
-The workers were subsequently synchronized and restarted at the user's request.
-All six now pass compatibility and health checks on source build
-`b1e2a4e3de3b7e0d`. Each accepted its designated distributed fragment with four
-synthetic users, completed RDFS reasoning and answered one query. All four native
-backends passed installer smoke checks on each remote host; full ontology
-consistency passed all four backends on the coordinator. Evidence is preserved
-under `outputs/audit/worker-sync-20261013/`.
-
-Restarting the old remote processes exceeded the stop helper's five-second wait;
-bounded retries recovered all services. The earlier failed health snapshot is
-retained as history, not the current deployment state. This readiness check does
-not establish performance at larger workload sizes.
+The six-node deployment was synchronized and verified on 13 October 2026;
+maintenance evidence is under `outputs/audit/worker-sync-20261013/`. This is a
+historical snapshot, not a guarantee after later source edits. Check compatibility
+before every campaign, and synchronize/restart after code or semantic changes.
+`physical status` validates build, topology and semantic identity, but does not
+expose a remote dump of the prepared graph. The local export above checks
+configured placement rather than remote memory contents.
 
 ## Remaining limitations and completion criteria
 
@@ -234,11 +209,12 @@ not establish performance at larger workload sizes.
   enforce per-user authorization on returned answers or secure files on disk.
 - The coordinator sees the complete benchmark input. Production decentralization
   requires local data ingestion and a policy-controlled response boundary.
-- Locations are placeholders; VPN connectivity does not establish physical
-  distance, and no mobility simulation is executed by fragmentation.
-- SHACL warnings and incomplete policy/requirement traceability are separate
-  from import correctness; consult `docs/ONTOLOGY_REVIEW.md`. A clean module
-  audit must not be reported as full clinical or policy validation.
+- The devices are geographically distributed, but coordinate fields are not
+  populated. VPN addresses do not establish distance; fragmentation executes
+  no mobility simulation. `network_mbps` is nominal metadata and does not cap
+  actual throughput.
+- Model-data completeness and traceability are evaluated separately in
+  [Ontology review](ONTOLOGY_REVIEW.md).
 - Remote deployment freshness must be checked before a new campaign. Do not
   synchronize or restart workers while a campaign is running; release/digest
   mismatches intentionally invalidate mixed-version evidence.

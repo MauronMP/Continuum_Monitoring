@@ -25,7 +25,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--users',type=int,default=100)
     parser.add_argument('--reasoner',choices=['rdfs','hermit','openllet','jfact','konclude'],default='konclude')
-    parser.add_argument('--topology-file',type=Path,default=ROOT/'configs/topologies/physical/without-mist.toml')
+    parser.add_argument('--topology-file',type=Path,default=ROOT/'configs/topologies/physical/topology.toml')
     parser.add_argument('--timeout-seconds',type=float,default=120)
     parser.add_argument('--output',type=Path,default=ROOT/'outputs/audit/distributed-semantics.json')
     args=parser.parse_args()

@@ -1,106 +1,128 @@
-# Policy Evaluation Experiments
+# Experiments and scientific contracts
 
-## Evaluation boundary
+## Two batteries, one reusable core
 
-This controlled evaluator selects monitoring plans through procedural context
-rules. The ontology validates identifiers; a separately timed synthetic reasoning
-probe does not feed the decision engine. These experiments therefore do not
-establish a semantic advantage over procedural rules. The alternative
-[comparison module](COMPARATIVE_EVALUATION.md) explicitly distinguishes static,
-procedural and semantic decisions.
+The project currently exposes two complete evaluation batteries. Their experimental
+families are components, not additional standalone research modules. A proposed
+third battery comparing static, threshold/rule-based, context-aware and
+ontology-plus-policy-aware monitoring is **not implemented**. No current result
+should be presented as that four-strategy comparison.
 
-Scenario generation, decision execution, process sampling, CSV export and figure
-generation are separate components. The configuration is
-`configs/policy-evaluation.toml`; the reduced verification profile is
-`configs/policy-evaluation-smoke.toml`.
+| Battery | Entry point | Scientific object |
+| --- | --- | --- |
+| 1. Physical architecture evaluation | `continuum-bench suite` | Cost, capacity and query correctness of configured monitoring workloads across a physical continuum. |
+| 2. Monitoring-strategy comparison | `python -m continuum_bench.monitoring.comparison run` | Paired operational-plan quality and computational cost of three decision implementations. |
 
-## Policy effectiveness
+See [Complete execution](COMPLETE_EXECUTION.md) for commands and [Outputs](OUTPUTS.md)
+for evidence. Ontology and policies are internal mechanisms; neither an OWL
+consistency check nor a timing curve validates stress detection clinically.
 
-Each configured scenario defines ground truth for policies, resources, metrics,
-sampling interval and actions. The static strategy always applies one broad plan.
-The policy-driven strategy evaluates context conditions and creates a plan from
-the active rules. A plan item is a policy, resource, metric, action or sampling
-interval.
+## Battery 1: physical architecture evaluation
 
-The experiment reports precision, coverage/recall, over-monitoring,
-under-monitoring, policy false positives and false negatives, correctly selected
-resources and metrics, and both actual and expected plans.
+The coordinator orchestrates six physical hosts: Cloud, Fog, Mist and three Edge
+nodes. Devices are geographically distributed and connected through Tailscale.
+Roles express architectural responsibilities, not controlled hardware classes.
+The VPN carries real traffic: `network_mbps` is inventory metadata and no traffic
+shaping is applied. Unrecorded coordinates and link capacity must remain unknown.
 
-```bash
-continuum-bench policy-evaluation effectiveness
-```
+`monitoring/suite.py` composes independent families and records their outcomes.
+Infrastructure discovery, graph construction, reasoner adapters, metrics and
+reporting are separate modules. Each point records the configured backend and
+workload; errors and timeouts are preserved. Distributed mode uses authority-aware
+instance fragments and tier-specific schema; replicated mode gives each worker
+the complete workload. See [Ontology distribution](ONTOLOGY_DISTRIBUTION.md).
 
-## Dynamic adaptation
+| Family / implementation | What changes or executes | Main observations | Interpretation boundary |
+| --- | --- | --- | --- |
+| Scalability: `physical.py`, `distributed_ontology.py` | Increasing synthetic users, repeated across five reasoners and two placements. | Preparation/reasoning cost, query latency, CPU/RSS, throughput, status and reference agreement. | Synthetic user growth is not increasing physical hosts. |
+| Cumulative monitoring: same coordinators | Successively includes configured query categories for the prepared workload. | Stage cost, accumulated work and category contribution. | Accumulated categories are not time-varying real patients. |
+| Load: `load_benchmark.py` | Configured event rates, users, triples, rule counts and node counts. | Completion, losses/timeouts, query timing, preparation and recovery phases. | Rebuilding worker state is not end-to-end application recovery. |
+| Scale-out: `experiments.py` | Selects increasing numbers of real workers from the inventory. | Execution time, throughput and per-node workload. | Real VPN conditions are uncontrolled; shared hardware types confound tier comparisons. |
+| Reasoning hardware: `experiments.py` | Varies users, asserted graph size or generated rule count on physical backends. | Materialization time, resources and capacity failures. | Neutral padding and semantic axioms represent different costs. |
+| Distributed ontology: `experiments.py` | Executes fragmented and full reference graphs and compares query results. | Placement costs, exact query evidence and worker timings. | Agreement is workload/query-specific, not complete distributed OWL semantics. |
+| Distributed reasoning scalability: `distributed_reasoning_scalability.py` | Configured graph sizes, worker counts and RDFS / OWL classification-realization tasks. | Scaling, normalized semantic validation, capacity and resource observations. | Backends expose different reasoning contracts; do not compare unlike tasks as identical. |
+| Workload-axis campaign: `campaign.py` | Changes physical nodes, IoT instances, users, requests, policies, individuals, requirements, query complexity/count or concurrency. | End-to-end request work, throughput, CPU/RSS, status and result checks. | Generated workload vocabulary is a controlled workload, not every application ontology module. |
+| Policy-plan evaluation: `policy_evaluation/` | Effectiveness, context adaptation, scalability and computational cost of fixed/procedural plans. | Plan conformance, coverage/excess, evaluation cost, sampled resources and estimated observation volume. | Contexts are supplied; the timed reasoning probe does not feed the decision path. |
 
-One run processes `normal → overload → failure → recovery`. Every transition
-records the previous and new state, activated and deactivated policies, previous
-and resulting plans, decision time, context-read time, separate reasoning cost,
-policy evaluation and plan-generation time. Contexts and timeline timestamps are
-supplied by configuration. The historical `detection_latency_ms` column times a
-context assignment; `total_adaptation_latency_ms` includes the separate reasoning
-probe. Neither measures physical fault detection or recovery.
+The local policy evaluator uses `normal → overload → failure → recovery` fixtures.
+Its historical `detection_latency_ms` field times reading a supplied context.
+`total_adaptation_latency_ms` includes a separate reasoning probe. Neither is
+physical fault-detection latency. Observation counts and traffic are model-based
+estimates, not emitted events or measured interface bytes. Process sampling does
+not automatically include native children; read each field's recorded scope.
 
-Recovery is valid only when its plan matches ground truth and no policy from the
-previous state remains stale.
+A policy belongs to one or more semantic categories. Category-associated queries
+may support multiple policies; their shared execution cost must not be counted
+as several independent measurements. The 12 policy categories and 16 query groups
+are different classifications. The [query guide](../queries/README.md) explains
+routing and the compiled query catalogue.
 
-```bash
-continuum-bench policy-evaluation dynamic-adaptation
-```
+## Battery 2: monitoring-strategy comparison
 
-## Policy scalability
+The module `monitoring/comparison/` defines a `DecisionAdapter` contract:
+`decide(context) -> MonitoringPlan`. Adapters receive inputs but never the expected
+plan. The runner owns repetitions, deterministic ordering, transport, timing and
+outputs. Each strategy/job executes in a fresh process on one selected host;
+this is paired per-host evaluation, not collaborative distributed decisions.
 
-Every level increases all four independent workload variables: continuum
-resources, evaluable policies, active policy categories and context events. The
-same four context semantics are retained at every level. Warm-up and repetition
-counts are configured outside the code.
+| Strategy | Actual mechanism | Purpose |
+| --- | --- | --- |
+| `static` | A fixed resource/metric/action/interval plan. | Quantify the cost and excess coverage of context-independent monitoring. |
+| `procedural` | Existing `PolicyEngine` selects configured rules for a supplied context. | Establish the non-semantic adaptive baseline. |
+| `semantic` | RDFS materializes specialized resource types; SPARQL selects policies and inferred tier members. | Measure an executable semantic implementation of equivalent supported policies. |
 
-Reported primary metrics are total policy-evaluation time, decision mean,
-median, p95 and standard deviation, plan-generation time, decision throughput,
-end-to-end throughput, CPU and RAM. Explicit triples, inferred triples, internal
-reasoning time and final graph size remain secondary explanatory metrics.
+The semantic adapter uses a small RDF projection of the same inputs. It does not
+load the entire modular ontology, use all OWL backends or implement general policy
+conflict resolution. RDFS type inference is consumed by resource selection;
+removing it changes decisions in the regression fixture. A supplied context label
+is not inferred from raw sensors in any current adapter.
 
-```bash
-continuum-bench policy-evaluation scalability
-```
+| Experiment | Method | Primary evidence |
+| --- | --- | --- |
+| Effectiveness | Same shuffled contexts and independently configured expected operational plans. | Resource–metric coverage, over/under-monitoring, interval/actions and exact-plan agreement. |
+| Adaptation | Ordered normal/overload/failure/recovery transitions. | Decision time after known context, active policies and planned versus required interval. |
+| Scalability | Multiply logical resources and policy copies. | Preparation, decision p50/p95, throughput and sampled memory per host. |
+| Cumulative | Process longer traces without rebuilding the model inside a job. | Accumulated decision time, amortized throughput and CPU per event. |
 
-## Computational cost
+Scalability currently increases resources and policies together, so it cannot
+isolate their separate causal effects. Each cumulative size is a new isolated job;
+it is not a continuously growing ontology. All six executors, including Mist,
+are selected by default. The default matrix has 720 jobs and five repetitions.
 
-Static and policy-driven strategies run the same scenario and resource set. The
-experiment records mean and peak CPU, mean and peak RAM, decision and total
-processing time, activated metrics, generated observations, aggregate sampling
-frequency, event volume, monitored resources and timeouts. Policy-driven rows
-also record reasoning, inferred triples, materialization and plan-generation
-cost.
+Correctness compares observable plans, not policy IDs that would unfairly penalize
+the static baseline. Coverage uses resource–metric pairs; exact agreement also
+checks actions and sampling interval. Expected plans are configured acceptance
+criteria, not clinical ground truth. Semantic and procedural agreement validates
+functional equivalence on these scenarios, not superior semantic accuracy.
 
-The cost runner repeats each decision a configured number of times before
-reporting the mean per-decision cost. This avoids treating sub-millisecond
-process-sampler startup as the workload itself.
+## Fairness, reproducibility and interpretation
 
-Observation counts and network traffic are estimates, not emitted sensor events
-or host-interface measurements. Traffic multiplies estimated observations by the
-configured payload size. Cost figures divide the once-per-batch reasoning time
-by `decision_iterations` before combining it with mean per-decision costs. The CSV labels
-this method explicitly.
+Use identical inputs and seeds, archive effective configuration and source, and
+pair strategies within node/workload/repetition. Warm-up precedes measurement;
+preparation and steady-state decisions are reported separately. Cross-host totals
+must not be called one distributed transaction. Native allocation failures are
+capacity observations and cannot be repaired by extending timeouts.
 
-```bash
-continuum-bench policy-evaluation computational-cost
-```
+Report missing, failed, timed-out and skipped points with denominators. Do not
+replace them with zero or hide them from coverage. Confidence intervals require
+independent repetitions; successful-only curves can exhibit survivor bias.
+Absolute timings vary with CPU scheduling, temperature, background load and VPN
+paths even when generated input is deterministic. Scientific claims must name
+the dataset, release, hardware and evaluation boundary.
 
-## Reproducibility
+## References and how they are used
 
-Each row includes the experiment, scenario, strategy, load size, repetition,
-policy category, random seed and final status. `metadata.json` records the source
-revision, host, platform, ontology release, internal reasoner and complete public
-configuration. Timing and operating-system resource measurements vary with the
-host; scenario generation and policy activation are deterministic for a fixed
-configuration and seed.
+These are methodological references, not implemented replicas or imported result
+sets. Their numbers must not be pooled with this project's measurements.
 
-## Interpretation limits
+| Reference | Relevance to the experiments | What is not reproduced |
+| --- | --- | --- |
+| Forti, Gaglianese and Brogi, *Lightweight self-organising distributed monitoring of Fog infrastructures*, FGCS 114, 605–618 (2021), [publisher](https://www.sciencedirect.com/science/article/abs/pii/S0167739X19334582). | Physical fog monitoring, resource/network costs and scale-out motivate Battery 1. | FogMon's peer-to-peer overlay, restructuring algorithm and fault resilience. |
+| Ghrab et al., *A core IoT ontology for automation support in edge computing*, SOCA 17, 25–37 (2023), [publisher](https://link.springer.com/article/10.1007/s11761-022-00356-2). | Semantic resource matching motivates the explicit inferred resource-selection mechanism in Battery 2. | EdgeOnto's matchmaker and its precision/recall dataset. |
+| De Brouwer et al., *Towards a Cascading Reasoning Framework to Support Responsive Ambient-Intelligent Healthcare Interventions*, Sensors 18, 3514 (2018), [publisher](https://www.mdpi.com/1424-8220/18/10/3514). | Hierarchical reasoning cost and healthcare context motivate architectural placement and latency boundaries. | Cascading stream reasoning, deployed interventions or clinical outcomes. |
 
-Effectiveness scores combine policy identifiers with operational plan items;
-they are plan-conformance diagnostics, not clinical effectiveness. Figure error
-bars use scenario-averaged repetition means, not independent scenario samples.
-Resource sampling covers the Python process, excluding native reasoner children.
-Linux reports sampled current RSS; macOS reports explicitly labelled lifetime
-peak RSS and cannot support an equivalent per-experiment memory comparison.
-Use Linux for physical measurements. Missing resource values are never zero.
+A direct quantitative comparison with these systems would require their actual
+implementations on matched supported workloads and hardware. The current three
+adapters are controlled baselines only. The future four-strategy battery must
+introduce raw observations, threshold/context mechanisms and an independently
+reviewed oracle before claiming those additional comparisons.

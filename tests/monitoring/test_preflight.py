@@ -38,11 +38,11 @@ def test_preflight_rejects_target_that_would_shrink_graph(config):
 
 
 def test_selected_load_profiles_are_checked(config):
-    workload = load_load_config(config.root / "configs/load-smoke.toml")
+    workload = load_load_config(config.root / "tests/fixtures/load.toml")
     invalid = replace(
         workload,
         profiles=(replace(workload.profiles[0], target_triples=1),),
     )
 
-    with pytest.raises(ValueError, match="eps-smoke"):
+    with pytest.raises(ValueError, match="eps-fixture"):
         validate_load_workload(config, invalid)

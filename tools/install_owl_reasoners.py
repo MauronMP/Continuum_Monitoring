@@ -91,7 +91,7 @@ def verify_java_reasoners(classpaths: dict[str, str]) -> None:
     """Fail installation early if a pinned factory cannot be instantiated."""
 
     checker = ROOT / "tools/check_owl_consistency.py"
-    fixture = ROOT / "tools/owl/smoke-ontology.ttl"
+    fixture = ROOT / "tools/owl/inference-fixture.ttl"
     for name, classpath in classpaths.items():
         command = [
             sys.executable,
@@ -149,7 +149,7 @@ def verify_konclude(konclude: str, classpaths: dict[str, str]) -> None:
         "-w",
         "AUTO",
         "-i",
-        str(ROOT / "tools/owl/smoke-ontology.ttl"),
+        str(ROOT / "tools/owl/inference-fixture.ttl"),
     ]
     print("[owl-install] verify=konclude", flush=True)
     try:

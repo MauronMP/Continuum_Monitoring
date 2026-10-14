@@ -45,7 +45,7 @@ def test_load_early_stop_dimensions_must_be_ordered(config, tmp_path):
 
 
 def test_distributed_ontology_scale_must_be_ordered(config, tmp_path):
-    source = (config.root / "configs/experiments-smoke.toml").read_text(
+    source = (config.root / "tests/fixtures/experiments.toml").read_text(
         encoding="utf-8"
     )
     path = tmp_path / "experiments.toml"

@@ -178,7 +178,7 @@ def offline_preflight(root: Path, inventory: PhysicalInventory) -> dict[str, Any
     """Inspect local files and declared inventory only; no processes or network.
 
     Presence checks are not runtime certification. Remote placement remains
-    pending until the actual target passes the installer smoke checks.
+    pending until the actual target passes the installer installation checks.
     """
     root = root.resolve()
     assets = ("src", "configs", "ontology", "queries", "requirements-node.txt", *_DL_ASSETS)
@@ -227,7 +227,7 @@ def offline_preflight(root: Path, inventory: PhysicalInventory) -> dict[str, Any
             "reachability": "not-probed", "runtime_verified": False,
             "placement_status": "pending-target-validation",
             "requirements": ["Python >=3.11 with venv and ensurepip", "Java 17 compatible with target OS/ABI",
-                             "Maven", "native Konclude built for target OS/CPU/ABI", "target-local installer smoke checks"],
+                             "Maven", "native Konclude built for target OS/CPU/ABI", "target-local installer installation checks"],
         })
     return {
         "schema_version": 1, "mode": "offline", "remote_contacted": False,
@@ -374,7 +374,7 @@ def deploy_cluster(
     *,
     with_dl_reasoners: bool = False,
 ) -> None:
-    """Online deployment; optionally install and smoke-test actual DL backends."""
+    """Online deployment; optionally install and verify actual DL backends."""
     _verify_key_auth(inventory)
     _verify_remote_dependencies(inventory)
     sources = (
