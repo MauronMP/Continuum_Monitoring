@@ -1,56 +1,56 @@
-@prefix mc: <http://example.org/monitoringcontinuum#> .
+@prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-mc:GlobalAggregateData a mc:PrivacyClass .
+comon:GlobalAggregateData a comon:PrivacyClass .
 
-mc:LocalPrivateData a mc:PrivacyClass .
+comon:LocalPrivateData a comon:PrivacyClass .
 
-mc:PublicSemanticSchema a mc:PrivacyClass .
+comon:PublicSemanticSchema a comon:PrivacyClass .
 
-mc:RegionalAnonymizedData a mc:PrivacyClass .
+comon:RegionalAnonymizedData a comon:PrivacyClass .
 
-mc:authoritativeFor a owl:ObjectProperty ;
+comon:authoritativeFor a owl:ObjectProperty ;
     rdfs:label "authoritative for"@en ;
     rdfs:comment "Relates a deployed fragment to the authority scope responsible for its instance data."@en ;
-    rdfs:domain mc:DeploymentFragment ;
-    rdfs:range mc:AuthorityScope .
+    rdfs:domain comon:DeploymentFragment ;
+    rdfs:range comon:AuthorityScope .
 
-mc:graphIRI a owl:DatatypeProperty ;
+comon:graphIRI a owl:DatatypeProperty ;
     rdfs:label "graph IRI"@en ;
     rdfs:comment "Identifies the graph represented by a deployment fragment."@en ;
-    rdfs:domain mc:DeploymentFragment ;
+    rdfs:domain comon:DeploymentFragment ;
     rdfs:range xsd:anyURI .
 
-mc:hasPrivacyClass a owl:ObjectProperty ;
+comon:hasPrivacyClass a owl:ObjectProperty ;
     rdfs:label "has privacy class"@en ;
     rdfs:comment "Assigns a disclosure classification to a fragment; enforcement remains the responsibility of the deployment and query-routing mechanisms."@en ;
-    rdfs:domain mc:DeploymentFragment ;
-    rdfs:range mc:PrivacyClass .
+    rdfs:domain comon:DeploymentFragment ;
+    rdfs:range comon:PrivacyClass .
 
-mc:hostedAt a owl:ObjectProperty ;
+comon:hostedAt a owl:ObjectProperty ;
     rdfs:label "hosted at"@en ;
     rdfs:comment "Identifies the physical computational node hosting a deployment fragment."@en ;
-    rdfs:domain mc:DeploymentFragment ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:domain comon:DeploymentFragment ;
+    rdfs:range comon:ComputationalNode .
 
-mc:ontologyDigest a owl:DatatypeProperty ;
+comon:ontologyDigest a owl:DatatypeProperty ;
     rdfs:label "ontology digest"@en ;
     rdfs:comment "Records a content digest used to detect mismatched semantic profiles."@en ;
-    rdfs:domain mc:SemanticNodeProfile ;
+    rdfs:domain comon:SemanticNodeProfile ;
     rdfs:range xsd:string .
 
-mc:replicaOf a owl:ObjectProperty ;
+comon:replicaOf a owl:ObjectProperty ;
     rdfs:label "replica of" ;
     rdfs:comment "Relates a replicated DeploymentFragment to its original fragment; not a generic model or service replica relation." ;
-    rdfs:domain mc:DeploymentFragment ;
-    rdfs:range mc:DeploymentFragment .
+    rdfs:domain comon:DeploymentFragment ;
+    rdfs:range comon:DeploymentFragment .
 
-mc:usesEntailmentProfile a owl:DatatypeProperty ;
+comon:usesEntailmentProfile a owl:DatatypeProperty ;
     rdfs:label "uses entailment profile"@en ;
     rdfs:comment "Names the inference profile selected for a semantic node profile."@en ;
-    rdfs:domain mc:SemanticNodeProfile ;
+    rdfs:domain comon:SemanticNodeProfile ;
     rdfs:range xsd:string .
 
 <http://example.org/monitoringcontinuum/modules/deployment> a owl:Ontology ;
@@ -59,18 +59,18 @@ mc:usesEntailmentProfile a owl:DatatypeProperty ;
         <http://example.org/monitoringcontinuum/modules/topology> ;
     owl:versionInfo "4.0.0" .
 
-mc:AuthorityScope a owl:Class ;
+comon:AuthorityScope a owl:Class ;
     rdfs:label "Authority scope"@en ;
     rdfs:comment "Identifies the administrative or data-ownership boundary responsible for a fragment."@en .
 
-mc:SemanticNodeProfile a owl:Class ;
+comon:SemanticNodeProfile a owl:Class ;
     rdfs:label "Semantic node profile"@en ;
     rdfs:comment "Defines the selected ontology imports and entailment metadata for a deployment role."@en .
 
-mc:PrivacyClass a owl:Class ;
+comon:PrivacyClass a owl:Class ;
     rdfs:label "Privacy class"@en ;
     rdfs:comment "A disclosure classification used when assigning instance data to continuum nodes."@en .
 
-mc:DeploymentFragment a owl:Class ;
+comon:DeploymentFragment a owl:Class ;
     rdfs:label "Deployment fragment"@en ;
     rdfs:comment "A placed subset or replica of semantic knowledge with an identified host, authority and privacy classification."@en .

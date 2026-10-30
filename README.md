@@ -12,12 +12,14 @@ without turning benchmark logic into the domain core.
 | Guide | Contents |
 | --- | --- |
 | [Installation](docs/INSTALLATION.md) | Clean OS dependencies, Python/native backends, Tailscale, inventory and worker deployment. |
-| [Complete execution](docs/COMPLETE_EXECUTION.md) | Basic and complementary commands, separated by the two batteries, budgets and recovery. |
+| [Complete execution](docs/COMPLETE_EXECUTION.md) | Basic and complementary commands, separated by the three batteries, budgets and recovery. |
 | [Experiments](docs/EXPERIMENTS.md) | Technical methods, scientific questions, metrics, interpretation limits and literature. |
 | [Outputs](docs/OUTPUTS.md) | Result directories, raw evidence, status semantics and PNG provenance. |
+| [Container scalability](docs/CONTAINER_SCALABILITY.md) | Compose installation/deployment, resource budgets, workload scenarios, outputs and limitations. |
 | [Physical continuum](docs/PHYSICAL_CONTINUUM.md) | Six-node inventory, real VPN networking and lifecycle. |
 | [Ontology distribution](docs/ONTOLOGY_DISTRIBUTION.md) | Exact files per tier/node, instance ownership, routing and implementation boundaries. |
 | [Ontology review](docs/ONTOLOGY_REVIEW.md) | External vocabularies, validation commands and remaining model-data debt. |
+| [Validation gaps](docs/VALIDATION_GAPS.md) | All uncovered requirements/policies, warning closure criteria and observed failure diagnosis. |
 | [Python reference](docs/PYTHON_REFERENCE.md) | Every maintained Python file and its responsibility/entry points. |
 | [Query guide](queries/README.md) | Query categories, catalogue and execution-plan semantics. |
 | [All queries](queries/ALL_QUERIES.md) | Consolidated texts of all 115 maintained queries. |
@@ -30,17 +32,22 @@ Generated references: [ontology](docs/reference/ONTOLOGY_REFERENCE.md),
 [policies](docs/reference/POLICIES.md), [requirements](docs/reference/REQUIREMENTS.md),
 [queries and traceability](docs/reference/SPARQL_QUERIES.md).
 
-## The two evaluation batteries
+## The three evaluation batteries
 
 | Battery | Complete entry point | Scope |
 | --- | --- | --- |
 | Physical architecture | `continuum-bench --timeout-mode bounded --keep-going suite` | Distributed/replicated scalability and cumulative work, load, physical experiments, workload axes, local policy-plan evaluation and reports. |
+| Container scalability | `continuum-bench --timeout-mode bounded --keep-going container-scale run` | Coordinated distributed/replicated knowledge on resource-limited Compose participants on the active physical hosts (all six hosts, including Mist). |
 | Strategy comparison | `python -m continuum_bench.monitoring.comparison run` | Static, procedural and semantic plans, evaluated individually on all six nodes. |
 
-A third four-strategy battery (static, threshold/rule-based, context-aware,
+For the container battery only, append `--exclude-host mist` only if Mist becomes
+unavailable. The effective configuration records the five-host placement. Omit the option
+when all hosts are available; see [container deployment](docs/CONTAINER_SCALABILITY.md).
+
+A separate four-strategy battery (static, threshold/rule-based, context-aware,
 ontology-plus-policy-aware) is planned, **not implemented**. Current results must
 not be described as that comparison. Regression checks are software maintenance,
-not a third experimental battery. No smoke commands or reduced physical profiles
+not an additional experimental battery. No smoke commands or reduced physical profiles
 are exposed. CI validates software and semantic assets; it does not run VPN campaigns.
 
 ## Start here
@@ -116,3 +123,25 @@ see [Ontology review](docs/ONTOLOGY_REVIEW.md). Existing Raspberry Pi userspace 
 More time does not remove that limit. Supplied-context plan tests do not measure
 real fault detection or clinical accuracy. Real VPN conditions vary across runs.
 Reports retain failed/missing points and reject unsupported publication claims.
+
+See [Scope adaptation](docs/SCOPE_ADAPTATION.md) for the revised requirements, policies and verification boundaries.
+
+## Containerized scalability
+
+The new battery is opt-in and is not part of `suite`. Start with one container per
+active physical host; all six hosts, including Mist, are selected by default. See [Container scalability](docs/CONTAINER_SCALABILITY.md).
+
+```bash
+continuum-bench container-scale doctor
+continuum-bench container-scale run --dry-run
+continuum-bench --timeout-mode bounded --keep-going container-scale run
+# Select a reasoner matrix (DL images are enabled automatically):
+continuum-bench --timeout-mode bounded --keep-going container-scale run --reasoner rdfs --reasoner jfact
+continuum-bench container-scale stop
+```
+
+## Optional adaptive monitoring
+
+The optional [adaptive monitoring extension](docs/ADAPTIVE_MONITORING.md) retains original services and adds authorized replicas to share query requests. Original and additional worker costs are recorded separately. Historical relocation results do not validate this new strategy. It is opt-in and does not change the three baseline batteries.
+
+The latest reviewed adaptive campaign is available in [outputs/latest/README.md](outputs/latest/README.md), with raw evidence, its baseline, scientific figures and checksums. See [latest-results publication](docs/LATEST_RESULTS.md) to replace this snapshot after future campaigns.

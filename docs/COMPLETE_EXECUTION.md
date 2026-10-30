@@ -5,12 +5,13 @@
 1. [Scope and prerequisites](#scope-and-prerequisites)
 2. [Battery 1: physical architecture evaluation](#battery-1-physical-architecture-evaluation)
 3. [Battery 2: monitoring-strategy comparison](#battery-2-monitoring-strategy-comparison)
-4. [Validation and maintenance](#validation-and-maintenance)
-5. [Timeouts and recovery](#timeouts-and-recovery)
+4. [Battery 3: container scalability](#battery-3-container-scalability)
+5. [Validation and maintenance](#validation-and-maintenance)
+6. [Timeouts and recovery](#timeouts-and-recovery)
 
 ## Scope and prerequisites
 
-There are **two executable evaluation batteries**. The proposed four-strategy
+There are **three executable evaluation batteries**. The proposed four-strategy
 extension is future work and has no command yet. Software regression tests are
 engineering checks, not an additional scientific battery.
 
@@ -26,7 +27,7 @@ continuum-bench physical status --ssh-user pi
 ```
 
 Read the [experiment contracts](EXPERIMENTS.md) before interpreting results.
-Do not run the two batteries concurrently. Freeze source, ontology, queries and
+Do not run the batteries concurrently. Freeze source, ontology, queries and
 configuration for each campaign; do not redeploy workers during acquisition.
 `network_mbps` is descriptive inventory metadata, not a traffic limiter. The
 physical experiments use actual VPN links without bandwidth shaping.
@@ -237,3 +238,191 @@ Battery 2 instead requires finite limits: default 120 s per isolated job and
 Use Ctrl+C for controlled interruption. Preserve partial output and start a new
 run; do not relabel a partial campaign as complete. Historical results remain
 immutable evidence under their original source and semantic fingerprints.
+
+## Battery 3: container scalability
+
+All six physical hosts, including Mist, are enabled in
+`configs/container-scale.toml` with `deployment.exclude_hosts = []`.
+
+This is separate from `suite` and the strategy-comparison command. The full run
+deploys its Compose workers automatically. Configuration and scenario definitions:
+`configs/container-scale.toml`. Detailed methods: [Container scalability](CONTAINER_SCALABILITY.md).
+
+```bash
+source .venv/bin/activate
+continuum-bench container-scale doctor
+continuum-bench --timeout-mode bounded --keep-going container-scale run
+```
+
+Complementary commands:
+
+```bash
+continuum-bench container-scale render
+continuum-bench container-scale run --dry-run
+continuum-bench container-scale deploy
+continuum-bench container-scale status
+continuum-bench --keep-going --repetitions 1 container-scale run --scenario users-1
+continuum-bench --keep-going container-scale run --containers-per-host 2
+continuum-bench container-scale report --input-dir outputs/container-scale/REPLACE_WITH_RUN_ID
+continuum-bench container-scale stop
+```
+
+Replace the report directory with the returned `Results:` path. Two participants
+per host are optional and still subject to live and declared capacity checks.
+Default request/point budgets are 120/600 seconds in this module. `--unlimited` is
+optional and may block a reasoner indefinitely; bounded mode is recommended.
+The final placement remains running until `stop`; do not overlap with other
+physical campaigns. Partial acquisition returns a nonzero exit status while
+`--keep-going` preserves subsequent scenarios and their evidence.
+
+### Container battery with an unavailable host
+
+If Mist becomes unavailable, use the explicit exclusion below. The maintained
+inventory remains complete; the effective run configuration records the exclusion.
+Omit the option when all six hosts are available.
+
+```bash
+continuum-bench container-scale doctor --exclude-host mist
+continuum-bench --timeout-mode bounded --keep-going container-scale run --exclude-host mist
+continuum-bench container-scale status --exclude-host mist
+continuum-bench container-scale stop --exclude-host mist
+```
+
+This is Battery 3 and is not included in the native `suite` command.
+
+### Container reasoner matrix
+
+Each repeated `--reasoner` adds a backend to the selected matrix, replacing the
+TOML list for that invocation. Native backends automatically enable the DL image.
+All six hosts, including Mist, are selected by the maintained configuration.
+
+```bash
+# Incremental selection:
+continuum-bench --timeout-mode bounded --keep-going container-scale run --reasoner rdfs --reasoner jfact
+# Validate all installed backends after deployment:
+continuum-bench container-scale deploy --reasoner rdfs --reasoner hermit --reasoner openllet --reasoner jfact --reasoner konclude
+continuum-bench container-scale validate-reasoners --reasoner rdfs --reasoner hermit --reasoner openllet --reasoner jfact --reasoner konclude
+# Full configured workload matrix with all backends:
+continuum-bench --timeout-mode bounded --keep-going container-scale run --reasoner rdfs --reasoner hermit --reasoner openllet --reasoner jfact --reasoner konclude
+```
+
+The plain `container-scale run` still uses the TOML defaults. Explicit selections
+apply only to their invocation; pass them again on subsequent commands or edit
+`experiment.reasoners` and `deployment.install_dl` for persistent selection.
+
+### User scalability: 1 to 2000 users
+
+The default container campaign now includes 1, 50, 100, 500, 1000 and 2000
+synthetic users. To run only those six scenarios, with both configured layouts,
+three measured repetitions and one warm-up:
+
+```bash
+source .venv/bin/activate
+continuum-bench --timeout-mode bounded --keep-going container-scale run \
+  --reasoner rdfs \
+  --scenario users-1 --scenario users-50 --scenario users-100 \
+  --scenario users-500 --scenario users-1000 --scenario users-2000
+```
+
+Omit all `--scenario` options to run all eleven scenarios, including the existing
+data-volume, request-concurrency and fixed/proportional-load scenarios. Repeat
+`--reasoner` to select additional backends. Append `--dry-run` to inspect the plan
+without contacting nodes. Existing results are not changed or extrapolated.
+
+### Cross user counts with configurable request concurrency
+
+Add `--concurrency 1 2 4 N` to a container run, replacing `N` with any positive
+integer. For example, the following compares all six user sizes at concurrency
+1, 2, 4 and 8, in both configured layouts:
+
+```bash
+continuum-bench --timeout-mode bounded --keep-going container-scale run \
+  --reasoner rdfs --concurrency 1 2 4 8 \
+  --scenario users-1 --scenario users-50 --scenario users-100 \
+  --scenario users-500 --scenario users-1000 --scenario users-2000
+```
+
+Each concurrency level means simultaneous full-catalog requests, not users or
+individual SPARQL queries. Omit the option to retain each scenario's configured
+levels. The override applies only to selected scenarios, sorts/deduplicates the
+levels, and is archived in `configuration.json` without editing the source TOML.
+It also supports repeated flags (`--concurrency 1 2 --concurrency 4 8`). Append
+`--dry-run` to inspect the effective configuration without running workloads.
+Preparation is measured per user/layout/reasoner/repetition; the query phase then
+sweeps concurrency. `query_rounds` remains the per-scenario configured value.
+
+## Optional adaptive monitoring
+
+Plan from an existing container campaign without changing services:
+
+```bash
+continuum-bench --timeout-mode bounded adaptive-monitoring plan --input-dir outputs/container-scale/REPLACE_WITH_RUN_ID --scenario users-2000
+```
+
+Execute recovery using its archived workload:
+
+```bash
+continuum-bench --timeout-mode bounded --keep-going adaptive-monitoring run --input-dir outputs/container-scale/REPLACE_WITH_RUN_ID --scenario users-2000
+```
+
+Replace the run ID with an actual campaign. For a new baseline followed by recovery, omit `--input-dir`. Omit `--scenario` for the full configured campaign. See [Adaptive monitoring](ADAPTIVE_MONITORING.md) for resource constraints, bounded actions, result meanings and limitations.
+
+Generate detailed baseline/adaptation figures after an adaptive run:
+
+```bash
+python tools/report_adaptive_comparison.py --input-dir outputs/adaptive-monitoring/REPLACE_WITH_RUN_ID
+```
+
+Use the returned adaptive run ID. Images are grouped under `figures/`; source comparisons and interpretation are in `analysis/`. This is reporting only and does not rerun or deploy workers.
+
+Run the adaptive extension across all configured user levels and concurrency 1, 2, 4 and 8, creating a new baseline first:
+
+```bash
+continuum-bench --timeout-mode bounded --keep-going adaptive-monitoring run \
+  --users 1 50 100 500 1000 2000 --concurrency 1 2 4 8
+```
+
+For an existing campaign, use `--input-dir` and omit `--concurrency`; the archived levels are preserved. Detailed figures are now generated automatically. Regenerate them using:
+
+```bash
+continuum-bench adaptive-monitoring report --input-dir outputs/adaptive-monitoring/REPLACE_WITH_RUN_ID
+```
+
+### Adaptive comparison after the trigger/placement update
+
+Use a new baseline to record worker-attributed failures for all layouts. This runs the selected Docker-only workloads first, then assesses each scenario/layout and performs bounded origin-preserving replica expansion when required:
+
+```bash
+source .venv/bin/activate
+continuum-bench --timeout-mode bounded container-scale deploy
+continuum-bench --timeout-mode bounded --keep-going adaptive-monitoring run \
+  --users 1 50 100 500 1000 2000 --concurrency 1 2 4 8
+```
+
+`configs/adaptive-monitoring.toml` controls the supervisor. Defaults are any observed failure (`minimum_failures=1`, `max_failure_fraction=0.0`), evaluated separately by reasoner/concurrency, and at most six attempts per scenario/layout, retaining original services and accepting useful extra replicas. An unresolved, unattributed or capacity-blocked case remains explicit. This can require substantially more time than the previous single-attempt configuration. It does not raise request timeouts.
+
+To regenerate figures without executing workloads:
+
+```bash
+continuum-bench adaptive-monitoring report --input-dir outputs/adaptive-monitoring/RUN_ID
+```
+
+Start with `figures/paired-*-availability.png`, `paired-*-concurrency-benefit.png` and `paired-*-intervention-cost.png`. Missing adaptive trials remain missing. See [adaptive monitoring](ADAPTIVE_MONITORING.md) for deployment scope, constraints and interpretation.
+
+### Validate retained-origin replica execution
+
+After deploying the current images, this bounded mechanism validation runs one user with six original workers and one Edge-2 replica on Fog. It checks actual CPU/request work on both copies, semantic digests and unchanged origin container IDs/PIDs before and after replica cleanup:
+
+```bash
+python tools/validate_origin_pool.py
+```
+
+This is not a scalability campaign and does not replace the full experiment. Historical `outputs/latest` evidence is unchanged and belongs to the previous relocation strategy.
+
+### After the replica-routing correction
+
+Start a new baseline/campaign using the current configuration (18 query rounds).
+Do not reuse the one-round October 26 baseline to claim adaptive improvements.
+The adaptive supervisor rejects insufficient coverage before deployment and
+stops expansions without completion improvement. Request timeouts remain bounded;
+the increased number of rounds increases total campaign duration.

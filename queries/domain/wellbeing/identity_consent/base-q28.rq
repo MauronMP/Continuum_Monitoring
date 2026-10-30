@@ -3,7 +3,7 @@
 # Requirements: RF-36, RF-60, RF-61
 # Policies: P-CONS-04, P-DATA-04
 # Current v4.0.0 result: false
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,12 +16,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 ASK {
-  ?transfer a :TransferEvent ; :transferDestination ?dest ; :carriesData ?data .
+  ?transfer a comon:TransferEvent ; comon:transferDestination ?dest ; comon:carriesData ?data .
   ?dest a ?destType .
-  FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
-  { ?data a ?rawType . FILTER(?rawType IN (:PhysiologicalObservation,:SleepObservation)) }
+  FILTER(?destType IN (comon:EdgeNode,comon:FogNode,comon:CloudNode))
+  { ?data a ?rawType . FILTER(?rawType IN (comon:PhysiologicalObservation,comon:SleepObservation)) }
   UNION
-  { ?transfer :usesIdentifier ?id . ?id a :DirectIdentifier }
+  { ?transfer comon:usesIdentifier ?id . ?id a comon:DirectIdentifier }
   UNION
-  { FILTER NOT EXISTS { ?transfer :usesIdentifier ?safe . ?safe a ?safeType . FILTER(?safeType IN (:PseudonymousIdentifier,:AnonymousIdentifier)) } }
+  { FILTER NOT EXISTS { ?transfer comon:usesIdentifier ?safe . ?safe a ?safeType . FILTER(?safeType IN (comon:PseudonymousIdentifier,comon:AnonymousIdentifier)) } }
 }

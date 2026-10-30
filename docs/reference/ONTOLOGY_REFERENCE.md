@@ -15,7 +15,8 @@ governance, MAPE-K adaptation, delegation, model selection,
 audit and validation. Federated learning is an optional module. The wellbeing domain
 adds wearables, physiological observations, stress and sleep.
 
-Hard constraints are evaluated before optimization. Consent,
+The normative design requires hard constraints before optimization;
+full runtime enforcement is not established by this model. Consent,
 contract, zone and security remain independent normative sources.
 Decisions are reified so their inputs, alternatives, selected tier,
 policies, trust evidence and resulting action can be audited.
@@ -23,7 +24,7 @@ policies, trust evidence and resulting action can be audited.
 ## Standards and serialization
 
 - RDF 1.1 and Turtle for serialization.
-- OWL 2 DL modeling, with an optional HermiT release check.
+- OWL 2 DL modeling; native consistency checks support HermiT, Openllet, JFact and Konclude.
 - SHACL for closed-world structural validation.
 - SPARQL 1.1 for inventory, reports, review gates and violations.
 - SOSA/SSN, SAREF, FOAF and GeoSPARQL reuse where applicable.

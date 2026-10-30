@@ -3,7 +3,7 @@
 # Requirements: RV-04
 # Policies: P-VAL-06
 # Current v4.0.0 result: 55 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,9 +16,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?mechanism ?id ?description (GROUP_CONCAT(DISTINCT STR(?policy); separator=", ") AS ?policies) WHERE {
-  ?mechanism a :MechanismSpecification ; :mechanismIdentifier ?id .
-  OPTIONAL { ?mechanism :mechanismDescription ?description }
-  OPTIONAL { ?mechanism :supportsPolicy ?policy }
+  ?mechanism a comon:MechanismSpecification ; comon:mechanismIdentifier ?id .
+  OPTIONAL { ?mechanism comon:mechanismDescription ?description }
+  OPTIONAL { ?mechanism comon:supportsPolicy ?policy }
 }
 GROUP BY ?mechanism ?id ?description
 ORDER BY ?id

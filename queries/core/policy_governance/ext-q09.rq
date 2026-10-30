@@ -3,7 +3,7 @@
 # Requirements: RV-04
 # Policies: P-VAL-06
 # Current v4.0.0 result: 6 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,8 +16,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?requirement ?rid WHERE {
-  ?requirement a :Requirement ; :requirementIdentifier ?rid .
-  FILTER NOT EXISTS { ?requirement :tracedToPolicy ?p }
-  FILTER NOT EXISTS { ?requirement :tracedToMechanism ?m }
+  ?requirement a comon:Requirement ; comon:requirementIdentifier ?rid .
+  FILTER NOT EXISTS { ?requirement comon:tracedToPolicy ?p }
+  FILTER NOT EXISTS { ?requirement comon:tracedToMechanism ?m }
 }
 ORDER BY ?rid

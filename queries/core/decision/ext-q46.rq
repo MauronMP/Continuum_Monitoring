@@ -1,9 +1,9 @@
 # Type: report
 # Purpose: Evaluate complete model decision report using the declared query contract.
-# Requirements: RF-15, RF-51, RF-66
+# Requirements: RF-15, RF-51, RF-66, RF-52
 # Policies: P-MODEL-01, P-MODEL-05, P-AUD-06
 # Current v4.0.0 result: 11 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,15 +16,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?user ?method ?latency ?privacy ?quality ?trustExternal ?tier ?justification ?action WHERE {
-  ?evaluation a :EvaluationState .
-  OPTIONAL { ?evaluation :evaluationUser ?user }
-  OPTIONAL { ?evaluation :hasDecisionMethod ?method }
-  OPTIONAL { ?evaluation :hasLatencyWeight ?latency }
-  OPTIONAL { ?evaluation :hasPrivacyWeight ?privacy }
-  OPTIONAL { ?evaluation :hasModelQualityWeight ?quality }
-  OPTIONAL { ?evaluation :hasTrustWeight ?trustExternal }
-  OPTIONAL { ?evaluation :selectedModelTier ?tier }
-  OPTIONAL { ?evaluation :hasSelectionJustification ?justification }
-  OPTIONAL { ?evaluation :resultedInAction ?action }
+  ?evaluation a comon:EvaluationState .
+  OPTIONAL { ?evaluation comon:evaluationUser ?user }
+  OPTIONAL { ?evaluation comon:hasDecisionMethod ?method }
+  OPTIONAL { ?evaluation comon:hasLatencyWeight ?latency }
+  OPTIONAL { ?evaluation comon:hasPrivacyWeight ?privacy }
+  OPTIONAL { ?evaluation comon:hasModelQualityWeight ?quality }
+  OPTIONAL { ?evaluation comon:hasTrustWeight ?trustExternal }
+  OPTIONAL { ?evaluation comon:selectedModelTier ?tier }
+  OPTIONAL { ?evaluation comon:hasSelectionJustification ?justification }
+  OPTIONAL { ?evaluation comon:resultedInAction ?action }
 }
 ORDER BY ?evaluation

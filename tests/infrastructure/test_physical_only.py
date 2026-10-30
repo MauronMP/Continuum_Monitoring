@@ -23,7 +23,7 @@ def test_removed_execution_module_and_inventory_are_absent(root):
     assert {path.name for path in (root / 'configs/topologies').iterdir()} == {'physical'}
 
 
-def test_container_deployment_assets_are_absent(root):
+def test_container_assets_are_scoped_to_the_opt_in_module(root):
     forbidden = {
         root / '.env.example',
         root / 'Dockerfile',
@@ -33,6 +33,8 @@ def test_container_deployment_assets_are_absent(root):
         root / 'compose.yaml',
     }
     assert not any(path.exists() for path in forbidden)
+    assert (root / "containers/worker/Dockerfile").is_file()
+    assert (root / "configs/container-scale.toml").is_file()
 
 
 def test_removed_local_product_matrix_cannot_reappear(root):

@@ -1,0 +1,22 @@
+[
+  "users-1-distributed-1-trajectory.png",
+  "users-1-distributed-1-resources.png",
+  "users-50-distributed-1-trajectory.png",
+  "users-50-distributed-1-resources.png",
+  "users-100-distributed-1-trajectory.png",
+  "users-100-distributed-1-resources.png",
+  "users-500-distributed-1-trajectory.png",
+  "users-500-distributed-1-resources.png",
+  "users-500-replicated-1-trajectory.png",
+  "users-500-replicated-1-resources.png",
+  "users-1000-distributed-1-trajectory.png",
+  "users-1000-distributed-1-resources.png",
+  "users-1000-replicated-1-trajectory.png",
+  "users-1000-replicated-1-resources.png",
+  "users-2000-distributed-1-trajectory.png",
+  "users-2000-distributed-1-resources.png",
+  "users-2000-replicated-1-trajectory.png",
+  "placement-evolution.png",
+  "baseline-triggers.png",
+  "campaign-timeline.png"
+]

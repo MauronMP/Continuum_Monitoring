@@ -3,7 +3,7 @@
 # Requirements: RF-32, RF-35
 # Policies: P-CONS-01, P-CONS-04
 # Current v4.0.0 result: 25 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,10 +16,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?record ?user ?range ?purpose ?dataCategory ?from ?to WHERE {
-  ?record a :ConsentRecord ; :consentSubject ?user ; :hasConsentRange ?range .
-  OPTIONAL { ?record :hasProcessingPurpose ?purpose }
-  OPTIONAL { ?record :hasAuthorizedDataCategory ?dataCategory }
-  OPTIONAL { ?record :validFrom ?from }
-  OPTIONAL { ?record :validTo ?to }
+  ?record a comon:ConsentRecord ; comon:consentSubject ?user ; comon:hasConsentRange ?range .
+  OPTIONAL { ?record comon:hasProcessingPurpose ?purpose }
+  OPTIONAL { ?record comon:hasAuthorizedDataCategory ?dataCategory }
+  OPTIONAL { ?record comon:validFrom ?from }
+  OPTIONAL { ?record comon:validTo ?to }
 }
 ORDER BY ?user ?record ?purpose ?dataCategory

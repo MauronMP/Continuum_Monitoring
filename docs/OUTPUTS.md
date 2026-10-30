@@ -1,9 +1,29 @@
 # Output layout and evidence
 
-There are two evaluation batteries. Their results remain separate. All generated
+There are three evaluation batteries. Their results remain separate. All generated
 evidence belongs under ignored `outputs/`; source configuration and documentation
-remain version controlled. Existing historical runs are not moved, merged or
-rewritten by this documentation update.
+remain version controlled. The cleanup on 14 October 2026 retained only the latest acquired run of each
+battery. Older runs, dry-run plans, standalone results and maintenance outputs
+were deleted. Retained acquisition files were verified unchanged using SHA-256.
+
+## Start here: retained results
+
+| Battery | Retained directory | What to open first | Recorded outcome |
+| --- | --- | --- | --- |
+| Physical architecture | `outputs/suites/20261007T120755Z-11ab3e5f/` | `review.md`, then `suite.json`; `diagnostic-figures/` for partial-data plots. | Partial: distributed monitoring timed out; replicated monitoring, load, experiments, campaign and report failed. |
+| Monitoring comparison | `outputs/comparison/20261009T162702Z-0df2fd02/` | `figure-captions.md`, `figures/`, then `outcomes.csv` and `summary.csv`. | Completed: 720 jobs, six hosts, zero failed jobs recorded. |
+
+These acquisitions predate the latest code cleanup. They are not results of the
+current revision. The physical suite's `report-recovered/` and diagnostic figures
+must not be presented as evidence that its failed steps succeeded. Preserve the
+raw data, source snapshots, configurations and logs inside these two run roots.
+Later figure rendering dates do not constitute a new experimental acquisition.
+
+`outputs/README.md` provides direct links to these results. `outputs/audit/current-review/` contains the latest requested maintenance checks,
+not an experimental battery. `outputs/runtime/`
+contains operational state for active services, not scientific results, and was
+preserved to avoid disrupting workers. Other output families described below are
+created by future commands; their presence is not required after this cleanup.
 
 ## Battery 1: complete physical suites
 
@@ -126,3 +146,32 @@ Use [Complete execution](COMPLETE_EXECUTION.md) for each battery's report comman
 Regeneration changes presentation, not acquisition identity or scientific validity.
 Preserve source/configuration snapshots, exact outcome counts and raw evidence.
 Historical reduced acquisitions remain historical; they are not full campaigns.
+
+## Battery 3: container scalability
+
+Each run is isolated under `outputs/container-scale/<run-id>/`. Open `campaign.json`
+first, then `figures/manifest.json`. `configuration.json` records effective options;
+`placement-*/placement.json` distinguishes physical hosts from logical participants.
+Each scenario separates `warmup/` from `measured/`. Docker snapshots and preflight
+records are evidence about deployment/resources, not additional scientific runs.
+
+The measured directory contains preparation summaries, node rows, query load,
+logical client throughput and semantic validation. PNG figures cover costs, all
+participants, physical-host aggregation, concurrency and completion states. Do not
+use internal fan-out query counts as cross-layout throughput. See the complete
+[output contract](CONTAINER_SCALABILITY.md#results-and-figures). Historical retained
+results above predate this battery and cannot validate its deployment.
+
+## Adaptive recovery evidence
+
+`outputs/adaptive-monitoring/<run-id>/` contains policy/configuration snapshots, decisions, per-attempt recovery measurements and service samples, plus CSV/PNG before-after outcomes. Planning runs retain missing after-values as NA. See [Adaptive monitoring](ADAPTIVE_MONITORING.md) for states and interpretation.
+
+For detailed adaptive comparisons, `tools/report_adaptive_comparison.py` creates `figures/manifest.json`, completion/concurrency/node-cost PNGs, physical-host telemetry plots and `analysis/COMPARISON.md` with the associated CSV tables. The original root-level `recovery-outcomes.png` remains available for compatibility and is copied into the figure collection.
+
+Adaptive paired comparisons additionally export `analysis/paired-service-outcomes.csv` and `analysis/intervention-trajectory.csv`. `figures/paired-*-availability.png` separates preparation completion from request completion; `paired-*-concurrency-benefit.png` compares matched user/concurrency cells; `paired-*-intervention-cost.png` reports every measured intervention's effectiveness and deployment/verification time. Only the intervention's target layout contributes adaptive measurements. No trial is not a zero-cost or successful trial.
+
+## Latest publishable campaign
+
+`outputs/latest/` is the Git-visible snapshot of the most recently exported adaptive campaign, including its nested baseline. Earlier local campaigns were removed after verified export. `outputs/runtime/` remains local operational state. Use [the publication guide](LATEST_RESULTS.md) to refresh the snapshot, regenerate figures and upload it without staging unrelated code changes. `.gitignore` continues to exclude all other output directories.
+
+For origin-preserving runs, `replica-routing.csv` records actual request destinations and successful-request CPU/RSS; `*-origin-work.png` and `analysis/replica-workshare.csv` distinguish originals from copies. `outputs/validation/origin-pool-*` holds bounded mechanism validation evidence and is ignored by Git. It does not replace the last scientific campaign.

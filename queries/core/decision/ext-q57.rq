@@ -3,7 +3,7 @@
 # Requirements: RF-24
 # Policies: P-FL-08
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,10 +16,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?model ?version ?updated ?supersedes ?lineageStatus WHERE {
-  ?model a :AIModel .
-  OPTIONAL { ?model :modelVersion ?version }
-  OPTIONAL { ?model :lastUpdated ?updated }
-  OPTIONAL { ?model :supersedesModel ?supersedes }
-  OPTIONAL { ?model :modelLineageStatus ?lineageStatus }
+  ?model a comon:AIModel .
+  OPTIONAL { ?model comon:modelVersion ?version }
+  OPTIONAL { ?model comon:lastUpdated ?updated }
+  OPTIONAL { ?model comon:supersedesModel ?supersedes }
+  OPTIONAL { ?model comon:modelLineageStatus ?lineageStatus }
 }
 ORDER BY ?model

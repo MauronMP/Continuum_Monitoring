@@ -1,0 +1,29 @@
+# Executable bindings for synthetic container-scale workloads, not patient consent.
+[supervisor]
+# Act on any observed failure, evaluated per reasoner/concurrency.
+# Origins stay in place; accepted replica pools grow within capacity/budget limits.
+max_attempts = 6
+max_replicas_per_authority = 2
+max_extra_containers_per_host = 2
+telemetry_interval_seconds = 10
+minimum_failures = 1
+max_failure_fraction = 0.0
+operation_timeout_seconds = 180
+recovery_port = 8591
+minimum_trust = 0.8
+# Placement changes do not increase query deadlines or reduce the workload.
+policy_ids = ["P-ADAPT-01", "P-ADAPT-04", "P-ADAPT-06", "P-ADAPT-07", "P-ADAPT-08", "P-NODE-02", "P-NODE-05", "P-GOV-03", "P-AUD-07", "P-OPS-02"]
+
+[authorization]
+workload = "synthetic-container-scale"
+allowed_destinations = ["cloud", "fog", "mist", "edge1", "edge2", "edge3"]
+# Explicit experimental grant. Real observations require a separate consent adapter.
+allow_cross_tier = true
+
+[trust]
+cloud = 1.0
+fog = 1.0
+mist = 1.0
+edge1 = 1.0
+edge2 = 1.0
+edge3 = 1.0

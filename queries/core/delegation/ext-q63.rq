@@ -3,7 +3,7 @@
 # Requirements: RF-62, RF-63, RF-64
 # Policies: P-AUD-01, P-AUD-02, P-AUD-03
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,14 +16,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?delegation ?origin ?target ?triggerState ?recovery ?depth ?plannedExpiry ?from ?to WHERE {
-  ?delegation a :DelegationEvent .
-  OPTIONAL { ?delegation :actionOriginNode ?origin }
-  OPTIONAL { ?delegation :actionTargetNode ?target }
-  OPTIONAL { ?delegation :triggeredByState ?triggerState }
-  OPTIONAL { ?delegation :hasRecoveryCondition ?recovery }
-  OPTIONAL { ?delegation :delegationDepth ?depth }
-  OPTIONAL { ?delegation :plannedExpiry ?plannedExpiry }
-  OPTIONAL { ?delegation :validFrom ?from }
-  OPTIONAL { ?delegation :validTo ?to }
+  ?delegation a comon:DelegationEvent .
+  OPTIONAL { ?delegation comon:actionOriginNode ?origin }
+  OPTIONAL { ?delegation comon:actionTargetNode ?target }
+  OPTIONAL { ?delegation comon:triggeredByState ?triggerState }
+  OPTIONAL { ?delegation comon:hasRecoveryCondition ?recovery }
+  OPTIONAL { ?delegation comon:delegationDepth ?depth }
+  OPTIONAL { ?delegation comon:plannedExpiry ?plannedExpiry }
+  OPTIONAL { ?delegation comon:validFrom ?from }
+  OPTIONAL { ?delegation comon:validTo ?to }
 }
 ORDER BY ?delegation

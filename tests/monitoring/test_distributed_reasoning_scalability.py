@@ -228,3 +228,41 @@ def test_statistics_and_nine_scalability_figures(root, tmp_path):
     paths = plot_distributed_reasoning_scalability(tmp_path)
     assert len(paths) == 9
     assert all(path.suffix == ".png" and path.is_file() for path in paths)
+
+
+def test_missing_replicated_projection_is_not_a_semantic_mismatch():
+    rows = [{'run_id': 'distributed', 'repetition': 1, 'status': 'completed'}]
+    projection = dict(run_id='distributed', scaling_mode='strong', target_triples=50000,
+        node_count=6, reasoner='rdfs', reasoning_task='rdfs_closure', repetition=1,
+        layout='distributed', query_id='Q1', category='resource', execution_scope='all',
+        merge_strategy='set_union', result_count=3, ask_result=None, result_digest='abc')
+    validation = _derive_semantic_validation(rows, [projection])
+    assert validation[0]['status'] == 'replicated_reference_unavailable'
+    assert rows[0]['semantic_equivalence_status'] == 'replicated_reference_unavailable'
+    assert rows[0]['semantic_validation_rate'] == ''
+
+
+def test_all_preparations_timing_out_still_finish_matrix_and_archive(root, config, tmp_path, monkeypatch):
+    from dataclasses import replace
+    import json
+    from continuum_bench.monitoring import distributed_reasoning_scalability as module
+    experiment = replace(load_distributed_reasoning_config(root / 'tests/fixtures/distributed-reasoning.toml'),
+        repetitions=2, reasoners=('rdfs',), node_counts=(1,), target_triples=(0,),
+        users=2000, strong_scaling=True, weak_scaling=False, stop_after_timeout=False,
+        layouts=('distributed', 'replicated'))
+    calls = []
+    monkeypatch.setattr(module, 'discover', lambda *a, **k: [])
+    monkeypatch.setattr(module, '_select_endpoints', lambda *a: [])
+    def timeout(*args):
+        calls.append(args)
+        raise TimeoutError('controlled preparation timeout')
+    monkeypatch.setattr(module, '_prepare', timeout)
+    output = module.run_distributed_reasoning_scalability(config, experiment, 'physical', tmp_path)
+    rows = list(csv.DictReader((output / 'distributed-reasoning-summary.csv').open()))
+    assert len(calls) == len(rows) == 4
+    assert all(r['status'] == 'timeout' for r in rows)
+    assert (output / 'metadata.json').exists()
+    assert len((output / 'results.jsonl').read_text().splitlines()) == 4
+    assert not (output / 'node-runs.csv').exists()
+    assert not (output / 'distributed-reasoning-statistics.csv').exists()
+    assert json.loads((output / 'metadata.json').read_text())['configuration']['users'] == 2000

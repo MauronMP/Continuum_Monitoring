@@ -3,7 +3,7 @@
 # Requirements: RF-56, RF-59, RNF-18
 # Policies: P-FL-04
 # Current v4.0.0 result: 2 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,16 +16,16 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?session ?budget ?noise ?account ?contract ?purpose ?maximum ?consumed ?remaining ?status WHERE {
-  ?session a :FederatedLearningSession .
-  OPTIONAL { ?session :hasPrivacyBudget ?budget }
-  OPTIONAL { ?session :noiseLevel ?noise }
-  OPTIONAL { ?session :hasPrivacyBudgetAccount ?account .
-    OPTIONAL { ?account :budgetForContract ?contract }
-    OPTIONAL { ?account :budgetForPurpose ?purpose }
-    OPTIONAL { ?account :privacyBudgetMaximum ?maximum }
-    OPTIONAL { ?account :privacyBudgetConsumed ?consumed }
-    OPTIONAL { ?account :privacyBudgetRemaining ?remaining }
-    OPTIONAL { ?account :configurationStatus ?status }
+  ?session a comon:FederatedLearningSession .
+  OPTIONAL { ?session comon:hasPrivacyBudget ?budget }
+  OPTIONAL { ?session comon:noiseLevel ?noise }
+  OPTIONAL { ?session comon:hasPrivacyBudgetAccount ?account .
+    OPTIONAL { ?account comon:budgetForContract ?contract }
+    OPTIONAL { ?account comon:budgetForPurpose ?purpose }
+    OPTIONAL { ?account comon:privacyBudgetMaximum ?maximum }
+    OPTIONAL { ?account comon:privacyBudgetConsumed ?consumed }
+    OPTIONAL { ?account comon:privacyBudgetRemaining ?remaining }
+    OPTIONAL { ?account comon:configurationStatus ?status }
   }
 }
 ORDER BY ?session

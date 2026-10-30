@@ -3,7 +3,7 @@
 # Requirements: RF-02, RF-33, RF-34, RF-70
 # Policies: P-CONS-02, P-CONS-03
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,13 +16,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?name ?zone ?wearable ?mobile ?activeRange ?consentRecord ?contract WHERE {
-  ?user a :User .
+  ?user a comon:User .
   OPTIONAL { ?user foaf:name ?name }
-  OPTIONAL { ?user :locatedInZone ?zone }
-  OPTIONAL { ?user :hasWearable ?wearable }
-  OPTIONAL { ?user :hasMobileDevice ?mobile }
-  OPTIONAL { ?user :hasActiveConsentRange ?activeRange }
-  OPTIONAL { ?user :hasConsentRecord ?consentRecord }
-  OPTIONAL { ?user :hasSemanticContract ?contract }
+  OPTIONAL { ?user comon:locatedInZone ?zone }
+  OPTIONAL { ?user comon:hasWearable ?wearable }
+  OPTIONAL { ?user comon:hasMobileDevice ?mobile }
+  OPTIONAL { ?user comon:hasActiveConsentRange ?activeRange }
+  OPTIONAL { ?user comon:hasConsentRecord ?consentRecord }
+  OPTIONAL { ?user comon:hasSemanticContract ?contract }
 }
 ORDER BY ?user

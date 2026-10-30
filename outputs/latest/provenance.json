@@ -1,0 +1,31 @@
+{
+  "baseline": "/home/dsdservidor/Documentos/Continuum_Monitoring/outputs/adaptive-monitoring/20261022T195405Z-d0e49f90/baseline/20261022T195405Z-1c25efc4",
+  "scope": "Synthetic scenario-boundary recovery",
+  "execute": true,
+  "selected_scenarios": [
+    "users-1",
+    "users-50",
+    "users-100",
+    "users-500",
+    "users-1000",
+    "users-2000"
+  ],
+  "coordinator_build_id": "continuum-benchmark-0.5.0-protocol-10-source-ddc99ac639e2f0ee",
+  "ontology_sha256": {
+    "ontology/core/schema.ttl": "2c94677668f07853cbe5172c6764fe78ef7ef11d4cb198ff834d3feb02bd7a1e",
+    "ontology/modules/foundation.ttl": "e461b109eb476d29aba978cbbbfb299f77fd8e795d7ac4b2b2ee6312f608a32f",
+    "ontology/modules/contracts.ttl": "ddbf564e174057b042ad9bcf71691d7201f5dcd438cf7392bacecbe9564b3311",
+    "ontology/modules/topology.ttl": "d0bb23abff836f066a6ada0849b0d0ee46ed67d17052f0f7e1b96ae5de2d04f2",
+    "ontology/modules/observability.ttl": "269680d6465eec074eb57704c5f9dc247ed32396dee92dfc30b09e113331b4f6",
+    "ontology/modules/governance.ttl": "82f348b264b76eec1da82ba36fa69c245390c77f53cc819a26e76f9c153907d4",
+    "ontology/modules/orchestration.ttl": "84ebe567f6ae603d71a286d13eede9e98c6b23ca7f7d84162c5ad5940ee6f77c",
+    "ontology/modules/federation.ttl": "79c87459e23e7e1bc748c823a5cc37d389b1fd5167dc41454574fe520fdaf044",
+    "ontology/modules/deployment.ttl": "dc351bab13628cc8b0dbf25aba02bf3e0a34682a616ca8a863633fd5c60fdb60",
+    "ontology/core/vocabulary.ttl": "455cf768208a275fc34e7335b7cd86751c91de110beb044871b2dab5092d803f",
+    "ontology/domains/wellbeing/schema.ttl": "78dbf2815e1cd929fce693161dd3a5fb9dad9d287a157ad6c451ec2a4c26c38a",
+    "ontology/domains/wellbeing/vocabulary.ttl": "b72a7fcc1e8062096a4b23c044caee9b9d97f823351f1dc4d38d042b962c2c94",
+    "ontology/examples/reference-system.ttl": "5c7fcca83948ca7546cd9564521b4b21658370b3751509a41a112a1abed60699",
+    "ontology/shapes/core-compliance.ttl": "b333eff8d2965d62d07c19785f6200f278507eca6fb4c5edf01efdb3c613bed5",
+    "ontology/shapes/federated-learning.ttl": "4497eee9b46dd93dc5caf9e17a64f6c4cd8d55b1a7a8b2aeabeea91595674378"
+  }
+}

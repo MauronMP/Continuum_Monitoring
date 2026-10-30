@@ -66,7 +66,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="3933.61,-902.44 3929.4,-896.98 3929.29,-903.87 3933.61,-902.44"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="3990.57" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:usesStandard</text>
+<text xml:space="preserve" text-anchor="middle" x="3990.57" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:usesStandard</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Artifact&#45;&gt;http://example.org/monitoringcontinuum#ValidationCampaign -->
 <g id="edge78" class="edge">
@@ -82,7 +82,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1486.09,-902.97 1489.23,-896.84 1482.96,-899.67 1486.09,-902.97"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1500.2" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasAuthorizationOutcome</text>
+<text xml:space="preserve" text-anchor="middle" x="1500.2" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasAuthorizationOutcome</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#AuthorizationDecision&#45;&gt;http://example.org/monitoringcontinuum#CityArea -->
 <g id="edge9" class="edge">
@@ -92,7 +92,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1611.92,-253.21 1617.78,-249.6 1610.95,-248.77 1611.92,-253.21"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1271.57" y="-638.15" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:basedOnZone</text>
+<text xml:space="preserve" text-anchor="middle" x="1271.57" y="-638.15" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:basedOnZone</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#AuthorizationDecision&#45;&gt;http://example.org/monitoringcontinuum#ConsentRange -->
 <g id="edge25" class="edge">
@@ -102,7 +102,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2004.9,-419.98 2004.14,-413.13 2000.46,-418.96 2004.9,-419.98"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1968.31" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasEffectiveConsentRange</text>
+<text xml:space="preserve" text-anchor="middle" x="1968.31" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasEffectiveConsentRange</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#AuthorizationDecision&#45;&gt;http://example.org/monitoringcontinuum#ConsentRecord -->
 <g id="edge7" class="edge">
@@ -112,7 +112,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1669.68,-902.13 1673.87,-896.67 1667.18,-898.33 1669.68,-902.13"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1654.7" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:basedOnConsentRecord</text>
+<text xml:space="preserve" text-anchor="middle" x="1654.7" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:basedOnConsentRecord</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#AuthorizationDecision&#45;&gt;http://example.org/monitoringcontinuum#SemanticContract -->
 <g id="edge8" class="edge">
@@ -122,7 +122,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1318.84,-420.23 1317.28,-413.53 1314.32,-419.74 1318.84,-420.23"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1426.77" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:basedOnContract</text>
+<text xml:space="preserve" text-anchor="middle" x="1426.77" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:basedOnContract</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#ConsentRecord&#45;&gt;http://example.org/monitoringcontinuum#DataCategory -->
 <g id="edge19" class="edge">
@@ -132,7 +132,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1828.37,-666.83 1830.83,-660.4 1824.9,-663.89 1828.37,-666.83"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1789.7" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasAuthorizedDataCategory</text>
+<text xml:space="preserve" text-anchor="middle" x="1789.7" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasAuthorizedDataCategory</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#ConsentRecord&#45;&gt;http://example.org/monitoringcontinuum#User -->
 <g id="edge12" class="edge">
@@ -142,7 +142,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1453,-662.61 1446.57,-660.13 1450.05,-666.08 1453,-662.61"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1655.93" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:consentSubject</text>
+<text xml:space="preserve" text-anchor="middle" x="1655.93" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:consentSubject</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#EvaluationState&#45;&gt;http://example.org/monitoringcontinuum#MechanismSpecification -->
 <g id="edge1" class="edge">
@@ -152,7 +152,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2613.33,-682.58 2606.86,-680.22 2610.44,-686.1 2613.33,-682.58"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2809.7" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:appliedMechanism</text>
+<text xml:space="preserve" text-anchor="middle" x="2809.7" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:appliedMechanism</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#EvaluationState&#45;&gt;http://example.org/monitoringcontinuum#Policy -->
 <g id="edge2" class="edge">
@@ -162,7 +162,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2680.29,-427.67 2673.4,-427.67 2678.79,-431.96 2680.29,-427.67"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2917.07" y="-638.15" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:appliedPolicy</text>
+<text xml:space="preserve" text-anchor="middle" x="2917.07" y="-638.15" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:appliedPolicy</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#EvaluationState&#45;&gt;http://example.org/monitoringcontinuum#PolicyArtifact -->
 <g id="edge36" class="edge">
@@ -172,7 +172,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="3878.48,-665.77 3882.58,-660.24 3875.92,-662.01 3878.48,-665.77"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="3534.81" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:policyArtifactUsed</text>
+<text xml:space="preserve" text-anchor="middle" x="3534.81" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:policyArtifactUsed</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#EvaluationState&#45;&gt;http://example.org/monitoringcontinuum#RequirementsArtifact -->
 <g id="edge41" class="edge">
@@ -182,7 +182,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="3385.88,-666.46 3389.04,-660.34 3382.76,-663.16 3385.88,-666.46"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="3314.88" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:requirementsArtifactUsed</text>
+<text xml:space="preserve" text-anchor="middle" x="3314.88" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:requirementsArtifactUsed</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Identifier&#45;&gt;http://example.org/monitoringcontinuum#AnonymousIdentifier -->
 <g id="edge57" class="edge">
@@ -210,7 +210,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2484.59,-459.71 2488.78,-454.24 2482.09,-455.9 2484.59,-459.71"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2495.07" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:supportsPolicy</text>
+<text xml:space="preserve" text-anchor="middle" x="2495.07" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:supportsPolicy</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#ModelTier&#45;&gt;http://example.org/monitoringcontinuum#ProcessingScope -->
 <g id="edge31" class="edge">
@@ -220,7 +220,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="3634.65,-667.4 3633.15,-660.68 3630.13,-666.87 3634.65,-667.4"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="3671.95" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasProcessingScope</text>
+<text xml:space="preserve" text-anchor="middle" x="3671.95" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasProcessingScope</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Permission&#45;&gt;diagram:undeclared:governance:range -->
 <g id="edge5" class="edge">
@@ -230,7 +230,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="3179.64,-667.84 3177.35,-661.34 3175.09,-667.85 3179.64,-667.84"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="3206.45" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:appliesTo</text>
+<text xml:space="preserve" text-anchor="middle" x="3206.45" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:appliesTo</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Policy&#45;&gt;http://example.org/monitoringcontinuum#CityArea -->
 <g id="edge4" class="edge">
@@ -240,7 +240,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1727.81,-243.26 1721.08,-244.72 1727.25,-247.78 1727.81,-243.26"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2276.6" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:appliesInZone</text>
+<text xml:space="preserve" text-anchor="middle" x="2276.6" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:appliesInZone</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Policy&#45;&gt;http://example.org/monitoringcontinuum#MechanismSpecification -->
 <g id="edge37" class="edge">
@@ -250,7 +250,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2552.34,-595.22 2555.41,-601.38 2556.85,-594.65 2552.34,-595.22"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2608.2" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:recommendedMechanism</text>
+<text xml:space="preserve" text-anchor="middle" x="2608.2" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:recommendedMechanism</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Policy&#45;&gt;http://example.org/monitoringcontinuum#PolicyCategory -->
 <g id="edge10" class="edge">
@@ -260,7 +260,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1198.9,-242.69 1192.24,-244.45 1198.55,-247.23 1198.9,-242.69"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2102.57" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:belongsToPolicyCategory</text>
+<text xml:space="preserve" text-anchor="middle" x="2102.57" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:belongsToPolicyCategory</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Policy&#45;&gt;http://example.org/monitoringcontinuum#PolicyType -->
 <g id="edge29" class="edge">
@@ -270,7 +270,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2727.21,-263.71 2728.07,-256.87 2723.14,-261.68 2727.21,-263.71"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2745.93" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasPolicyType</text>
+<text xml:space="preserve" text-anchor="middle" x="2745.93" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasPolicyType</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Policy&#45;&gt;http://example.org/monitoringcontinuum#Requirement -->
 <g id="edge38" class="edge">
@@ -280,7 +280,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2371.42,-283.28 2369.17,-276.77 2366.87,-283.26 2371.42,-283.28"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2422.7" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:relatedRequirement</text>
+<text xml:space="preserve" text-anchor="middle" x="2422.7" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:relatedRequirement</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Policy&#45;&gt;http://example.org/monitoringcontinuum#ZoneType -->
 <g id="edge6" class="edge">
@@ -290,7 +290,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2605.03,-263.74 2603.95,-256.94 2600.55,-262.93 2605.03,-263.74"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2646.08" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:appliesToZoneType</text>
+<text xml:space="preserve" text-anchor="middle" x="2646.08" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:appliesToZoneType</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#PolicyCategoryRelation&#45;&gt;http://example.org/monitoringcontinuum#ConflictResolutionStrategy -->
 <g id="edge50" class="edge">
@@ -300,7 +300,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="688.91,-271.62 684.98,-265.96 684.52,-272.84 688.91,-271.62"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="758.82" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:usesResolutionStrategy</text>
+<text xml:space="preserve" text-anchor="middle" x="758.82" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:usesResolutionStrategy</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#PolicyCategoryRelation&#45;&gt;http://example.org/monitoringcontinuum#PolicyCategory -->
 <g id="edge39" class="edge">
@@ -310,7 +310,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1042.15,-270.11 1047.29,-265.52 1040.41,-265.9 1042.15,-270.11"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1026.82" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:relationSourceCategory</text>
+<text xml:space="preserve" text-anchor="middle" x="1026.82" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:relationSourceCategory</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#PolicyCategoryRelation&#45;&gt;http://example.org/monitoringcontinuum#PolicyCategory -->
 <g id="edge40" class="edge">
@@ -320,7 +320,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1104.25,-272.83 1104.14,-265.95 1099.94,-271.4 1104.25,-272.83"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1152.43" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:relationTargetCategory</text>
+<text xml:space="preserve" text-anchor="middle" x="1152.43" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:relationTargetCategory</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#PolicyCategoryRelation&#45;&gt;http://example.org/monitoringcontinuum#PolicyRelationType -->
 <g id="edge28" class="edge">
@@ -330,7 +330,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="856.03,-271.96 859,-265.74 852.8,-268.75 856.03,-271.96"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="882.95" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasPolicyRelationType</text>
+<text xml:space="preserve" text-anchor="middle" x="882.95" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasPolicyRelationType</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#PrivacyMechanism&#45;&gt;http://example.org/monitoringcontinuum#DifferentialPrivacyMechanism -->
 <g id="edge61" class="edge">
@@ -346,7 +346,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="4888.26,-667.18 4889.99,-660.52 4884.48,-664.65 4888.26,-667.18"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4861.93" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:belongsToQueryCatalog</text>
+<text xml:space="preserve" text-anchor="middle" x="4861.93" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:belongsToQueryCatalog</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#QuerySpecification&#45;&gt;http://example.org/monitoringcontinuum#QueryType -->
 <g id="edge32" class="edge">
@@ -356,7 +356,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="4591.9,-667.43 4590.6,-660.67 4587.4,-666.77 4591.9,-667.43"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4611.2" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasQueryType</text>
+<text xml:space="preserve" text-anchor="middle" x="4611.2" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasQueryType</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Requirement&#45;&gt;http://example.org/monitoringcontinuum#FunctionalRequirement -->
 <g id="edge65" class="edge">
@@ -372,7 +372,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2519.9,-598.6 2525.94,-601.91 2523.28,-595.55 2519.9,-598.6"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2424.07" y="-390.94" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:tracedToMechanism</text>
+<text xml:space="preserve" text-anchor="middle" x="2424.07" y="-390.94" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:tracedToMechanism</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Requirement&#45;&gt;http://example.org/monitoringcontinuum#NonFunctionalRequirement -->
 <g id="edge66" class="edge">
@@ -388,7 +388,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2508.09,-330.63 2514.41,-333.34 2511.16,-327.27 2508.09,-330.63"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2528.43" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:tracedToPolicy</text>
+<text xml:space="preserve" text-anchor="middle" x="2528.43" y="-302.03" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:tracedToPolicy</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Requirement&#45;&gt;http://example.org/monitoringcontinuum#ValidationRequirement -->
 <g id="edge79" class="edge">
@@ -404,7 +404,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="3176.04,-902.69 3179.58,-896.78 3173.13,-899.19 3176.04,-902.69"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="3155.82" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasPermission</text>
+<text xml:space="preserve" text-anchor="middle" x="3155.82" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasPermission</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Scenario&#45;&gt;http://example.org/monitoringcontinuum#MechanismSpecification -->
 <g id="edge43" class="edge">
@@ -414,7 +414,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2523.28,-686.6 2525.94,-680.24 2519.9,-683.55 2523.28,-686.6"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2449.59" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:scenarioMechanism</text>
+<text xml:space="preserve" text-anchor="middle" x="2449.59" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:scenarioMechanism</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#Scenario&#45;&gt;http://example.org/monitoringcontinuum#Policy -->
 <g id="edge44" class="edge">
@@ -424,7 +424,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2480.81,-456.34 2485.43,-451.23 2478.63,-452.34 2480.81,-456.34"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2410.2" y="-638.15" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:scenarioPolicy</text>
+<text xml:space="preserve" text-anchor="middle" x="2410.2" y="-638.15" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:scenarioPolicy</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#SecurityMechanism&#45;&gt;http://example.org/monitoringcontinuum#EncryptionMechanism -->
 <g id="edge63" class="edge">
@@ -440,7 +440,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1424.71,-614.83 1426.55,-621.47 1429.25,-615.13 1424.71,-614.83"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1480.32" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:contractSubject</text>
+<text xml:space="preserve" text-anchor="middle" x="1480.32" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:contractSubject</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#State&#45;&gt;http://example.org/monitoringcontinuum#EvaluationState -->
 <g id="edge64" class="edge">
@@ -492,7 +492,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="414.78,-435.52 408.31,-433.17 411.91,-439.05 414.78,-435.52"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="899.38" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:usesIdentifier</text>
+<text xml:space="preserve" text-anchor="middle" x="899.38" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:usesIdentifier</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#UrbanEnvironment&#45;&gt;http://example.org/monitoringcontinuum#CityArea -->
 <g id="edge59" class="edge">
@@ -508,7 +508,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1958.1,-417.28 1963.3,-412.77 1956.42,-413.06 1958.1,-417.28"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1864.32" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasActiveConsentRange</text>
+<text xml:space="preserve" text-anchor="middle" x="1864.32" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasActiveConsentRange</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#User&#45;&gt;http://example.org/monitoringcontinuum#ConsentRecord -->
 <g id="edge21" class="edge">
@@ -518,7 +518,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1660.07,-857.61 1666.88,-858.62 1662.18,-853.58 1660.07,-857.61"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1548.7" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasConsentRecord</text>
+<text xml:space="preserve" text-anchor="middle" x="1548.7" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasConsentRecord</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#User&#45;&gt;http://example.org/monitoringcontinuum#Identifier -->
 <g id="edge26" class="edge">
@@ -528,7 +528,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="449.91,-404.78 443.16,-406.15 449.29,-409.29 449.91,-404.78"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1067.2" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasIdentifier</text>
+<text xml:space="preserve" text-anchor="middle" x="1067.2" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasIdentifier</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#User&#45;&gt;http://example.org/monitoringcontinuum#SemanticContract -->
 <g id="edge34" class="edge">
@@ -538,7 +538,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1320.45,-420.13 1318.47,-413.53 1315.91,-419.92 1320.45,-420.13"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1372.95" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasSemanticContract</text>
+<text xml:space="preserve" text-anchor="middle" x="1372.95" y="-479.86" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasSemanticContract</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#ValidationCampaign&#45;&gt;http://example.org/monitoringcontinuum#AcceptanceProfile -->
 <g id="edge48" class="edge">
@@ -548,7 +548,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="4155.2,-775.97 4150.3,-771.13 4151.11,-777.97 4155.2,-775.97"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4226.07" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:usesAcceptanceProfile</text>
+<text xml:space="preserve" text-anchor="middle" x="4226.07" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:usesAcceptanceProfile</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#ValidationCampaign&#45;&gt;http://example.org/monitoringcontinuum#OntologyArtifact -->
 <g id="edge52" class="edge">
@@ -558,7 +558,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="4279.17,-666.95 4276.24,-660.71 4274.64,-667.41 4279.17,-666.95"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4352.2" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:validationUsesOntology</text>
+<text xml:space="preserve" text-anchor="middle" x="4352.2" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:validationUsesOntology</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#ValidationCampaign&#45;&gt;http://example.org/monitoringcontinuum#PolicyArtifact -->
 <g id="edge53" class="edge">
@@ -568,7 +568,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="3925.63,-665.02 3920.35,-660.6 3921.72,-667.35 3925.63,-665.02"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4099.32" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:validationUsesPolicies</text>
+<text xml:space="preserve" text-anchor="middle" x="4099.32" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:validationUsesPolicies</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#ValidationCampaign&#45;&gt;http://example.org/monitoringcontinuum#QueryCatalog -->
 <g id="edge54" class="edge">
@@ -578,7 +578,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="4870.35,-665.63 4874.56,-660.17 4867.87,-661.81 4870.35,-665.63"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4727.23" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:validationUsesQueries</text>
+<text xml:space="preserve" text-anchor="middle" x="4727.23" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:validationUsesQueries</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#ValidationCampaign&#45;&gt;http://example.org/monitoringcontinuum#ScenarioArtifact -->
 <g id="edge55" class="edge">
@@ -588,7 +588,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="5119.24,-666.01 5123.08,-660.29 5116.51,-662.37 5119.24,-666.01"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="5005.43" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:validationUsesScenarios</text>
+<text xml:space="preserve" text-anchor="middle" x="5005.43" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:validationUsesScenarios</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#ValidationCampaign&#45;&gt;http://example.org/monitoringcontinuum#ValidationResult -->
 <g id="edge35" class="edge">
@@ -598,7 +598,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="4441.73,-667.48 4440.47,-660.71 4437.23,-666.79 4441.73,-667.48"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4472.17" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasValidationResult</text>
+<text xml:space="preserve" text-anchor="middle" x="4472.17" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasValidationResult</text>
 </g>
 <!-- http://xmlns.com/foaf/0.1/Person&#45;&gt;http://example.org/monitoringcontinuum#Role -->
 <g id="edge33" class="edge">
@@ -608,7 +608,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="3010.06,-1058.11 3014.93,-1053.24 3008.09,-1054.01 3010.06,-1058.11"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2721.14" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasRole</text>
+<text xml:space="preserve" text-anchor="middle" x="2721.14" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasRole</text>
 </g>
 <!-- http://xmlns.com/foaf/0.1/Person&#45;&gt;http://example.org/monitoringcontinuum#User -->
 <g id="edge77" class="edge">
@@ -624,7 +624,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2029.41,-416.82 2023.52,-413.25 2025.9,-419.71 2029.41,-416.82"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2105.13" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasConsentRange</text>
+<text xml:space="preserve" text-anchor="middle" x="2105.13" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasConsentRange</text>
 </g>
 <!-- urn:continuum:ontology:4.0.0:node:100&#45;&gt;http://example.org/monitoringcontinuum#ConsentRecord -->
 <g id="edge85" class="edge">
@@ -689,7 +689,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2681.6,-904.04 2681.16,-897.17 2677.22,-902.82 2681.6,-904.04"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2724.82" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasProcessingPurpose</text>
+<text xml:space="preserve" text-anchor="middle" x="2724.82" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasProcessingPurpose</text>
 </g>
 <!-- urn:continuum:ontology:4.0.0:node:106&#45;&gt;http://example.org/monitoringcontinuum#SemanticContract -->
 <g id="edge86" class="edge">
@@ -714,7 +714,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2033.24,-416.09 2027,-413.17 2030.06,-419.34 2033.24,-416.09"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2218.95" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:requiresConsentRange</text>
+<text xml:space="preserve" text-anchor="middle" x="2218.95" y="-796.44" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:requiresConsentRange</text>
 </g>
 <!-- urn:continuum:ontology:4.0.0:node:83&#45;&gt;http://example.org/monitoringcontinuum#EvaluationState -->
 <g id="edge99" class="edge">
@@ -759,7 +759,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="4090.6,-1090.9 4088.33,-1084.4 4086.05,-1090.9 4090.6,-1090.9"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4135.2" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:definedInArtifact</text>
+<text xml:space="preserve" text-anchor="middle" x="4135.2" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:definedInArtifact</text>
 </g>
 <!-- diagram:undeclared:governance:domain&#45;&gt;http://example.org/monitoringcontinuum#AuthorizationDecision -->
 <g id="edge17" class="edge">
@@ -769,7 +769,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1566.48,-1045.61 1559.75,-1047.05 1565.91,-1050.12 1566.48,-1045.61"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="2521.07" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasAuthorizationDecision</text>
+<text xml:space="preserve" text-anchor="middle" x="2521.07" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasAuthorizationDecision</text>
 </g>
 <!-- diagram:undeclared:governance:domain&#45;&gt;http://example.org/monitoringcontinuum#DataCategory -->
 <g id="edge22" class="edge">
@@ -779,7 +779,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="1855.33,-666.08 1851.41,-660.42 1850.95,-667.29 1855.33,-666.08"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="1982.07" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasDataCategory</text>
+<text xml:space="preserve" text-anchor="middle" x="1982.07" y="-953.02" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasDataCategory</text>
 </g>
 <!-- diagram:undeclared:governance:domain&#45;&gt;http://example.org/monitoringcontinuum#DataCriticality -->
 <g id="edge23" class="edge">
@@ -789,7 +789,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="4241.81,-1059.71 4244.4,-1053.32 4238.4,-1056.7 4241.81,-1059.71"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4244.37" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasDataCriticality</text>
+<text xml:space="preserve" text-anchor="middle" x="4244.37" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasDataCriticality</text>
 </g>
 <!-- diagram:undeclared:governance:domain&#45;&gt;http://example.org/monitoringcontinuum#DataSensitivity -->
 <g id="edge24" class="edge">
@@ -799,7 +799,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="4389.42,-1058.81 4393.54,-1053.29 4386.87,-1055.04 4389.42,-1058.81"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4362.82" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:hasDataSensitivity</text>
+<text xml:space="preserve" text-anchor="middle" x="4362.82" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:hasDataSensitivity</text>
 </g>
 <!-- diagram:undeclared:governance:domain&#45;&gt;http://example.org/monitoringcontinuum#Policy -->
 <g id="edge15" class="edge">
@@ -809,7 +809,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="2679.72,-402.92 2673.02,-404.51 2679.25,-407.44 2679.72,-402.92"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="3785.7" y="-874.73" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:governedBy</text>
+<text xml:space="preserve" text-anchor="middle" x="3785.7" y="-874.73" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:governedBy</text>
 </g>
 <!-- diagram:undeclared:governance:domain&#45;&gt;http://example.org/monitoringcontinuum#SecurityMechanism -->
 <g id="edge3" class="edge">
@@ -819,7 +819,7 @@
 <polygon fill="#64717d" stroke="#64717d" stroke-width="0.8" points="5162.98,-1053.42 5169.08,-1050.21 5162.31,-1048.92 5162.98,-1053.42"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="4853.98" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">mc:appliedSecurityMechanism</text>
+<text xml:space="preserve" text-anchor="middle" x="4853.98" y="-1109.6" font-family="sans-Serif" font-size="9.00" fill="#26323c">comon:appliedSecurityMechanism</text>
 </g>
 <!-- http://example.org/monitoringcontinuum#AIModel -->
 <g id="node1" class="node">
@@ -827,7 +827,7 @@
 <g id="a_node1"><a xlink:title="http://example.org/monitoringcontinuum#AIModel">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M3476.52,-895.65C3476.52,-895.65 3404.12,-895.65 3404.12,-895.65 3398.12,-895.65 3392.12,-889.65 3392.12,-883.65 3392.12,-883.65 3392.12,-871.65 3392.12,-871.65 3392.12,-865.65 3398.12,-859.65 3404.12,-859.65 3404.12,-859.65 3476.52,-859.65 3476.52,-859.65 3482.52,-859.65 3488.52,-865.65 3488.52,-871.65 3488.52,-871.65 3488.52,-883.65 3488.52,-883.65 3488.52,-889.65 3482.52,-895.65 3476.52,-895.65"/>
 <polygon fill="#f5f5f5" stroke="none" points="3399.32,-865.9 3399.32,-889.4 3481.32,-889.4 3481.32,-865.9 3399.32,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="3404.32" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:AIModel</text>
+<text xml:space="preserve" text-anchor="start" x="3404.32" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:AIModel</text>
 </a>
 </g>
 </g>
@@ -837,46 +837,46 @@
 <g id="a_node2"><a xlink:title="http://example.org/monitoringcontinuum#AcceptanceProfile">
 <path fill="#fcedd2" stroke="#52606d" d="M4167.4,-769.74C4167.4,-769.74 4007.25,-769.74 4007.25,-769.74 4001.25,-769.74 3995.25,-763.74 3995.25,-757.74 3995.25,-757.74 3995.25,-524.41 3995.25,-524.41 3995.25,-518.41 4001.25,-512.41 4007.25,-512.41 4007.25,-512.41 4167.4,-512.41 4167.4,-512.41 4173.4,-512.41 4179.4,-518.41 4179.4,-524.41 4179.4,-524.41 4179.4,-757.74 4179.4,-757.74 4179.4,-763.74 4173.4,-769.74 4167.4,-769.74"/>
 <polygon fill="#fcedd2" stroke="none" points="4002.45,-741.2 4002.45,-764.7 4172.2,-764.7 4172.2,-741.2 4002.45,-741.2"/>
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-750.25" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:AcceptanceProfile</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-750.25" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:AcceptanceProfile</text>
 <g id="a_node2_0"><a xlink:title="http://example.org/monitoringcontinuum#AHP_consistency_threshold">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-727.65" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:AHP_consistency_threshold:</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-727.65" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:AHP_consistency_threshold:</text>
 <text xml:space="preserve" text-anchor="start" x="4052.07" y="-716.4" font-family="sans-Serif" font-size="9.00" fill="#17212b">xsd:decimal</text>
 </a>
 </g>
 <g id="a_node2_1"><a xlink:title="http://example.org/monitoringcontinuum#D_delegation_max">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-695.15" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:D_delegation_max: xsd:integer</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-695.15" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:D_delegation_max: xsd:integer</text>
 </a>
 </g>
 <g id="a_node2_2"><a xlink:title="http://example.org/monitoringcontinuum#E_device_max">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-673.9" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:E_device_max: xsd:decimal</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-673.9" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:E_device_max: xsd:decimal</text>
 </a>
 </g>
 <g id="a_node2_3"><a xlink:title="http://example.org/monitoringcontinuum#N_agents">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-652.65" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:N_agents: xsd:integer</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-652.65" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:N_agents: xsd:integer</text>
 </a>
 </g>
 <g id="a_node2_4"><a xlink:title="http://example.org/monitoringcontinuum#T_decision_max">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-631.4" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:T_decision_max: xsd:decimal</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-631.4" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:T_decision_max: xsd:decimal</text>
 </a>
 </g>
 <g id="a_node2_5"><a xlink:title="http://example.org/monitoringcontinuum#T_inference_local">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-610.15" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:T_inference_local: xsd:decimal</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-610.15" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:T_inference_local: xsd:decimal</text>
 </a>
 </g>
 <g id="a_node2_6"><a xlink:title="http://example.org/monitoringcontinuum#T_migration_max">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-588.9" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:T_migration_max: xsd:decimal</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-588.9" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:T_migration_max: xsd:decimal</text>
 </a>
 </g>
 <g id="a_node2_7"><a xlink:title="http://example.org/monitoringcontinuum#T_node_join">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-567.65" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:T_node_join: xsd:decimal</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-567.65" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:T_node_join: xsd:decimal</text>
 </a>
 </g>
 <g id="a_node2_8"><a xlink:title="http://example.org/monitoringcontinuum#T_reselection_max">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-546.4" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:T_reselection_max: xsd:decimal</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-546.4" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:T_reselection_max: xsd:decimal</text>
 </a>
 </g>
 <g id="a_node2_9"><a xlink:title="http://example.org/monitoringcontinuum#T_sparql_monitor">
-<text xml:space="preserve" text-anchor="start" x="4007.45" y="-525.15" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:T_sparql_monitor: xsd:decimal</text>
+<text xml:space="preserve" text-anchor="start" x="4007.45" y="-525.15" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:T_sparql_monitor: xsd:decimal</text>
 </a>
 </g>
 </a>
@@ -888,7 +888,7 @@
 <g id="a_node3"><a xlink:title="http://example.org/monitoringcontinuum#AnonymousIdentifier">
 <path fill="#fcedd2" stroke="#52606d" d="M538.52,-255.29C538.52,-255.29 388.12,-255.29 388.12,-255.29 382.12,-255.29 376.12,-249.29 376.12,-243.29 376.12,-243.29 376.12,-231.29 376.12,-231.29 376.12,-225.29 382.12,-219.29 388.12,-219.29 388.12,-219.29 538.52,-219.29 538.52,-219.29 544.52,-219.29 550.52,-225.29 550.52,-231.29 550.52,-231.29 550.52,-243.29 550.52,-243.29 550.52,-249.29 544.52,-255.29 538.52,-255.29"/>
 <polygon fill="#fcedd2" stroke="none" points="383.32,-225.54 383.32,-249.04 543.32,-249.04 543.32,-225.54 383.32,-225.54"/>
-<text xml:space="preserve" text-anchor="start" x="388.32" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:AnonymousIdentifier</text>
+<text xml:space="preserve" text-anchor="start" x="388.32" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:AnonymousIdentifier</text>
 </a>
 </g>
 </g>
@@ -898,17 +898,17 @@
 <g id="a_node4"><a xlink:title="http://example.org/monitoringcontinuum#Artifact">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M4159.4,-1082.9C4159.4,-1082.9 4017.25,-1082.9 4017.25,-1082.9 4011.25,-1082.9 4005.25,-1076.9 4005.25,-1070.9 4005.25,-1070.9 4005.25,-997.57 4005.25,-997.57 4005.25,-991.57 4011.25,-985.57 4017.25,-985.57 4017.25,-985.57 4159.4,-985.57 4159.4,-985.57 4165.4,-985.57 4171.4,-991.57 4171.4,-997.57 4171.4,-997.57 4171.4,-1070.9 4171.4,-1070.9 4171.4,-1076.9 4165.4,-1082.9 4159.4,-1082.9"/>
 <polygon fill="#f5f5f5" stroke="none" points="4012.45,-1054.36 4012.45,-1077.86 4164.2,-1077.86 4164.2,-1054.36 4012.45,-1054.36"/>
-<text xml:space="preserve" text-anchor="start" x="4017.45" y="-1063.41" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:Artifact</text>
+<text xml:space="preserve" text-anchor="start" x="4017.45" y="-1063.41" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:Artifact</text>
 <g id="a_node4_10"><a xlink:title="http://example.org/monitoringcontinuum#artifactIdentifier">
-<text xml:space="preserve" text-anchor="start" x="4017.45" y="-1040.81" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:artifactIdentifier: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="4017.45" y="-1040.81" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:artifactIdentifier: xsd:string</text>
 </a>
 </g>
 <g id="a_node4_11"><a xlink:title="http://example.org/monitoringcontinuum#artifactStatus">
-<text xml:space="preserve" text-anchor="start" x="4017.45" y="-1019.56" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:artifactStatus: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="4017.45" y="-1019.56" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:artifactStatus: xsd:string</text>
 </a>
 </g>
 <g id="a_node4_12"><a xlink:title="http://example.org/monitoringcontinuum#artifactVersion">
-<text xml:space="preserve" text-anchor="start" x="4017.45" y="-998.31" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:artifactVersion: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="4017.45" y="-998.31" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:artifactVersion: xsd:string</text>
 </a>
 </g>
 </a>
@@ -920,9 +920,9 @@
 <g id="a_node5"><a xlink:title="http://example.org/monitoringcontinuum#AuthorizationDecision">
 <path fill="#fcedd2" stroke="#52606d" d="M1546.4,-1061.65C1546.4,-1061.65 1386.25,-1061.65 1386.25,-1061.65 1380.25,-1061.65 1374.25,-1055.65 1374.25,-1049.65 1374.25,-1049.65 1374.25,-1018.82 1374.25,-1018.82 1374.25,-1012.82 1380.25,-1006.82 1386.25,-1006.82 1386.25,-1006.82 1546.4,-1006.82 1546.4,-1006.82 1552.4,-1006.82 1558.4,-1012.82 1558.4,-1018.82 1558.4,-1018.82 1558.4,-1049.65 1558.4,-1049.65 1558.4,-1055.65 1552.4,-1061.65 1546.4,-1061.65"/>
 <polygon fill="#fcedd2" stroke="none" points="1381.45,-1033.11 1381.45,-1056.61 1551.2,-1056.61 1551.2,-1033.11 1381.45,-1033.11"/>
-<text xml:space="preserve" text-anchor="start" x="1386.45" y="-1042.16" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:AuthorizationDecision</text>
+<text xml:space="preserve" text-anchor="start" x="1386.45" y="-1042.16" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:AuthorizationDecision</text>
 <g id="a_node5_13"><a xlink:title="http://example.org/monitoringcontinuum#authorizationReason">
-<text xml:space="preserve" text-anchor="start" x="1386.45" y="-1019.56" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:authorizationReason: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="1386.45" y="-1019.56" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:authorizationReason: xsd:string</text>
 </a>
 </g>
 </a>
@@ -934,7 +934,7 @@
 <g id="a_node6"><a xlink:title="http://example.org/monitoringcontinuum#AuthorizationOutcome">
 <path fill="#fcedd2" stroke="#52606d" d="M1588.77,-895.65C1588.77,-895.65 1427.87,-895.65 1427.87,-895.65 1421.87,-895.65 1415.87,-889.65 1415.87,-883.65 1415.87,-883.65 1415.87,-871.65 1415.87,-871.65 1415.87,-865.65 1421.87,-859.65 1427.87,-859.65 1427.87,-859.65 1588.77,-859.65 1588.77,-859.65 1594.77,-859.65 1600.77,-865.65 1600.77,-871.65 1600.77,-871.65 1600.77,-883.65 1600.77,-883.65 1600.77,-889.65 1594.77,-895.65 1588.77,-895.65"/>
 <polygon fill="#fcedd2" stroke="none" points="1423.07,-865.9 1423.07,-889.4 1593.57,-889.4 1593.57,-865.9 1423.07,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="1428.07" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:AuthorizationOutcome</text>
+<text xml:space="preserve" text-anchor="start" x="1428.07" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:AuthorizationOutcome</text>
 </a>
 </g>
 </g>
@@ -944,7 +944,7 @@
 <g id="a_node7"><a xlink:title="http://example.org/monitoringcontinuum#CityArea">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M1707.4,-255.29C1707.4,-255.29 1631.25,-255.29 1631.25,-255.29 1625.25,-255.29 1619.25,-249.29 1619.25,-243.29 1619.25,-243.29 1619.25,-231.29 1619.25,-231.29 1619.25,-225.29 1625.25,-219.29 1631.25,-219.29 1631.25,-219.29 1707.4,-219.29 1707.4,-219.29 1713.4,-219.29 1719.4,-225.29 1719.4,-231.29 1719.4,-231.29 1719.4,-243.29 1719.4,-243.29 1719.4,-249.29 1713.4,-255.29 1707.4,-255.29"/>
 <polygon fill="#f5f5f5" stroke="none" points="1626.45,-225.54 1626.45,-249.04 1712.2,-249.04 1712.2,-225.54 1626.45,-225.54"/>
-<text xml:space="preserve" text-anchor="start" x="1631.45" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:CityArea</text>
+<text xml:space="preserve" text-anchor="start" x="1631.45" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:CityArea</text>
 </a>
 </g>
 </g>
@@ -954,9 +954,9 @@
 <g id="a_node8"><a xlink:title="http://example.org/monitoringcontinuum#ConflictResolutionStrategy">
 <path fill="#fcedd2" stroke="#52606d" d="M772.02,-264.7C772.02,-264.7 582.62,-264.7 582.62,-264.7 576.62,-264.7 570.62,-258.7 570.62,-252.7 570.62,-252.7 570.62,-221.88 570.62,-221.88 570.62,-215.88 576.62,-209.88 582.62,-209.88 582.62,-209.88 772.02,-209.88 772.02,-209.88 778.02,-209.88 784.02,-215.88 784.02,-221.88 784.02,-221.88 784.02,-252.7 784.02,-252.7 784.02,-258.7 778.02,-264.7 772.02,-264.7"/>
 <polygon fill="#fcedd2" stroke="none" points="577.82,-236.16 577.82,-259.66 776.82,-259.66 776.82,-236.16 577.82,-236.16"/>
-<text xml:space="preserve" text-anchor="start" x="582.82" y="-245.22" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ConflictResolutionStrategy</text>
+<text xml:space="preserve" text-anchor="start" x="582.82" y="-245.22" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ConflictResolutionStrategy</text>
 <g id="a_node8_14"><a xlink:title="http://example.org/monitoringcontinuum#strategyCode">
-<text xml:space="preserve" text-anchor="start" x="582.82" y="-222.61" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:strategyCode: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="582.82" y="-222.61" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:strategyCode: xsd:string</text>
 </a>
 </g>
 </a>
@@ -968,7 +968,7 @@
 <g id="a_node9"><a xlink:title="http://example.org/monitoringcontinuum#ConsentRange">
 <path fill="#fcedd2" stroke="#52606d" d="M2064.02,-411.87C2064.02,-411.87 1952.62,-411.87 1952.62,-411.87 1946.62,-411.87 1940.62,-405.87 1940.62,-399.87 1940.62,-399.87 1940.62,-387.87 1940.62,-387.87 1940.62,-381.87 1946.62,-375.87 1952.62,-375.87 1952.62,-375.87 2064.02,-375.87 2064.02,-375.87 2070.02,-375.87 2076.02,-381.87 2076.02,-387.87 2076.02,-387.87 2076.02,-399.87 2076.02,-399.87 2076.02,-405.87 2070.02,-411.87 2064.02,-411.87"/>
 <polygon fill="#fcedd2" stroke="none" points="1947.82,-382.12 1947.82,-405.62 2068.82,-405.62 2068.82,-382.12 1947.82,-382.12"/>
-<text xml:space="preserve" text-anchor="start" x="1952.82" y="-391.17" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ConsentRange</text>
+<text xml:space="preserve" text-anchor="start" x="1952.82" y="-391.17" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ConsentRange</text>
 </a>
 </g>
 </g>
@@ -978,7 +978,7 @@
 <g id="a_node10"><a xlink:title="http://example.org/monitoringcontinuum#ConsentRecord">
 <path fill="#fcedd2" stroke="#52606d" d="M1759.27,-895.65C1759.27,-895.65 1643.37,-895.65 1643.37,-895.65 1637.37,-895.65 1631.37,-889.65 1631.37,-883.65 1631.37,-883.65 1631.37,-871.65 1631.37,-871.65 1631.37,-865.65 1637.37,-859.65 1643.37,-859.65 1643.37,-859.65 1759.27,-859.65 1759.27,-859.65 1765.27,-859.65 1771.27,-865.65 1771.27,-871.65 1771.27,-871.65 1771.27,-883.65 1771.27,-883.65 1771.27,-889.65 1765.27,-895.65 1759.27,-895.65"/>
 <polygon fill="#fcedd2" stroke="none" points="1638.57,-865.9 1638.57,-889.4 1764.07,-889.4 1764.07,-865.9 1638.57,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="1643.57" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ConsentRecord</text>
+<text xml:space="preserve" text-anchor="start" x="1643.57" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ConsentRecord</text>
 </a>
 </g>
 </g>
@@ -988,7 +988,7 @@
 <g id="a_node11"><a xlink:title="http://example.org/monitoringcontinuum#DataCategory">
 <path fill="#fcedd2" stroke="#52606d" d="M1900.52,-659.08C1900.52,-659.08 1792.12,-659.08 1792.12,-659.08 1786.12,-659.08 1780.12,-653.08 1780.12,-647.08 1780.12,-647.08 1780.12,-635.08 1780.12,-635.08 1780.12,-629.08 1786.12,-623.08 1792.12,-623.08 1792.12,-623.08 1900.52,-623.08 1900.52,-623.08 1906.52,-623.08 1912.52,-629.08 1912.52,-635.08 1912.52,-635.08 1912.52,-647.08 1912.52,-647.08 1912.52,-653.08 1906.52,-659.08 1900.52,-659.08"/>
 <polygon fill="#fcedd2" stroke="none" points="1787.32,-629.33 1787.32,-652.83 1905.32,-652.83 1905.32,-629.33 1787.32,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="1792.32" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:DataCategory</text>
+<text xml:space="preserve" text-anchor="start" x="1792.32" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:DataCategory</text>
 </a>
 </g>
 </g>
@@ -998,7 +998,7 @@
 <g id="a_node12"><a xlink:title="http://example.org/monitoringcontinuum#DataCriticality">
 <path fill="#fcedd2" stroke="#52606d" d="M4316.77,-1052.23C4316.77,-1052.23 4203.88,-1052.23 4203.88,-1052.23 4197.88,-1052.23 4191.88,-1046.23 4191.88,-1040.23 4191.88,-1040.23 4191.88,-1028.23 4191.88,-1028.23 4191.88,-1022.23 4197.88,-1016.23 4203.88,-1016.23 4203.88,-1016.23 4316.77,-1016.23 4316.77,-1016.23 4322.77,-1016.23 4328.77,-1022.23 4328.77,-1028.23 4328.77,-1028.23 4328.77,-1040.23 4328.77,-1040.23 4328.77,-1046.23 4322.77,-1052.23 4316.77,-1052.23"/>
 <polygon fill="#fcedd2" stroke="none" points="4199.07,-1022.48 4199.07,-1045.98 4321.57,-1045.98 4321.57,-1022.48 4199.07,-1022.48"/>
-<text xml:space="preserve" text-anchor="start" x="4204.07" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:DataCriticality</text>
+<text xml:space="preserve" text-anchor="start" x="4204.07" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:DataCriticality</text>
 </a>
 </g>
 </g>
@@ -1008,7 +1008,7 @@
 <g id="a_node13"><a xlink:title="http://example.org/monitoringcontinuum#DataSensitivity">
 <path fill="#fcedd2" stroke="#52606d" d="M4479.77,-1052.23C4479.77,-1052.23 4360.88,-1052.23 4360.88,-1052.23 4354.88,-1052.23 4348.88,-1046.23 4348.88,-1040.23 4348.88,-1040.23 4348.88,-1028.23 4348.88,-1028.23 4348.88,-1022.23 4354.88,-1016.23 4360.88,-1016.23 4360.88,-1016.23 4479.77,-1016.23 4479.77,-1016.23 4485.77,-1016.23 4491.77,-1022.23 4491.77,-1028.23 4491.77,-1028.23 4491.77,-1040.23 4491.77,-1040.23 4491.77,-1046.23 4485.77,-1052.23 4479.77,-1052.23"/>
 <polygon fill="#fcedd2" stroke="none" points="4356.07,-1022.48 4356.07,-1045.98 4484.57,-1045.98 4484.57,-1022.48 4356.07,-1022.48"/>
-<text xml:space="preserve" text-anchor="start" x="4361.07" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:DataSensitivity</text>
+<text xml:space="preserve" text-anchor="start" x="4361.07" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:DataSensitivity</text>
 </a>
 </g>
 </g>
@@ -1018,7 +1018,7 @@
 <g id="a_node14"><a xlink:title="http://example.org/monitoringcontinuum#DifferentialPrivacyMechanism">
 <path fill="#fcedd2" stroke="#52606d" d="M5598.15,-1055.27C5598.15,-1055.27 5400.5,-1055.27 5400.5,-1055.27 5394.5,-1055.27 5388.5,-1049.27 5388.5,-1043.27 5388.5,-1043.27 5388.5,-1025.19 5388.5,-1025.19 5388.5,-1019.19 5394.5,-1013.19 5400.5,-1013.19 5400.5,-1013.19 5598.15,-1013.19 5598.15,-1013.19 5604.15,-1013.19 5610.15,-1019.19 5610.15,-1025.19 5610.15,-1025.19 5610.15,-1043.27 5610.15,-1043.27 5610.15,-1049.27 5604.15,-1055.27 5598.15,-1055.27"/>
 <polygon fill="#fcedd2" stroke="none" points="5395.7,-1018.23 5395.7,-1050.23 5602.95,-1050.23 5602.95,-1018.23 5395.7,-1018.23"/>
-<text xml:space="preserve" text-anchor="start" x="5400.7" y="-1035.78" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:DifferentialPrivacyMechanis</text>
+<text xml:space="preserve" text-anchor="start" x="5400.7" y="-1035.78" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:DifferentialPrivacyMechanis</text>
 <text xml:space="preserve" text-anchor="start" x="5493.7" y="-1024.78" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">m</text>
 </a>
 </g>
@@ -1029,7 +1029,7 @@
 <g id="a_node15"><a xlink:title="http://example.org/monitoringcontinuum#DirectIdentifier">
 <path fill="#fcedd2" stroke="#52606d" d="M128.65,-255.29C128.65,-255.29 12,-255.29 12,-255.29 6,-255.29 0,-249.29 0,-243.29 0,-243.29 0,-231.29 0,-231.29 0,-225.29 6,-219.29 12,-219.29 12,-219.29 128.65,-219.29 128.65,-219.29 134.65,-219.29 140.65,-225.29 140.65,-231.29 140.65,-231.29 140.65,-243.29 140.65,-243.29 140.65,-249.29 134.65,-255.29 128.65,-255.29"/>
 <polygon fill="#fcedd2" stroke="none" points="7.2,-225.54 7.2,-249.04 133.45,-249.04 133.45,-225.54 7.2,-225.54"/>
-<text xml:space="preserve" text-anchor="start" x="12.2" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:DirectIdentifier</text>
+<text xml:space="preserve" text-anchor="start" x="12.2" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:DirectIdentifier</text>
 </a>
 </g>
 </g>
@@ -1039,7 +1039,7 @@
 <g id="a_node16"><a xlink:title="http://example.org/monitoringcontinuum#EncryptionMechanism">
 <path fill="#fcedd2" stroke="#52606d" d="M5348.65,-895.65C5348.65,-895.65 5190,-895.65 5190,-895.65 5184,-895.65 5178,-889.65 5178,-883.65 5178,-883.65 5178,-871.65 5178,-871.65 5178,-865.65 5184,-859.65 5190,-859.65 5190,-859.65 5348.65,-859.65 5348.65,-859.65 5354.65,-859.65 5360.65,-865.65 5360.65,-871.65 5360.65,-871.65 5360.65,-883.65 5360.65,-883.65 5360.65,-889.65 5354.65,-895.65 5348.65,-895.65"/>
 <polygon fill="#fcedd2" stroke="none" points="5185.2,-865.9 5185.2,-889.4 5353.45,-889.4 5353.45,-865.9 5185.2,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="5190.2" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:EncryptionMechanism</text>
+<text xml:space="preserve" text-anchor="start" x="5190.2" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:EncryptionMechanism</text>
 </a>
 </g>
 </g>
@@ -1049,7 +1049,7 @@
 <g id="a_node17"><a xlink:title="http://example.org/monitoringcontinuum#EvaluationState">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M2964.27,-895.65C2964.27,-895.65 2842.38,-895.65 2842.38,-895.65 2836.38,-895.65 2830.38,-889.65 2830.38,-883.65 2830.38,-883.65 2830.38,-871.65 2830.38,-871.65 2830.38,-865.65 2836.38,-859.65 2842.38,-859.65 2842.38,-859.65 2964.27,-859.65 2964.27,-859.65 2970.27,-859.65 2976.27,-865.65 2976.27,-871.65 2976.27,-871.65 2976.27,-883.65 2976.27,-883.65 2976.27,-889.65 2970.27,-895.65 2964.27,-895.65"/>
 <polygon fill="#f5f5f5" stroke="none" points="2837.57,-865.9 2837.57,-889.4 2969.07,-889.4 2969.07,-865.9 2837.57,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="2842.57" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:EvaluationState</text>
+<text xml:space="preserve" text-anchor="start" x="2842.57" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:EvaluationState</text>
 </a>
 </g>
 </g>
@@ -1059,14 +1059,14 @@
 <g id="a_node18"><a xlink:title="http://example.org/monitoringcontinuum#FederatedLearningSession">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M2571.52,-921.32C2571.52,-921.32 2385.12,-921.32 2385.12,-921.32 2379.12,-921.32 2373.12,-915.32 2373.12,-909.32 2373.12,-909.32 2373.12,-845.99 2373.12,-845.99 2373.12,-839.99 2379.12,-833.99 2385.12,-833.99 2385.12,-833.99 2571.52,-833.99 2571.52,-833.99 2577.52,-833.99 2583.52,-839.99 2583.52,-845.99 2583.52,-845.99 2583.52,-909.32 2583.52,-909.32 2583.52,-915.32 2577.52,-921.32 2571.52,-921.32"/>
 <polygon fill="#f5f5f5" stroke="none" points="2380.32,-892.78 2380.32,-916.28 2576.32,-916.28 2576.32,-892.78 2380.32,-892.78"/>
-<text xml:space="preserve" text-anchor="start" x="2385.32" y="-901.83" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:FederatedLearningSession</text>
+<text xml:space="preserve" text-anchor="start" x="2385.32" y="-901.83" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:FederatedLearningSession</text>
 <g id="a_node18_15"><a xlink:title="http://example.org/monitoringcontinuum#containsPersistentIdentifier">
-<text xml:space="preserve" text-anchor="start" x="2385.32" y="-879.23" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:containsPersistentIdentifier:</text>
+<text xml:space="preserve" text-anchor="start" x="2385.32" y="-879.23" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:containsPersistentIdentifier:</text>
 <text xml:space="preserve" text-anchor="start" x="2430.32" y="-867.98" font-family="sans-Serif" font-size="9.00" fill="#17212b">xsd:boolean</text>
 </a>
 </g>
 <g id="a_node18_16"><a xlink:title="http://example.org/monitoringcontinuum#containsPersonalData">
-<text xml:space="preserve" text-anchor="start" x="2385.32" y="-846.73" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:containsPersonalData: xsd:boolean</text>
+<text xml:space="preserve" text-anchor="start" x="2385.32" y="-846.73" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:containsPersonalData: xsd:boolean</text>
 </a>
 </g>
 </a>
@@ -1078,7 +1078,7 @@
 <g id="a_node19"><a xlink:title="http://example.org/monitoringcontinuum#FunctionalRequirement">
 <path fill="#fcedd2" stroke="#52606d" d="M2231.02,-150.25C2231.02,-150.25 2065.62,-150.25 2065.62,-150.25 2059.62,-150.25 2053.62,-144.25 2053.62,-138.25 2053.62,-138.25 2053.62,-126.25 2053.62,-126.25 2053.62,-120.25 2059.62,-114.25 2065.62,-114.25 2065.62,-114.25 2231.02,-114.25 2231.02,-114.25 2237.02,-114.25 2243.02,-120.25 2243.02,-126.25 2243.02,-126.25 2243.02,-138.25 2243.02,-138.25 2243.02,-144.25 2237.02,-150.25 2231.02,-150.25"/>
 <polygon fill="#fcedd2" stroke="none" points="2060.82,-120.5 2060.82,-144 2235.82,-144 2235.82,-120.5 2060.82,-120.5"/>
-<text xml:space="preserve" text-anchor="start" x="2065.82" y="-129.55" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:FunctionalRequirement</text>
+<text xml:space="preserve" text-anchor="start" x="2065.82" y="-129.55" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:FunctionalRequirement</text>
 </a>
 </g>
 </g>
@@ -1088,13 +1088,13 @@
 <g id="a_node20"><a xlink:title="http://example.org/monitoringcontinuum#Identifier">
 <path fill="#fcedd2" stroke="#52606d" d="M429.77,-431.91C429.77,-431.91 292.87,-431.91 292.87,-431.91 286.87,-431.91 280.87,-425.91 280.87,-419.91 280.87,-419.91 280.87,-367.83 280.87,-367.83 280.87,-361.83 286.87,-355.83 292.87,-355.83 292.87,-355.83 429.77,-355.83 429.77,-355.83 435.77,-355.83 441.77,-361.83 441.77,-367.83 441.77,-367.83 441.77,-419.91 441.77,-419.91 441.77,-425.91 435.77,-431.91 429.77,-431.91"/>
 <polygon fill="#fcedd2" stroke="none" points="288.07,-403.37 288.07,-426.87 434.57,-426.87 434.57,-403.37 288.07,-403.37"/>
-<text xml:space="preserve" text-anchor="start" x="293.07" y="-412.42" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:Identifier</text>
+<text xml:space="preserve" text-anchor="start" x="293.07" y="-412.42" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:Identifier</text>
 <g id="a_node20_17"><a xlink:title="http://example.org/monitoringcontinuum#identifierScope">
-<text xml:space="preserve" text-anchor="start" x="293.07" y="-389.82" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:identifierScope: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="293.07" y="-389.82" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:identifierScope: xsd:string</text>
 </a>
 </g>
 <g id="a_node20_18"><a xlink:title="http://example.org/monitoringcontinuum#identifierValue">
-<text xml:space="preserve" text-anchor="start" x="293.07" y="-368.57" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:identifierValue: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="293.07" y="-368.57" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:identifierValue: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1106,13 +1106,13 @@
 <g id="a_node21"><a xlink:title="http://example.org/monitoringcontinuum#MechanismSpecification">
 <path fill="#fcedd2" stroke="#52606d" d="M2647.9,-679.12C2647.9,-679.12 2472.75,-679.12 2472.75,-679.12 2466.75,-679.12 2460.75,-673.12 2460.75,-667.12 2460.75,-667.12 2460.75,-615.04 2460.75,-615.04 2460.75,-609.04 2466.75,-603.04 2472.75,-603.04 2472.75,-603.04 2647.9,-603.04 2647.9,-603.04 2653.9,-603.04 2659.9,-609.04 2659.9,-615.04 2659.9,-615.04 2659.9,-667.12 2659.9,-667.12 2659.9,-673.12 2653.9,-679.12 2647.9,-679.12"/>
 <polygon fill="#fcedd2" stroke="none" points="2467.95,-650.58 2467.95,-674.08 2652.7,-674.08 2652.7,-650.58 2467.95,-650.58"/>
-<text xml:space="preserve" text-anchor="start" x="2472.95" y="-659.62" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:MechanismSpecification</text>
+<text xml:space="preserve" text-anchor="start" x="2472.95" y="-659.62" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:MechanismSpecification</text>
 <g id="a_node21_19"><a xlink:title="http://example.org/monitoringcontinuum#mechanismDescription">
-<text xml:space="preserve" text-anchor="start" x="2472.95" y="-637.03" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:mechanismDescription: rdfs:Literal</text>
+<text xml:space="preserve" text-anchor="start" x="2472.95" y="-637.03" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:mechanismDescription: rdfs:Literal</text>
 </a>
 </g>
 <g id="a_node21_20"><a xlink:title="http://example.org/monitoringcontinuum#mechanismIdentifier">
-<text xml:space="preserve" text-anchor="start" x="2472.95" y="-615.78" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:mechanismIdentifier: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="2472.95" y="-615.78" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:mechanismIdentifier: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1124,7 +1124,7 @@
 <g id="a_node22"><a xlink:title="http://example.org/monitoringcontinuum#ModelTier">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M3688.52,-895.65C3688.52,-895.65 3604.12,-895.65 3604.12,-895.65 3598.12,-895.65 3592.12,-889.65 3592.12,-883.65 3592.12,-883.65 3592.12,-871.65 3592.12,-871.65 3592.12,-865.65 3598.12,-859.65 3604.12,-859.65 3604.12,-859.65 3688.52,-859.65 3688.52,-859.65 3694.52,-859.65 3700.52,-865.65 3700.52,-871.65 3700.52,-871.65 3700.52,-883.65 3700.52,-883.65 3700.52,-889.65 3694.52,-895.65 3688.52,-895.65"/>
 <polygon fill="#f5f5f5" stroke="none" points="3599.32,-865.9 3599.32,-889.4 3693.32,-889.4 3693.32,-865.9 3599.32,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="3604.32" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ModelTier</text>
+<text xml:space="preserve" text-anchor="start" x="3604.32" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ModelTier</text>
 </a>
 </g>
 </g>
@@ -1134,7 +1134,7 @@
 <g id="a_node23"><a xlink:title="http://example.org/monitoringcontinuum#NonFunctionalRequirement">
 <path fill="#fcedd2" stroke="#52606d" d="M2464.02,-150.25C2464.02,-150.25 2274.62,-150.25 2274.62,-150.25 2268.62,-150.25 2262.62,-144.25 2262.62,-138.25 2262.62,-138.25 2262.62,-126.25 2262.62,-126.25 2262.62,-120.25 2268.62,-114.25 2274.62,-114.25 2274.62,-114.25 2464.02,-114.25 2464.02,-114.25 2470.02,-114.25 2476.02,-120.25 2476.02,-126.25 2476.02,-126.25 2476.02,-138.25 2476.02,-138.25 2476.02,-144.25 2470.02,-150.25 2464.02,-150.25"/>
 <polygon fill="#fcedd2" stroke="none" points="2269.82,-120.5 2269.82,-144 2468.82,-144 2468.82,-120.5 2269.82,-120.5"/>
-<text xml:space="preserve" text-anchor="start" x="2274.82" y="-129.55" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:NonFunctionalRequirement</text>
+<text xml:space="preserve" text-anchor="start" x="2274.82" y="-129.55" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:NonFunctionalRequirement</text>
 </a>
 </g>
 </g>
@@ -1144,7 +1144,7 @@
 <g id="a_node24"><a xlink:title="http://example.org/monitoringcontinuum#OntologyArtifact">
 <path fill="#fcedd2" stroke="#52606d" d="M4336.77,-659.08C4336.77,-659.08 4211.88,-659.08 4211.88,-659.08 4205.88,-659.08 4199.88,-653.08 4199.88,-647.08 4199.88,-647.08 4199.88,-635.08 4199.88,-635.08 4199.88,-629.08 4205.88,-623.08 4211.88,-623.08 4211.88,-623.08 4336.77,-623.08 4336.77,-623.08 4342.77,-623.08 4348.77,-629.08 4348.77,-635.08 4348.77,-635.08 4348.77,-647.08 4348.77,-647.08 4348.77,-653.08 4342.77,-659.08 4336.77,-659.08"/>
 <polygon fill="#fcedd2" stroke="none" points="4207.07,-629.33 4207.07,-652.83 4341.57,-652.83 4341.57,-629.33 4207.07,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="4212.07" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:OntologyArtifact</text>
+<text xml:space="preserve" text-anchor="start" x="4212.07" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:OntologyArtifact</text>
 </a>
 </g>
 </g>
@@ -1154,7 +1154,7 @@
 <g id="a_node25"><a xlink:title="http://example.org/monitoringcontinuum#Permission">
 <path fill="#fcedd2" stroke="#52606d" d="M3246.9,-895.65C3246.9,-895.65 3155.75,-895.65 3155.75,-895.65 3149.75,-895.65 3143.75,-889.65 3143.75,-883.65 3143.75,-883.65 3143.75,-871.65 3143.75,-871.65 3143.75,-865.65 3149.75,-859.65 3155.75,-859.65 3155.75,-859.65 3246.9,-859.65 3246.9,-859.65 3252.9,-859.65 3258.9,-865.65 3258.9,-871.65 3258.9,-871.65 3258.9,-883.65 3258.9,-883.65 3258.9,-889.65 3252.9,-895.65 3246.9,-895.65"/>
 <polygon fill="#fcedd2" stroke="none" points="3150.95,-865.9 3150.95,-889.4 3251.7,-889.4 3251.7,-865.9 3150.95,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="3155.95" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:Permission</text>
+<text xml:space="preserve" text-anchor="start" x="3155.95" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:Permission</text>
 </a>
 </g>
 </g>
@@ -1164,21 +1164,21 @@
 <g id="a_node26"><a xlink:title="http://example.org/monitoringcontinuum#Policy">
 <path fill="#fcedd2" stroke="#52606d" d="M2659.77,-453.16C2659.77,-453.16 2498.88,-453.16 2498.88,-453.16 2492.88,-453.16 2486.88,-447.16 2486.88,-441.16 2486.88,-441.16 2486.88,-346.58 2486.88,-346.58 2486.88,-340.58 2492.88,-334.58 2498.88,-334.58 2498.88,-334.58 2659.77,-334.58 2659.77,-334.58 2665.77,-334.58 2671.77,-340.58 2671.77,-346.58 2671.77,-346.58 2671.77,-441.16 2671.77,-441.16 2671.77,-447.16 2665.77,-453.16 2659.77,-453.16"/>
 <polygon fill="#fcedd2" stroke="none" points="2494.07,-424.62 2494.07,-448.12 2664.57,-448.12 2664.57,-424.62 2494.07,-424.62"/>
-<text xml:space="preserve" text-anchor="start" x="2499.07" y="-433.67" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:Policy</text>
+<text xml:space="preserve" text-anchor="start" x="2499.07" y="-433.67" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:Policy</text>
 <g id="a_node26_21"><a xlink:title="http://example.org/monitoringcontinuum#hasPolicyAction">
-<text xml:space="preserve" text-anchor="start" x="2499.07" y="-411.07" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:hasPolicyAction: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="2499.07" y="-411.07" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:hasPolicyAction: xsd:string</text>
 </a>
 </g>
 <g id="a_node26_22"><a xlink:title="http://example.org/monitoringcontinuum#hasPolicyStatement">
-<text xml:space="preserve" text-anchor="start" x="2499.07" y="-389.82" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:hasPolicyStatement: rdfs:Literal</text>
+<text xml:space="preserve" text-anchor="start" x="2499.07" y="-389.82" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:hasPolicyStatement: rdfs:Literal</text>
 </a>
 </g>
 <g id="a_node26_23"><a xlink:title="http://example.org/monitoringcontinuum#policyIdentifier">
-<text xml:space="preserve" text-anchor="start" x="2499.07" y="-368.57" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:policyIdentifier: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="2499.07" y="-368.57" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:policyIdentifier: xsd:string</text>
 </a>
 </g>
 <g id="a_node26_24"><a xlink:title="http://example.org/monitoringcontinuum#policyVersion">
-<text xml:space="preserve" text-anchor="start" x="2499.07" y="-347.32" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:policyVersion: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="2499.07" y="-347.32" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:policyVersion: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1190,7 +1190,7 @@
 <g id="a_node27"><a xlink:title="http://example.org/monitoringcontinuum#PolicyArtifact">
 <path fill="#fcedd2" stroke="#52606d" d="M3962.77,-659.08C3962.77,-659.08 3855.88,-659.08 3855.88,-659.08 3849.88,-659.08 3843.88,-653.08 3843.88,-647.08 3843.88,-647.08 3843.88,-635.08 3843.88,-635.08 3843.88,-629.08 3849.88,-623.08 3855.88,-623.08 3855.88,-623.08 3962.77,-623.08 3962.77,-623.08 3968.77,-623.08 3974.77,-629.08 3974.77,-635.08 3974.77,-635.08 3974.77,-647.08 3974.77,-647.08 3974.77,-653.08 3968.77,-659.08 3962.77,-659.08"/>
 <polygon fill="#fcedd2" stroke="none" points="3851.07,-629.33 3851.07,-652.83 3967.57,-652.83 3967.57,-629.33 3851.07,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="3856.07" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:PolicyArtifact</text>
+<text xml:space="preserve" text-anchor="start" x="3856.07" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:PolicyArtifact</text>
 </a>
 </g>
 </g>
@@ -1200,9 +1200,9 @@
 <g id="a_node28"><a xlink:title="http://example.org/monitoringcontinuum#PolicyCategory">
 <path fill="#fcedd2" stroke="#52606d" d="M1178.77,-264.7C1178.77,-264.7 1047.87,-264.7 1047.87,-264.7 1041.87,-264.7 1035.87,-258.7 1035.87,-252.7 1035.87,-252.7 1035.87,-221.88 1035.87,-221.88 1035.87,-215.88 1041.87,-209.88 1047.87,-209.88 1047.87,-209.88 1178.77,-209.88 1178.77,-209.88 1184.77,-209.88 1190.77,-215.88 1190.77,-221.88 1190.77,-221.88 1190.77,-252.7 1190.77,-252.7 1190.77,-258.7 1184.77,-264.7 1178.77,-264.7"/>
 <polygon fill="#fcedd2" stroke="none" points="1043.07,-236.16 1043.07,-259.66 1183.57,-259.66 1183.57,-236.16 1043.07,-236.16"/>
-<text xml:space="preserve" text-anchor="start" x="1048.07" y="-245.22" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:PolicyCategory</text>
+<text xml:space="preserve" text-anchor="start" x="1048.07" y="-245.22" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:PolicyCategory</text>
 <g id="a_node28_25"><a xlink:title="http://example.org/monitoringcontinuum#categoryCode">
-<text xml:space="preserve" text-anchor="start" x="1048.07" y="-222.61" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:categoryCode: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="1048.07" y="-222.61" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:categoryCode: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1214,7 +1214,7 @@
 <g id="a_node29"><a xlink:title="http://example.org/monitoringcontinuum#PolicyCategoryRelation">
 <path fill="#fcedd2" stroke="#52606d" d="M979.15,-411.87C979.15,-411.87 811.5,-411.87 811.5,-411.87 805.5,-411.87 799.5,-405.87 799.5,-399.87 799.5,-399.87 799.5,-387.87 799.5,-387.87 799.5,-381.87 805.5,-375.87 811.5,-375.87 811.5,-375.87 979.15,-375.87 979.15,-375.87 985.15,-375.87 991.15,-381.87 991.15,-387.87 991.15,-387.87 991.15,-399.87 991.15,-399.87 991.15,-405.87 985.15,-411.87 979.15,-411.87"/>
 <polygon fill="#fcedd2" stroke="none" points="806.7,-382.12 806.7,-405.62 983.95,-405.62 983.95,-382.12 806.7,-382.12"/>
-<text xml:space="preserve" text-anchor="start" x="811.7" y="-391.17" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:PolicyCategoryRelation</text>
+<text xml:space="preserve" text-anchor="start" x="811.7" y="-391.17" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:PolicyCategoryRelation</text>
 </a>
 </g>
 </g>
@@ -1224,9 +1224,9 @@
 <g id="a_node30"><a xlink:title="http://example.org/monitoringcontinuum#PolicyRelationType">
 <path fill="#fcedd2" stroke="#52606d" d="M956.27,-264.7C956.27,-264.7 816.37,-264.7 816.37,-264.7 810.37,-264.7 804.37,-258.7 804.37,-252.7 804.37,-252.7 804.37,-221.88 804.37,-221.88 804.37,-215.88 810.37,-209.88 816.37,-209.88 816.37,-209.88 956.27,-209.88 956.27,-209.88 962.27,-209.88 968.27,-215.88 968.27,-221.88 968.27,-221.88 968.27,-252.7 968.27,-252.7 968.27,-258.7 962.27,-264.7 956.27,-264.7"/>
 <polygon fill="#fcedd2" stroke="none" points="811.57,-236.16 811.57,-259.66 961.07,-259.66 961.07,-236.16 811.57,-236.16"/>
-<text xml:space="preserve" text-anchor="start" x="816.57" y="-245.22" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:PolicyRelationType</text>
+<text xml:space="preserve" text-anchor="start" x="816.57" y="-245.22" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:PolicyRelationType</text>
 <g id="a_node30_26"><a xlink:title="http://example.org/monitoringcontinuum#relationCode">
-<text xml:space="preserve" text-anchor="start" x="816.57" y="-222.61" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:relationCode: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="816.57" y="-222.61" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:relationCode: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1238,7 +1238,7 @@
 <g id="a_node31"><a xlink:title="http://example.org/monitoringcontinuum#PolicyType">
 <path fill="#fcedd2" stroke="#52606d" d="M2781.77,-255.29C2781.77,-255.29 2692.88,-255.29 2692.88,-255.29 2686.88,-255.29 2680.88,-249.29 2680.88,-243.29 2680.88,-243.29 2680.88,-231.29 2680.88,-231.29 2680.88,-225.29 2686.88,-219.29 2692.88,-219.29 2692.88,-219.29 2781.77,-219.29 2781.77,-219.29 2787.77,-219.29 2793.77,-225.29 2793.77,-231.29 2793.77,-231.29 2793.77,-243.29 2793.77,-243.29 2793.77,-249.29 2787.77,-255.29 2781.77,-255.29"/>
 <polygon fill="#fcedd2" stroke="none" points="2688.07,-225.54 2688.07,-249.04 2786.57,-249.04 2786.57,-225.54 2688.07,-225.54"/>
-<text xml:space="preserve" text-anchor="start" x="2693.07" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:PolicyType</text>
+<text xml:space="preserve" text-anchor="start" x="2693.07" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:PolicyType</text>
 </a>
 </g>
 </g>
@@ -1248,7 +1248,7 @@
 <g id="a_node32"><a xlink:title="http://example.org/monitoringcontinuum#PrivacyMechanism">
 <path fill="#fcedd2" stroke="#52606d" d="M5568.9,-1230.69C5568.9,-1230.69 5429.75,-1230.69 5429.75,-1230.69 5423.75,-1230.69 5417.75,-1224.69 5417.75,-1218.69 5417.75,-1218.69 5417.75,-1206.69 5417.75,-1206.69 5417.75,-1200.69 5423.75,-1194.69 5429.75,-1194.69 5429.75,-1194.69 5568.9,-1194.69 5568.9,-1194.69 5574.9,-1194.69 5580.9,-1200.69 5580.9,-1206.69 5580.9,-1206.69 5580.9,-1218.69 5580.9,-1218.69 5580.9,-1224.69 5574.9,-1230.69 5568.9,-1230.69"/>
 <polygon fill="#fcedd2" stroke="none" points="5424.95,-1200.94 5424.95,-1224.44 5573.7,-1224.44 5573.7,-1200.94 5424.95,-1200.94"/>
-<text xml:space="preserve" text-anchor="start" x="5429.95" y="-1209.99" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:PrivacyMechanism</text>
+<text xml:space="preserve" text-anchor="start" x="5429.95" y="-1209.99" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:PrivacyMechanism</text>
 </a>
 </g>
 </g>
@@ -1258,7 +1258,7 @@
 <g id="a_node33"><a xlink:title="http://example.org/monitoringcontinuum#ProcessingPurpose">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M2756.65,-895.65C2756.65,-895.65 2616,-895.65 2616,-895.65 2610,-895.65 2604,-889.65 2604,-883.65 2604,-883.65 2604,-871.65 2604,-871.65 2604,-865.65 2610,-859.65 2616,-859.65 2616,-859.65 2756.65,-859.65 2756.65,-859.65 2762.65,-859.65 2768.65,-865.65 2768.65,-871.65 2768.65,-871.65 2768.65,-883.65 2768.65,-883.65 2768.65,-889.65 2762.65,-895.65 2756.65,-895.65"/>
 <polygon fill="#f5f5f5" stroke="none" points="2611.2,-865.9 2611.2,-889.4 2761.45,-889.4 2761.45,-865.9 2611.2,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="2616.2" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ProcessingPurpose</text>
+<text xml:space="preserve" text-anchor="start" x="2616.2" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ProcessingPurpose</text>
 </a>
 </g>
 </g>
@@ -1268,7 +1268,7 @@
 <g id="a_node34"><a xlink:title="http://example.org/monitoringcontinuum#ProcessingScope">
 <path fill="#fcedd2" stroke="#52606d" d="M3699.27,-659.08C3699.27,-659.08 3571.38,-659.08 3571.38,-659.08 3565.38,-659.08 3559.38,-653.08 3559.38,-647.08 3559.38,-647.08 3559.38,-635.08 3559.38,-635.08 3559.38,-629.08 3565.38,-623.08 3571.38,-623.08 3571.38,-623.08 3699.27,-623.08 3699.27,-623.08 3705.27,-623.08 3711.27,-629.08 3711.27,-635.08 3711.27,-635.08 3711.27,-647.08 3711.27,-647.08 3711.27,-653.08 3705.27,-659.08 3699.27,-659.08"/>
 <polygon fill="#fcedd2" stroke="none" points="3566.57,-629.33 3566.57,-652.83 3704.07,-652.83 3704.07,-629.33 3566.57,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="3571.57" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ProcessingScope</text>
+<text xml:space="preserve" text-anchor="start" x="3571.57" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ProcessingScope</text>
 </a>
 </g>
 </g>
@@ -1278,7 +1278,7 @@
 <g id="a_node35"><a xlink:title="http://example.org/monitoringcontinuum#PseudonymousIdentifier">
 <path fill="#fcedd2" stroke="#52606d" d="M344.02,-255.29C344.02,-255.29 172.62,-255.29 172.62,-255.29 166.62,-255.29 160.62,-249.29 160.62,-243.29 160.62,-243.29 160.62,-231.29 160.62,-231.29 160.62,-225.29 166.62,-219.29 172.62,-219.29 172.62,-219.29 344.02,-219.29 344.02,-219.29 350.02,-219.29 356.02,-225.29 356.02,-231.29 356.02,-231.29 356.02,-243.29 356.02,-243.29 356.02,-249.29 350.02,-255.29 344.02,-255.29"/>
 <polygon fill="#fcedd2" stroke="none" points="167.82,-225.54 167.82,-249.04 348.82,-249.04 348.82,-225.54 167.82,-225.54"/>
-<text xml:space="preserve" text-anchor="start" x="172.82" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:PseudonymousIdentifier</text>
+<text xml:space="preserve" text-anchor="start" x="172.82" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:PseudonymousIdentifier</text>
 </a>
 </g>
 </g>
@@ -1288,7 +1288,7 @@
 <g id="a_node36"><a xlink:title="http://example.org/monitoringcontinuum#QueryCatalog">
 <path fill="#fcedd2" stroke="#52606d" d="M4955.77,-659.08C4955.77,-659.08 4848.88,-659.08 4848.88,-659.08 4842.88,-659.08 4836.88,-653.08 4836.88,-647.08 4836.88,-647.08 4836.88,-635.08 4836.88,-635.08 4836.88,-629.08 4842.88,-623.08 4848.88,-623.08 4848.88,-623.08 4955.77,-623.08 4955.77,-623.08 4961.77,-623.08 4967.77,-629.08 4967.77,-635.08 4967.77,-635.08 4967.77,-647.08 4967.77,-647.08 4967.77,-653.08 4961.77,-659.08 4955.77,-659.08"/>
 <polygon fill="#fcedd2" stroke="none" points="4844.07,-629.33 4844.07,-652.83 4960.57,-652.83 4960.57,-629.33 4844.07,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="4849.07" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:QueryCatalog</text>
+<text xml:space="preserve" text-anchor="start" x="4849.07" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:QueryCatalog</text>
 </a>
 </g>
 </g>
@@ -1298,17 +1298,17 @@
 <g id="a_node37"><a xlink:title="http://example.org/monitoringcontinuum#QuerySpecification">
 <path fill="#fcedd2" stroke="#52606d" d="M4773.27,-926.32C4773.27,-926.32 4615.38,-926.32 4615.38,-926.32 4609.38,-926.32 4603.38,-920.32 4603.38,-914.32 4603.38,-914.32 4603.38,-840.99 4603.38,-840.99 4603.38,-834.99 4609.38,-828.99 4615.38,-828.99 4615.38,-828.99 4773.27,-828.99 4773.27,-828.99 4779.27,-828.99 4785.27,-834.99 4785.27,-840.99 4785.27,-840.99 4785.27,-914.32 4785.27,-914.32 4785.27,-920.32 4779.27,-926.32 4773.27,-926.32"/>
 <polygon fill="#fcedd2" stroke="none" points="4610.57,-897.78 4610.57,-921.28 4778.07,-921.28 4778.07,-897.78 4610.57,-897.78"/>
-<text xml:space="preserve" text-anchor="start" x="4615.57" y="-906.83" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:QuerySpecification</text>
+<text xml:space="preserve" text-anchor="start" x="4615.57" y="-906.83" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:QuerySpecification</text>
 <g id="a_node37_27"><a xlink:title="http://example.org/monitoringcontinuum#queryIdentifier">
-<text xml:space="preserve" text-anchor="start" x="4615.57" y="-884.23" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:queryIdentifier: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="4615.57" y="-884.23" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:queryIdentifier: xsd:string</text>
 </a>
 </g>
 <g id="a_node37_28"><a xlink:title="http://example.org/monitoringcontinuum#queryInterpretation">
-<text xml:space="preserve" text-anchor="start" x="4615.57" y="-862.98" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:queryInterpretation: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="4615.57" y="-862.98" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:queryInterpretation: xsd:string</text>
 </a>
 </g>
 <g id="a_node37_29"><a xlink:title="http://example.org/monitoringcontinuum#queryPurpose">
-<text xml:space="preserve" text-anchor="start" x="4615.57" y="-841.73" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:queryPurpose: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="4615.57" y="-841.73" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:queryPurpose: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1320,7 +1320,7 @@
 <g id="a_node38"><a xlink:title="http://example.org/monitoringcontinuum#QueryType">
 <path fill="#fcedd2" stroke="#52606d" d="M4637.4,-659.08C4637.4,-659.08 4549.25,-659.08 4549.25,-659.08 4543.25,-659.08 4537.25,-653.08 4537.25,-647.08 4537.25,-647.08 4537.25,-635.08 4537.25,-635.08 4537.25,-629.08 4543.25,-623.08 4549.25,-623.08 4549.25,-623.08 4637.4,-623.08 4637.4,-623.08 4643.4,-623.08 4649.4,-629.08 4649.4,-635.08 4649.4,-635.08 4649.4,-647.08 4649.4,-647.08 4649.4,-653.08 4643.4,-659.08 4637.4,-659.08"/>
 <polygon fill="#fcedd2" stroke="none" points="4544.45,-629.33 4544.45,-652.83 4642.2,-652.83 4642.2,-629.33 4544.45,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="4549.45" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:QueryType</text>
+<text xml:space="preserve" text-anchor="start" x="4549.45" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:QueryType</text>
 </a>
 </g>
 </g>
@@ -1330,9 +1330,9 @@
 <g id="a_node39"><a xlink:title="http://example.org/monitoringcontinuum#RecoveryCondition">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M5772.02,-1240.1C5772.02,-1240.1 5612.62,-1240.1 5612.62,-1240.1 5606.62,-1240.1 5600.62,-1234.1 5600.62,-1228.1 5600.62,-1228.1 5600.62,-1197.27 5600.62,-1197.27 5600.62,-1191.27 5606.62,-1185.27 5612.62,-1185.27 5612.62,-1185.27 5772.02,-1185.27 5772.02,-1185.27 5778.02,-1185.27 5784.02,-1191.27 5784.02,-1197.27 5784.02,-1197.27 5784.02,-1228.1 5784.02,-1228.1 5784.02,-1234.1 5778.02,-1240.1 5772.02,-1240.1"/>
 <polygon fill="#f5f5f5" stroke="none" points="5607.82,-1211.56 5607.82,-1235.06 5776.82,-1235.06 5776.82,-1211.56 5607.82,-1211.56"/>
-<text xml:space="preserve" text-anchor="start" x="5612.82" y="-1220.61" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:RecoveryCondition</text>
+<text xml:space="preserve" text-anchor="start" x="5612.82" y="-1220.61" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:RecoveryCondition</text>
 <g id="a_node39_30"><a xlink:title="http://example.org/monitoringcontinuum#conditionExpression">
-<text xml:space="preserve" text-anchor="start" x="5612.82" y="-1198.01" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:conditionExpression: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="5612.82" y="-1198.01" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:conditionExpression: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1344,13 +1344,13 @@
 <g id="a_node40"><a xlink:title="http://example.org/monitoringcontinuum#Requirement">
 <path fill="#fcedd2" stroke="#52606d" d="M2455.77,-275.33C2455.77,-275.33 2282.88,-275.33 2282.88,-275.33 2276.88,-275.33 2270.88,-269.33 2270.88,-263.33 2270.88,-263.33 2270.88,-211.25 2270.88,-211.25 2270.88,-205.25 2276.88,-199.25 2282.88,-199.25 2282.88,-199.25 2455.77,-199.25 2455.77,-199.25 2461.77,-199.25 2467.77,-205.25 2467.77,-211.25 2467.77,-211.25 2467.77,-263.33 2467.77,-263.33 2467.77,-269.33 2461.77,-275.33 2455.77,-275.33"/>
 <polygon fill="#fcedd2" stroke="none" points="2278.07,-246.79 2278.07,-270.29 2460.57,-270.29 2460.57,-246.79 2278.07,-246.79"/>
-<text xml:space="preserve" text-anchor="start" x="2283.07" y="-255.84" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:Requirement</text>
+<text xml:space="preserve" text-anchor="start" x="2283.07" y="-255.84" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:Requirement</text>
 <g id="a_node40_31"><a xlink:title="http://example.org/monitoringcontinuum#requirementIdentifier">
-<text xml:space="preserve" text-anchor="start" x="2283.07" y="-233.24" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:requirementIdentifier: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="2283.07" y="-233.24" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:requirementIdentifier: xsd:string</text>
 </a>
 </g>
 <g id="a_node40_32"><a xlink:title="http://example.org/monitoringcontinuum#requirementStatement">
-<text xml:space="preserve" text-anchor="start" x="2283.07" y="-211.99" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:requirementStatement: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="2283.07" y="-211.99" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:requirementStatement: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1362,7 +1362,7 @@
 <g id="a_node41"><a xlink:title="http://example.org/monitoringcontinuum#RequirementsArtifact">
 <path fill="#fcedd2" stroke="#52606d" d="M3485.77,-659.08C3485.77,-659.08 3330.88,-659.08 3330.88,-659.08 3324.88,-659.08 3318.88,-653.08 3318.88,-647.08 3318.88,-647.08 3318.88,-635.08 3318.88,-635.08 3318.88,-629.08 3324.88,-623.08 3330.88,-623.08 3330.88,-623.08 3485.77,-623.08 3485.77,-623.08 3491.77,-623.08 3497.77,-629.08 3497.77,-635.08 3497.77,-635.08 3497.77,-647.08 3497.77,-647.08 3497.77,-653.08 3491.77,-659.08 3485.77,-659.08"/>
 <polygon fill="#fcedd2" stroke="none" points="3326.07,-629.33 3326.07,-652.83 3490.57,-652.83 3490.57,-629.33 3326.07,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="3331.07" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:RequirementsArtifact</text>
+<text xml:space="preserve" text-anchor="start" x="3331.07" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:RequirementsArtifact</text>
 </a>
 </g>
 </g>
@@ -1372,7 +1372,7 @@
 <g id="a_node42"><a xlink:title="http://example.org/monitoringcontinuum#Role">
 <path fill="#fcedd2" stroke="#52606d" d="M3077.27,-1052.23C3077.27,-1052.23 3027.38,-1052.23 3027.38,-1052.23 3021.38,-1052.23 3015.38,-1046.23 3015.38,-1040.23 3015.38,-1040.23 3015.38,-1028.23 3015.38,-1028.23 3015.38,-1022.23 3021.38,-1016.23 3027.38,-1016.23 3027.38,-1016.23 3077.27,-1016.23 3077.27,-1016.23 3083.27,-1016.23 3089.27,-1022.23 3089.27,-1028.23 3089.27,-1028.23 3089.27,-1040.23 3089.27,-1040.23 3089.27,-1046.23 3083.27,-1052.23 3077.27,-1052.23"/>
 <polygon fill="#fcedd2" stroke="none" points="3022.57,-1022.48 3022.57,-1045.98 3082.07,-1045.98 3082.07,-1022.48 3022.57,-1022.48"/>
-<text xml:space="preserve" text-anchor="start" x="3027.57" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:Role</text>
+<text xml:space="preserve" text-anchor="start" x="3027.57" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:Role</text>
 </a>
 </g>
 </g>
@@ -1382,9 +1382,9 @@
 <g id="a_node43"><a xlink:title="http://example.org/monitoringcontinuum#Scenario">
 <path fill="#fcedd2" stroke="#52606d" d="M2299.02,-905.07C2299.02,-905.07 2151.62,-905.07 2151.62,-905.07 2145.62,-905.07 2139.62,-899.07 2139.62,-893.07 2139.62,-893.07 2139.62,-862.24 2139.62,-862.24 2139.62,-856.24 2145.62,-850.24 2151.62,-850.24 2151.62,-850.24 2299.02,-850.24 2299.02,-850.24 2305.02,-850.24 2311.02,-856.24 2311.02,-862.24 2311.02,-862.24 2311.02,-893.07 2311.02,-893.07 2311.02,-899.07 2305.02,-905.07 2299.02,-905.07"/>
 <polygon fill="#fcedd2" stroke="none" points="2146.82,-876.53 2146.82,-900.03 2303.82,-900.03 2303.82,-876.53 2146.82,-876.53"/>
-<text xml:space="preserve" text-anchor="start" x="2151.82" y="-885.58" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:Scenario</text>
+<text xml:space="preserve" text-anchor="start" x="2151.82" y="-885.58" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:Scenario</text>
 <g id="a_node43_33"><a xlink:title="http://example.org/monitoringcontinuum#scenarioIdentifier">
-<text xml:space="preserve" text-anchor="start" x="2151.82" y="-862.98" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:scenarioIdentifier: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="2151.82" y="-862.98" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:scenarioIdentifier: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1396,7 +1396,7 @@
 <g id="a_node44"><a xlink:title="http://example.org/monitoringcontinuum#ScenarioArtifact">
 <path fill="#fcedd2" stroke="#52606d" d="M5209.02,-659.08C5209.02,-659.08 5085.62,-659.08 5085.62,-659.08 5079.62,-659.08 5073.62,-653.08 5073.62,-647.08 5073.62,-647.08 5073.62,-635.08 5073.62,-635.08 5073.62,-629.08 5079.62,-623.08 5085.62,-623.08 5085.62,-623.08 5209.02,-623.08 5209.02,-623.08 5215.02,-623.08 5221.02,-629.08 5221.02,-635.08 5221.02,-635.08 5221.02,-647.08 5221.02,-647.08 5221.02,-653.08 5215.02,-659.08 5209.02,-659.08"/>
 <polygon fill="#fcedd2" stroke="none" points="5080.82,-629.33 5080.82,-652.83 5213.82,-652.83 5213.82,-629.33 5080.82,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="5085.82" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ScenarioArtifact</text>
+<text xml:space="preserve" text-anchor="start" x="5085.82" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ScenarioArtifact</text>
 </a>
 </g>
 </g>
@@ -1406,17 +1406,17 @@
 <g id="a_node45"><a xlink:title="http://example.org/monitoringcontinuum#SecurityMechanism">
 <path fill="#fcedd2" stroke="#52606d" d="M5356.15,-1082.9C5356.15,-1082.9 5182.5,-1082.9 5182.5,-1082.9 5176.5,-1082.9 5170.5,-1076.9 5170.5,-1070.9 5170.5,-1070.9 5170.5,-997.57 5170.5,-997.57 5170.5,-991.57 5176.5,-985.57 5182.5,-985.57 5182.5,-985.57 5356.15,-985.57 5356.15,-985.57 5362.15,-985.57 5368.15,-991.57 5368.15,-997.57 5368.15,-997.57 5368.15,-1070.9 5368.15,-1070.9 5368.15,-1076.9 5362.15,-1082.9 5356.15,-1082.9"/>
 <polygon fill="#fcedd2" stroke="none" points="5177.7,-1054.36 5177.7,-1077.86 5360.95,-1077.86 5360.95,-1054.36 5177.7,-1054.36"/>
-<text xml:space="preserve" text-anchor="start" x="5182.7" y="-1063.41" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:SecurityMechanism</text>
+<text xml:space="preserve" text-anchor="start" x="5182.7" y="-1063.41" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:SecurityMechanism</text>
 <g id="a_node45_34"><a xlink:title="http://example.org/monitoringcontinuum#protectsAtRest">
-<text xml:space="preserve" text-anchor="start" x="5182.7" y="-1040.81" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:protectsAtRest: xsd:boolean</text>
+<text xml:space="preserve" text-anchor="start" x="5182.7" y="-1040.81" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:protectsAtRest: xsd:boolean</text>
 </a>
 </g>
 <g id="a_node45_35"><a xlink:title="http://example.org/monitoringcontinuum#protectsInTransit">
-<text xml:space="preserve" text-anchor="start" x="5182.7" y="-1019.56" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:protectsInTransit: xsd:boolean</text>
+<text xml:space="preserve" text-anchor="start" x="5182.7" y="-1019.56" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:protectsInTransit: xsd:boolean</text>
 </a>
 </g>
 <g id="a_node45_36"><a xlink:title="http://example.org/monitoringcontinuum#securityBaselineVersion">
-<text xml:space="preserve" text-anchor="start" x="5182.7" y="-998.31" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:securityBaselineVersion: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="5182.7" y="-998.31" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:securityBaselineVersion: xsd:string</text>
 </a>
 </g>
 </a>
@@ -1428,7 +1428,7 @@
 <g id="a_node46"><a xlink:title="http://example.org/monitoringcontinuum#SemanticContract">
 <path fill="#fcedd2" stroke="#52606d" d="M1386.27,-411.87C1386.27,-411.87 1252.37,-411.87 1252.37,-411.87 1246.37,-411.87 1240.37,-405.87 1240.37,-399.87 1240.37,-399.87 1240.37,-387.87 1240.37,-387.87 1240.37,-381.87 1246.37,-375.87 1252.37,-375.87 1252.37,-375.87 1386.27,-375.87 1386.27,-375.87 1392.27,-375.87 1398.27,-381.87 1398.27,-387.87 1398.27,-387.87 1398.27,-399.87 1398.27,-399.87 1398.27,-405.87 1392.27,-411.87 1386.27,-411.87"/>
 <polygon fill="#fcedd2" stroke="none" points="1247.57,-382.12 1247.57,-405.62 1391.07,-405.62 1391.07,-382.12 1247.57,-382.12"/>
-<text xml:space="preserve" text-anchor="start" x="1252.57" y="-391.17" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:SemanticContract</text>
+<text xml:space="preserve" text-anchor="start" x="1252.57" y="-391.17" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:SemanticContract</text>
 </a>
 </g>
 </g>
@@ -1438,7 +1438,7 @@
 <g id="a_node47"><a xlink:title="http://example.org/monitoringcontinuum#Service">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M3360.02,-895.65C3360.02,-895.65 3290.62,-895.65 3290.62,-895.65 3284.62,-895.65 3278.62,-889.65 3278.62,-883.65 3278.62,-883.65 3278.62,-871.65 3278.62,-871.65 3278.62,-865.65 3284.62,-859.65 3290.62,-859.65 3290.62,-859.65 3360.02,-859.65 3360.02,-859.65 3366.02,-859.65 3372.02,-865.65 3372.02,-871.65 3372.02,-871.65 3372.02,-883.65 3372.02,-883.65 3372.02,-889.65 3366.02,-895.65 3360.02,-895.65"/>
 <polygon fill="#f5f5f5" stroke="none" points="3285.82,-865.9 3285.82,-889.4 3364.82,-889.4 3364.82,-865.9 3285.82,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="3290.82" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:Service</text>
+<text xml:space="preserve" text-anchor="start" x="3290.82" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:Service</text>
 </a>
 </g>
 </g>
@@ -1448,7 +1448,7 @@
 <g id="a_node48"><a xlink:title="http://example.org/monitoringcontinuum#ServiceState">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M3111.9,-895.65C3111.9,-895.65 3008.75,-895.65 3008.75,-895.65 3002.75,-895.65 2996.75,-889.65 2996.75,-883.65 2996.75,-883.65 2996.75,-871.65 2996.75,-871.65 2996.75,-865.65 3002.75,-859.65 3008.75,-859.65 3008.75,-859.65 3111.9,-859.65 3111.9,-859.65 3117.9,-859.65 3123.9,-865.65 3123.9,-871.65 3123.9,-871.65 3123.9,-883.65 3123.9,-883.65 3123.9,-889.65 3117.9,-895.65 3111.9,-895.65"/>
 <polygon fill="#f5f5f5" stroke="none" points="3003.95,-865.9 3003.95,-889.4 3116.7,-889.4 3116.7,-865.9 3003.95,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="3008.95" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ServiceState</text>
+<text xml:space="preserve" text-anchor="start" x="3008.95" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ServiceState</text>
 </a>
 </g>
 </g>
@@ -1458,7 +1458,7 @@
 <g id="a_node49"><a xlink:title="http://example.org/monitoringcontinuum#StandardSpecification">
 <path fill="#fcedd2" stroke="#52606d" d="M4003.02,-895.65C4003.02,-895.65 3843.62,-895.65 3843.62,-895.65 3837.62,-895.65 3831.62,-889.65 3831.62,-883.65 3831.62,-883.65 3831.62,-871.65 3831.62,-871.65 3831.62,-865.65 3837.62,-859.65 3843.62,-859.65 3843.62,-859.65 4003.02,-859.65 4003.02,-859.65 4009.02,-859.65 4015.02,-865.65 4015.02,-871.65 4015.02,-871.65 4015.02,-883.65 4015.02,-883.65 4015.02,-889.65 4009.02,-895.65 4003.02,-895.65"/>
 <polygon fill="#fcedd2" stroke="none" points="3838.82,-865.9 3838.82,-889.4 4007.82,-889.4 4007.82,-865.9 3838.82,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="3843.82" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:StandardSpecification</text>
+<text xml:space="preserve" text-anchor="start" x="3843.82" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:StandardSpecification</text>
 </a>
 </g>
 </g>
@@ -1468,7 +1468,7 @@
 <g id="a_node50"><a xlink:title="http://example.org/monitoringcontinuum#State">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M2931.65,-1052.23C2931.65,-1052.23 2875,-1052.23 2875,-1052.23 2869,-1052.23 2863,-1046.23 2863,-1040.23 2863,-1040.23 2863,-1028.23 2863,-1028.23 2863,-1022.23 2869,-1016.23 2875,-1016.23 2875,-1016.23 2931.65,-1016.23 2931.65,-1016.23 2937.65,-1016.23 2943.65,-1022.23 2943.65,-1028.23 2943.65,-1028.23 2943.65,-1040.23 2943.65,-1040.23 2943.65,-1046.23 2937.65,-1052.23 2931.65,-1052.23"/>
 <polygon fill="#f5f5f5" stroke="none" points="2870.2,-1022.48 2870.2,-1045.98 2936.45,-1045.98 2936.45,-1022.48 2870.2,-1022.48"/>
-<text xml:space="preserve" text-anchor="start" x="2875.2" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:State</text>
+<text xml:space="preserve" text-anchor="start" x="2875.2" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:State</text>
 </a>
 </g>
 </g>
@@ -1478,7 +1478,7 @@
 <g id="a_node51"><a xlink:title="http://example.org/monitoringcontinuum#TemporalEntity">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M1524.27,-1230.69C1524.27,-1230.69 1408.37,-1230.69 1408.37,-1230.69 1402.37,-1230.69 1396.37,-1224.69 1396.37,-1218.69 1396.37,-1218.69 1396.37,-1206.69 1396.37,-1206.69 1396.37,-1200.69 1402.37,-1194.69 1408.37,-1194.69 1408.37,-1194.69 1524.27,-1194.69 1524.27,-1194.69 1530.27,-1194.69 1536.27,-1200.69 1536.27,-1206.69 1536.27,-1206.69 1536.27,-1218.69 1536.27,-1218.69 1536.27,-1224.69 1530.27,-1230.69 1524.27,-1230.69"/>
 <polygon fill="#f5f5f5" stroke="none" points="1403.57,-1200.94 1403.57,-1224.44 1529.07,-1224.44 1529.07,-1200.94 1403.57,-1200.94"/>
-<text xml:space="preserve" text-anchor="start" x="1408.57" y="-1209.99" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:TemporalEntity</text>
+<text xml:space="preserve" text-anchor="start" x="1408.57" y="-1209.99" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:TemporalEntity</text>
 </a>
 </g>
 </g>
@@ -1488,7 +1488,7 @@
 <g id="a_node52"><a xlink:title="http://example.org/monitoringcontinuum#TransferEvent">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M1198.52,-1052.23C1198.52,-1052.23 1090.12,-1052.23 1090.12,-1052.23 1084.12,-1052.23 1078.12,-1046.23 1078.12,-1040.23 1078.12,-1040.23 1078.12,-1028.23 1078.12,-1028.23 1078.12,-1022.23 1084.12,-1016.23 1090.12,-1016.23 1090.12,-1016.23 1198.52,-1016.23 1198.52,-1016.23 1204.52,-1016.23 1210.52,-1022.23 1210.52,-1028.23 1210.52,-1028.23 1210.52,-1040.23 1210.52,-1040.23 1210.52,-1046.23 1204.52,-1052.23 1198.52,-1052.23"/>
 <polygon fill="#f5f5f5" stroke="none" points="1085.32,-1022.48 1085.32,-1045.98 1203.32,-1045.98 1203.32,-1022.48 1085.32,-1022.48"/>
-<text xml:space="preserve" text-anchor="start" x="1090.32" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:TransferEvent</text>
+<text xml:space="preserve" text-anchor="start" x="1090.32" y="-1031.53" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:TransferEvent</text>
 </a>
 </g>
 </g>
@@ -1498,7 +1498,7 @@
 <g id="a_node53"><a xlink:title="http://example.org/monitoringcontinuum#UrbanEnvironment">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M1738.15,-411.87C1738.15,-411.87 1600.5,-411.87 1600.5,-411.87 1594.5,-411.87 1588.5,-405.87 1588.5,-399.87 1588.5,-399.87 1588.5,-387.87 1588.5,-387.87 1588.5,-381.87 1594.5,-375.87 1600.5,-375.87 1600.5,-375.87 1738.15,-375.87 1738.15,-375.87 1744.15,-375.87 1750.15,-381.87 1750.15,-387.87 1750.15,-387.87 1750.15,-399.87 1750.15,-399.87 1750.15,-405.87 1744.15,-411.87 1738.15,-411.87"/>
 <polygon fill="#f5f5f5" stroke="none" points="1595.7,-382.12 1595.7,-405.62 1742.95,-405.62 1742.95,-382.12 1595.7,-382.12"/>
-<text xml:space="preserve" text-anchor="start" x="1600.7" y="-391.17" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:UrbanEnvironment</text>
+<text xml:space="preserve" text-anchor="start" x="1600.7" y="-391.17" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:UrbanEnvironment</text>
 </a>
 </g>
 </g>
@@ -1508,7 +1508,7 @@
 <g id="a_node54"><a xlink:title="http://example.org/monitoringcontinuum#User">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M1451.02,-659.08C1451.02,-659.08 1399.62,-659.08 1399.62,-659.08 1393.62,-659.08 1387.62,-653.08 1387.62,-647.08 1387.62,-647.08 1387.62,-635.08 1387.62,-635.08 1387.62,-629.08 1393.62,-623.08 1399.62,-623.08 1399.62,-623.08 1451.02,-623.08 1451.02,-623.08 1457.02,-623.08 1463.02,-629.08 1463.02,-635.08 1463.02,-635.08 1463.02,-647.08 1463.02,-647.08 1463.02,-653.08 1457.02,-659.08 1451.02,-659.08"/>
 <polygon fill="#f5f5f5" stroke="none" points="1394.82,-629.33 1394.82,-652.83 1455.82,-652.83 1455.82,-629.33 1394.82,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="1399.82" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:User</text>
+<text xml:space="preserve" text-anchor="start" x="1399.82" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:User</text>
 </a>
 </g>
 </g>
@@ -1518,7 +1518,7 @@
 <g id="a_node55"><a xlink:title="http://example.org/monitoringcontinuum#ValidationCampaign">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M4448.27,-895.65C4448.27,-895.65 4302.38,-895.65 4302.38,-895.65 4296.38,-895.65 4290.38,-889.65 4290.38,-883.65 4290.38,-883.65 4290.38,-871.65 4290.38,-871.65 4290.38,-865.65 4296.38,-859.65 4302.38,-859.65 4302.38,-859.65 4448.27,-859.65 4448.27,-859.65 4454.27,-859.65 4460.27,-865.65 4460.27,-871.65 4460.27,-871.65 4460.27,-883.65 4460.27,-883.65 4460.27,-889.65 4454.27,-895.65 4448.27,-895.65"/>
 <polygon fill="#f5f5f5" stroke="none" points="4297.57,-865.9 4297.57,-889.4 4453.07,-889.4 4453.07,-865.9 4297.57,-865.9"/>
-<text xml:space="preserve" text-anchor="start" x="4302.57" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ValidationCampaign</text>
+<text xml:space="preserve" text-anchor="start" x="4302.57" y="-874.95" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ValidationCampaign</text>
 </a>
 </g>
 </g>
@@ -1528,7 +1528,7 @@
 <g id="a_node56"><a xlink:title="http://example.org/monitoringcontinuum#ValidationRequirement">
 <path fill="#fcedd2" stroke="#52606d" d="M2672.27,-150.25C2672.27,-150.25 2508.38,-150.25 2508.38,-150.25 2502.38,-150.25 2496.38,-144.25 2496.38,-138.25 2496.38,-138.25 2496.38,-126.25 2496.38,-126.25 2496.38,-120.25 2502.38,-114.25 2508.38,-114.25 2508.38,-114.25 2672.27,-114.25 2672.27,-114.25 2678.27,-114.25 2684.27,-120.25 2684.27,-126.25 2684.27,-126.25 2684.27,-138.25 2684.27,-138.25 2684.27,-144.25 2678.27,-150.25 2672.27,-150.25"/>
 <polygon fill="#fcedd2" stroke="none" points="2503.57,-120.5 2503.57,-144 2677.07,-144 2677.07,-120.5 2503.57,-120.5"/>
-<text xml:space="preserve" text-anchor="start" x="2508.57" y="-129.55" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ValidationRequirement</text>
+<text xml:space="preserve" text-anchor="start" x="2508.57" y="-129.55" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ValidationRequirement</text>
 </a>
 </g>
 </g>
@@ -1538,7 +1538,7 @@
 <g id="a_node57"><a xlink:title="http://example.org/monitoringcontinuum#ValidationResult">
 <path fill="#fcedd2" stroke="#52606d" d="M4505.4,-659.08C4505.4,-659.08 4381.25,-659.08 4381.25,-659.08 4375.25,-659.08 4369.25,-653.08 4369.25,-647.08 4369.25,-647.08 4369.25,-635.08 4369.25,-635.08 4369.25,-629.08 4375.25,-623.08 4381.25,-623.08 4381.25,-623.08 4505.4,-623.08 4505.4,-623.08 4511.4,-623.08 4517.4,-629.08 4517.4,-635.08 4517.4,-635.08 4517.4,-647.08 4517.4,-647.08 4517.4,-653.08 4511.4,-659.08 4505.4,-659.08"/>
 <polygon fill="#fcedd2" stroke="none" points="4376.45,-629.33 4376.45,-652.83 4510.2,-652.83 4510.2,-629.33 4376.45,-629.33"/>
-<text xml:space="preserve" text-anchor="start" x="4381.45" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ValidationResult</text>
+<text xml:space="preserve" text-anchor="start" x="4381.45" y="-638.38" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ValidationResult</text>
 </a>
 </g>
 </g>
@@ -1548,7 +1548,7 @@
 <g id="a_node58"><a xlink:title="http://example.org/monitoringcontinuum#ZoneType">
 <path fill="#f5f5f5" stroke="#52606d" stroke-dasharray="5,2" d="M2648.4,-255.29C2648.4,-255.29 2566.25,-255.29 2566.25,-255.29 2560.25,-255.29 2554.25,-249.29 2554.25,-243.29 2554.25,-243.29 2554.25,-231.29 2554.25,-231.29 2554.25,-225.29 2560.25,-219.29 2566.25,-219.29 2566.25,-219.29 2648.4,-219.29 2648.4,-219.29 2654.4,-219.29 2660.4,-225.29 2660.4,-231.29 2660.4,-231.29 2660.4,-243.29 2660.4,-243.29 2660.4,-249.29 2654.4,-255.29 2648.4,-255.29"/>
 <polygon fill="#f5f5f5" stroke="none" points="2561.45,-225.54 2561.45,-249.04 2653.2,-249.04 2653.2,-225.54 2561.45,-225.54"/>
-<text xml:space="preserve" text-anchor="start" x="2566.45" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">mc:ZoneType</text>
+<text xml:space="preserve" text-anchor="start" x="2566.45" y="-234.59" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">comon:ZoneType</text>
 </a>
 </g>
 </g>
@@ -1598,7 +1598,7 @@
 <polygon fill="#f4f4f4" stroke="#52606d" stroke-dasharray="5,2" points="4181.65,-1243.1 3995,-1243.1 3995,-1182.27 4181.65,-1182.27 4181.65,-1243.1"/>
 <text xml:space="preserve" text-anchor="start" x="4030.95" y="-1221.61" font-family="sans-Serif" font-style="italic" font-size="11.00" fill="#17212b">Domain not declared</text>
 <g id="a_node63_37"><a xlink:title="http://example.org/monitoringcontinuum#configurationStatus">
-<text xml:space="preserve" text-anchor="start" x="4009.2" y="-1197.01" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:configurationStatus: xsd:string</text>
+<text xml:space="preserve" text-anchor="start" x="4009.2" y="-1197.01" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:configurationStatus: xsd:string</text>
 </a>
 </g>
 </g>
@@ -1613,12 +1613,12 @@
 <title>registry:Additional schema axioms</title>
 <polygon fill="#f4f4f4" stroke="#52606d" points="5994.52,-1283.23 5804.12,-1283.23 5804.12,-1142.15 5994.52,-1142.15 5994.52,-1283.23"/>
 <text xml:space="preserve" text-anchor="start" x="5818.32" y="-1261.74" font-family="sans-Serif" font-weight="bold" font-size="11.00" fill="#17212b">Additional schema axioms</text>
-<text xml:space="preserve" text-anchor="start" x="5818.32" y="-1237.14" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:DirectIdentifier disjoint</text>
-<text xml:space="preserve" text-anchor="start" x="5822.82" y="-1225.89" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:AnonymousIdentifier</text>
-<text xml:space="preserve" text-anchor="start" x="5818.32" y="-1202.64" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:DirectIdentifier disjoint</text>
-<text xml:space="preserve" text-anchor="start" x="5818.32" y="-1191.39" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:PseudonymousIdentifier</text>
-<text xml:space="preserve" text-anchor="start" x="5818.32" y="-1168.14" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:PseudonymousIdentifier disjoint</text>
-<text xml:space="preserve" text-anchor="start" x="5843.45" y="-1156.89" font-family="sans-Serif" font-size="9.00" fill="#17212b">mc:AnonymousIdentifier</text>
+<text xml:space="preserve" text-anchor="start" x="5818.32" y="-1237.14" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:DirectIdentifier disjoint</text>
+<text xml:space="preserve" text-anchor="start" x="5822.82" y="-1225.89" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:AnonymousIdentifier</text>
+<text xml:space="preserve" text-anchor="start" x="5818.32" y="-1202.64" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:DirectIdentifier disjoint</text>
+<text xml:space="preserve" text-anchor="start" x="5818.32" y="-1191.39" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:PseudonymousIdentifier</text>
+<text xml:space="preserve" text-anchor="start" x="5818.32" y="-1168.14" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:PseudonymousIdentifier disjoint</text>
+<text xml:space="preserve" text-anchor="start" x="5843.45" y="-1156.89" font-family="sans-Serif" font-size="9.00" fill="#17212b">comon:AnonymousIdentifier</text>
 </g>
 </g>
 </svg>

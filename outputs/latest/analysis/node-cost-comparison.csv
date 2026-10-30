@@ -1,0 +1,1597 @@
+attempt,reasoner,layout,phase,node,metric,samples,median,minimum,maximum
+users-1-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0233502780000001,0.9746218400000001,1.214819676
+users-1-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.1106003959999997,2.103282991,2.6766228219999997
+users-1-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.12349129,2.116494362,2.705202345
+users-1-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.092287144,2.076038992,2.658261227
+users-1-distributed-1-1,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,1.990936808,1.9467363620000002,2.5230780800000003
+users-1-distributed-1-1,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.373729212,2.364969356,3.050133674
+users-1-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.034419815,0.977555897,1.269367597
+users-1-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,0.992409415,0.941729568,1.2731256100000001
+users-1-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,2.137101291,2.1132202309999997,2.7548187410000002
+users-1-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,2.110029823,2.085176506,2.566575898
+users-1-distributed-1-1,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.01320393,1.9825023819999998,2.549798602
+users-1-distributed-1-1,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.328476749,2.318906121,2.9669706750000002
+users-1-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,89.40625,87.33984375,96.0390625
+users-1-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,53.19140625,52.515625,55.58984375
+users-1-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,53.015625,52.36328125,55.109375
+users-1-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,52.6875,52.35546875,55.328125
+users-1-distributed-1-1,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,51.87109375,51.53125,54.40625
+users-1-distributed-1-1,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,54.17578125,54.03515625,56.6015625
+users-1-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,88.43359375,84.46484375,91.34375
+users-1-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,86.26953125,83.00390625,88.703125
+users-1-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,52.7578125,52.4453125,55.32421875
+users-1-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,52.4921875,52.3984375,55.33984375
+users-1-distributed-1-1,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,51.84375,51.47265625,54.4609375
+users-1-distributed-1-1,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,54.1171875,53.98046875,56.5546875
+users-1-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.093827324,1.043624153,1.393546616
+users-1-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,2.392432044,2.365652695,3.1163540440000004
+users-1-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,2.431054174,2.384817453,3.169630009
+users-1-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,2.3975036249999997,2.3696556810000002,3.075848748
+users-1-distributed-1-1,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,2.385665989,2.372768916,3.144360732
+users-1-distributed-1-1,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,2.4440820100000002,2.419941047,3.179523156
+users-1-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.04724027,1.036971873,1.4229878450000002
+users-1-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.082605466,1.051270059,1.485360443
+users-1-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,2.4175685749999998,2.31253525,3.168318766
+users-1-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,2.360403459,2.335505232,3.1070053590000004
+users-1-distributed-1-1,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,2.4125809570000003,2.3960311069999998,3.193134667
+users-1-distributed-1-1,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,2.36627688,2.359600398,3.138254543
+users-1-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,89.10546875,81.34765625,93.77734375
+users-1-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,52.0,48.57421875,55.109375
+users-1-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,52.359375,48.21484375,55.046875
+users-1-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,52.0078125,48.34765625,55.1953125
+users-1-distributed-1-1,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,50.578125,48.47265625,54.81640625
+users-1-distributed-1-1,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,50.98828125,48.53515625,55.6953125
+users-1-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,89.12109375,84.7265625,92.83984375
+users-1-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,84.19921875,80.85546875,92.19921875
+users-1-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,52.03515625,48.17578125,55.48046875
+users-1-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,51.1640625,48.4765625,55.046875
+users-1-distributed-1-1,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,50.28515625,48.75,54.91015625
+users-1-distributed-1-1,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,51.56640625,48.28515625,55.4765625
+users-1-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0233502780000001,0.9746218400000001,1.214819676
+users-1-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.1106003959999997,2.103282991,2.6766228219999997
+users-1-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.12349129,2.116494362,2.705202345
+users-1-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.092287144,2.076038992,2.658261227
+users-1-distributed-1-2,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,1.990936808,1.9467363620000002,2.5230780800000003
+users-1-distributed-1-2,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.373729212,2.364969356,3.050133674
+users-1-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.016360836,1.008056959,1.286870057
+users-1-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,0.917794218,0.909979339,1.213158202
+users-1-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,0.97459024,0.971640415,1.2589492990000002
+users-1-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,2.1087746710000004,2.0647652229999998,2.580826209
+users-1-distributed-1-2,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,1.984929921,1.953020642,2.5522111599999997
+users-1-distributed-1-2,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.359220419,2.32135901,2.954142546
+users-1-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,89.40625,87.33984375,96.0390625
+users-1-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,53.19140625,52.515625,55.58984375
+users-1-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,53.015625,52.36328125,55.109375
+users-1-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,52.6875,52.35546875,55.328125
+users-1-distributed-1-2,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,51.87109375,51.53125,54.40625
+users-1-distributed-1-2,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,54.17578125,54.03515625,56.6015625
+users-1-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,89.54296875,87.3515625,91.21875
+users-1-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,85.88671875,85.72265625,89.01953125
+users-1-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,88.82421875,84.31640625,88.96875
+users-1-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,52.90625,52.47265625,55.3046875
+users-1-distributed-1-2,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,51.75390625,51.4140625,54.296875
+users-1-distributed-1-2,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,54.3046875,54.1015625,56.609375
+users-1-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.093827324,1.043624153,1.393546616
+users-1-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,2.392432044,2.365652695,3.1163540440000004
+users-1-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,2.431054174,2.384817453,3.169630009
+users-1-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,2.3975036249999997,2.3696556810000002,3.075848748
+users-1-distributed-1-2,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,2.385665989,2.372768916,3.144360732
+users-1-distributed-1-2,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,2.4440820100000002,2.419941047,3.179523156
+users-1-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.048726625,1.039742395,1.4282611280000002
+users-1-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.098630802,1.076123083,1.458739644
+users-1-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,1.050656594,1.0474734,1.4629684250000001
+users-1-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,2.369464288,2.3675724000000002,3.0861690410000002
+users-1-distributed-1-2,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,2.454849316,2.38382055,3.169823687
+users-1-distributed-1-2,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,2.373402157,2.355156473,3.1009120290000003
+users-1-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,89.10546875,81.34765625,93.77734375
+users-1-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,52.0,48.57421875,55.109375
+users-1-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,52.359375,48.21484375,55.046875
+users-1-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,52.0078125,48.34765625,55.1953125
+users-1-distributed-1-2,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,50.578125,48.47265625,54.81640625
+users-1-distributed-1-2,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,50.98828125,48.53515625,55.6953125
+users-1-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,90.328125,79.125,95.265625
+users-1-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,90.08984375,81.71875,93.15234375
+users-1-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,91.19140625,87.25390625,93.16015625
+users-1-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,51.97265625,48.5546875,55.37109375
+users-1-distributed-1-2,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,50.41015625,48.3828125,54.78125
+users-1-distributed-1-2,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,50.98828125,48.33203125,55.96875
+users-1-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0233502780000001,0.9746218400000001,1.214819676
+users-1-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.1106003959999997,2.103282991,2.6766228219999997
+users-1-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.12349129,2.116494362,2.705202345
+users-1-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.092287144,2.076038992,2.658261227
+users-1-distributed-1-3,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,1.990936808,1.9467363620000002,2.5230780800000003
+users-1-distributed-1-3,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.373729212,2.364969356,3.050133674
+users-1-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.0413684570000001,1.017561914,1.268195902
+users-1-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,0.94407868,0.940284274,1.237810843
+users-1-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,0.9370746329999999,0.924713191,1.231455248
+users-1-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,0.936101831,0.931828615,1.2617320440000002
+users-1-distributed-1-3,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,1.9814286,1.94706825,2.499106414
+users-1-distributed-1-3,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.328833068,2.314647172,2.941902137
+users-1-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,89.40625,87.33984375,96.0390625
+users-1-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,53.19140625,52.515625,55.58984375
+users-1-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,53.015625,52.36328125,55.109375
+users-1-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,52.6875,52.35546875,55.328125
+users-1-distributed-1-3,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,51.87109375,51.53125,54.40625
+users-1-distributed-1-3,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,54.17578125,54.03515625,56.6015625
+users-1-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,88.41796875,88.1796875,89.98828125
+users-1-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,88.7578125,86.9765625,88.83203125
+users-1-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,83.99609375,83.234375,89.0078125
+users-1-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,86.00390625,82.18359375,89.3515625
+users-1-distributed-1-3,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,51.8203125,51.546875,54.55078125
+users-1-distributed-1-3,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,54.48828125,54.18359375,56.74609375
+users-1-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.093827324,1.043624153,1.393546616
+users-1-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,2.392432044,2.365652695,3.1163540440000004
+users-1-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,2.431054174,2.384817453,3.169630009
+users-1-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,2.3975036249999997,2.3696556810000002,3.075848748
+users-1-distributed-1-3,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,2.385665989,2.372768916,3.144360732
+users-1-distributed-1-3,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,2.4440820100000002,2.419941047,3.179523156
+users-1-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.069880622,1.066476396,1.420138092
+users-1-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.123631445,1.009359483,1.438420261
+users-1-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,1.0990218330000001,1.041912272,1.4468120530000002
+users-1-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,1.0593232399999999,1.039536374,1.426677717
+users-1-distributed-1-3,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,2.367608268,2.364581506,3.204526473
+users-1-distributed-1-3,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,2.352577969,2.3477768030000004,3.1489590830000003
+users-1-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,89.10546875,81.34765625,93.77734375
+users-1-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,52.0,48.57421875,55.109375
+users-1-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,52.359375,48.21484375,55.046875
+users-1-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,52.0078125,48.34765625,55.1953125
+users-1-distributed-1-3,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,50.578125,48.47265625,54.81640625
+users-1-distributed-1-3,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,50.98828125,48.53515625,55.6953125
+users-1-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,90.09765625,82.40234375,94.85546875
+users-1-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,87.5234375,82.6015625,94.8515625
+users-1-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,90.08984375,84.203125,93.0625
+users-1-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,90.9921875,82.23046875,92.78515625
+users-1-distributed-1-3,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,50.48046875,48.7265625,54.95703125
+users-1-distributed-1-3,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,52.33203125,48.375,56.0
+users-1-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0233502780000001,0.9746218400000001,1.214819676
+users-1-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.1106003959999997,2.103282991,2.6766228219999997
+users-1-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.12349129,2.116494362,2.705202345
+users-1-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.092287144,2.076038992,2.658261227
+users-1-distributed-1-4,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,1.990936808,1.9467363620000002,2.5230780800000003
+users-1-distributed-1-4,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.373729212,2.364969356,3.050133674
+users-1-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,0.972747347,0.967956923,1.291611966
+users-1-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,0.9757820530000001,0.930763981,1.248086151
+users-1-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,0.9820679360000001,0.9394349790000001,1.243674358
+users-1-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,0.9893600370000001,0.930909781,1.227089582
+users-1-distributed-1-4,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,0.919063689,0.870236871,1.157113008
+users-1-distributed-1-4,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.342770843,2.3301530699999997,2.9841731690000004
+users-1-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,89.40625,87.33984375,96.0390625
+users-1-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,53.19140625,52.515625,55.58984375
+users-1-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,53.015625,52.36328125,55.109375
+users-1-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,52.6875,52.35546875,55.328125
+users-1-distributed-1-4,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,51.87109375,51.53125,54.40625
+users-1-distributed-1-4,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,54.17578125,54.03515625,56.6015625
+users-1-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,88.78125,88.72265625,90.13671875
+users-1-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,86.16015625,82.96875,88.625
+users-1-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,86.640625,84.41015625,89.08984375
+users-1-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,85.046875,83.30859375,88.33203125
+users-1-distributed-1-4,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,87.71484375,80.484375,88.5234375
+users-1-distributed-1-4,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,54.16015625,53.98046875,56.5625
+users-1-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.093827324,1.043624153,1.393546616
+users-1-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,2.392432044,2.365652695,3.1163540440000004
+users-1-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,2.431054174,2.384817453,3.169630009
+users-1-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,2.3975036249999997,2.3696556810000002,3.075848748
+users-1-distributed-1-4,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,2.385665989,2.372768916,3.144360732
+users-1-distributed-1-4,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,2.4440820100000002,2.419941047,3.179523156
+users-1-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.081954592,1.0518554500000001,1.4097073620000002
+users-1-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.1030552740000001,1.0452581840000001,1.4285690420000001
+users-1-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,1.0515500770000001,1.011081335,1.443281379
+users-1-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,1.114406312,1.049634738,1.468710981
+users-1-distributed-1-4,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,1.131087039,1.0668187969999998,1.4369840770000002
+users-1-distributed-1-4,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,2.387017175,2.383131325,3.147566342
+users-1-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,89.10546875,81.34765625,93.77734375
+users-1-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,52.0,48.57421875,55.109375
+users-1-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,52.359375,48.21484375,55.046875
+users-1-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,52.0078125,48.34765625,55.1953125
+users-1-distributed-1-4,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,50.578125,48.47265625,54.81640625
+users-1-distributed-1-4,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,50.98828125,48.53515625,55.6953125
+users-1-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,89.53515625,83.03515625,95.2578125
+users-1-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,87.9453125,83.0234375,90.83203125
+users-1-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,90.11328125,84.1953125,93.0859375
+users-1-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,88.0234375,82.1171875,90.0078125
+users-1-distributed-1-4,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,86.5703125,79.6796875,91.25
+users-1-distributed-1-4,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,50.5859375,48.33203125,55.640625
+users-1-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0233502780000001,0.9746218400000001,1.214819676
+users-1-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.1106003959999997,2.103282991,2.6766228219999997
+users-1-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.12349129,2.116494362,2.705202345
+users-1-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.092287144,2.076038992,2.658261227
+users-1-distributed-1-5,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,1.990936808,1.9467363620000002,2.5230780800000003
+users-1-distributed-1-5,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.373729212,2.364969356,3.050133674
+users-1-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,0.990701633,0.984402329,1.3439506799999998
+users-1-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,0.9737299620000001,0.934103554,1.232319988
+users-1-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,0.934445078,0.9343995640000001,1.283572236
+users-1-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,0.93800027,0.9320993700000001,1.287913319
+users-1-distributed-1-5,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,0.870485415,0.8642677710000001,1.152842313
+users-1-distributed-1-5,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,1.087947308,1.044600931,1.4083755880000002
+users-1-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,89.40625,87.33984375,96.0390625
+users-1-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,53.19140625,52.515625,55.58984375
+users-1-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,53.015625,52.36328125,55.109375
+users-1-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,52.6875,52.35546875,55.328125
+users-1-distributed-1-5,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,51.87109375,51.53125,54.40625
+users-1-distributed-1-5,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,54.17578125,54.03515625,56.6015625
+users-1-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,88.1953125,88.1796875,91.08984375
+users-1-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,87.69140625,87.53125,89.8984375
+users-1-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,84.2109375,83.99609375,89.76953125
+users-1-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,86.7734375,84.140625,88.5
+users-1-distributed-1-5,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,86.8828125,83.66796875,87.2734375
+users-1-distributed-1-5,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,89.69921875,89.46484375,92.3203125
+users-1-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.093827324,1.043624153,1.393546616
+users-1-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,2.392432044,2.365652695,3.1163540440000004
+users-1-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,2.431054174,2.384817453,3.169630009
+users-1-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,2.3975036249999997,2.3696556810000002,3.075848748
+users-1-distributed-1-5,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,2.385665989,2.372768916,3.144360732
+users-1-distributed-1-5,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,2.4440820100000002,2.419941047,3.179523156
+users-1-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.064181749,1.053950394,1.471963189
+users-1-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.051630661,1.044400038,1.4452326020000001
+users-1-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,1.116277977,1.094403467,1.436027848
+users-1-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,1.052101441,1.036193305,1.466402339
+users-1-distributed-1-5,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,1.082202034,1.053306061,1.415629088
+users-1-distributed-1-5,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,1.064907573,1.062214812,1.450228868
+users-1-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,89.10546875,81.34765625,93.77734375
+users-1-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,52.0,48.57421875,55.109375
+users-1-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,52.359375,48.21484375,55.046875
+users-1-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,52.0078125,48.34765625,55.1953125
+users-1-distributed-1-5,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,50.578125,48.47265625,54.81640625
+users-1-distributed-1-5,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,50.98828125,48.53515625,55.6953125
+users-1-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,90.15234375,78.69921875,94.65234375
+users-1-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,88.61328125,83.69140625,95.8984375
+users-1-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,88.9453125,84.9921875,92.8828125
+users-1-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,85.78515625,82.0,92.67578125
+users-1-distributed-1-5,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,86.4375,78.5859375,92.05078125
+users-1-distributed-1-5,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,87.3046875,80.375,96.24609375
+users-50-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0412618130000002,1.0335311710000001,1.354265665
+users-50-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.402787863,2.399511453,3.06972041
+users-50-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.392030332,2.389528824,3.0642740589999997
+users-50-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.348178378,2.343839726,3.029304658
+users-50-distributed-1-1,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.005529766,2.002973235,2.557213365
+users-50-distributed-1-1,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.738101341,2.662517598,3.415614619
+users-50-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.105515548,1.057833979,1.406427169
+users-50-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.0844194729999999,1.0453759660000002,1.428022085
+users-50-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,2.386742065,2.3547622510000004,3.0391195840000003
+users-50-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,2.369448216,2.357347882,3.04652032
+users-50-distributed-1-1,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.136238573,1.9808561050000002,2.540510823
+users-50-distributed-1-1,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.698217209,2.593062816,3.346756269
+users-50-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,98.703125,97.125,100.671875
+users-50-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,55.19140625,55.015625,59.89453125
+users-50-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,54.79296875,54.47265625,59.3359375
+users-50-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,55.34765625,54.64453125,59.73828125
+users-50-distributed-1-1,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,54.60546875,54.60546875,57.73046875
+users-50-distributed-1-1,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,59.12890625,56.80859375,60.79296875
+users-50-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,94.05078125,90.765625,96.296875
+users-50-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,90.5625,88.23828125,97.1015625
+users-50-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,54.4609375,54.44921875,59.19140625
+users-50-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,55.14453125,55.0546875,59.5859375
+users-50-distributed-1-1,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,54.23828125,51.578125,56.96484375
+users-50-distributed-1-1,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,56.5390625,55.9609375,60.66796875
+users-50-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.498604369,1.440120807,1.98204796
+users-50-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,3.435040669,3.375108042,4.408027203
+users-50-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,3.4700288390000003,3.383362485,4.52107161
+users-50-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,3.4208070800000003,3.396642759,4.338279091
+users-50-distributed-1-1,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,3.447834229,3.4416174120000003,4.447681286
+users-50-distributed-1-1,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,3.5105284670000003,3.4025109670000004,4.550386455
+users-50-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.466732326,1.460588352,2.027853151
+users-50-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.504532927,1.449548929,2.0162685220000003
+users-50-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,3.454615414,3.316945633,4.45914854
+users-50-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,3.424038856,3.358414323,4.419600133
+users-50-distributed-1-1,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,3.448924929,3.336103398,4.440042595
+users-50-distributed-1-1,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,3.33502441,3.3134317660000003,4.46341713
+users-50-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,91.71484375,91.71484375,106.62890625
+users-50-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,57.27734375,54.4921875,61.34375
+users-50-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,58.4375,54.3359375,61.08203125
+users-50-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,56.28125,54.64453125,60.78125
+users-50-distributed-1-1,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,54.87890625,54.69921875,59.69921875
+users-50-distributed-1-1,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,57.5,56.8125,61.19921875
+users-50-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,100.94140625,95.22265625,105.8515625
+users-50-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,93.91015625,90.98046875,100.59375
+users-50-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,56.30078125,54.1015625,60.984375
+users-50-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,57.53515625,54.171875,61.296875
+users-50-distributed-1-1,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,54.6328125,54.43359375,59.734375
+users-50-distributed-1-1,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,56.4296875,53.87109375,61.515625
+users-50-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0412618130000002,1.0335311710000001,1.354265665
+users-50-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.402787863,2.399511453,3.06972041
+users-50-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.392030332,2.389528824,3.0642740589999997
+users-50-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.348178378,2.343839726,3.029304658
+users-50-distributed-1-2,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.005529766,2.002973235,2.557213365
+users-50-distributed-1-2,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.738101341,2.662517598,3.415614619
+users-50-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.044182937,1.03726312,1.3942525829999999
+users-50-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.101452536,1.089848402,1.3967942519999998
+users-50-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,1.10508903,1.0445340140000001,1.398060675
+users-50-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,2.3333513,2.3270093980000004,2.998039495
+users-50-distributed-1-2,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.082600739,2.008792269,2.5814483380000004
+users-50-distributed-1-2,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.674168339,2.5992922830000005,3.3310669699999997
+users-50-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,98.703125,97.125,100.671875
+users-50-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,55.19140625,55.015625,59.89453125
+users-50-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,54.79296875,54.47265625,59.3359375
+users-50-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,55.34765625,54.64453125,59.73828125
+users-50-distributed-1-2,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,54.60546875,54.60546875,57.73046875
+users-50-distributed-1-2,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,59.12890625,56.80859375,60.79296875
+users-50-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,89.71875,89.63671875,96.21484375
+users-50-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,90.83203125,88.5078125,97.43359375
+users-50-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,92.8828125,90.421875,95.77734375
+users-50-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,54.96875,54.60546875,59.68359375
+users-50-distributed-1-2,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,54.4765625,51.85546875,56.9140625
+users-50-distributed-1-2,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,56.6875,56.15234375,60.8984375
+users-50-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.498604369,1.440120807,1.98204796
+users-50-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,3.435040669,3.375108042,4.408027203
+users-50-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,3.4700288390000003,3.383362485,4.52107161
+users-50-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,3.4208070800000003,3.396642759,4.338279091
+users-50-distributed-1-2,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,3.447834229,3.4416174120000003,4.447681286
+users-50-distributed-1-2,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,3.5105284670000003,3.4025109670000004,4.550386455
+users-50-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.486888704,1.486354532,2.0436052030000003
+users-50-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.533879744,1.4489941899999998,2.062485363
+users-50-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,1.5421983620000002,1.5209294990000002,2.060142131
+users-50-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,3.412586904,3.322653824,4.381987027999999
+users-50-distributed-1-2,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,3.4750831750000004,3.3723743570000004,4.477471742
+users-50-distributed-1-2,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,3.420281545,3.2984224880000004,4.460186002
+users-50-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,91.71484375,91.71484375,106.62890625
+users-50-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,57.27734375,54.4921875,61.34375
+users-50-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,58.4375,54.3359375,61.08203125
+users-50-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,56.28125,54.64453125,60.78125
+users-50-distributed-1-2,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,54.87890625,54.69921875,59.69921875
+users-50-distributed-1-2,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,57.5,56.8125,61.19921875
+users-50-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,90.30078125,90.22265625,103.83984375
+users-50-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,94.14453125,91.30859375,100.98828125
+users-50-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,97.83203125,92.51171875,104.5625
+users-50-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,54.28125,54.12890625,60.70703125
+users-50-distributed-1-2,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,54.5,54.29296875,59.70703125
+users-50-distributed-1-2,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,55.5390625,54.40625,61.17578125
+users-50-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0412618130000002,1.0335311710000001,1.354265665
+users-50-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.402787863,2.399511453,3.06972041
+users-50-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.392030332,2.389528824,3.0642740589999997
+users-50-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.348178378,2.343839726,3.029304658
+users-50-distributed-1-3,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.005529766,2.002973235,2.557213365
+users-50-distributed-1-3,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.738101341,2.662517598,3.415614619
+users-50-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.106435845,1.090227919,1.4063883510000001
+users-50-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.065590966,1.052463203,1.3963528429999998
+users-50-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,1.043330416,1.0385420509999999,1.3859388449999999
+users-50-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,1.083592928,1.0315304650000001,1.4215453210000002
+users-50-distributed-1-3,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.089551708,1.974726122,2.5415518080000004
+users-50-distributed-1-3,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.709424952,2.629013488,3.34782373
+users-50-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,98.703125,97.125,100.671875
+users-50-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,55.19140625,55.015625,59.89453125
+users-50-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,54.79296875,54.47265625,59.3359375
+users-50-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,55.34765625,54.64453125,59.73828125
+users-50-distributed-1-3,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,54.60546875,54.60546875,57.73046875
+users-50-distributed-1-3,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,59.12890625,56.80859375,60.79296875
+users-50-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,93.69921875,88.578125,96.18359375
+users-50-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,90.78125,88.48828125,97.39453125
+users-50-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,90.57421875,88.41015625,97.140625
+users-50-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,89.109375,86.78125,95.58203125
+users-50-distributed-1-3,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,54.25,51.609375,56.9765625
+users-50-distributed-1-3,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,56.58203125,55.90234375,60.88671875
+users-50-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.498604369,1.440120807,1.98204796
+users-50-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,3.435040669,3.375108042,4.408027203
+users-50-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,3.4700288390000003,3.383362485,4.52107161
+users-50-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,3.4208070800000003,3.396642759,4.338279091
+users-50-distributed-1-3,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,3.447834229,3.4416174120000003,4.447681286
+users-50-distributed-1-3,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,3.5105284670000003,3.4025109670000004,4.550386455
+users-50-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.535792491,1.4785180869999999,2.066588382
+users-50-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.5319763499999999,1.481469171,2.055031176
+users-50-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,1.534612018,1.525034429,2.047754742
+users-50-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,1.574121672,1.528300153,2.083600883
+users-50-distributed-1-3,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,3.445268916,3.355482786,4.444524994
+users-50-distributed-1-3,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,3.336327212,3.327439156,4.516311501000001
+users-50-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,91.71484375,91.71484375,106.62890625
+users-50-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,57.27734375,54.4921875,61.34375
+users-50-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,58.4375,54.3359375,61.08203125
+users-50-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,56.28125,54.64453125,60.78125
+users-50-distributed-1-3,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,54.87890625,54.69921875,59.69921875
+users-50-distributed-1-3,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,57.5,56.8125,61.19921875
+users-50-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,103.05078125,96.109375,103.484375
+users-50-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,94.1171875,91.19921875,100.7890625
+users-50-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,96.81640625,91.421875,101.09375
+users-50-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,93.984375,91.15625,100.5234375
+users-50-distributed-1-3,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,54.5,54.20703125,59.6875
+users-50-distributed-1-3,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,59.37890625,55.12890625,61.1953125
+users-50-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0412618130000002,1.0335311710000001,1.354265665
+users-50-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.402787863,2.399511453,3.06972041
+users-50-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.392030332,2.389528824,3.0642740589999997
+users-50-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.348178378,2.343839726,3.029304658
+users-50-distributed-1-4,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.005529766,2.002973235,2.557213365
+users-50-distributed-1-4,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.738101341,2.662517598,3.415614619
+users-50-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.100464754,1.055099125,1.411935366
+users-50-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.078041489,1.075827391,1.413781323
+users-50-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,1.051319085,1.045557362,1.419234279
+users-50-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,1.04973364,1.0493506620000002,1.430010579
+users-50-distributed-1-4,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,0.912434747,0.8768794820000001,1.1634060730000002
+users-50-distributed-1-4,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.642546222,2.59723806,3.30674746
+users-50-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,98.703125,97.125,100.671875
+users-50-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,55.19140625,55.015625,59.89453125
+users-50-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,54.79296875,54.47265625,59.3359375
+users-50-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,55.34765625,54.64453125,59.73828125
+users-50-distributed-1-4,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,54.60546875,54.60546875,57.73046875
+users-50-distributed-1-4,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,59.12890625,56.80859375,60.79296875
+users-50-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,91.9921875,90.85546875,96.3828125
+users-50-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,90.5546875,88.19921875,97.27734375
+users-50-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,90.56640625,88.41796875,97.22265625
+users-50-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,90.30859375,88.09765625,96.84765625
+users-50-distributed-1-4,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,85.71484375,84.91015625,91.25390625
+users-50-distributed-1-4,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,56.51953125,55.8828125,60.6953125
+users-50-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.498604369,1.440120807,1.98204796
+users-50-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,3.435040669,3.375108042,4.408027203
+users-50-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,3.4700288390000003,3.383362485,4.52107161
+users-50-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,3.4208070800000003,3.396642759,4.338279091
+users-50-distributed-1-4,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,3.447834229,3.4416174120000003,4.447681286
+users-50-distributed-1-4,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,3.5105284670000003,3.4025109670000004,4.550386455
+users-50-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.527963573,1.500307016,2.110896981
+users-50-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.560612673,1.530795879,2.126186271
+users-50-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,1.5349380510000001,1.4460343660000001,2.066567816
+users-50-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,1.532628624,1.476095854,2.085027135
+users-50-distributed-1-4,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,1.580792119,1.478167779,2.052252209
+users-50-distributed-1-4,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,3.420042211,3.321399244,4.48289378
+users-50-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,91.71484375,91.71484375,106.62890625
+users-50-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,57.27734375,54.4921875,61.34375
+users-50-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,58.4375,54.3359375,61.08203125
+users-50-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,56.28125,54.64453125,60.78125
+users-50-distributed-1-4,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,54.87890625,54.69921875,59.69921875
+users-50-distributed-1-4,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,57.5,56.8125,61.19921875
+users-50-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,91.38671875,91.3828125,100.91796875
+users-50-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,92.8828125,90.87890625,100.6171875
+users-50-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,96.5546875,91.2578125,100.87890625
+users-50-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,96.11328125,91.21875,100.4609375
+users-50-distributed-1-4,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,93.0625,91.203125,98.95703125
+users-50-distributed-1-4,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,55.0390625,54.27734375,61.52734375
+users-50-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.0412618130000002,1.0335311710000001,1.354265665
+users-50-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.402787863,2.399511453,3.06972041
+users-50-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.392030332,2.389528824,3.0642740589999997
+users-50-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.348178378,2.343839726,3.029304658
+users-50-distributed-1-5,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.005529766,2.002973235,2.557213365
+users-50-distributed-1-5,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.738101341,2.662517598,3.415614619
+users-50-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.151049075,1.0465988190000002,1.415650913
+users-50-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.112659177,1.1063972340000001,1.4300709059999999
+users-50-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,1.1062167219999999,1.059261937,1.443226089
+users-50-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,1.083092463,1.057803801,1.448372304
+users-50-distributed-1-5,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,0.8704560179999999,0.86992075,1.165215087
+users-50-distributed-1-5,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,1.177240726,1.142577311,1.543168154
+users-50-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,98.703125,97.125,100.671875
+users-50-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,55.19140625,55.015625,59.89453125
+users-50-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,54.79296875,54.47265625,59.3359375
+users-50-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,55.34765625,54.64453125,59.73828125
+users-50-distributed-1-5,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,54.60546875,54.60546875,57.73046875
+users-50-distributed-1-5,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,59.12890625,56.80859375,60.79296875
+users-50-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,94.80078125,91.484375,96.33984375
+users-50-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,90.7734375,87.1328125,96.05078125
+users-50-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,93.02734375,90.5703125,95.94921875
+users-50-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,89.17578125,86.9140625,95.73046875
+users-50-distributed-1-5,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,84.58203125,84.48046875,90.72265625
+users-50-distributed-1-5,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,94.6328125,94.5546875,99.50390625
+users-50-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.498604369,1.440120807,1.98204796
+users-50-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,3.435040669,3.375108042,4.408027203
+users-50-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,3.4700288390000003,3.383362485,4.52107161
+users-50-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,3.4208070800000003,3.396642759,4.338279091
+users-50-distributed-1-5,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,3.447834229,3.4416174120000003,4.447681286
+users-50-distributed-1-5,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,3.5105284670000003,3.4025109670000004,4.550386455
+users-50-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.53041574,1.466278788,2.0759427550000003
+users-50-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,1.557695271,1.467282859,2.065185337
+users-50-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,1.577635829,1.470599196,2.104117827
+users-50-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,1.5653863060000002,1.533423443,2.119593103
+users-50-distributed-1-5,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,1.575090302,1.494110116,2.0438234520000003
+users-50-distributed-1-5,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,1.464566513,1.456407473,2.053558733
+users-50-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,91.71484375,91.71484375,106.62890625
+users-50-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,57.27734375,54.4921875,61.34375
+users-50-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,58.4375,54.3359375,61.08203125
+users-50-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,56.28125,54.64453125,60.78125
+users-50-distributed-1-5,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,54.87890625,54.69921875,59.69921875
+users-50-distributed-1-5,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,57.5,56.8125,61.19921875
+users-50-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,99.375,90.703125,107.5859375
+users-50-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,95.09375,91.15625,100.78125
+users-50-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,99.28125,92.390625,104.8359375
+users-50-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,95.05859375,91.26171875,100.78125
+users-50-distributed-1-5,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,95.4140625,93.55078125,101.41796875
+users-50-distributed-1-5,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,90.89453125,90.140625,107.35546875
+users-100-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.223878617,1.206928073,1.5363103249999999
+users-100-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.742314141,2.655239012,3.4057626730000004
+users-100-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.696005544,2.691335291,3.484747764
+users-100-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.635283731,2.627078786,3.370630819
+users-100-distributed-1-1,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.117498416,1.991354566,2.623921394
+users-100-distributed-1-1,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.9200570640000003,2.905078865,3.778858267
+users-100-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.166832987,1.155624877,1.510637897
+users-100-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.236611487,1.170894866,1.5566547149999999
+users-100-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,2.700729317,2.669549437,3.472230008
+users-100-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,2.640056513,2.61632384,3.402678662
+users-100-distributed-1-1,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.024381639,1.9887567480000001,2.504084637
+users-100-distributed-1-1,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.869290642,2.847829322,3.675254112
+users-100-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,99.41015625,98.83984375,108.875
+users-100-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,60.875,60.375,65.47265625
+users-100-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,63.0859375,62.625,65.8203125
+users-100-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,59.72265625,59.72265625,65.45703125
+users-100-distributed-1-1,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,62.50390625,62.25390625,62.6484375
+users-100-distributed-1-1,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,61.6484375,61.43359375,66.3984375
+users-100-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,94.85546875,89.90234375,107.7265625
+users-100-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,95.16015625,90.1640625,109.07421875
+users-100-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,57.25390625,57.05078125,65.3203125
+users-100-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,57.33984375,56.78515625,65.4609375
+users-100-distributed-1-1,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,51.4921875,51.375,60.8515625
+users-100-distributed-1-1,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,58.5625,58.19140625,66.40625
+users-100-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.934061604,1.931856085,2.524764796
+users-100-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,4.444692035,4.409290801,5.675770327
+users-100-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,4.502585852999999,4.4599809100000005,5.771045422
+users-100-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,4.337835258,4.317362353000001,5.622015587
+users-100-distributed-1-1,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,4.454919278999999,4.365227743,5.852840497
+users-100-distributed-1-1,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,4.520986555,4.5043726269999995,5.850572627
+users-100-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,2.016282408,1.981675654,2.615507783
+users-100-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,2.0253436320000002,1.915387556,2.6469903770000003
+users-100-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,4.458082652,4.395984426,5.7362378110000005
+users-100-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,4.362939224,4.309926721,5.654756762
+users-100-distributed-1-1,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,4.478933687,4.446366221,5.936963114
+users-100-distributed-1-1,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,4.455990055,4.311609442,5.805888102
+users-100-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,112.55859375,108.90234375,122.24609375
+users-100-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,70.16796875,65.3046875,71.21484375
+users-100-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,65.82421875,65.08203125,70.41796875
+users-100-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,70.48046875,64.94140625,71.234375
+users-100-distributed-1-1,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,68.375,66.34765625,69.41796875
+users-100-distributed-1-1,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,70.06640625,63.98828125,71.62109375
+users-100-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,108.63671875,108.54296875,121.02734375
+users-100-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,113.8125,109.15234375,118.8203125
+users-100-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,63.890625,63.7578125,70.51171875
+users-100-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,64.125,64.109375,70.671875
+users-100-distributed-1-1,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,65.2109375,64.3046875,69.390625
+users-100-distributed-1-1,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,65.1484375,65.0078125,71.62890625
+users-100-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.223878617,1.206928073,1.5363103249999999
+users-100-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.742314141,2.655239012,3.4057626730000004
+users-100-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.696005544,2.691335291,3.484747764
+users-100-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.635283731,2.627078786,3.370630819
+users-100-distributed-1-2,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.117498416,1.991354566,2.623921394
+users-100-distributed-1-2,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.9200570640000003,2.905078865,3.778858267
+users-100-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.226192496,1.225265988,1.497746218
+users-100-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.246512917,1.178681982,1.564812775
+users-100-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,1.234600518,1.16584481,1.607902165
+users-100-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,2.6747841020000003,2.641440664,3.389243767
+users-100-distributed-1-2,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.03819632,1.9982504550000002,2.533192897
+users-100-distributed-1-2,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,3.013713121,2.9553605210000002,3.867280241
+users-100-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,99.41015625,98.83984375,108.875
+users-100-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,60.875,60.375,65.47265625
+users-100-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,63.0859375,62.625,65.8203125
+users-100-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,59.72265625,59.72265625,65.45703125
+users-100-distributed-1-2,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,62.50390625,62.25390625,62.6484375
+users-100-distributed-1-2,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,61.6484375,61.43359375,66.3984375
+users-100-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,100.30859375,95.13671875,107.98046875
+users-100-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,94.67578125,91.09375,108.76171875
+users-100-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,94.97265625,89.9609375,108.9453125
+users-100-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,57.39453125,56.90625,67.78125
+users-100-distributed-1-2,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,51.53515625,51.4140625,60.79296875
+users-100-distributed-1-2,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,58.52734375,58.02734375,66.5078125
+users-100-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.934061604,1.931856085,2.524764796
+users-100-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,4.444692035,4.409290801,5.675770327
+users-100-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,4.502585852999999,4.4599809100000005,5.771045422
+users-100-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,4.337835258,4.317362353000001,5.622015587
+users-100-distributed-1-2,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,4.454919278999999,4.365227743,5.852840497
+users-100-distributed-1-2,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,4.520986555,4.5043726269999995,5.850572627
+users-100-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.960769935,1.923544595,2.6114948960000004
+users-100-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,2.03329104,2.002235913,2.663779113
+users-100-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,2.008521015,1.968425416,2.645625645
+users-100-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,4.408794541000001,4.307494723,5.707849834
+users-100-distributed-1-2,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,4.488076819,4.449401739,5.961697407
+users-100-distributed-1-2,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,4.631721987,4.591723941000001,6.010035105
+users-100-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,112.55859375,108.90234375,122.24609375
+users-100-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,70.16796875,65.3046875,71.21484375
+users-100-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,65.82421875,65.08203125,70.41796875
+users-100-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,70.48046875,64.94140625,71.234375
+users-100-distributed-1-2,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,68.375,66.34765625,69.41796875
+users-100-distributed-1-2,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,70.06640625,63.98828125,71.62109375
+users-100-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,121.31640625,108.37890625,122.671875
+users-100-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,109.69921875,109.0390625,118.80078125
+users-100-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,107.5078125,107.3203125,118.7421875
+users-100-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,64.1171875,63.9453125,70.62890625
+users-100-distributed-1-2,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,65.19921875,64.3046875,69.3671875
+users-100-distributed-1-2,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,65.05859375,65.0390625,71.43359375
+users-100-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.223878617,1.206928073,1.5363103249999999
+users-100-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.742314141,2.655239012,3.4057626730000004
+users-100-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.696005544,2.691335291,3.484747764
+users-100-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.635283731,2.627078786,3.370630819
+users-100-distributed-1-3,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.117498416,1.991354566,2.623921394
+users-100-distributed-1-3,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.9200570640000003,2.905078865,3.778858267
+users-100-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.1860735230000001,1.140782365,1.503460822
+users-100-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.265226778,1.201059489,1.638057925
+users-100-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,1.1718627719999999,1.170422683,1.575341903
+users-100-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,1.2298146810000001,1.21335412,1.6210825150000001
+users-100-distributed-1-3,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.012228971,1.9887125820000002,2.504084359
+users-100-distributed-1-3,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.886926731,2.884989136,3.882619279
+users-100-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,99.41015625,98.83984375,108.875
+users-100-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,60.875,60.375,65.47265625
+users-100-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,63.0859375,62.625,65.8203125
+users-100-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,59.72265625,59.72265625,65.45703125
+users-100-distributed-1-3,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,62.50390625,62.25390625,62.6484375
+users-100-distributed-1-3,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,61.6484375,61.43359375,66.3984375
+users-100-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,99.61328125,93.51171875,107.32421875
+users-100-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,96.61328125,91.0625,109.16796875
+users-100-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,95.0078125,89.7734375,109.08984375
+users-100-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,93.70703125,90.234375,108.70703125
+users-100-distributed-1-3,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,51.4140625,51.29296875,60.7734375
+users-100-distributed-1-3,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,58.2578125,58.171875,66.453125
+users-100-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.934061604,1.931856085,2.524764796
+users-100-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,4.444692035,4.409290801,5.675770327
+users-100-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,4.502585852999999,4.4599809100000005,5.771045422
+users-100-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,4.337835258,4.317362353000001,5.622015587
+users-100-distributed-1-3,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,4.454919278999999,4.365227743,5.852840497
+users-100-distributed-1-3,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,4.520986555,4.5043726269999995,5.850572627
+users-100-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,2.0390562460000003,1.986801668,2.624808095
+users-100-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,2.0522743770000003,2.00011788,2.73343146
+users-100-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,2.042777419,1.978075853,2.687776298
+users-100-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,2.004482087,1.933322518,2.684410507
+users-100-distributed-1-3,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,4.482350802,4.398065823,5.904560808
+users-100-distributed-1-3,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,4.4750613,4.4748791510000006,5.778786124000001
+users-100-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,112.55859375,108.90234375,122.24609375
+users-100-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,70.16796875,65.3046875,71.21484375
+users-100-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,65.82421875,65.08203125,70.41796875
+users-100-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,70.48046875,64.94140625,71.234375
+users-100-distributed-1-3,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,68.375,66.34765625,69.41796875
+users-100-distributed-1-3,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,70.06640625,63.98828125,71.62109375
+users-100-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,110.3125,109.65625,119.359375
+users-100-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,113.55859375,111.98046875,121.6484375
+users-100-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,109.71875,109.0,118.890625
+users-100-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,113.828125,112.13671875,121.73828125
+users-100-distributed-1-3,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,65.1015625,64.71484375,69.2890625
+users-100-distributed-1-3,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,65.5859375,65.015625,71.46484375
+users-100-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.223878617,1.206928073,1.5363103249999999
+users-100-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.742314141,2.655239012,3.4057626730000004
+users-100-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.696005544,2.691335291,3.484747764
+users-100-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.635283731,2.627078786,3.370630819
+users-100-distributed-1-4,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.117498416,1.991354566,2.623921394
+users-100-distributed-1-4,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.9200570640000003,2.905078865,3.778858267
+users-100-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.188616227,1.1303020719999999,1.514784796
+users-100-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.280777482,1.177272829,1.568508685
+users-100-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,1.1965060490000001,1.188275917,1.611051129
+users-100-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,1.229877138,1.220400304,1.5543625589999999
+users-100-distributed-1-4,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,0.980715971,0.935592755,1.118841247
+users-100-distributed-1-4,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,3.012206306,2.966584669,3.806978711
+users-100-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,99.41015625,98.83984375,108.875
+users-100-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,60.875,60.375,65.47265625
+users-100-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,63.0859375,62.625,65.8203125
+users-100-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,59.72265625,59.72265625,65.45703125
+users-100-distributed-1-4,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,62.50390625,62.25390625,62.6484375
+users-100-distributed-1-4,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,61.6484375,61.43359375,66.3984375
+users-100-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,96.9296875,95.1328125,107.9921875
+users-100-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,96.0703125,94.85546875,108.9296875
+users-100-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,96.3359375,96.2734375,108.9453125
+users-100-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,91.98828125,90.54296875,108.6015625
+users-100-distributed-1-4,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,95.09765625,83.9375,98.26953125
+users-100-distributed-1-4,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,58.75,57.77734375,66.3203125
+users-100-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.934061604,1.931856085,2.524764796
+users-100-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,4.444692035,4.409290801,5.675770327
+users-100-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,4.502585852999999,4.4599809100000005,5.771045422
+users-100-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,4.337835258,4.317362353000001,5.622015587
+users-100-distributed-1-4,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,4.454919278999999,4.365227743,5.852840497
+users-100-distributed-1-4,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,4.520986555,4.5043726269999995,5.850572627
+users-100-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,1.979228649,1.930322381,2.733025665
+users-100-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,2.0203559760000003,1.938463137,2.633732277
+users-100-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,2.013141145,2.004529562,2.761260923
+users-100-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,2.030597296,1.9793355320000001,2.658462019
+users-100-distributed-1-4,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,2.0598550110000002,2.036231687,2.76174228
+users-100-distributed-1-4,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,4.450517761,4.442761259,5.871402623
+users-100-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,112.55859375,108.90234375,122.24609375
+users-100-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,70.16796875,65.3046875,71.21484375
+users-100-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,65.82421875,65.08203125,70.41796875
+users-100-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,70.48046875,64.94140625,71.234375
+users-100-distributed-1-4,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,68.375,66.34765625,69.41796875
+users-100-distributed-1-4,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,70.06640625,63.98828125,71.62109375
+users-100-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,119.71875,112.36328125,121.59765625
+users-100-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,115.42578125,111.84765625,121.640625
+users-100-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,120.3515625,108.23046875,122.62109375
+users-100-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,111.79296875,111.59765625,121.47265625
+users-100-distributed-1-4,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,110.0078125,109.3671875,119.4375
+users-100-distributed-1-4,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,70.484375,64.1171875,71.4765625
+users-100-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.223878617,1.206928073,1.5363103249999999
+users-100-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,2.742314141,2.655239012,3.4057626730000004
+users-100-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,2.696005544,2.691335291,3.484747764
+users-100-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,2.635283731,2.627078786,3.370630819
+users-100-distributed-1-5,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.117498416,1.991354566,2.623921394
+users-100-distributed-1-5,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,2.9200570640000003,2.905078865,3.778858267
+users-100-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.222487367,1.179250345,1.5170623989999998
+users-100-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,1.23281441,1.181894822,1.588711581
+users-100-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,1.180944252,1.1661232950000002,1.5623831540000002
+users-100-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,1.174758251,1.165579895,1.557572363
+users-100-distributed-1-5,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,0.949924933,0.865227439,1.1201412960000001
+users-100-distributed-1-5,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,1.261690578,1.254876366,1.7221223440000002
+users-100-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,99.41015625,98.83984375,108.875
+users-100-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,60.875,60.375,65.47265625
+users-100-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,63.0859375,62.625,65.8203125
+users-100-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,59.72265625,59.72265625,65.45703125
+users-100-distributed-1-5,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,62.50390625,62.25390625,62.6484375
+users-100-distributed-1-5,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,61.6484375,61.43359375,66.3984375
+users-100-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,93.7890625,90.7578125,107.9375
+users-100-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,96.5703125,93.171875,109.22265625
+users-100-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,93.69921875,90.15234375,108.96484375
+users-100-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,90.8203125,89.984375,108.4765625
+users-100-distributed-1-5,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,90.07421875,83.875,98.25
+users-100-distributed-1-5,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,99.0078125,95.25390625,111.14453125
+users-100-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,3,1.934061604,1.931856085,2.524764796
+users-100-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,3,4.444692035,4.409290801,5.675770327
+users-100-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,3,4.502585852999999,4.4599809100000005,5.771045422
+users-100-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,3,4.337835258,4.317362353000001,5.622015587
+users-100-distributed-1-5,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,3,4.454919278999999,4.365227743,5.852840497
+users-100-distributed-1-5,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,3,4.520986555,4.5043726269999995,5.850572627
+users-100-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,2.006285942,1.989403249,2.674479883
+users-100-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,2.069258424,1.987128749,2.673895457
+users-100-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,2.02948909,1.993371547,2.67049755
+users-100-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,1.983542082,1.915309179,2.631901555
+users-100-distributed-1-5,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,1.989968459,1.978430364,2.692723877
+users-100-distributed-1-5,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,2.01798242,1.995460987,2.635302859
+users-100-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,3,112.55859375,108.90234375,122.24609375
+users-100-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,3,70.16796875,65.3046875,71.21484375
+users-100-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,3,65.82421875,65.08203125,70.41796875
+users-100-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,3,70.48046875,64.94140625,71.234375
+users-100-distributed-1-5,rdfs,replicated,Baseline,fog-c1,current_rss_kib,3,68.375,66.34765625,69.41796875
+users-100-distributed-1-5,rdfs,replicated,Baseline,mist-c1,current_rss_kib,3,70.06640625,63.98828125,71.62109375
+users-100-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,116.98828125,109.375,118.78125
+users-100-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,115.30859375,108.22265625,122.4453125
+users-100-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,112.58984375,111.90234375,121.74609375
+users-100-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,113.90625,112.73828125,122.43359375
+users-100-distributed-1-5,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,110.43359375,108.8203125,115.87890625
+users-100-distributed-1-5,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,115.6328125,108.2890625,123.28125
+users-500-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.8526284069999999,1.831313138,2.369513493
+users-500-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,5.037352763,5.037163649,6.5830770240000005
+users-500-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,5.12849633,5.080250316,6.698108479000001
+users-500-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,5.023756633,4.984550447,6.483897829
+users-500-distributed-1-1,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.3315293240000003,2.017871733,2.7942135090000004
+users-500-distributed-1-1,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,5.6039987490000005,5.41079133,7.107086327
+users-500-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.85721659,1.8562989170000002,2.3975109480000003
+users-500-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,2.297059881,2.2888581869999998,3.0639274260000002
+users-500-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,5.159016521,5.092382442,6.783384736
+users-500-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,4.981109301000001,4.958605700000001,6.548913067000001
+users-500-distributed-1-1,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.317851232,1.9962593260000001,2.786545809
+users-500-distributed-1-1,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,5.3162650540000005,5.2851125880000005,7.10646787
+users-500-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,142.6328125,141.6484375,175.1171875
+users-500-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,84.765625,84.515625,106.55859375
+users-500-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,85.41015625,85.40625,106.68359375
+users-500-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,83.29296875,83.29296875,106.1015625
+users-500-distributed-1-1,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,71.29296875,69.19140625,94.25
+users-500-distributed-1-1,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,82.65234375,82.6484375,107.29296875
+users-500-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,130.421875,126.62890625,163.6484375
+users-500-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,143.59375,134.84375,176.0703125
+users-500-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,83.02734375,81.76171875,104.11328125
+users-500-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,83.515625,83.015625,104.23046875
+users-500-distributed-1-1,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,69.3671875,69.3671875,88.859375
+users-500-distributed-1-1,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,80.94921875,79.21484375,106.35546875
+users-500-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,6.869243975,5.991272685,7.747215265
+users-500-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,15.164373159,13.289438132999999,17.039308185000003
+users-500-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,15.2896768585,13.307561262,17.271792455
+users-500-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,15.269833652500001,13.618086408,16.921580897000002
+users-500-distributed-1-1,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,15.049509176,13.187629982,16.91138837
+users-500-distributed-1-1,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,15.810630625000002,13.955759372000001,17.665501878
+users-500-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,6.120942309,5.946164464000001,7.9641312300000004
+users-500-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,6.069760886,5.915433814,7.9534436820000005
+users-500-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,13.314874899000001,13.260477245,17.541682400000003
+users-500-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,13.243912664,13.056225042,17.131343364
+users-500-distributed-1-1,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,13.430142799,13.428155992,17.186794892
+users-500-distributed-1-1,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,13.588129243,13.499122706,17.354127975
+users-500-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,212.146484375,205.5078125,218.78515625
+users-500-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,124.57421875,122.36328125,126.78515625
+users-500-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,122.09375,117.65625,126.53125
+users-500-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,122.48046875,118.0625,126.8984375
+users-500-distributed-1-1,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,118.2578125,117.51953125,118.99609375
+users-500-distributed-1-1,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,122.833984375,118.51171875,127.15625
+users-500-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,205.69140625,203.8359375,218.96875
+users-500-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,214.06640625,206.76953125,224.484375
+users-500-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,117.95703125,117.9375,126.66015625
+users-500-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,118.0625,117.953125,126.87890625
+users-500-distributed-1-1,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,118.06640625,117.6015625,118.21484375
+users-500-distributed-1-1,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,117.8515625,117.8125,127.0390625
+users-500-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.8526284069999999,1.831313138,2.369513493
+users-500-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,5.037352763,5.037163649,6.5830770240000005
+users-500-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,5.12849633,5.080250316,6.698108479000001
+users-500-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,5.023756633,4.984550447,6.483897829
+users-500-distributed-1-2,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.3315293240000003,2.017871733,2.7942135090000004
+users-500-distributed-1-2,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,5.6039987490000005,5.41079133,7.107086327
+users-500-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.868315254,1.8407160919999999,2.447910729
+users-500-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,2.316594841,2.297279799,3.059560056
+users-500-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,2.359760453,2.3231104399999998,3.1015649680000004
+users-500-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,5.092626873,5.004667232,6.425598086
+users-500-distributed-1-2,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.3854476759999996,2.098733052,2.678577715
+users-500-distributed-1-2,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,5.498379347,5.455788071,6.960157063
+users-500-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,142.6328125,141.6484375,175.1171875
+users-500-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,84.765625,84.515625,106.55859375
+users-500-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,85.41015625,85.40625,106.68359375
+users-500-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,83.29296875,83.29296875,106.1015625
+users-500-distributed-1-2,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,71.29296875,69.19140625,94.25
+users-500-distributed-1-2,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,82.65234375,82.6484375,107.29296875
+users-500-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,133.765625,131.015625,165.99609375
+users-500-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,142.7734375,141.77734375,176.2734375
+users-500-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,144.23828125,143.29296875,177.01953125
+users-500-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,81.98828125,80.796875,104.62109375
+users-500-distributed-1-2,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,66.12109375,66.12109375,88.953125
+users-500-distributed-1-2,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,82.36328125,80.1015625,105.6171875
+users-500-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,6.869243975,5.991272685,7.747215265
+users-500-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,15.164373159,13.289438132999999,17.039308185000003
+users-500-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,15.2896768585,13.307561262,17.271792455
+users-500-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,15.269833652500001,13.618086408,16.921580897000002
+users-500-distributed-1-2,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,15.049509176,13.187629982,16.91138837
+users-500-distributed-1-2,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,15.810630625000002,13.955759372000001,17.665501878
+users-500-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,6.003609695000001,5.915715477,8.004744923
+users-500-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,6.185085775,6.127218011,8.087530866
+users-500-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,6.1532384350000005,5.9504479869999996,8.175250587
+users-500-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,13.172569932,12.967981035000001,17.03593206
+users-500-distributed-1-2,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,13.874301996,13.548536285,17.609752774
+users-500-distributed-1-2,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,13.420818276,13.377834349999999,17.428159911999998
+users-500-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,212.146484375,205.5078125,218.78515625
+users-500-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,124.57421875,122.36328125,126.78515625
+users-500-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,122.09375,117.65625,126.53125
+users-500-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,122.48046875,118.0625,126.8984375
+users-500-distributed-1-2,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,118.2578125,117.51953125,118.99609375
+users-500-distributed-1-2,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,122.833984375,118.51171875,127.15625
+users-500-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,207.80859375,205.875,219.203125
+users-500-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,209.078125,207.171875,219.546875
+users-500-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,207.671875,205.6015625,219.578125
+users-500-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,118.37109375,118.3671875,126.81640625
+users-500-distributed-1-2,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,118.0859375,117.61328125,118.375
+users-500-distributed-1-2,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,118.4140625,118.203125,127.42578125
+users-500-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.8526284069999999,1.831313138,2.369513493
+users-500-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,5.037352763,5.037163649,6.5830770240000005
+users-500-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,5.12849633,5.080250316,6.698108479000001
+users-500-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,5.023756633,4.984550447,6.483897829
+users-500-distributed-1-3,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.3315293240000003,2.017871733,2.7942135090000004
+users-500-distributed-1-3,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,5.6039987490000005,5.41079133,7.107086327
+users-500-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.888380675,1.878264911,2.554419946
+users-500-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,2.3145303210000003,2.299380734,3.090902626
+users-500-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,2.3483518340000002,2.3159464520000004,3.112836989
+users-500-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,2.3733401,2.310490515,3.038195892
+users-500-distributed-1-3,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.332097379,2.068800581,2.6975730400000004
+users-500-distributed-1-3,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,5.643002739,5.428607872,7.224025728
+users-500-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,142.6328125,141.6484375,175.1171875
+users-500-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,84.765625,84.515625,106.55859375
+users-500-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,85.41015625,85.40625,106.68359375
+users-500-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,83.29296875,83.29296875,106.1015625
+users-500-distributed-1-3,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,71.29296875,69.19140625,94.25
+users-500-distributed-1-3,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,82.65234375,82.6484375,107.29296875
+users-500-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,143.28515625,135.484375,165.51953125
+users-500-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,140.01953125,138.9609375,176.1484375
+users-500-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,146.58203125,140.97265625,177.38671875
+users-500-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,142.03125,135.7578125,177.015625
+users-500-distributed-1-3,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,65.375,64.859375,88.69921875
+users-500-distributed-1-3,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,82.04296875,81.98046875,105.44921875
+users-500-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,6.869243975,5.991272685,7.747215265
+users-500-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,15.164373159,13.289438132999999,17.039308185000003
+users-500-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,15.2896768585,13.307561262,17.271792455
+users-500-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,15.269833652500001,13.618086408,16.921580897000002
+users-500-distributed-1-3,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,15.049509176,13.187629982,16.91138837
+users-500-distributed-1-3,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,15.810630625000002,13.955759372000001,17.665501878
+users-500-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,6.220605987,6.18456302,8.03824422
+users-500-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,6.169160259000001,6.117118501,8.237104715
+users-500-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,5.990963170000001,5.971755019000001,8.261361278
+users-500-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,6.06350495,6.032619544,8.08391229
+users-500-distributed-1-3,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,13.636522565,13.611334445,17.293651286
+users-500-distributed-1-3,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,13.826725688000002,13.557121857,17.812660212
+users-500-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,212.146484375,205.5078125,218.78515625
+users-500-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,124.57421875,122.36328125,126.78515625
+users-500-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,122.09375,117.65625,126.53125
+users-500-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,122.48046875,118.0625,126.8984375
+users-500-distributed-1-3,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,118.2578125,117.51953125,118.99609375
+users-500-distributed-1-3,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,122.833984375,118.51171875,127.15625
+users-500-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,207.390625,205.51171875,219.1875
+users-500-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,214.23828125,206.23828125,224.4296875
+users-500-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,209.1875,209.140625,219.5546875
+users-500-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,209.3125,204.58984375,219.84375
+users-500-distributed-1-3,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,118.0078125,117.59765625,118.01171875
+users-500-distributed-1-3,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,118.13671875,118.08984375,127.34765625
+users-500-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.8526284069999999,1.831313138,2.369513493
+users-500-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,5.037352763,5.037163649,6.5830770240000005
+users-500-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,5.12849633,5.080250316,6.698108479000001
+users-500-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,5.023756633,4.984550447,6.483897829
+users-500-distributed-1-4,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.3315293240000003,2.017871733,2.7942135090000004
+users-500-distributed-1-4,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,5.6039987490000005,5.41079133,7.107086327
+users-500-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.9569807940000001,1.936475027,2.528476098
+users-500-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,2.318061765,2.312501323,3.10972575
+users-500-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,2.371461289,2.348725522,3.152228994
+users-500-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,2.3175208130000002,2.274653377,2.9906003230000002
+users-500-distributed-1-4,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,1.12888367,0.8913918,1.3151582579999999
+users-500-distributed-1-4,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,5.617818344000001,5.476811165,7.242680406000001
+users-500-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,142.6328125,141.6484375,175.1171875
+users-500-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,84.765625,84.515625,106.55859375
+users-500-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,85.41015625,85.40625,106.68359375
+users-500-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,83.29296875,83.29296875,106.1015625
+users-500-distributed-1-4,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,71.29296875,69.19140625,94.25
+users-500-distributed-1-4,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,82.65234375,82.6484375,107.29296875
+users-500-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,131.80859375,128.15234375,165.51171875
+users-500-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,141.29296875,138.43359375,176.70703125
+users-500-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,143.94140625,143.0,177.15234375
+users-500-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,140.41796875,133.8125,176.66015625
+users-500-distributed-1-4,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,116.43359375,115.9609375,149.0078125
+users-500-distributed-1-4,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,82.453125,79.7265625,105.3671875
+users-500-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,6.869243975,5.991272685,7.747215265
+users-500-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,15.164373159,13.289438132999999,17.039308185000003
+users-500-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,15.2896768585,13.307561262,17.271792455
+users-500-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,15.269833652500001,13.618086408,16.921580897000002
+users-500-distributed-1-4,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,15.049509176,13.187629982,16.91138837
+users-500-distributed-1-4,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,15.810630625000002,13.955759372000001,17.665501878
+users-500-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,6.209896323,6.0764829659999995,8.260271385
+users-500-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,6.094316326,6.0047128160000005,8.261952241000001
+users-500-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,6.049488597,6.012885488,8.306398955
+users-500-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,5.996949143,5.968815033,8.082327999
+users-500-distributed-1-4,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,6.153999977000001,5.99497437,8.128908142
+users-500-distributed-1-4,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,13.848276106,13.811666501,17.893055173
+users-500-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,212.146484375,205.5078125,218.78515625
+users-500-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,124.57421875,122.36328125,126.78515625
+users-500-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,122.09375,117.65625,126.53125
+users-500-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,122.48046875,118.0625,126.8984375
+users-500-distributed-1-4,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,118.2578125,117.51953125,118.99609375
+users-500-distributed-1-4,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,122.833984375,118.51171875,127.15625
+users-500-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,208.87109375,205.609375,215.23046875
+users-500-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,209.24609375,209.13671875,219.6796875
+users-500-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,213.92578125,205.94921875,224.40625
+users-500-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,208.859375,206.9296875,219.375
+users-500-distributed-1-4,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,206.890625,205.11328125,206.953125
+users-500-distributed-1-4,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,117.87890625,117.8046875,127.04296875
+users-500-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.8526284069999999,1.831313138,2.369513493
+users-500-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,5.037352763,5.037163649,6.5830770240000005
+users-500-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,5.12849633,5.080250316,6.698108479000001
+users-500-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,5.023756633,4.984550447,6.483897829
+users-500-distributed-1-5,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.3315293240000003,2.017871733,2.7942135090000004
+users-500-distributed-1-5,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,5.6039987490000005,5.41079133,7.107086327
+users-500-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.877553602,1.847908317,2.468932385
+users-500-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,2.301161133,2.300858602,3.1755142770000004
+users-500-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,2.370948214,2.333797113,3.154593224
+users-500-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,2.3765483709999997,2.353186257,3.026938409
+users-500-distributed-1-5,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,1.618507654,1.365581218,1.772111083
+users-500-distributed-1-5,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,2.5476949810000002,2.426720494,3.294003856
+users-500-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,142.6328125,141.6484375,175.1171875
+users-500-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,84.765625,84.515625,106.55859375
+users-500-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,85.41015625,85.40625,106.68359375
+users-500-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,83.29296875,83.29296875,106.1015625
+users-500-distributed-1-5,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,71.29296875,69.19140625,94.25
+users-500-distributed-1-5,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,82.65234375,82.6484375,107.29296875
+users-500-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,134.75,130.9609375,166.0078125
+users-500-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,142.921875,137.578125,175.98046875
+users-500-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,145.51953125,141.890625,177.1953125
+users-500-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,142.4140625,135.0078125,176.88671875
+users-500-distributed-1-5,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,117.47265625,116.984375,149.82421875
+users-500-distributed-1-5,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,143.26953125,142.8203125,178.73828125
+users-500-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,6.869243975,5.991272685,7.747215265
+users-500-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,15.164373159,13.289438132999999,17.039308185000003
+users-500-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,15.2896768585,13.307561262,17.271792455
+users-500-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,15.269833652500001,13.618086408,16.921580897000002
+users-500-distributed-1-5,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,15.049509176,13.187629982,16.91138837
+users-500-distributed-1-5,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,15.810630625000002,13.955759372000001,17.665501878
+users-500-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,6.099581022000001,5.986996259,8.057052861
+users-500-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,6.07001736,6.033472582000001,8.035306262
+users-500-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,6.230779953000001,6.0838641209999995,8.370414419000001
+users-500-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,6.0373617070000005,6.021396962,8.08110706
+users-500-distributed-1-5,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,9.080092395,8.912523727,11.226334146
+users-500-distributed-1-5,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,5.9796391700000004,5.975175354,8.333652449999999
+users-500-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,212.146484375,205.5078125,218.78515625
+users-500-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,124.57421875,122.36328125,126.78515625
+users-500-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,122.09375,117.65625,126.53125
+users-500-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,122.48046875,118.0625,126.8984375
+users-500-distributed-1-5,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,118.2578125,117.51953125,118.99609375
+users-500-distributed-1-5,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,122.833984375,118.51171875,127.15625
+users-500-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,213.03125,212.75,219.05859375
+users-500-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,209.12890625,205.07421875,219.453125
+users-500-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,209.30078125,207.17578125,219.62890625
+users-500-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,208.96875,206.99609375,219.609375
+users-500-distributed-1-5,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,205.68359375,205.390625,205.796875
+users-500-distributed-1-5,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,209.0625,205.15625,220.15625
+users-500-replicated-1-1,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,1.8526284069999999,1.831313138,2.369513493
+users-500-replicated-1-1,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,5.037352763,5.037163649,6.5830770240000005
+users-500-replicated-1-1,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,5.12849633,5.080250316,6.698108479000001
+users-500-replicated-1-1,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,5.023756633,4.984550447,6.483897829
+users-500-replicated-1-1,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.3315293240000003,2.017871733,2.7942135090000004
+users-500-replicated-1-1,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,5.6039987490000005,5.41079133,7.107086327
+users-500-replicated-1-1,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,1.86551522,1.846407757,2.4162943230000002
+users-500-replicated-1-1,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,5.046558914,4.976108875,6.450054326000001
+users-500-replicated-1-1,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,2.33049611,2.323154456,3.10044469
+users-500-replicated-1-1,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,5.218588563,5.062502145000001,6.489315111
+users-500-replicated-1-1,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.2859692369999998,2.009113788,2.58323823
+users-500-replicated-1-1,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,5.380460756000001,5.3476169659999995,7.000134788
+users-500-replicated-1-1,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,142.6328125,141.6484375,175.1171875
+users-500-replicated-1-1,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,84.765625,84.515625,106.55859375
+users-500-replicated-1-1,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,85.41015625,85.40625,106.68359375
+users-500-replicated-1-1,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,83.29296875,83.29296875,106.1015625
+users-500-replicated-1-1,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,71.29296875,69.19140625,94.25
+users-500-replicated-1-1,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,82.65234375,82.6484375,107.29296875
+users-500-replicated-1-1,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,132.01953125,128.2265625,165.171875
+users-500-replicated-1-1,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,80.25,78.9296875,104.3984375
+users-500-replicated-1-1,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,147.17578125,147.17578125,176.46875
+users-500-replicated-1-1,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,80.94140625,79.19140625,104.76171875
+users-500-replicated-1-1,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,65.44921875,65.44921875,88.796875
+users-500-replicated-1-1,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,81.46484375,78.328125,104.73046875
+users-500-replicated-1-1,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,6.869243975,5.991272685,7.747215265
+users-500-replicated-1-1,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,15.164373159,13.289438132999999,17.039308185000003
+users-500-replicated-1-1,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,15.2896768585,13.307561262,17.271792455
+users-500-replicated-1-1,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,15.269833652500001,13.618086408,16.921580897000002
+users-500-replicated-1-1,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,15.049509176,13.187629982,16.91138837
+users-500-replicated-1-1,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,15.810630625000002,13.955759372000001,17.665501878
+users-500-replicated-1-1,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,6.062769039,5.995958483000001,8.032125915
+users-500-replicated-1-1,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,13.048166493,13.002958192,17.101567344
+users-500-replicated-1-1,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,6.310699809,6.2721123180000005,8.211001359
+users-500-replicated-1-1,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,13.310529815,13.13258111,17.054625791
+users-500-replicated-1-1,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,13.320133344,13.279382977,16.995288792
+users-500-replicated-1-1,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,13.530974918,13.246631291,17.649400579
+users-500-replicated-1-1,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,212.146484375,205.5078125,218.78515625
+users-500-replicated-1-1,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,124.57421875,122.36328125,126.78515625
+users-500-replicated-1-1,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,122.09375,117.65625,126.53125
+users-500-replicated-1-1,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,122.48046875,118.0625,126.8984375
+users-500-replicated-1-1,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,118.2578125,117.51953125,118.99609375
+users-500-replicated-1-1,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,122.833984375,118.51171875,127.15625
+users-500-replicated-1-1,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,213.13671875,208.07421875,219.49609375
+users-500-replicated-1-1,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,118.3359375,118.21875,126.984375
+users-500-replicated-1-1,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,208.671875,206.734375,219.21875
+users-500-replicated-1-1,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,118.12109375,118.0859375,126.85546875
+users-500-replicated-1-1,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,118.09375,117.48828125,118.1171875
+users-500-replicated-1-1,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,117.96484375,117.87890625,127.125
+users-1000-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,2.66676454,2.659149714,3.574046802
+users-1000-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,8.303073393,8.256911139,10.545682937
+users-1000-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,8.362590928,8.358139994,10.840119048
+users-1000-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,8.234218568000001,8.223563264000001,10.474302927
+users-1000-distributed-1-1,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.076563954,1.954954177,2.768337449
+users-1000-distributed-1-1,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,8.792164542,8.790390338,11.370939386
+users-1000-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,2.8233993500000003,2.718974322,3.605019366
+users-1000-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,3.837994488,3.829394978,4.7693959
+users-1000-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,8.447060023,8.434425639999999,10.918941442
+users-1000-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,8.236319873000001,8.219610061,10.503009254
+users-1000-distributed-1-1,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.550252677,2.058725399,2.776539229
+users-1000-distributed-1-1,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,8.68244852,8.663815711,10.702226251
+users-1000-distributed-1-1,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,198.00390625,192.71484375,261.00390625
+users-1000-distributed-1-1,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,119.61328125,119.11328125,163.08203125
+users-1000-distributed-1-1,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,119.97265625,118.15625,162.828125
+users-1000-distributed-1-1,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,118.234375,116.234375,162.39453125
+users-1000-distributed-1-1,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,139.44140625,92.21484375,139.44140625
+users-1000-distributed-1-1,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,119.23828125,117.953125,162.875
+users-1000-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,184.09765625,172.68359375,252.46875
+users-1000-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,192.7109375,186.6875,252.828125
+users-1000-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,110.64453125,109.140625,154.46484375
+users-1000-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,109.8359375,109.3359375,154.26953125
+users-1000-distributed-1-1,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,89.05859375,86.37890625,130.078125
+users-1000-distributed-1-1,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,107.234375,107.22265625,151.86328125
+users-1000-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,13.3822179755,11.977616478,14.786819473
+users-1000-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,29.2248754075,26.251062978000004,32.198687837
+users-1000-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,29.8512283045,26.697790496000003,33.004666113
+users-1000-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,28.9513630135,25.727090214,32.175635813
+users-1000-distributed-1-1,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,29.350009927000002,26.15418834,32.545831514
+users-1000-distributed-1-1,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,30.271615860999997,26.667949919999998,33.875281801999996
+users-1000-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,2,13.7672015725,12.102269836,15.432133309000001
+users-1000-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,2,13.7354837325,12.252648653,15.218318812
+users-1000-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,2,30.1033602155,26.604967745000003,33.601752686
+users-1000-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,2,29.026417758,25.763238422,32.289597094
+users-1000-distributed-1-1,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,2,29.4382538415,26.377042751,32.499464932
+users-1000-distributed-1-1,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,2,29.699760456499995,26.269754025999998,33.129766886999995
+users-1000-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,330.98828125,329.62109375,332.35546875
+users-1000-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,191.3984375,186.84375,195.953125
+users-1000-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,191.078125,186.4609375,195.6953125
+users-1000-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,192.822265625,189.77734375,195.8671875
+users-1000-distributed-1-1,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,184.150390625,181.16015625,187.140625
+users-1000-distributed-1-1,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,192.52734375,189.05078125,196.00390625
+users-1000-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,2,330.935546875,329.87109375,332.0
+users-1000-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,2,335.69140625,330.140625,341.2421875
+users-1000-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,2,192.646484375,189.44921875,195.84375
+users-1000-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,2,192.525390625,189.15234375,195.8984375
+users-1000-distributed-1-1,rdfs,replicated,After relocation,fog-c1,current_rss_kib,2,182.9921875,178.9921875,186.9921875
+users-1000-distributed-1-1,rdfs,replicated,After relocation,mist-c1,current_rss_kib,2,191.673828125,187.1484375,196.19921875
+users-1000-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,2.66676454,2.659149714,3.574046802
+users-1000-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,8.303073393,8.256911139,10.545682937
+users-1000-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,8.362590928,8.358139994,10.840119048
+users-1000-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,8.234218568000001,8.223563264000001,10.474302927
+users-1000-distributed-1-2,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.076563954,1.954954177,2.768337449
+users-1000-distributed-1-2,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,8.792164542,8.790390338,11.370939386
+users-1000-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,2.860479411,2.760901054,3.619189794
+users-1000-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,3.90757191,3.8569112180000005,4.845515174
+users-1000-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,3.862181588,3.832560312,4.9653048360000005
+users-1000-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,8.191464002,8.162840692,10.456541421
+users-1000-distributed-1-2,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.541711179,2.010587478,2.8464277950000003
+users-1000-distributed-1-2,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,8.882109597000001,8.74065917,11.56556783
+users-1000-distributed-1-2,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,198.00390625,192.71484375,261.00390625
+users-1000-distributed-1-2,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,119.61328125,119.11328125,163.08203125
+users-1000-distributed-1-2,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,119.97265625,118.15625,162.828125
+users-1000-distributed-1-2,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,118.234375,116.234375,162.39453125
+users-1000-distributed-1-2,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,139.44140625,92.21484375,139.44140625
+users-1000-distributed-1-2,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,119.23828125,117.953125,162.875
+users-1000-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,183.48828125,183.48828125,251.77734375
+users-1000-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,183.5859375,183.5859375,253.87109375
+users-1000-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,186.9453125,185.9609375,253.3125
+users-1000-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,108.57421875,107.57421875,154.46875
+users-1000-distributed-1-2,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,87.30859375,84.69140625,130.359375
+users-1000-distributed-1-2,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,109.31640625,107.91015625,155.4140625
+users-1000-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,13.3822179755,11.977616478,14.786819473
+users-1000-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,29.2248754075,26.251062978000004,32.198687837
+users-1000-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,29.8512283045,26.697790496000003,33.004666113
+users-1000-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,28.9513630135,25.727090214,32.175635813
+users-1000-distributed-1-2,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,29.350009927000002,26.15418834,32.545831514
+users-1000-distributed-1-2,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,30.271615860999997,26.667949919999998,33.875281801999996
+users-1000-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,2,13.7695628755,12.159046139,15.380079612
+users-1000-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,2,13.917194758499999,12.175605892,15.658783625
+users-1000-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,2,14.0631431255,12.459085572,15.667200679
+users-1000-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,2,29.3451166805,26.211916836,32.478316525
+users-1000-distributed-1-2,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,2,29.211865419,26.415522901,32.008207937
+users-1000-distributed-1-2,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,2,30.949801762,27.521048536,34.378554988000005
+users-1000-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,330.98828125,329.62109375,332.35546875
+users-1000-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,191.3984375,186.84375,195.953125
+users-1000-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,191.078125,186.4609375,195.6953125
+users-1000-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,192.822265625,189.77734375,195.8671875
+users-1000-distributed-1-2,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,184.150390625,181.16015625,187.140625
+users-1000-distributed-1-2,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,192.52734375,189.05078125,196.00390625
+users-1000-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,2,333.2109375,328.80859375,337.61328125
+users-1000-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,2,334.689453125,327.99609375,341.3828125
+users-1000-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,2,334.736328125,327.9609375,341.51171875
+users-1000-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,2,191.150390625,186.52734375,195.7734375
+users-1000-distributed-1-2,rdfs,replicated,After relocation,fog-c1,current_rss_kib,2,182.984375,178.98828125,186.98046875
+users-1000-distributed-1-2,rdfs,replicated,After relocation,mist-c1,current_rss_kib,2,191.21484375,186.37890625,196.05078125
+users-1000-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,2.66676454,2.659149714,3.574046802
+users-1000-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,8.303073393,8.256911139,10.545682937
+users-1000-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,8.362590928,8.358139994,10.840119048
+users-1000-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,8.234218568000001,8.223563264000001,10.474302927
+users-1000-distributed-1-3,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.076563954,1.954954177,2.768337449
+users-1000-distributed-1-3,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,8.792164542,8.790390338,11.370939386
+users-1000-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,2.749057279,2.707323832,3.61657482
+users-1000-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,3.899082075,3.8833880439999997,4.869480854000001
+users-1000-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,3.933645942,3.849935508,5.129430851
+users-1000-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,3.923574175,3.853659307,5.0839444480000004
+users-1000-distributed-1-3,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.5217277680000003,2.030924845,2.725702311
+users-1000-distributed-1-3,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,8.690363649000002,8.689600403,11.16830375
+users-1000-distributed-1-3,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,198.00390625,192.71484375,261.00390625
+users-1000-distributed-1-3,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,119.61328125,119.11328125,163.08203125
+users-1000-distributed-1-3,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,119.97265625,118.15625,162.828125
+users-1000-distributed-1-3,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,118.234375,116.234375,162.39453125
+users-1000-distributed-1-3,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,139.44140625,92.21484375,139.44140625
+users-1000-distributed-1-3,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,119.23828125,117.953125,162.875
+users-1000-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,182.5546875,182.5546875,251.828125
+users-1000-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,192.8203125,185.31640625,256.9375
+users-1000-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,192.02734375,190.02734375,252.8359375
+users-1000-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,203.484375,195.02734375,258.56640625
+users-1000-distributed-1-3,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,86.80859375,84.65234375,130.05859375
+users-1000-distributed-1-3,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,108.20703125,108.1875,151.76953125
+users-1000-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,13.3822179755,11.977616478,14.786819473
+users-1000-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,29.2248754075,26.251062978000004,32.198687837
+users-1000-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,29.8512283045,26.697790496000003,33.004666113
+users-1000-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,28.9513630135,25.727090214,32.175635813
+users-1000-distributed-1-3,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,29.350009927000002,26.15418834,32.545831514
+users-1000-distributed-1-3,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,30.271615860999997,26.667949919999998,33.875281801999996
+users-1000-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,2,13.7382904105,12.110741286000001,15.365839535
+users-1000-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,2,13.8862873255,12.425403665,15.347170986
+users-1000-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,2,14.0186344255,12.407758594,15.629510257
+users-1000-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,2,13.796972511,12.151544385,15.442400637
+users-1000-distributed-1-3,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,2,28.9324045025,26.245166713,31.619642292
+users-1000-distributed-1-3,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,2,29.817918282500003,26.505650558000003,33.130186007
+users-1000-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,330.98828125,329.62109375,332.35546875
+users-1000-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,191.3984375,186.84375,195.953125
+users-1000-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,191.078125,186.4609375,195.6953125
+users-1000-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,192.822265625,189.77734375,195.8671875
+users-1000-distributed-1-3,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,184.150390625,181.16015625,187.140625
+users-1000-distributed-1-3,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,192.52734375,189.05078125,196.00390625
+users-1000-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,2,332.98046875,328.44140625,337.51953125
+users-1000-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,2,335.759765625,330.21484375,341.3046875
+users-1000-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,2,338.291015625,327.50390625,349.078125
+users-1000-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,2,343.23046875,337.73828125,348.72265625
+users-1000-distributed-1-3,rdfs,replicated,After relocation,fog-c1,current_rss_kib,2,182.666015625,178.921875,186.41015625
+users-1000-distributed-1-3,rdfs,replicated,After relocation,mist-c1,current_rss_kib,2,192.607421875,189.01953125,196.1953125
+users-1000-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,2.66676454,2.659149714,3.574046802
+users-1000-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,8.303073393,8.256911139,10.545682937
+users-1000-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,8.362590928,8.358139994,10.840119048
+users-1000-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,8.234218568000001,8.223563264000001,10.474302927
+users-1000-distributed-1-4,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.076563954,1.954954177,2.768337449
+users-1000-distributed-1-4,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,8.792164542,8.790390338,11.370939386
+users-1000-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,2.8691817310000003,2.859902687,3.6506705200000003
+users-1000-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,3.940412889,3.89460234,4.939766543
+users-1000-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,3.8434366719999997,3.711714883,5.099650393
+users-1000-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,3.879071926,3.8460670980000002,5.140854429
+users-1000-distributed-1-4,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,0.933342494,0.8757538029999999,1.1131351760000001
+users-1000-distributed-1-4,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,8.700665171,8.633927205,10.829671838000001
+users-1000-distributed-1-4,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,198.00390625,192.71484375,261.00390625
+users-1000-distributed-1-4,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,119.61328125,119.11328125,163.08203125
+users-1000-distributed-1-4,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,119.97265625,118.15625,162.828125
+users-1000-distributed-1-4,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,118.234375,116.234375,162.39453125
+users-1000-distributed-1-4,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,139.44140625,92.21484375,139.44140625
+users-1000-distributed-1-4,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,119.23828125,117.953125,162.875
+users-1000-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,180.5859375,171.9765625,250.08203125
+users-1000-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,198.40234375,190.8046875,253.875
+users-1000-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,201.59375,192.12890625,254.75390625
+users-1000-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,190.5,184.1015625,258.5390625
+users-1000-distributed-1-4,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,151.2265625,149.2578125,225.63671875
+users-1000-distributed-1-4,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,107.6328125,107.625,152.015625
+users-1000-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,13.3822179755,11.977616478,14.786819473
+users-1000-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,29.2248754075,26.251062978000004,32.198687837
+users-1000-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,29.8512283045,26.697790496000003,33.004666113
+users-1000-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,28.9513630135,25.727090214,32.175635813
+users-1000-distributed-1-4,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,29.350009927000002,26.15418834,32.545831514
+users-1000-distributed-1-4,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,30.271615860999997,26.667949919999998,33.875281801999996
+users-1000-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,2,13.8410697875,12.246629272,15.435510303
+users-1000-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,2,13.995137473500002,12.227210989,15.763063958000002
+users-1000-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,2,13.942684292,12.400641076,15.484727508
+users-1000-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,2,13.773244701500001,12.031380819,15.515108584
+users-1000-distributed-1-4,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,2,13.758423565000001,12.212088704,15.304758426000001
+users-1000-distributed-1-4,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,2,29.839546499,26.581519628,33.09757337
+users-1000-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,330.98828125,329.62109375,332.35546875
+users-1000-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,191.3984375,186.84375,195.953125
+users-1000-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,191.078125,186.4609375,195.6953125
+users-1000-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,192.822265625,189.77734375,195.8671875
+users-1000-distributed-1-4,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,184.150390625,181.16015625,187.140625
+users-1000-distributed-1-4,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,192.52734375,189.05078125,196.00390625
+users-1000-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,2,333.072265625,328.5703125,337.57421875
+users-1000-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,2,343.2421875,337.703125,348.78125
+users-1000-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,2,343.322265625,337.80078125,348.84375
+users-1000-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,2,336.1875,330.94140625,341.43359375
+users-1000-distributed-1-4,rdfs,replicated,After relocation,fog-c1,current_rss_kib,2,321.357421875,314.1015625,328.61328125
+users-1000-distributed-1-4,rdfs,replicated,After relocation,mist-c1,current_rss_kib,2,192.45703125,188.85546875,196.05859375
+users-1000-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,2.66676454,2.659149714,3.574046802
+users-1000-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,8.303073393,8.256911139,10.545682937
+users-1000-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,8.362590928,8.358139994,10.840119048
+users-1000-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,8.234218568000001,8.223563264000001,10.474302927
+users-1000-distributed-1-5,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.076563954,1.954954177,2.768337449
+users-1000-distributed-1-5,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,8.792164542,8.790390338,11.370939386
+users-1000-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,2.881403501,2.868998393,3.62952626
+users-1000-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,3.995980082,3.970617718,4.900325197
+users-1000-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,3.874601295,3.8717123740000003,5.1429162
+users-1000-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,4.032474174,3.9334233330000004,5.141113808
+users-1000-distributed-1-5,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,1.335008524,0.9368621389999999,1.372592799
+users-1000-distributed-1-5,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,4.053560676,4.003732389,5.274022858
+users-1000-distributed-1-5,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,198.00390625,192.71484375,261.00390625
+users-1000-distributed-1-5,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,119.61328125,119.11328125,163.08203125
+users-1000-distributed-1-5,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,119.97265625,118.15625,162.828125
+users-1000-distributed-1-5,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,118.234375,116.234375,162.39453125
+users-1000-distributed-1-5,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,139.44140625,92.21484375,139.44140625
+users-1000-distributed-1-5,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,119.23828125,117.953125,162.875
+users-1000-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,182.33203125,182.33203125,251.58984375
+users-1000-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,184.6171875,181.99609375,252.71484375
+users-1000-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,201.3515625,192.87109375,254.8828125
+users-1000-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,194.97265625,178.2890625,258.69140625
+users-1000-distributed-1-5,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,161.203125,160.21875,223.80859375
+users-1000-distributed-1-5,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,195.80859375,195.73046875,254.93359375
+users-1000-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,13.3822179755,11.977616478,14.786819473
+users-1000-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,29.2248754075,26.251062978000004,32.198687837
+users-1000-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,29.8512283045,26.697790496000003,33.004666113
+users-1000-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,28.9513630135,25.727090214,32.175635813
+users-1000-distributed-1-5,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,29.350009927000002,26.15418834,32.545831514
+users-1000-distributed-1-5,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,30.271615860999997,26.667949919999998,33.875281801999996
+users-1000-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,12.096681919000002,11.828953734,15.525750531
+users-1000-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,11.549125749000002,11.541322002000001,15.673074204
+users-1000-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,11.817492626,11.810606686,15.7047148
+users-1000-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,12.102324350000002,11.912244961,15.756056064000001
+users-1000-distributed-1-5,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,11.95344187,11.904914940000001,15.366969184
+users-1000-distributed-1-5,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,11.870811853,11.838211617999999,15.602432419000001
+users-1000-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,330.98828125,329.62109375,332.35546875
+users-1000-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,191.3984375,186.84375,195.953125
+users-1000-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,191.078125,186.4609375,195.6953125
+users-1000-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,192.822265625,189.77734375,195.8671875
+users-1000-distributed-1-5,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,184.150390625,181.16015625,187.140625
+users-1000-distributed-1-5,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,192.52734375,189.05078125,196.00390625
+users-1000-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,325.5625,325.51953125,337.765625
+users-1000-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,330.3828125,330.37890625,341.375
+users-1000-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,338.10546875,325.47265625,349.12109375
+users-1000-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,325.64453125,325.5625,341.484375
+users-1000-distributed-1-5,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,327.12109375,314.42578125,327.265625
+users-1000-distributed-1-5,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,338.45703125,327.9765625,350.21484375
+users-1000-replicated-1-1,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,2.66676454,2.659149714,3.574046802
+users-1000-replicated-1-1,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,8.303073393,8.256911139,10.545682937
+users-1000-replicated-1-1,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,8.362590928,8.358139994,10.840119048
+users-1000-replicated-1-1,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,8.234218568000001,8.223563264000001,10.474302927
+users-1000-replicated-1-1,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.076563954,1.954954177,2.768337449
+users-1000-replicated-1-1,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,8.792164542,8.790390338,11.370939386
+users-1000-replicated-1-1,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,2.7743771670000004,2.712752649,3.6333854270000003
+users-1000-replicated-1-1,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,8.509486975,8.422497602,10.789761739
+users-1000-replicated-1-1,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,8.381315731,8.169897352,10.898635198000001
+users-1000-replicated-1-1,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,8.327559774,8.258909991000001,10.578006233
+users-1000-replicated-1-1,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.547232504,2.027812457,2.800205677
+users-1000-replicated-1-1,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,3.9583111210000004,3.881686664,5.152676405999999
+users-1000-replicated-1-1,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,198.00390625,192.71484375,261.00390625
+users-1000-replicated-1-1,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,119.61328125,119.11328125,163.08203125
+users-1000-replicated-1-1,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,119.97265625,118.15625,162.828125
+users-1000-replicated-1-1,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,118.234375,116.234375,162.39453125
+users-1000-replicated-1-1,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,139.44140625,92.21484375,139.44140625
+users-1000-replicated-1-1,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,119.23828125,117.953125,162.875
+users-1000-replicated-1-1,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,182.99609375,182.1640625,250.421875
+users-1000-replicated-1-1,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,109.09765625,108.27734375,150.96875
+users-1000-replicated-1-1,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,112.81640625,110.71875,153.72265625
+users-1000-replicated-1-1,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,108.12109375,107.1640625,156.01953125
+users-1000-replicated-1-1,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,88.5625,85.15234375,130.26953125
+users-1000-replicated-1-1,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,201.19140625,192.6640625,257.62109375
+users-1000-replicated-1-1,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,13.3822179755,11.977616478,14.786819473
+users-1000-replicated-1-1,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,29.2248754075,26.251062978000004,32.198687837
+users-1000-replicated-1-1,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,29.8512283045,26.697790496000003,33.004666113
+users-1000-replicated-1-1,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,28.9513630135,25.727090214,32.175635813
+users-1000-replicated-1-1,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,29.350009927000002,26.15418834,32.545831514
+users-1000-replicated-1-1,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,30.271615860999997,26.667949919999998,33.875281801999996
+users-1000-replicated-1-1,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,11.664447304,11.662671356999999,15.287955419
+users-1000-replicated-1-1,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,26.242308648999998,25.949672569,33.110017302
+users-1000-replicated-1-1,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,26.593898565,26.130648792,33.583072916999996
+users-1000-replicated-1-1,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,25.714903076,25.198818505,32.579955837
+users-1000-replicated-1-1,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,25.850665689000003,25.701578033,32.38482087
+users-1000-replicated-1-1,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,11.685285544000001,11.678071254,15.328808359000002
+users-1000-replicated-1-1,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,330.98828125,329.62109375,332.35546875
+users-1000-replicated-1-1,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,191.3984375,186.84375,195.953125
+users-1000-replicated-1-1,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,191.078125,186.4609375,195.6953125
+users-1000-replicated-1-1,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,192.822265625,189.77734375,195.8671875
+users-1000-replicated-1-1,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,184.150390625,181.16015625,187.140625
+users-1000-replicated-1-1,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,192.52734375,189.05078125,196.00390625
+users-1000-replicated-1-1,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,324.671875,324.4765625,337.40625
+users-1000-replicated-1-1,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,186.8515625,186.54296875,196.01171875
+users-1000-replicated-1-1,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,186.97265625,186.69140625,195.93359375
+users-1000-replicated-1-1,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,186.61328125,186.59765625,195.859375
+users-1000-replicated-1-1,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,186.4921875,179.08203125,186.5625
+users-1000-replicated-1-1,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,338.34375,328.02734375,350.1328125
+users-1000-replicated-1-2,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,2.66676454,2.659149714,3.574046802
+users-1000-replicated-1-2,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,8.303073393,8.256911139,10.545682937
+users-1000-replicated-1-2,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,8.362590928,8.358139994,10.840119048
+users-1000-replicated-1-2,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,8.234218568000001,8.223563264000001,10.474302927
+users-1000-replicated-1-2,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.076563954,1.954954177,2.768337449
+users-1000-replicated-1-2,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,8.792164542,8.790390338,11.370939386
+users-1000-replicated-1-2,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,2.738927792,2.709928841,3.637734572
+users-1000-replicated-1-2,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,3.938543987,3.836305966,4.849553986
+users-1000-replicated-1-2,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,8.53449756,8.473830550999999,10.957177849
+users-1000-replicated-1-2,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,8.187491448,8.168111731,10.431376907
+users-1000-replicated-1-2,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.515977883,2.030650515,2.826181964
+users-1000-replicated-1-2,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,4.020032219,3.955778644,5.237634852999999
+users-1000-replicated-1-2,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,198.00390625,192.71484375,261.00390625
+users-1000-replicated-1-2,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,119.61328125,119.11328125,163.08203125
+users-1000-replicated-1-2,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,119.97265625,118.15625,162.828125
+users-1000-replicated-1-2,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,118.234375,116.234375,162.39453125
+users-1000-replicated-1-2,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,139.44140625,92.21484375,139.44140625
+users-1000-replicated-1-2,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,119.23828125,117.953125,162.875
+users-1000-replicated-1-2,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,196.5546875,195.5703125,250.5546875
+users-1000-replicated-1-2,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,191.21875,190.22265625,253.3671875
+users-1000-replicated-1-2,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,108.21875,107.83984375,153.47265625
+users-1000-replicated-1-2,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,110.203125,109.203125,154.5546875
+users-1000-replicated-1-2,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,88.5703125,85.078125,129.83984375
+users-1000-replicated-1-2,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,202.87890625,195.21875,268.6015625
+users-1000-replicated-1-2,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,13.3822179755,11.977616478,14.786819473
+users-1000-replicated-1-2,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,29.2248754075,26.251062978000004,32.198687837
+users-1000-replicated-1-2,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,29.8512283045,26.697790496000003,33.004666113
+users-1000-replicated-1-2,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,28.9513630135,25.727090214,32.175635813
+users-1000-replicated-1-2,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,29.350009927000002,26.15418834,32.545831514
+users-1000-replicated-1-2,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,30.271615860999997,26.667949919999998,33.875281801999996
+users-1000-replicated-1-2,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,11.737683117000001,11.693565376,15.299610803
+users-1000-replicated-1-2,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,11.779092681,11.327935916000001,15.258607764
+users-1000-replicated-1-2,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,26.358083794,26.123670073000003,33.533741284
+users-1000-replicated-1-2,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,25.574597563,25.298459417,32.311433181
+users-1000-replicated-1-2,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,25.720358746000002,25.694452054000003,31.821115331
+users-1000-replicated-1-2,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,11.707918195000001,11.556112898,15.343366072
+users-1000-replicated-1-2,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,330.98828125,329.62109375,332.35546875
+users-1000-replicated-1-2,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,191.3984375,186.84375,195.953125
+users-1000-replicated-1-2,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,191.078125,186.4609375,195.6953125
+users-1000-replicated-1-2,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,192.822265625,189.77734375,195.8671875
+users-1000-replicated-1-2,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,184.150390625,181.16015625,187.140625
+users-1000-replicated-1-2,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,192.52734375,189.05078125,196.00390625
+users-1000-replicated-1-2,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,326.46484375,324.58203125,337.72265625
+users-1000-replicated-1-2,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,337.75390625,337.7421875,348.83203125
+users-1000-replicated-1-2,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,186.9296875,186.4140625,195.82421875
+users-1000-replicated-1-2,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,186.90234375,186.6171875,195.90625
+users-1000-replicated-1-2,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,186.5,179.05078125,186.65625
+users-1000-replicated-1-2,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,338.453125,326.2578125,350.26171875
+users-1000-replicated-1-3,rdfs,distributed,Baseline,cloud-c1,process_cpu_ms,3,2.66676454,2.659149714,3.574046802
+users-1000-replicated-1-3,rdfs,distributed,Baseline,edge1-c1,process_cpu_ms,3,8.303073393,8.256911139,10.545682937
+users-1000-replicated-1-3,rdfs,distributed,Baseline,edge2-c1,process_cpu_ms,3,8.362590928,8.358139994,10.840119048
+users-1000-replicated-1-3,rdfs,distributed,Baseline,edge3-c1,process_cpu_ms,3,8.234218568000001,8.223563264000001,10.474302927
+users-1000-replicated-1-3,rdfs,distributed,Baseline,fog-c1,process_cpu_ms,3,2.076563954,1.954954177,2.768337449
+users-1000-replicated-1-3,rdfs,distributed,Baseline,mist-c1,process_cpu_ms,3,8.792164542,8.790390338,11.370939386
+users-1000-replicated-1-3,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,2.846258085,2.835531429,3.63289293
+users-1000-replicated-1-3,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,3.9251207920000004,3.866837392,4.865114481
+users-1000-replicated-1-3,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,3.9015413170000004,3.7583825550000003,5.030871240000001
+users-1000-replicated-1-3,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,8.322589015,8.302909336,10.652470974
+users-1000-replicated-1-3,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.6093437290000003,2.023098564,2.7805908230000003
+users-1000-replicated-1-3,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,4.0066466510000005,4.003276201,5.196860264
+users-1000-replicated-1-3,rdfs,distributed,Baseline,cloud-c1,current_rss_kib,3,198.00390625,192.71484375,261.00390625
+users-1000-replicated-1-3,rdfs,distributed,Baseline,edge1-c1,current_rss_kib,3,119.61328125,119.11328125,163.08203125
+users-1000-replicated-1-3,rdfs,distributed,Baseline,edge2-c1,current_rss_kib,3,119.97265625,118.15625,162.828125
+users-1000-replicated-1-3,rdfs,distributed,Baseline,edge3-c1,current_rss_kib,3,118.234375,116.234375,162.39453125
+users-1000-replicated-1-3,rdfs,distributed,Baseline,fog-c1,current_rss_kib,3,139.44140625,92.21484375,139.44140625
+users-1000-replicated-1-3,rdfs,distributed,Baseline,mist-c1,current_rss_kib,3,119.23828125,117.953125,162.875
+users-1000-replicated-1-3,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,182.35546875,170.0625,249.82421875
+users-1000-replicated-1-3,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,191.1953125,186.15625,254.0625
+users-1000-replicated-1-3,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,200.1171875,200.10546875,252.65625
+users-1000-replicated-1-3,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,110.04296875,108.04296875,154.375
+users-1000-replicated-1-3,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,88.09765625,87.34765625,130.8203125
+users-1000-replicated-1-3,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,188.69140625,188.57421875,254.953125
+users-1000-replicated-1-3,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,13.3822179755,11.977616478,14.786819473
+users-1000-replicated-1-3,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,29.2248754075,26.251062978000004,32.198687837
+users-1000-replicated-1-3,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,29.8512283045,26.697790496000003,33.004666113
+users-1000-replicated-1-3,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,28.9513630135,25.727090214,32.175635813
+users-1000-replicated-1-3,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,29.350009927000002,26.15418834,32.545831514
+users-1000-replicated-1-3,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,30.271615860999997,26.667949919999998,33.875281801999996
+users-1000-replicated-1-3,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,3,11.670476029,11.488807202,15.28167655
+users-1000-replicated-1-3,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,3,11.455193738,11.40566409,15.451483846
+users-1000-replicated-1-3,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,3,11.821217054000002,11.778402620000001,15.322467949
+users-1000-replicated-1-3,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,3,25.734501497,25.674393604000002,32.883806012
+users-1000-replicated-1-3,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,3,25.714077997,25.617342046999998,32.001162722000004
+users-1000-replicated-1-3,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,3,11.630701946,11.465496888,15.48796565
+users-1000-replicated-1-3,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,330.98828125,329.62109375,332.35546875
+users-1000-replicated-1-3,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,191.3984375,186.84375,195.953125
+users-1000-replicated-1-3,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,191.078125,186.4609375,195.6953125
+users-1000-replicated-1-3,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,192.822265625,189.77734375,195.8671875
+users-1000-replicated-1-3,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,184.150390625,181.16015625,187.140625
+users-1000-replicated-1-3,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,192.52734375,189.05078125,196.00390625
+users-1000-replicated-1-3,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,3,325.76953125,325.72265625,332.25390625
+users-1000-replicated-1-3,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,3,330.4375,330.40625,341.41796875
+users-1000-replicated-1-3,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,3,330.76171875,330.75,341.859375
+users-1000-replicated-1-3,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,3,186.546875,186.51953125,195.80078125
+users-1000-replicated-1-3,rdfs,replicated,After relocation,fog-c1,current_rss_kib,3,186.61328125,178.9296875,186.7421875
+users-1000-replicated-1-3,rdfs,replicated,After relocation,mist-c1,current_rss_kib,3,328.05078125,323.89453125,349.9453125
+users-2000-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,4.612196807,4.60877644,6.4667103159999995
+users-2000-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,14.933945164,14.865810194,18.664903876
+users-2000-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,7.0801701260000005,6.992138484,9.188528794
+users-2000-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,15.474555023999999,15.298525492000001,19.668508622
+users-2000-distributed-1-1,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.542172416,2.0783100500000002,3.177299676
+users-2000-distributed-1-1,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,15.570115569,15.362004612000002,20.217937867
+users-2000-distributed-1-1,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,274.86328125,272.88671875,417.95703125
+users-2000-distributed-1-1,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,137.4140625,137.40625,162.375
+users-2000-distributed-1-1,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,322.3125,309.49609375,483.9296875
+users-2000-distributed-1-1,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,179.76953125,177.01171875,273.46484375
+users-2000-distributed-1-1,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,94.16796875,87.80859375,240.15234375
+users-2000-distributed-1-1,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,183.4140625,182.125,275.3828125
+users-2000-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,28.478976750500003,25.601198497000002,31.356755004
+users-2000-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,62.37217367000001,56.479571357000005,68.264775983
+users-2000-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,63.9334861165,56.41959352400001,71.44737870899999
+users-2000-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,61.755688369,55.210953327000006,68.300423411
+users-2000-distributed-1-1,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,62.748339126000005,57.271971059,68.224707193
+users-2000-distributed-1-1,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,65.4195781685,58.507803978999995,72.331352358
+users-2000-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,1,25.641843462,25.641843462,25.641843462
+users-2000-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,1,56.22722696900001,56.22722696900001,56.22722696900001
+users-2000-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,1,26.100152481000002,26.100152481000002,26.100152481000002
+users-2000-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,1,58.370907487,58.370907487,58.370907487
+users-2000-distributed-1-1,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,1,55.970627185,55.970627185,55.970627185
+users-2000-distributed-1-1,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,1,58.200475917000006,58.200475917000006,58.200475917000006
+users-2000-distributed-1-1,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,585.955078125,584.48828125,587.421875
+users-2000-distributed-1-1,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,334.775390625,329.5703125,339.98046875
+users-2000-distributed-1-1,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,386.205078125,357.30859375,415.1015625
+users-2000-distributed-1-1,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,335.154296875,330.27734375,340.03125
+users-2000-distributed-1-1,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,319.865234375,310.08203125,329.6484375
+users-2000-distributed-1-1,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,334.90234375,329.8359375,339.96875
+users-2000-distributed-1-1,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,1,592.7578125,592.7578125,592.7578125
+users-2000-distributed-1-1,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,1,333.58984375,333.58984375,333.58984375
+users-2000-distributed-1-1,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,1,598.58984375,598.58984375,598.58984375
+users-2000-distributed-1-1,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,1,329.9453125,329.9453125,329.9453125
+users-2000-distributed-1-1,rdfs,replicated,After relocation,fog-c1,current_rss_kib,1,336.66796875,336.66796875,336.66796875
+users-2000-distributed-1-1,rdfs,replicated,After relocation,mist-c1,current_rss_kib,1,329.64453125,329.64453125,329.64453125
+users-2000-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,4.6914914,4.670765414000001,6.626030528
+users-2000-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,7.187619633000001,7.162271407,9.907542675999998
+users-2000-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,7.148059046,6.93525947,9.853501623
+users-2000-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,14.930106879000002,14.763498497,18.89582568
+users-2000-distributed-1-2,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.5526306450000003,2.113519437,3.3651076250000003
+users-2000-distributed-1-2,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,15.426190194000002,15.331411155,20.918342068
+users-2000-distributed-1-2,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,269.60546875,269.6015625,418.2265625
+users-2000-distributed-1-2,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,303.93359375,293.078125,456.19921875
+users-2000-distributed-1-2,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,297.9453125,285.10546875,459.05078125
+users-2000-distributed-1-2,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,137.8046875,137.7578125,162.453125
+users-2000-distributed-1-2,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,132.5546875,123.4453125,240.1015625
+users-2000-distributed-1-2,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,169.8671875,168.77734375,258.86328125
+users-2000-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,28.478976750500003,25.601198497000002,31.356755004
+users-2000-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,62.37217367000001,56.479571357000005,68.264775983
+users-2000-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,63.9334861165,56.41959352400001,71.44737870899999
+users-2000-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,61.755688369,55.210953327000006,68.300423411
+users-2000-distributed-1-2,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,62.748339126000005,57.271971059,68.224707193
+users-2000-distributed-1-2,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,65.4195781685,58.507803978999995,72.331352358
+users-2000-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,1,25.377909399,25.377909399,25.377909399
+users-2000-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,1,25.467707482,25.467707482,25.467707482
+users-2000-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,1,25.740839872000002,25.740839872000002,25.740839872000002
+users-2000-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,1,56.521747233000006,56.521747233000006,56.521747233000006
+users-2000-distributed-1-2,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,1,56.804507422,56.804507422,56.804507422
+users-2000-distributed-1-2,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,1,57.621126274000005,57.621126274000005,57.621126274000005
+users-2000-distributed-1-2,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,585.955078125,584.48828125,587.421875
+users-2000-distributed-1-2,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,334.775390625,329.5703125,339.98046875
+users-2000-distributed-1-2,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,386.205078125,357.30859375,415.1015625
+users-2000-distributed-1-2,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,335.154296875,330.27734375,340.03125
+users-2000-distributed-1-2,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,319.865234375,310.08203125,329.6484375
+users-2000-distributed-1-2,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,334.90234375,329.8359375,339.96875
+users-2000-distributed-1-2,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,1,582.9921875,582.9921875,582.9921875
+users-2000-distributed-1-2,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,1,591.5390625,591.5390625,591.5390625
+users-2000-distributed-1-2,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,1,585.5234375,585.5234375,585.5234375
+users-2000-distributed-1-2,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,1,330.1484375,330.1484375,330.1484375
+users-2000-distributed-1-2,rdfs,replicated,After relocation,fog-c1,current_rss_kib,1,329.609375,329.609375,329.609375
+users-2000-distributed-1-2,rdfs,replicated,After relocation,mist-c1,current_rss_kib,1,330.09375,330.09375,330.09375
+users-2000-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,4.764480150000001,4.699627128,6.631766326
+users-2000-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,6.945813557,6.943470636,9.992612532999999
+users-2000-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,7.103313514000001,6.971922926,9.994331350000001
+users-2000-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,6.973457145999999,6.922157631,10.017596036
+users-2000-distributed-1-3,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.53857721,2.101725435,3.231769982
+users-2000-distributed-1-3,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,15.344342123,15.314767673,21.098076549
+users-2000-distributed-1-3,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,277.828125,275.4921875,420.53515625
+users-2000-distributed-1-3,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,302.98046875,293.10546875,456.2265625
+users-2000-distributed-1-3,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,289.3828125,286.48828125,466.28515625
+users-2000-distributed-1-3,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,317.42578125,293.73828125,454.1328125
+users-2000-distributed-1-3,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,91.171875,84.80859375,239.88671875
+users-2000-distributed-1-3,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,172.1484375,170.58203125,258.2578125
+users-2000-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,28.478976750500003,25.601198497000002,31.356755004
+users-2000-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,62.37217367000001,56.479571357000005,68.264775983
+users-2000-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,63.9334861165,56.41959352400001,71.44737870899999
+users-2000-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,61.755688369,55.210953327000006,68.300423411
+users-2000-distributed-1-3,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,62.748339126000005,57.271971059,68.224707193
+users-2000-distributed-1-3,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,65.4195781685,58.507803978999995,72.331352358
+users-2000-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,1,25.516781791000003,25.516781791000003,25.516781791000003
+users-2000-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,1,26.109184788,26.109184788,26.109184788
+users-2000-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,1,25.468029486,25.468029486,25.468029486
+users-2000-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,1,25.340014374,25.340014374,25.340014374
+users-2000-distributed-1-3,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,1,57.199560948,57.199560948,57.199560948
+users-2000-distributed-1-3,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,1,57.681864836,57.681864836,57.681864836
+users-2000-distributed-1-3,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,585.955078125,584.48828125,587.421875
+users-2000-distributed-1-3,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,334.775390625,329.5703125,339.98046875
+users-2000-distributed-1-3,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,386.205078125,357.30859375,415.1015625
+users-2000-distributed-1-3,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,335.154296875,330.27734375,340.03125
+users-2000-distributed-1-3,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,319.865234375,310.08203125,329.6484375
+users-2000-distributed-1-3,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,334.90234375,329.8359375,339.96875
+users-2000-distributed-1-3,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,1,581.578125,581.578125,581.578125
+users-2000-distributed-1-3,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,1,586.89453125,586.89453125,586.89453125
+users-2000-distributed-1-3,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,1,590.57421875,590.57421875,590.57421875
+users-2000-distributed-1-3,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,1,586.12109375,586.12109375,586.12109375
+users-2000-distributed-1-3,rdfs,replicated,After relocation,fog-c1,current_rss_kib,1,329.33203125,329.33203125,329.33203125
+users-2000-distributed-1-3,rdfs,replicated,After relocation,mist-c1,current_rss_kib,1,330.21875,330.21875,330.21875
+users-2000-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,5.65863891,5.006206784,6.2976547410000006
+users-2000-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,7.269272337,7.121304988,9.322783203
+users-2000-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,7.107056741,6.9448963489999995,9.423785389
+users-2000-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,7.1396239360000004,7.100829251,9.881594191
+users-2000-distributed-1-4,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.5778630629999997,2.2227915830000002,3.25587657
+users-2000-distributed-1-4,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,7.323452592,7.282396007,9.591320936
+users-2000-distributed-1-4,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,318.3125,275.76171875,412.296875
+users-2000-distributed-1-4,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,304.796875,301.86328125,444.04296875
+users-2000-distributed-1-4,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,325.625,301.62890625,482.89453125
+users-2000-distributed-1-4,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,307.68359375,298.8046875,450.37890625
+users-2000-distributed-1-4,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,124.734375,115.984375,220.94921875
+users-2000-distributed-1-4,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,320.703125,315.78125,453.57421875
+users-2000-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,28.478976750500003,25.601198497000002,31.356755004
+users-2000-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,62.37217367000001,56.479571357000005,68.264775983
+users-2000-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,63.9334861165,56.41959352400001,71.44737870899999
+users-2000-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,61.755688369,55.210953327000006,68.300423411
+users-2000-distributed-1-4,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,62.748339126000005,57.271971059,68.224707193
+users-2000-distributed-1-4,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,65.4195781685,58.507803978999995,72.331352358
+users-2000-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,2,28.5847001915,25.257100148000003,31.912300235
+users-2000-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,2,29.05364542,25.92477539,32.18251545
+users-2000-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,2,28.845641604999997,25.790632336999998,31.900650873
+users-2000-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,2,28.858845928,25.773924979,31.943766876999998
+users-2000-distributed-1-4,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,2,63.453725372,58.062191603,68.845259141
+users-2000-distributed-1-4,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,2,29.228830188,26.130062361,32.327598015
+users-2000-distributed-1-4,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,585.955078125,584.48828125,587.421875
+users-2000-distributed-1-4,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,334.775390625,329.5703125,339.98046875
+users-2000-distributed-1-4,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,386.205078125,357.30859375,415.1015625
+users-2000-distributed-1-4,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,335.154296875,330.27734375,340.03125
+users-2000-distributed-1-4,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,319.865234375,310.08203125,329.6484375
+users-2000-distributed-1-4,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,334.90234375,329.8359375,339.96875
+users-2000-distributed-1-4,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,2,585.4921875,583.07421875,587.91015625
+users-2000-distributed-1-4,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,2,605.78515625,599.59765625,611.97265625
+users-2000-distributed-1-4,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,2,594.876953125,591.76171875,597.9921875
+users-2000-distributed-1-4,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,2,595.265625,592.59765625,597.93359375
+users-2000-distributed-1-4,rdfs,replicated,After relocation,fog-c1,current_rss_kib,2,318.857421875,308.0234375,329.69140625
+users-2000-distributed-1-4,rdfs,replicated,After relocation,mist-c1,current_rss_kib,2,596.2109375,579.16796875,613.25390625
+users-2000-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,process_cpu_ms,3,4.728958856,4.718742045,6.17887763
+users-2000-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,process_cpu_ms,3,15.013784641,14.962369537,19.684844702
+users-2000-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,process_cpu_ms,3,7.077805352,7.022382984,9.284723115
+users-2000-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,process_cpu_ms,3,7.19724768,7.0352377939999995,8.723089476
+users-2000-distributed-1-5,rdfs,distributed,After relocation,fog-c1,process_cpu_ms,3,2.095562067,2.08707695,3.373293861
+users-2000-distributed-1-5,rdfs,distributed,After relocation,mist-c1,process_cpu_ms,3,7.304047592,7.1236266509999995,9.306490849
+users-2000-distributed-1-5,rdfs,distributed,After relocation,cloud-c1,current_rss_kib,3,274.76953125,248.71875,422.83203125
+users-2000-distributed-1-5,rdfs,distributed,After relocation,edge1-c1,current_rss_kib,3,161.87890625,160.92578125,248.453125
+users-2000-distributed-1-5,rdfs,distributed,After relocation,edge2-c1,current_rss_kib,3,310.3359375,297.6015625,482.359375
+users-2000-distributed-1-5,rdfs,distributed,After relocation,edge3-c1,current_rss_kib,3,312.9609375,301.140625,442.9140625
+users-2000-distributed-1-5,rdfs,distributed,After relocation,fog-c1,current_rss_kib,3,221.9453125,125.234375,221.9453125
+users-2000-distributed-1-5,rdfs,distributed,After relocation,mist-c1,current_rss_kib,3,318.81640625,312.8203125,453.890625
+users-2000-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,28.478976750500003,25.601198497000002,31.356755004
+users-2000-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,62.37217367000001,56.479571357000005,68.264775983
+users-2000-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,63.9334861165,56.41959352400001,71.44737870899999
+users-2000-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,61.755688369,55.210953327000006,68.300423411
+users-2000-distributed-1-5,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,62.748339126000005,57.271971059,68.224707193
+users-2000-distributed-1-5,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,65.4195781685,58.507803978999995,72.331352358
+users-2000-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,1,26.345329669999998,26.345329669999998,26.345329669999998
+users-2000-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,1,57.239850921,57.239850921,57.239850921
+users-2000-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,1,25.791187526,25.791187526,25.791187526
+users-2000-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,1,25.810796033,25.810796033,25.810796033
+users-2000-distributed-1-5,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,1,55.753738411,55.753738411,55.753738411
+users-2000-distributed-1-5,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,1,26.473806572,26.473806572,26.473806572
+users-2000-distributed-1-5,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,585.955078125,584.48828125,587.421875
+users-2000-distributed-1-5,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,334.775390625,329.5703125,339.98046875
+users-2000-distributed-1-5,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,386.205078125,357.30859375,415.1015625
+users-2000-distributed-1-5,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,335.154296875,330.27734375,340.03125
+users-2000-distributed-1-5,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,319.865234375,310.08203125,329.6484375
+users-2000-distributed-1-5,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,334.90234375,329.8359375,339.96875
+users-2000-distributed-1-5,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,1,586.07421875,586.07421875,586.07421875
+users-2000-distributed-1-5,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,1,332.03515625,332.03515625,332.03515625
+users-2000-distributed-1-5,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,1,598.59765625,598.59765625,598.59765625
+users-2000-distributed-1-5,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,1,585.6328125,585.6328125,585.6328125
+users-2000-distributed-1-5,rdfs,replicated,After relocation,fog-c1,current_rss_kib,1,329.75,329.75,329.75
+users-2000-distributed-1-5,rdfs,replicated,After relocation,mist-c1,current_rss_kib,1,599.01953125,599.01953125,599.01953125
+users-2000-distributed-1-6,rdfs,replicated,Baseline,cloud-c1,process_cpu_ms,2,28.478976750500003,25.601198497000002,31.356755004
+users-2000-distributed-1-6,rdfs,replicated,Baseline,edge1-c1,process_cpu_ms,2,62.37217367000001,56.479571357000005,68.264775983
+users-2000-distributed-1-6,rdfs,replicated,Baseline,edge2-c1,process_cpu_ms,2,63.9334861165,56.41959352400001,71.44737870899999
+users-2000-distributed-1-6,rdfs,replicated,Baseline,edge3-c1,process_cpu_ms,2,61.755688369,55.210953327000006,68.300423411
+users-2000-distributed-1-6,rdfs,replicated,Baseline,fog-c1,process_cpu_ms,2,62.748339126000005,57.271971059,68.224707193
+users-2000-distributed-1-6,rdfs,replicated,Baseline,mist-c1,process_cpu_ms,2,65.4195781685,58.507803978999995,72.331352358
+users-2000-distributed-1-6,rdfs,replicated,After relocation,cloud-c1,process_cpu_ms,2,28.734043515499998,25.725597422,31.742489609
+users-2000-distributed-1-6,rdfs,replicated,After relocation,edge1-c1,process_cpu_ms,2,63.938046202500004,58.025777510000005,69.85031489500001
+users-2000-distributed-1-6,rdfs,replicated,After relocation,edge2-c1,process_cpu_ms,2,29.5586972505,26.098488625,33.018905876
+users-2000-distributed-1-6,rdfs,replicated,After relocation,edge3-c1,process_cpu_ms,2,29.1405334445,25.309753802,32.971313087000006
+users-2000-distributed-1-6,rdfs,replicated,After relocation,fog-c1,process_cpu_ms,2,62.077598608,56.311091705,67.84410551100001
+users-2000-distributed-1-6,rdfs,replicated,After relocation,mist-c1,process_cpu_ms,2,29.296044799,25.778176267,32.813913331
+users-2000-distributed-1-6,rdfs,replicated,Baseline,cloud-c1,current_rss_kib,2,585.955078125,584.48828125,587.421875
+users-2000-distributed-1-6,rdfs,replicated,Baseline,edge1-c1,current_rss_kib,2,334.775390625,329.5703125,339.98046875
+users-2000-distributed-1-6,rdfs,replicated,Baseline,edge2-c1,current_rss_kib,2,386.205078125,357.30859375,415.1015625
+users-2000-distributed-1-6,rdfs,replicated,Baseline,edge3-c1,current_rss_kib,2,335.154296875,330.27734375,340.03125
+users-2000-distributed-1-6,rdfs,replicated,Baseline,fog-c1,current_rss_kib,2,319.865234375,310.08203125,329.6484375
+users-2000-distributed-1-6,rdfs,replicated,Baseline,mist-c1,current_rss_kib,2,334.90234375,329.8359375,339.96875
+users-2000-distributed-1-6,rdfs,replicated,After relocation,cloud-c1,current_rss_kib,2,584.39453125,581.79296875,586.99609375
+users-2000-distributed-1-6,rdfs,replicated,After relocation,edge1-c1,current_rss_kib,2,372.208984375,329.38671875,415.03125
+users-2000-distributed-1-6,rdfs,replicated,After relocation,edge2-c1,current_rss_kib,2,605.90234375,600.69921875,611.10546875
+users-2000-distributed-1-6,rdfs,replicated,After relocation,edge3-c1,current_rss_kib,2,591.6796875,584.4609375,598.8984375
+users-2000-distributed-1-6,rdfs,replicated,After relocation,fog-c1,current_rss_kib,2,321.521484375,307.8203125,335.22265625
+users-2000-distributed-1-6,rdfs,replicated,After relocation,mist-c1,current_rss_kib,2,596.17578125,580.08984375,612.26171875

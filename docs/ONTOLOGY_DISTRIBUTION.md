@@ -234,3 +234,12 @@ continuum-bench physical status --ssh-user pi
 The first three commands inspect and test local assets. The last checks physical
 worker status; it does not update their code. See [Physical continuum](PHYSICAL_CONTINUUM.md)
 for deployment and [Complete execution](COMPLETE_EXECUTION.md) for campaign commands.
+
+## Containerized participants
+
+Battery 3 uses the same profiles, partitioner and query routing, with explicit
+`<host>-c<number>` identities. Multiple participants on an authority host split
+users deterministically across the enlarged authority list. Physical host and
+participant identity are recorded separately. This is static, centrally prepared
+distribution, not decentralized ownership updates or live migration. See
+[Container scalability](CONTAINER_SCALABILITY.md#distributed-and-replicated-knowledge).

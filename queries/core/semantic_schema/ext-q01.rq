@@ -3,7 +3,7 @@
 # Requirements: RF-68, RNF-39, RV-01, RV-03
 # Policies: P-VAL-01, P-VAL-04
 # Current v4.0.0 result: 6 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -21,13 +21,13 @@ SELECT ?ontology ?versionInfo ?versionIRI ?artifact ?artifactType ?identifier ?a
   OPTIONAL { ?ontology owl:versionIRI ?versionIRI }
   OPTIONAL {
     VALUES ?artifactType {
-      :OntologyArtifact :RequirementsArtifact :PolicyArtifact
-      :ScenarioArtifact :QueryCatalog :AcceptanceProfile
+      comon:OntologyArtifact comon:RequirementsArtifact comon:PolicyArtifact
+      comon:ScenarioArtifact comon:QueryCatalog comon:AcceptanceProfile
     }
     ?artifact a ?artifactType .
-    OPTIONAL { ?artifact :artifactIdentifier ?identifier }
-    OPTIONAL { ?artifact :artifactVersion ?artifactVersion }
-    OPTIONAL { ?artifact :artifactStatus ?status }
+    OPTIONAL { ?artifact comon:artifactIdentifier ?identifier }
+    OPTIONAL { ?artifact comon:artifactVersion ?artifactVersion }
+    OPTIONAL { ?artifact comon:artifactStatus ?status }
   }
 }
 ORDER BY ?artifactType ?artifact

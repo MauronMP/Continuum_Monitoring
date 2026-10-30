@@ -3,7 +3,7 @@
 # Requirements: RF-16, RF-17, RF-20, RF-66
 # Policies: P-ADAPT-06, P-AUD-06
 # Current v4.0.0 result: 11 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,15 +16,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?action ?actionType ?scenario ?evaluation ?origin ?target ?service ?model ?from ?to WHERE {
-  ?action a :AdaptationAction ; a ?actionType .
-  FILTER(?actionType != :AdaptationAction && ?actionType != owl:NamedIndividual)
-  OPTIONAL { ?action :partOfScenario ?scenario }
-  OPTIONAL { ?action :authorizedByEvaluation ?evaluation }
-  OPTIONAL { ?action :actionOriginNode ?origin }
-  OPTIONAL { ?action :actionTargetNode ?target }
-  OPTIONAL { ?action :affectsService ?service }
-  OPTIONAL { ?action :affectsModel ?model }
-  OPTIONAL { ?action :validFrom ?from }
-  OPTIONAL { ?action :validTo ?to }
+  ?action a comon:AdaptationAction ; a ?actionType .
+  FILTER(?actionType != comon:AdaptationAction && ?actionType != owl:NamedIndividual)
+  OPTIONAL { ?action comon:partOfScenario ?scenario }
+  OPTIONAL { ?action comon:authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?action comon:actionOriginNode ?origin }
+  OPTIONAL { ?action comon:actionTargetNode ?target }
+  OPTIONAL { ?action comon:affectsService ?service }
+  OPTIONAL { ?action comon:affectsModel ?model }
+  OPTIONAL { ?action comon:validFrom ?from }
+  OPTIONAL { ?action comon:validTo ?to }
 }
 ORDER BY ?scenario ?action

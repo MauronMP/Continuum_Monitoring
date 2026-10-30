@@ -1,0 +1,19 @@
+placement,reasoner,scenario,metric,distributed_over_replicated,reduction_percent,comparison
+placement-1,rdfs,users-1,benchmark_end_to_end_ms,15.92062459156218,-1492.062459156218,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-50,benchmark_end_to_end_ms,8.171397681291612,-717.1397681291612,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-100,benchmark_end_to_end_ms,8.995759899320387,-799.5759899320386,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-1,reasoning_ms,0.8718869072578926,12.811309274210736,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-50,reasoning_ms,0.6872631581813943,31.273684181860574,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-100,reasoning_ms,0.6405353856745247,35.94646143254753,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-1,process_cpu_ms,0.8910094242582137,10.899057574178627,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-50,process_cpu_ms,0.6915781012464882,30.842189875351178,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-100,process_cpu_ms,0.5904204240438947,40.95795759561053,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-1,current_rss_kib_sum,1.0210598590756623,-2.1059859075662324,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-50,current_rss_kib_sum,1.0025966202390968,-0.2596620239096792,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-100,current_rss_kib_sum,0.8899361118000736,11.00638881999264,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-1,aggregate_input_triples,0.8275855210819412,17.241447891805883,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-50,aggregate_input_triples,0.6425486875529213,35.74513124470787,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-100,aggregate_input_triples,0.539200957979534,46.07990420204659,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-1,network_bytes,834.8904501071684,-83389.04501071683,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-50,network_bytes,904.1423664574204,-90314.23664574204,ratio of medians; complete cohorts; sampled query equivalence
+placement-1,rdfs,users-100,network_bytes,977.4890649012885,-97648.90649012885,ratio of medians; complete cohorts; sampled query equivalence

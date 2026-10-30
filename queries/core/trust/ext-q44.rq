@@ -3,7 +3,7 @@
 # Requirements: RF-46, RF-55
 # Policies: P-MODEL-03, P-NODE-05
 # Current v4.0.0 result: 10 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,11 +16,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?latencyWeight ?privacyWeight ?qualityWeight ?externalTrustWeight ?nodeTrust WHERE {
-  ?evaluation a :EvaluationState .
-  OPTIONAL { ?evaluation :hasLatencyWeight ?latencyWeight }
-  OPTIONAL { ?evaluation :hasPrivacyWeight ?privacyWeight }
-  OPTIONAL { ?evaluation :hasModelQualityWeight ?qualityWeight }
-  OPTIONAL { ?evaluation :hasTrustWeight ?externalTrustWeight }
-  OPTIONAL { ?evaluation :evaluatesNode/:hasNodeState/:hasTrustAssessment/:hasTrustScore ?nodeTrust }
+  ?evaluation a comon:EvaluationState .
+  OPTIONAL { ?evaluation comon:hasLatencyWeight ?latencyWeight }
+  OPTIONAL { ?evaluation comon:hasPrivacyWeight ?privacyWeight }
+  OPTIONAL { ?evaluation comon:hasModelQualityWeight ?qualityWeight }
+  OPTIONAL { ?evaluation comon:hasTrustWeight ?externalTrustWeight }
+  OPTIONAL { ?evaluation comon:evaluatesNode/comon:hasNodeState/comon:hasTrustAssessment/comon:hasTrustScore ?nodeTrust }
 }
 ORDER BY ?evaluation

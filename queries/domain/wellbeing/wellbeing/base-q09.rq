@@ -3,7 +3,7 @@
 # Requirements: RF-03, RF-30, RNF-35
 # Policies: P-GOV-05, P-OPS-05
 # Current v4.0.0 result: 6 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,12 +16,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?state ?mobility ?stress ?personStatus ?from ?to WHERE {
-  ?user :hasUserState ?state .
-  ?state a :UserState .
-  OPTIONAL { ?state :hasMobility ?mobility }
-  OPTIONAL { ?state :hasPredictedStressLevel ?stress }
-  OPTIONAL { ?state :hasPersonStatus ?personStatus }
-  OPTIONAL { ?state :validFrom ?from }
-  OPTIONAL { ?state :validTo ?to }
+  ?user comon:hasUserState ?state .
+  ?state a comon:UserState .
+  OPTIONAL { ?state comon:hasMobility ?mobility }
+  OPTIONAL { ?state comon:hasPredictedStressLevel ?stress }
+  OPTIONAL { ?state comon:hasPersonStatus ?personStatus }
+  OPTIONAL { ?state comon:validFrom ?from }
+  OPTIONAL { ?state comon:validTo ?to }
 }
 ORDER BY ?user ?from

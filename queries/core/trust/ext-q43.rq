@@ -3,7 +3,7 @@
 # Requirements: RF-49, RNF-32
 # Policies: P-NODE-03
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,13 +16,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?assessment ?state ?score ?ruleVersion ?windowStart ?windowEnd ?evidence ?configStatus WHERE {
-  ?assessment a :TrustAssessment ; :trustAssessmentForState ?state .
-  OPTIONAL { ?assessment :hasTrustScore ?score }
-  OPTIONAL { ?assessment :trustRuleVersion ?ruleVersion }
-  OPTIONAL { ?assessment :trustWindowStart ?windowStart }
-  OPTIONAL { ?assessment :trustWindowEnd ?windowEnd }
-  OPTIONAL { ?assessment :hasTrustEvidence ?evidence }
-  OPTIONAL { ?assessment :configurationStatus ?configStatus }
+  ?assessment a comon:TrustAssessment ; comon:trustAssessmentForState ?state .
+  OPTIONAL { ?assessment comon:hasTrustScore ?score }
+  OPTIONAL { ?assessment comon:trustRuleVersion ?ruleVersion }
+  OPTIONAL { ?assessment comon:trustWindowStart ?windowStart }
+  OPTIONAL { ?assessment comon:trustWindowEnd ?windowEnd }
+  OPTIONAL { ?assessment comon:hasTrustEvidence ?evidence }
+  OPTIONAL { ?assessment comon:configurationStatus ?configStatus }
   FILTER(!BOUND(?score) || !BOUND(?ruleVersion) || !BOUND(?windowStart) || !BOUND(?windowEnd) || !BOUND(?evidence))
 }
 ORDER BY ?assessment

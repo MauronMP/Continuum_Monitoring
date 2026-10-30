@@ -1,8 +1,8 @@
-@prefix mc: <http://example.org/monitoringcontinuum#> .
+@prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<http://example.org/monitoringcontinuum/profiles/full> a mc:SemanticNodeProfile,
+<http://example.org/monitoringcontinuum/profiles/full> a comon:SemanticNodeProfile,
         owl:Ontology ;
     rdfs:label "Full continuum semantic profile"@en ;
     owl:imports <http://example.org/monitoringcontinuum>,

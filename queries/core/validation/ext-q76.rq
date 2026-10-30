@@ -3,7 +3,7 @@
 # Requirements: RNF-01, RNF-02, RNF-04, RNF-05, RNF-06, RNF-08, RNF-09, RNF-14, RNF-21, RNF-34
 # Policies: P-OPS-01, P-VAL-03
 # Current v4.0.0 result: 9 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,18 +16,18 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?profile ?missing WHERE {
-  ?profile a :AcceptanceProfile .
+  ?profile a comon:AcceptanceProfile .
   VALUES (?prop ?missing) {
-    (:T_inference_local "T_inference_local")
-    (:T_migration_max "T_migration_max")
-    (:T_sparql_monitor "T_sparql_monitor")
-    (:T_decision_max "T_decision_max")
-    (:E_device_max "E_device_max")
-    (:N_agents "N_agents")
-    (:T_node_join "T_node_join")
-    (:D_delegation_max "D_delegation_max")
-    (:T_reselection_max "T_reselection_max")
-    (:AHP_consistency_threshold "AHP_consistency_threshold")
+    (comon:T_inference_local "T_inference_local")
+    (comon:T_migration_max "T_migration_max")
+    (comon:T_sparql_monitor "T_sparql_monitor")
+    (comon:T_decision_max "T_decision_max")
+    (comon:E_device_max "E_device_max")
+    (comon:N_agents "N_agents")
+    (comon:T_node_join "T_node_join")
+    (comon:D_delegation_max "D_delegation_max")
+    (comon:T_reselection_max "T_reselection_max")
+    (comon:AHP_consistency_threshold "AHP_consistency_threshold")
   }
   FILTER NOT EXISTS { ?profile ?prop ?v }
 }

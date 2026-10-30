@@ -3,7 +3,7 @@
 # Requirements: RF-54, RF-66, RNF-28, RNF-29
 # Policies: P-AUD-06
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,24 +16,24 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?missing WHERE {
-  ?evaluation a :EvaluationState .
+  ?evaluation a comon:EvaluationState .
   {
     VALUES (?prop ?missing) {
-      (:hasDetectedSymptom "hasDetectedSymptom")
-      (:appliedPolicy "appliedPolicy")
-      (:auditsContract "auditsContract")
-      (:hasAuthorizationDecision "hasAuthorizationDecision")
-      (:hasDecisionAlternative "hasDecisionAlternative")
-      (:selectedModelTier "selectedModelTier")
-      (:hasSelectionJustification "hasSelectionJustification")
-      (:validFrom "validFrom")
-      (:resultedInAction "resultedInAction")
+      (comon:hasDetectedSymptom "hasDetectedSymptom")
+      (comon:appliedPolicy "appliedPolicy")
+      (comon:auditsContract "auditsContract")
+      (comon:hasAuthorizationDecision "hasAuthorizationDecision")
+      (comon:hasDecisionAlternative "hasDecisionAlternative")
+      (comon:selectedModelTier "selectedModelTier")
+      (comon:hasSelectionJustification "hasSelectionJustification")
+      (comon:validFrom "validFrom")
+      (comon:resultedInAction "resultedInAction")
     }
     FILTER NOT EXISTS { ?evaluation ?prop ?v }
   }
   UNION
   {
-    FILTER NOT EXISTS { ?evaluation :hasAuthorizationDecision/:hasEffectiveConsentRange ?r }
+    FILTER NOT EXISTS { ?evaluation comon:hasAuthorizationDecision/comon:hasEffectiveConsentRange ?r }
     BIND("effectiveConsentRange" AS ?missing)
   }
 }

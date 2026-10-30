@@ -1,585 +1,585 @@
-@prefix mc: <http://example.org/monitoringcontinuum#> .
+@prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-mc:AHPDecisionMethod a mc:DecisionMethod,
+comon:AHPDecisionMethod a comon:DecisionMethod,
         owl:NamedIndividual ;
     rdfs:label "Analytic Hierarchy Process (AHP)" .
 
-mc:Acceptable a mc:PerformanceLevel,
+comon:Acceptable a comon:PerformanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Acceptable" .
 
-mc:Adequate a mc:ProfitabilityLevel,
+comon:Adequate a comon:ProfitabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Adequate" .
 
-mc:AirplaneMode a mc:DeviceConnectionStatus,
+comon:AirplaneMode a comon:DeviceConnectionStatus,
         owl:NamedIndividual ;
     rdfs:label "Airplane Mode" ;
     rdfs:comment "No communication. Most basic local model active." .
 
-mc:AuthorizationBlocked a mc:AuthorizationOutcome,
+comon:AuthorizationBlocked a comon:AuthorizationOutcome,
         owl:NamedIndividual ;
     rdfs:label "Authorization blocked" .
 
-mc:AuthorizationGranted a mc:AuthorizationOutcome,
+comon:AuthorizationGranted a comon:AuthorizationOutcome,
         owl:NamedIndividual ;
     rdfs:label "Authorization granted" .
 
-mc:AuthorizationInconsistent a mc:AuthorizationOutcome,
+comon:AuthorizationInconsistent a comon:AuthorizationOutcome,
         owl:NamedIndividual ;
     rdfs:label "Authorization inconsistent" .
 
-mc:Available a mc:AvailabilityLevel,
+comon:Available a comon:AvailabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Available" .
 
-mc:BatteryHigh a mc:BatteryLevel,
+comon:BatteryHigh a comon:BatteryLevel,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-mc:BatteryLow a mc:BatteryLevel,
+comon:BatteryLow a comon:BatteryLevel,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-mc:BatteryMedium a mc:BatteryLevel,
+comon:BatteryMedium a comon:BatteryLevel,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-mc:BatteryVeryLow a mc:BatteryLevel,
+comon:BatteryVeryLow a comon:BatteryLevel,
         owl:NamedIndividual ;
     rdfs:label "Very Low" .
 
-mc:Close a mc:DistanceLevel,
+comon:Close a comon:DistanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Close" .
 
-mc:CommunicationLoss a mc:ModelDegradationCause,
+comon:CommunicationLoss a comon:ModelDegradationCause,
         owl:NamedIndividual ;
     rdfs:label "Communication Loss" .
 
-mc:ComputeOnly a mc:OperationalStatus,
+comon:ComputeOnly a comon:OperationalStatus,
         owl:NamedIndividual ;
     rdfs:label "Compute Only" ;
     rdfs:comment "Disconnected node but still computing. Receives internal delegations." .
 
-mc:Connected a mc:DeviceConnectionStatus,
+comon:Connected a comon:DeviceConnectionStatus,
         owl:NamedIndividual ;
     rdfs:label "Connected" .
 
-mc:CostHigh a mc:MigrationCostLevel,
+comon:CostHigh a comon:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-mc:CostLow a mc:MigrationCostLevel,
+comon:CostLow a comon:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-mc:CostMedium a mc:MigrationCostLevel,
+comon:CostMedium a comon:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-mc:CostVeryHigh a mc:MigrationCostLevel,
+comon:CostVeryHigh a comon:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "Very High" .
 
-mc:CostVeryLow a mc:MigrationCostLevel,
+comon:CostVeryLow a comon:MigrationCostLevel,
         owl:NamedIndividual ;
     rdfs:label "Very Low" .
 
-mc:CriticalData a mc:DataCriticality,
+comon:CriticalData a comon:DataCriticality,
         owl:NamedIndividual ;
     rdfs:label "Critical" .
 
-mc:CriticalResidual a mc:ResidualCapacity,
+comon:CriticalResidual a comon:ResidualCapacity,
         owl:NamedIndividual ;
     rdfs:label "Critical" .
 
-mc:Deficient a mc:PerformanceLevel,
+comon:Deficient a comon:PerformanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Deficient" .
 
-mc:Disconnected a mc:DeviceConnectionStatus,
+comon:Disconnected a comon:DeviceConnectionStatus,
         owl:NamedIndividual ;
     rdfs:label "Disconnected" .
 
-mc:Far a mc:DistanceLevel,
+comon:Far a comon:DistanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Far" .
 
-mc:FullProcessing a mc:ProcessingLevel,
+comon:FullProcessing a comon:ProcessingLevel,
         owl:NamedIndividual ;
     rdfs:label "Full" .
 
-mc:GlobalModelParametersPayload a mc:PayloadType,
+comon:GlobalModelParametersPayload a comon:PayloadType,
         owl:NamedIndividual ;
     rdfs:label "Global model parameters" .
 
-mc:HighDensity a mc:PopulationDensity,
+comon:HighDensity a comon:PopulationDensity,
         owl:NamedIndividual ;
     rdfs:label "High Density" .
 
-mc:HighEnergy a mc:EnergyLevel,
+comon:HighEnergy a comon:EnergyLevel,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-mc:HighPriorityData a mc:DataCriticality,
+comon:HighPriorityData a comon:DataCriticality,
         owl:NamedIndividual ;
     rdfs:label "High priority" .
 
-mc:HighResidual a mc:ResidualCapacity,
+comon:HighResidual a comon:ResidualCapacity,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-mc:ImprovedModelParametersPayload a mc:PayloadType,
+comon:ImprovedModelParametersPayload a comon:PayloadType,
         owl:NamedIndividual ;
     rdfs:label "Improved model parameters" .
 
-mc:InTransport a mc:MobilityLevel,
+comon:InTransport a comon:MobilityLevel,
         owl:NamedIndividual ;
     rdfs:label "In Transport" .
 
-mc:InfrastructureOverload a mc:ModelDegradationCause,
+comon:InfrastructureOverload a comon:ModelDegradationCause,
         owl:NamedIndividual ;
     rdfs:label "Infrastructure Overload" .
 
-mc:Inoperative a mc:OperationalStatus,
+comon:Inoperative a comon:OperationalStatus,
         owl:NamedIndividual ;
     rdfs:label "Inoperative" ;
     rdfs:comment "Total failure. Cannot process or receive requests." .
 
-mc:InspectionQueryType a mc:QueryType,
+comon:InspectionQueryType a comon:QueryType,
         owl:NamedIndividual ;
     rdfs:label "Inspection query" .
 
-mc:IntermittentComm a mc:CommunicationLevel,
+comon:IntermittentComm a comon:CommunicationLevel,
         owl:NamedIndividual ;
     rdfs:label "Intermittent" .
 
-mc:LowBattery a mc:ModelDegradationCause,
+comon:LowBattery a comon:ModelDegradationCause,
         owl:NamedIndividual ;
     rdfs:label "Low Battery" .
 
-mc:LowDensity a mc:PopulationDensity,
+comon:LowDensity a comon:PopulationDensity,
         owl:NamedIndividual ;
     rdfs:label "Low Density" .
 
-mc:LowEnergy a mc:EnergyLevel,
+comon:LowEnergy a comon:EnergyLevel,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-mc:LowPriorityData a mc:DataCriticality,
+comon:LowPriorityData a comon:DataCriticality,
         owl:NamedIndividual ;
     rdfs:label "Low priority" .
 
-mc:LowResidual a mc:ResidualCapacity,
+comon:LowResidual a comon:ResidualCapacity,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-mc:MediumDensity a mc:PopulationDensity,
+comon:MediumDensity a comon:PopulationDensity,
         owl:NamedIndividual ;
     rdfs:label "Medium Density" .
 
-mc:MediumEnergy a mc:EnergyLevel,
+comon:MediumEnergy a comon:EnergyLevel,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-mc:MediumResidual a mc:ResidualCapacity,
+comon:MediumResidual a comon:ResidualCapacity,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-mc:Migratable a mc:AdaptabilityLevel,
+comon:Migratable a comon:AdaptabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Migratable" .
 
-mc:MigratableAndScalable a mc:AdaptabilityLevel,
+comon:MigratableAndScalable a comon:AdaptabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Migratable and Scalable" .
 
-mc:MinimalProcessing a mc:ProcessingLevel,
+comon:MinimalProcessing a comon:ProcessingLevel,
         owl:NamedIndividual ;
     rdfs:label "Minimal" .
 
-mc:ModelGradientCategory a mc:DataCategory,
+comon:ModelGradientCategory a comon:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Model gradient update" .
 
-mc:ModelGradientsPayload a mc:PayloadType,
+comon:ModelGradientsPayload a comon:PayloadType,
         owl:NamedIndividual ;
     rdfs:label "Model gradients" .
 
-mc:ModelParametersCategory a mc:DataCategory,
+comon:ModelParametersCategory a comon:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Model parameters" .
 
-mc:MorningWindow a mc:TrafficWindow,
+comon:MorningWindow a comon:TrafficWindow,
         owl:NamedIndividual ;
     rdfs:label "Morning Window" ;
     rdfs:comment "High demand on wake-up: sleep calculation + daily stress prediction." .
 
-mc:Near a mc:DistanceLevel,
+comon:Near a comon:DistanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Near" .
 
-mc:NightWindow a mc:TrafficWindow,
+comon:NightWindow a comon:TrafficWindow,
         owl:NamedIndividual ;
     rdfs:label "Night Window" ;
     rdfs:comment "High demand at night: physiological parametrized data upload to continuum." .
 
-mc:NoConnectionComm a mc:CommunicationLevel,
+comon:NoConnectionComm a comon:CommunicationLevel,
         owl:NamedIndividual ;
     rdfs:label "No Connection" .
 
-mc:NoNearbyNodes a mc:ModelDegradationCause,
+comon:NoNearbyNodes a comon:ModelDegradationCause,
         owl:NamedIndividual ;
     rdfs:label "No Nearby Nodes" .
 
-mc:NonSensitiveData a mc:DataSensitivity,
+comon:NonSensitiveData a comon:DataSensitivity,
         owl:NamedIndividual ;
     rdfs:label "Non-sensitive" .
 
-mc:NormalPriorityData a mc:DataCriticality,
+comon:NormalPriorityData a comon:DataCriticality,
         owl:NamedIndividual ;
     rdfs:label "Normal" .
 
-mc:NotAdaptable a mc:AdaptabilityLevel,
+comon:NotAdaptable a comon:AdaptabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Not Adaptable" .
 
-mc:NotAdequate a mc:ProfitabilityLevel,
+comon:NotAdequate a comon:ProfitabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Not Adequate" .
 
-mc:NotAvailable a mc:AvailabilityLevel,
+comon:NotAvailable a comon:AvailabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Not Available" .
 
-mc:Operational a mc:OperationalStatus,
+comon:Operational a comon:OperationalStatus,
         owl:NamedIndividual ;
     rdfs:label "Operational" .
 
-mc:Optimal a mc:PerformanceLevel,
+comon:Optimal a comon:PerformanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Optimal" .
 
-mc:ParametrizedDataPayload a mc:PayloadType,
+comon:ParametrizedDataPayload a comon:PayloadType,
         owl:NamedIndividual ;
     rdfs:label "Parametrized data" .
 
-mc:Partial a mc:AvailabilityLevel,
+comon:Partial a comon:AvailabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Partial" .
 
-mc:PendingRecalculation a mc:AuthorizationOutcome,
+comon:PendingRecalculation a comon:AuthorizationOutcome,
         owl:NamedIndividual ;
     rdfs:label "Pending recalculation" .
 
-mc:PhysiologicalParametrizedCategory a mc:DataCategory,
+comon:PhysiologicalParametrizedCategory a comon:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Physiological parametrized data" .
 
-mc:PolicyCategory_ADAPT a mc:PolicyCategory,
+comon:PolicyCategory_ADAPT a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Migration, offloading, degradation and continuity" ;
-    mc:categoryCode "ADAPT" ;
-    mc:evaluationOrder 5 .
+    comon:categoryCode "ADAPT" ;
+    comon:evaluationOrder 5 .
 
-mc:PolicyCategory_AUD a mc:PolicyCategory,
+comon:PolicyCategory_AUD a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Temporal delegation, MAPE-K and audit" ;
-    mc:categoryCode "AUD" ;
-    mc:evaluationOrder 6 .
+    comon:categoryCode "AUD" ;
+    comon:evaluationOrder 6 .
 
-mc:PolicyCategory_CONS a mc:PolicyCategory,
+comon:PolicyCategory_CONS a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Consent and semantic contracts" ;
-    mc:categoryCode "CONS" ;
-    mc:evaluationOrder 2 .
+    comon:categoryCode "CONS" ;
+    comon:evaluationOrder 2 .
 
-mc:PolicyCategory_DATA a mc:PolicyCategory,
+comon:PolicyCategory_DATA a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Data, privacy, identity and transmission" ;
-    mc:categoryCode "DATA" ;
-    mc:evaluationOrder 2 .
+    comon:categoryCode "DATA" ;
+    comon:evaluationOrder 2 .
 
-mc:PolicyCategory_FL a mc:PolicyCategory,
+comon:PolicyCategory_FL a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Federated learning and model lifecycle" ;
-    mc:categoryCode "FL" ;
-    mc:evaluationOrder 5 .
+    comon:categoryCode "FL" ;
+    comon:evaluationOrder 5 .
 
-mc:PolicyCategory_GOV a mc:PolicyCategory,
+comon:PolicyCategory_GOV a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Governance, precedence and lifecycle" ;
-    mc:categoryCode "GOV" ;
-    mc:evaluationOrder 1 .
+    comon:categoryCode "GOV" ;
+    comon:evaluationOrder 1 .
 
-mc:PolicyCategory_INT a mc:PolicyCategory,
+comon:PolicyCategory_INT a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Interoperability and semantic extensibility" ;
-    mc:categoryCode "INT" ;
-    mc:evaluationOrder 0 .
+    comon:categoryCode "INT" ;
+    comon:evaluationOrder 0 .
 
-mc:PolicyCategory_MODEL a mc:PolicyCategory,
+comon:PolicyCategory_MODEL a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Model selection and AHP" ;
-    mc:categoryCode "MODEL" ;
-    mc:evaluationOrder 4 .
+    comon:categoryCode "MODEL" ;
+    comon:evaluationOrder 4 .
 
-mc:PolicyCategory_NODE a mc:PolicyCategory,
+comon:PolicyCategory_NODE a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Nodes and dynamic trust" ;
-    mc:categoryCode "NODE" ;
-    mc:evaluationOrder 3 .
+    comon:categoryCode "NODE" ;
+    comon:evaluationOrder 3 .
 
-mc:PolicyCategory_OPS a mc:PolicyCategory,
+comon:PolicyCategory_OPS a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Operations, scalability and QoS" ;
-    mc:categoryCode "OPS" ;
-    mc:evaluationOrder 3 .
+    comon:categoryCode "OPS" ;
+    comon:evaluationOrder 3 .
 
-mc:PolicyCategory_VAL a mc:PolicyCategory,
+comon:PolicyCategory_VAL a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Validation, reproducibility and maintainability" ;
-    mc:categoryCode "VAL" ;
-    mc:evaluationOrder 7 .
+    comon:categoryCode "VAL" ;
+    comon:evaluationOrder 7 .
 
-mc:PolicyCategory_ZONE a mc:PolicyCategory,
+comon:PolicyCategory_ZONE a comon:PolicyCategory,
         owl:NamedIndividual ;
     rdfs:label "Zones and georestriction" ;
-    mc:categoryCode "ZONE" ;
-    mc:evaluationOrder 2 .
+    comon:categoryCode "ZONE" ;
+    comon:evaluationOrder 2 .
 
-mc:PolicyRelationType_CO a mc:PolicyRelationType,
+comon:PolicyRelationType_CO a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Consistent Overlap" ;
-    mc:relationCode "CO" ;
+    comon:relationCode "CO" ;
     rdfs:comment "Policies overlap and can be satisfied simultaneously." .
 
-mc:PolicyRelationType_CON a mc:PolicyRelationType,
+comon:PolicyRelationType_CON a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Contradiction / Direct Conflict" ;
-    mc:relationCode "CON" ;
+    comon:relationCode "CON" ;
     rdfs:comment "Policies require incompatible effects in the same scope." .
 
-mc:PolicyRelationType_COR a mc:PolicyRelationType,
+comon:PolicyRelationType_COR a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Correlation / Partial Conflict" ;
-    mc:relationCode "COR" ;
+    comon:relationCode "COR" ;
     rdfs:comment "Policies partially overlap with different effects in the intersection." .
 
-mc:PolicyRelationType_DEP a mc:PolicyRelationType,
+comon:PolicyRelationType_DEP a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Policy Dependency / Order Dependency" ;
-    mc:relationCode "DEP" ;
+    comon:relationCode "DEP" ;
     rdfs:comment "One policy requires the result of another before evaluation/execution." .
 
-mc:PolicyRelationType_GEN a mc:PolicyRelationType,
+comon:PolicyRelationType_GEN a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Generalization / Exception Conflict" ;
-    mc:relationCode "GEN" ;
+    comon:relationCode "GEN" ;
     rdfs:comment "A specific policy is an exception/restriction to a more general policy." .
 
-mc:PolicyRelationType_IND a mc:PolicyRelationType,
+comon:PolicyRelationType_IND a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Independent / Disjoint" ;
-    mc:relationCode "IND" ;
+    comon:relationCode "IND" ;
     rdfs:comment "Policies regulate independent scopes/actions." .
 
-mc:PolicyRelationType_IRR a mc:PolicyRelationType,
+comon:PolicyRelationType_IRR a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Irrelevance" ;
-    mc:relationCode "IRR" ;
+    comon:relationCode "IRR" ;
     rdfs:comment "Policy cannot activate in any valid state or governs no reachable resource/action." .
 
-mc:PolicyRelationType_RED a mc:PolicyRelationType,
+comon:PolicyRelationType_RED a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Redundancy" ;
-    mc:relationCode "RED" ;
+    comon:relationCode "RED" ;
     rdfs:comment "One policy adds no observable effect beyond another." .
 
-mc:PolicyRelationType_SHD a mc:PolicyRelationType,
+comon:PolicyRelationType_SHD a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Shadowing / Override" ;
-    mc:relationCode "SHD" ;
+    comon:relationCode "SHD" ;
     rdfs:comment "A higher-priority policy makes another ineffective within the overlap." .
 
-mc:PolicyRelationType_SUB a mc:PolicyRelationType,
+comon:PolicyRelationType_SUB a comon:PolicyRelationType,
         owl:NamedIndividual ;
     rdfs:label "Subsumption / Specialization" ;
-    mc:relationCode "SUB" ;
+    comon:relationCode "SUB" ;
     rdfs:comment "One policy scope is contained in another and adds compatible restrictions." .
 
-mc:PredictionCategory a mc:DataCategory,
+comon:PredictionCategory a comon:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Prediction output" .
 
-mc:PurposeClinicalMonitoring a mc:ProcessingPurpose,
+comon:PurposeClinicalMonitoring a comon:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Clinical monitoring" .
 
-mc:PurposeCommunityFederatedLearning a mc:ProcessingPurpose,
+comon:PurposeCommunityFederatedLearning a comon:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Community federated learning" .
 
-mc:PurposeGlobalFederatedLearning a mc:ProcessingPurpose,
+comon:PurposeGlobalFederatedLearning a comon:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Global federated learning" .
 
-mc:PurposeInfrastructureAdaptation a mc:ProcessingPurpose,
+comon:PurposeInfrastructureAdaptation a comon:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Infrastructure adaptation" .
 
-mc:PurposeLocalPrediction a mc:ProcessingPurpose,
+comon:PurposeLocalPrediction a comon:ProcessingPurpose,
         owl:NamedIndividual ;
     rdfs:label "Local stress prediction" .
 
-mc:RawPhysiologicalDataCategory a mc:DataCategory,
+comon:RawPhysiologicalDataCategory a comon:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Raw physiological data" .
 
-mc:RawSleepDataCategory a mc:DataCategory,
+comon:RawSleepDataCategory a comon:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Raw sleep data" .
 
-mc:ReducedProcessing a mc:ProcessingLevel,
+comon:ReducedProcessing a comon:ProcessingLevel,
         owl:NamedIndividual ;
     rdfs:label "Reduced" .
 
-mc:Resolution_CONSTRAINT_BEFORE_OPT a mc:ConflictResolutionStrategy,
+comon:Resolution_CONSTRAINT_BEFORE_OPT a comon:ConflictResolutionStrategy,
         owl:NamedIndividual ;
     rdfs:label "Constraint-before-optimization" ;
-    mc:strategyCode "CONSTRAINT_BEFORE_OPT" .
+    comon:strategyCode "CONSTRAINT_BEFORE_OPT" .
 
-mc:Resolution_DEFER_REEVALUATE a mc:ConflictResolutionStrategy,
+comon:Resolution_DEFER_REEVALUATE a comon:ConflictResolutionStrategy,
         owl:NamedIndividual ;
     rdfs:label "Defer-and-reevaluate" ;
-    mc:strategyCode "DEFER_REEVALUATE" .
+    comon:strategyCode "DEFER_REEVALUATE" .
 
-mc:Resolution_DENY_OVERRIDES a mc:ConflictResolutionStrategy,
+comon:Resolution_DENY_OVERRIDES a comon:ConflictResolutionStrategy,
         owl:NamedIndividual ;
     rdfs:label "Deny-overrides / Most-restrictive" ;
-    mc:strategyCode "DENY_OVERRIDES" .
+    comon:strategyCode "DENY_OVERRIDES" .
 
-mc:Resolution_EXPLICIT_REJECT a mc:ConflictResolutionStrategy,
+comon:Resolution_EXPLICIT_REJECT a comon:ConflictResolutionStrategy,
         owl:NamedIndividual ;
     rdfs:label "Explicit conflict rejection" ;
-    mc:strategyCode "EXPLICIT_REJECT" .
+    comon:strategyCode "EXPLICIT_REJECT" .
 
-mc:Resolution_MOST_SPECIFIC a mc:ConflictResolutionStrategy,
+comon:Resolution_MOST_SPECIFIC a comon:ConflictResolutionStrategy,
         owl:NamedIndividual ;
     rdfs:label "Most-specific-policy" ;
-    mc:strategyCode "MOST_SPECIFIC" .
+    comon:strategyCode "MOST_SPECIFIC" .
 
-mc:Resolution_PRIORITY_ORDERED a mc:ConflictResolutionStrategy,
+comon:Resolution_PRIORITY_ORDERED a comon:ConflictResolutionStrategy,
         owl:NamedIndividual ;
     rdfs:label "Priority-ordered" ;
-    mc:strategyCode "PRIORITY_ORDERED" .
+    comon:strategyCode "PRIORITY_ORDERED" .
 
-mc:Running a mc:MobilityLevel,
+comon:Running a comon:MobilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Running" .
 
-mc:Scalable a mc:AdaptabilityLevel,
+comon:Scalable a comon:AdaptabilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Scalable" .
 
-mc:SensitiveData a mc:DataSensitivity,
+comon:SensitiveData a comon:DataSensitivity,
         owl:NamedIndividual ;
     rdfs:label "Sensitive" .
 
-mc:SleepParametrizedCategory a mc:DataCategory,
+comon:SleepParametrizedCategory a comon:DataCategory,
         owl:NamedIndividual ;
     rdfs:label "Sleep parametrized data" .
 
-mc:StableComm a mc:CommunicationLevel,
+comon:StableComm a comon:CommunicationLevel,
         owl:NamedIndividual ;
     rdfs:label "Stable" .
 
-mc:Still a mc:MobilityLevel,
+comon:Still a comon:MobilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Still" .
 
-mc:SymptomCommunicationLoss a mc:MAPESymptom,
+comon:SymptomCommunicationLoss a comon:MAPESymptom,
         owl:NamedIndividual ;
     rdfs:label "Communication loss" .
 
-mc:SymptomConsentLocalOnly a mc:MAPESymptom,
+comon:SymptomConsentLocalOnly a comon:MAPESymptom,
         owl:NamedIndividual ;
     rdfs:label "Consent local only" .
 
-mc:SymptomNodeRecoveryPending a mc:MAPESymptom,
+comon:SymptomNodeRecoveryPending a comon:MAPESymptom,
         owl:NamedIndividual ;
     rdfs:label "Node recovery pending" .
 
-mc:SymptomNone a mc:MAPESymptom,
+comon:SymptomNone a comon:MAPESymptom,
         owl:NamedIndividual ;
     rdfs:label "No relevant symptom" .
 
-mc:SymptomRestrictedZoneBoundary a mc:MAPESymptom,
+comon:SymptomRestrictedZoneBoundary a comon:MAPESymptom,
         owl:NamedIndividual ;
     rdfs:label "Restricted zone boundary" .
 
-mc:SymptomRuralLowConnectivity a mc:MAPESymptom,
+comon:SymptomRuralLowConnectivity a comon:MAPESymptom,
         owl:NamedIndividual ;
     rdfs:label "Rural low connectivity" .
 
-mc:SymptomSaturatedWorkload a mc:MAPESymptom,
+comon:SymptomSaturatedWorkload a comon:MAPESymptom,
         owl:NamedIndividual ;
     rdfs:label "Saturated workload" .
 
-mc:TimingHigh a mc:MigrationTimeLevel,
+comon:TimingHigh a comon:MigrationTimeLevel,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-mc:TimingLow a mc:MigrationTimeLevel,
+comon:TimingLow a comon:MigrationTimeLevel,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-mc:TimingMedium a mc:MigrationTimeLevel,
+comon:TimingMedium a comon:MigrationTimeLevel,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 
-mc:TimingVeryHigh a mc:MigrationTimeLevel,
+comon:TimingVeryHigh a comon:MigrationTimeLevel,
         owl:NamedIndividual ;
     rdfs:label "Very High" .
 
-mc:TimingVeryLow a mc:MigrationTimeLevel,
+comon:TimingVeryLow a comon:MigrationTimeLevel,
         owl:NamedIndividual ;
     rdfs:label "Very Low" .
 
-mc:VariableComm a mc:CommunicationLevel,
+comon:VariableComm a comon:CommunicationLevel,
         owl:NamedIndividual ;
     rdfs:label "Variable" .
 
-mc:VeryClose a mc:DistanceLevel,
+comon:VeryClose a comon:DistanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Very Close" .
 
-mc:VeryFar a mc:DistanceLevel,
+comon:VeryFar a comon:DistanceLevel,
         owl:NamedIndividual ;
     rdfs:label "Very Far" .
 
-mc:VeryLowEnergy a mc:EnergyLevel,
+comon:VeryLowEnergy a comon:EnergyLevel,
         owl:NamedIndividual ;
     rdfs:label "Very Low" .
 
-mc:ViolationQueryType a mc:QueryType,
+comon:ViolationQueryType a comon:QueryType,
         owl:NamedIndividual ;
     rdfs:label "Violation / non-compliance query" .
 
-mc:Walking a mc:MobilityLevel,
+comon:Walking a comon:MobilityLevel,
         owl:NamedIndividual ;
     rdfs:label "Walking" .
 
-mc:WarningQueryType a mc:QueryType,
+comon:WarningQueryType a comon:QueryType,
         owl:NamedIndividual ;
     rdfs:label "Warning query" .
 
-mc:WeightedMulticriteriaMethod a mc:DecisionMethod,
+comon:WeightedMulticriteriaMethod a comon:DecisionMethod,
         owl:NamedIndividual ;
     rdfs:label "Weighted multicriteria scoring" .
 
@@ -597,107 +597,107 @@ mc:WeightedMulticriteriaMethod a mc:DecisionMethod,
 <urn:continuum:ontology:4.0.0:node:122> a owl:AllDifferent ;
     owl:distinctMembers <urn:continuum:ontology:4.0.0:node:123> .
 
-mc:AbstentionPolicyType a mc:PolicyType,
+comon:AbstentionPolicyType a comon:PolicyType,
         owl:NamedIndividual ;
     rdfs:label "Abstention" .
 
-mc:CloudModelTier a mc:ModelTier,
+comon:CloudModelTier a comon:ModelTier,
         owl:NamedIndividual ;
     rdfs:label "Cloud / Global" ;
-    mc:continuumLevel 3 ;
-    mc:hasProcessingScope mc:ExternalProcessingScope ;
-    mc:requiresConsentRange mc:RangeGlobalAgg ;
+    comon:continuumLevel 3 ;
+    comon:hasProcessingScope comon:ExternalProcessingScope ;
+    comon:requiresConsentRange comon:RangeGlobalAgg ;
     rdfs:comment "Cloud/global processing tier. Eligibility depends on effective authorization, zone, node status and active policies." .
 
-mc:EdgeModelTier a mc:ModelTier,
+comon:EdgeModelTier a comon:ModelTier,
         owl:NamedIndividual ;
     rdfs:label "Edge" ;
-    mc:continuumLevel 1 ;
-    mc:hasProcessingScope mc:ExternalProcessingScope ;
-    mc:requiresConsentRange mc:RangeCommunityAgg ;
+    comon:continuumLevel 1 ;
+    comon:hasProcessingScope comon:ExternalProcessingScope ;
+    comon:requiresConsentRange comon:RangeCommunityAgg ;
     rdfs:comment "Edge processing tier. Eligibility depends on authorization, zone, node status and active policies." .
 
-mc:FogModelTier a mc:ModelTier,
+comon:FogModelTier a comon:ModelTier,
         owl:NamedIndividual ;
     rdfs:label "Fog / Community" ;
-    mc:continuumLevel 2 ;
-    mc:hasProcessingScope mc:ExternalProcessingScope ;
-    mc:requiresConsentRange mc:RangeCommunityAgg ;
+    comon:continuumLevel 2 ;
+    comon:hasProcessingScope comon:ExternalProcessingScope ;
+    comon:requiresConsentRange comon:RangeCommunityAgg ;
     rdfs:comment "Fog/community processing tier. Eligibility depends on authorization, zone, node status and active policies." .
 
-mc:LocalModelTier a mc:ModelTier,
+comon:LocalModelTier a comon:ModelTier,
         owl:NamedIndividual ;
     rdfs:label "Local / Mist" ;
-    mc:continuumLevel 0 ;
-    mc:hasProcessingScope mc:LocalProcessingScope ;
-    mc:requiresConsentRange mc:RangeLocalOnly ;
+    comon:continuumLevel 0 ;
+    comon:hasProcessingScope comon:LocalProcessingScope ;
+    comon:requiresConsentRange comon:RangeLocalOnly ;
     rdfs:comment "Tier executed on the wearable/mobile device or an authorised personal Mist node. Tier order is not a quality preference." .
 
-mc:LocalProcessingScope a mc:ProcessingScope,
+comon:LocalProcessingScope a comon:ProcessingScope,
         owl:NamedIndividual ;
     rdfs:label "Local processing scope" .
 
-mc:ObligationPolicyType a mc:PolicyType,
+comon:ObligationPolicyType a comon:PolicyType,
         owl:NamedIndividual ;
     rdfs:label "Obligation" .
 
-mc:ProhibitionPolicyType a mc:PolicyType,
+comon:ProhibitionPolicyType a comon:PolicyType,
         owl:NamedIndividual ;
     rdfs:label "Prohibition" .
 
-mc:RangeDenied a mc:ConsentRange,
+comon:RangeDenied a comon:ConsentRange,
         owl:NamedIndividual ;
     rdfs:label "Denied / Revoked" ;
     rdfs:comment "No external processing is authorised. Any strictly local functionality must still be allowed by purpose and active contract/policy." .
 
-<urn:continuum:ontology:4.0.0:node:113> rdf:first mc:LocalModelTier ;
+<urn:continuum:ontology:4.0.0:node:113> rdf:first comon:LocalModelTier ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:114> .
 
-<urn:continuum:ontology:4.0.0:node:114> rdf:first mc:EdgeModelTier ;
+<urn:continuum:ontology:4.0.0:node:114> rdf:first comon:EdgeModelTier ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:115> .
 
-<urn:continuum:ontology:4.0.0:node:115> rdf:first mc:FogModelTier ;
+<urn:continuum:ontology:4.0.0:node:115> rdf:first comon:FogModelTier ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:116> .
 
-<urn:continuum:ontology:4.0.0:node:116> rdf:first mc:CloudModelTier ;
+<urn:continuum:ontology:4.0.0:node:116> rdf:first comon:CloudModelTier ;
     rdf:rest () .
 
-<urn:continuum:ontology:4.0.0:node:118> rdf:first mc:RangeDenied ;
+<urn:continuum:ontology:4.0.0:node:118> rdf:first comon:RangeDenied ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:119> .
 
-<urn:continuum:ontology:4.0.0:node:119> rdf:first mc:RangeLocalOnly ;
+<urn:continuum:ontology:4.0.0:node:119> rdf:first comon:RangeLocalOnly ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:120> .
 
-<urn:continuum:ontology:4.0.0:node:120> rdf:first mc:RangeCommunityAgg ;
+<urn:continuum:ontology:4.0.0:node:120> rdf:first comon:RangeCommunityAgg ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:121> .
 
-<urn:continuum:ontology:4.0.0:node:121> rdf:first mc:RangeGlobalAgg ;
+<urn:continuum:ontology:4.0.0:node:121> rdf:first comon:RangeGlobalAgg ;
     rdf:rest () .
 
-<urn:continuum:ontology:4.0.0:node:123> rdf:first mc:ObligationPolicyType ;
+<urn:continuum:ontology:4.0.0:node:123> rdf:first comon:ObligationPolicyType ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:124> .
 
-<urn:continuum:ontology:4.0.0:node:124> rdf:first mc:AbstentionPolicyType ;
+<urn:continuum:ontology:4.0.0:node:124> rdf:first comon:AbstentionPolicyType ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:125> .
 
-<urn:continuum:ontology:4.0.0:node:125> rdf:first mc:ProhibitionPolicyType ;
+<urn:continuum:ontology:4.0.0:node:125> rdf:first comon:ProhibitionPolicyType ;
     rdf:rest () .
 
-mc:RangeGlobalAgg a mc:ConsentRange,
+comon:RangeGlobalAgg a comon:ConsentRange,
         owl:NamedIndividual ;
     rdfs:label "Global Aggregation" ;
     rdfs:comment "Authorises eligible global/cloud processing for permitted data categories and purposes, subject to zone, privacy and other hard constraints." .
 
-mc:RangeLocalOnly a mc:ConsentRange,
+comon:RangeLocalOnly a comon:ConsentRange,
         owl:NamedIndividual ;
     rdfs:label "Local Only" ;
     rdfs:comment "Processing limited to wearable/mobile device and, when authorised, personal Mist. Edge, Fog and Cloud are external to local scope." .
 
-mc:ExternalProcessingScope a mc:ProcessingScope,
+comon:ExternalProcessingScope a comon:ProcessingScope,
         owl:NamedIndividual ;
     rdfs:label "External processing scope" .
 
-mc:RangeCommunityAgg a mc:ConsentRange,
+comon:RangeCommunityAgg a comon:ConsentRange,
         owl:NamedIndividual ;
     rdfs:label "Community Aggregation" ;
     rdfs:comment "Authorises eligible community processing such as Edge/Fog for permitted data categories and purposes, subject to zone and other hard constraints." .

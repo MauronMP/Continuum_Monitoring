@@ -3,7 +3,7 @@
 # Requirements: RF-09, RF-27, RF-61
 # Policies: P-DATA-02, P-DATA-03, P-DATA-10
 # Current v4.0.0 result: 3 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,12 +16,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?transfer ?data ?category ?sensitivity ?criticality ?source ?destination ?identifier ?security ?from WHERE {
-  ?transfer a :TransferEvent ; :carriesData ?data ; :transferSource ?source ; :transferDestination ?destination .
-  OPTIONAL { ?data :hasDataCategory ?category }
-  OPTIONAL { ?data :hasDataSensitivity ?sensitivity }
-  OPTIONAL { ?data :hasDataCriticality ?criticality }
-  OPTIONAL { ?transfer :usesIdentifier ?identifier }
-  OPTIONAL { ?transfer :appliedSecurityMechanism ?security }
-  OPTIONAL { ?transfer :validFrom ?from }
+  ?transfer a comon:TransferEvent ; comon:carriesData ?data ; comon:transferSource ?source ; comon:transferDestination ?destination .
+  OPTIONAL { ?data comon:hasDataCategory ?category }
+  OPTIONAL { ?data comon:hasDataSensitivity ?sensitivity }
+  OPTIONAL { ?data comon:hasDataCriticality ?criticality }
+  OPTIONAL { ?transfer comon:usesIdentifier ?identifier }
+  OPTIONAL { ?transfer comon:appliedSecurityMechanism ?security }
+  OPTIONAL { ?transfer comon:validFrom ?from }
 }
 ORDER BY ?from ?transfer

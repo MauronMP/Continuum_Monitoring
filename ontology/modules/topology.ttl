@@ -1,134 +1,134 @@
 @prefix geo: <http://www.opengis.net/ont/geosparql#> .
-@prefix mc: <http://example.org/monitoringcontinuum#> .
+@prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix saref: <https://saref.etsi.org/core/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-mc:CloudNode a owl:Class ;
+comon:CloudNode a owl:Class ;
     rdfs:label "Cloud Node" ;
     rdfs:comment "Cloud continuum node for global processing. Selection is conditional on authorization and policies; it is not intrinsically preferred." ;
-    rdfs:subClassOf mc:ComputationalNode .
+    rdfs:subClassOf comon:ComputationalNode .
 
-mc:EdgeNode a owl:Class ;
+comon:EdgeNode a owl:Class ;
     rdfs:label "Edge Node" ;
     rdfs:comment "Edge continuum node. It is external to the local scope defined for raw physiological observations. Elasticity is a node capability, not a class invariant." ;
-    rdfs:subClassOf mc:ComputationalNode .
+    rdfs:subClassOf comon:ComputationalNode .
 
-mc:FogNode a owl:Class ;
+comon:FogNode a owl:Class ;
     rdfs:label "Fog Node" ;
     rdfs:comment "Fog continuum node for community/zone processing. Elasticity depends on deployment capability and is not fixed by the class." ;
-    rdfs:subClassOf mc:ComputationalNode .
+    rdfs:subClassOf comon:ComputationalNode .
 
-mc:RestrictedZone a mc:ZoneType,
+comon:RestrictedZone a comon:ZoneType,
         owl:Class,
         owl:NamedIndividual ;
     rdfs:label "Restricted Zone" ;
     rdfs:comment "Geographic zone with hard restrictions on external processing/transfer. Raw physiological observations remain on wearable/mobile or authorised personal Mist; Edge, Fog and Cloud are external to local scope." ;
-    rdfs:subClassOf mc:CityArea .
+    rdfs:subClassOf comon:CityArea .
 
-mc:RuralZone a mc:ZoneType,
+comon:RuralZone a comon:ZoneType,
         owl:Class,
         owl:NamedIndividual ;
     rdfs:label "Rural Zone" ;
     rdfs:comment "Few nodes. Predominance of local retention and controlled transmission." ;
-    rdfs:subClassOf mc:CityArea .
+    rdfs:subClassOf comon:CityArea .
 
-mc:UrbanZone a mc:ZoneType,
+comon:UrbanZone a comon:ZoneType,
         owl:Class,
         owl:NamedIndividual ;
     rdfs:label "Urban Zone" ;
     rdfs:comment "High node and user density. More communication options." ;
-    rdfs:subClassOf mc:CityArea .
+    rdfs:subClassOf comon:CityArea .
 
-mc:belongsToCommunity a owl:ObjectProperty ;
+comon:belongsToCommunity a owl:ObjectProperty ;
     rdfs:label "belongs to community" ;
     rdfs:comment "belongs to community links resources. Declared domain: User. Declared range: Community. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:User ;
-    rdfs:range mc:Community .
+    rdfs:domain comon:User ;
+    rdfs:range comon:Community .
 
-mc:connectsTo a owl:ObjectProperty ;
+comon:connectsTo a owl:ObjectProperty ;
     rdfs:label "connects to" ;
     rdfs:comment "connects to links resources. Declared domain: https://saref.etsi.org/core/Device. Declared range: Computational Node. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
     rdfs:domain saref:Device ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:range comon:ComputationalNode .
 
-mc:continuumLevel a owl:DatatypeProperty ;
+comon:continuumLevel a owl:DatatypeProperty ;
     rdfs:label "continuum level" ;
     rdfs:comment "Physical/logical continuum level only; not a preference or quality ranking." ;
-    rdfs:domain mc:ModelTier ;
+    rdfs:domain comon:ModelTier ;
     rdfs:range xsd:integer .
 
-mc:coversArea a owl:ObjectProperty ;
+comon:coversArea a owl:ObjectProperty ;
     rdfs:label "covers area" ;
     rdfs:comment "covers area links resources. Declared domain: Computational Node. Declared range: City Area. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:ComputationalNode ;
-    rdfs:range mc:CityArea .
+    rdfs:domain comon:ComputationalNode ;
+    rdfs:range comon:CityArea .
 
-mc:hasDistance a owl:ObjectProperty ;
+comon:hasDistance a owl:ObjectProperty ;
     rdfs:label "has distance" ;
     rdfs:comment "has distance links resources. Declared domain: Node-User Relation. Declared range: Distance Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeUserRelation ;
-    rdfs:range mc:DistanceLevel .
+    rdfs:domain comon:NodeUserRelation ;
+    rdfs:range comon:DistanceLevel .
 
-mc:hasElasticity a owl:DatatypeProperty ;
+comon:hasElasticity a owl:DatatypeProperty ;
     rdfs:label "has elasticity" ;
     rdfs:comment "has elasticity records a literal value. Declared domain: Computational Node. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:ComputationalNode ;
+    rdfs:domain comon:ComputationalNode ;
     rdfs:range xsd:boolean .
 
-mc:hasGeometry a owl:ObjectProperty ;
+comon:hasGeometry a owl:ObjectProperty ;
     rdfs:label "has geometry" ;
     rdfs:comment "has geometry links resources. Declared domain: City Area. Declared range: Geometry. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:CityArea ;
+    rdfs:domain comon:CityArea ;
     rdfs:range geo:Geometry ;
     rdfs:subPropertyOf geo:hasGeometry .
 
-mc:hasMobileDevice a owl:ObjectProperty ;
+comon:hasMobileDevice a owl:ObjectProperty ;
     rdfs:label "has mobile device" ;
     rdfs:comment "has mobile device links resources. Declared domain: User. Declared range: Mobile Device. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:User ;
-    rdfs:range mc:MobileDevice .
+    rdfs:domain comon:User ;
+    rdfs:range comon:MobileDevice .
 
-mc:hasNeighborNode a owl:ObjectProperty ;
+comon:hasNeighborNode a owl:ObjectProperty ;
     rdfs:label "has neighbor node" ;
     rdfs:comment "Adjacent node to which requests can be delegated." ;
-    rdfs:domain mc:ComputationalNode ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:domain comon:ComputationalNode ;
+    rdfs:range comon:ComputationalNode .
 
-mc:hasPopulationDensity a owl:ObjectProperty ;
+comon:hasPopulationDensity a owl:ObjectProperty ;
     rdfs:label "has population density" ;
     rdfs:comment "has population density links resources. Declared domain: City Area. Declared range: Population Density. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:CityArea ;
-    rdfs:range mc:PopulationDensity .
+    rdfs:domain comon:CityArea ;
+    rdfs:range comon:PopulationDensity .
 
-mc:isPreferredNode a owl:DatatypeProperty ;
+comon:isPreferredNode a owl:DatatypeProperty ;
     rdfs:label "is preferred node" ;
     rdfs:comment "Historical preferred node for this user based on zone and load." ;
-    rdfs:domain mc:NodeUserRelation ;
+    rdfs:domain comon:NodeUserRelation ;
     rdfs:range xsd:boolean .
 
-mc:locatedIn a owl:ObjectProperty ;
+comon:locatedIn a owl:ObjectProperty ;
     rdfs:label "located in" ;
     rdfs:comment "located in links resources. The domain is intentionally open for reuse across governed resources. Value restrictions are defined by the application validation shapes. Domain and range axioms support inference; SHACL supplies record-completeness checks." .
 
-mc:locatedInZone a owl:ObjectProperty ;
+comon:locatedInZone a owl:ObjectProperty ;
     rdfs:label "located in zone" ;
     rdfs:comment "located in zone links resources. Declared domain: User. Declared range: City Area. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:User ;
-    rdfs:range mc:CityArea .
+    rdfs:domain comon:User ;
+    rdfs:range comon:CityArea .
 
-mc:relatesNode a owl:ObjectProperty ;
+comon:relatesNode a owl:ObjectProperty ;
     rdfs:label "relates node" ;
     rdfs:comment "relates node links resources. Declared domain: Node-User Relation. Declared range: Computational Node. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeUserRelation ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:domain comon:NodeUserRelation ;
+    rdfs:range comon:ComputationalNode .
 
-mc:relatesUser a owl:ObjectProperty ;
+comon:relatesUser a owl:ObjectProperty ;
     rdfs:label "relates user" ;
     rdfs:comment "relates user links resources. Declared domain: Node-User Relation. Declared range: User. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeUserRelation ;
-    rdfs:range mc:User .
+    rdfs:domain comon:NodeUserRelation ;
+    rdfs:range comon:User .
 
 <http://example.org/monitoringcontinuum/modules/topology> a owl:Ontology ;
     rdfs:label "Continuum topology module"@en ;
@@ -136,29 +136,29 @@ mc:relatesUser a owl:ObjectProperty ;
         <http://example.org/monitoringcontinuum/modules/foundation> ;
     owl:versionInfo "4.0.0" .
 
-mc:Community a owl:Class ;
+comon:Community a owl:Class ;
     rdfs:label "Community" ;
     rdfs:comment "Group of users with similar mobility patterns and routines (neighbourhood, floor, hospital ward)." .
 
-mc:DistanceLevel a owl:Class ;
+comon:DistanceLevel a owl:Class ;
     rdfs:label "Distance Level" ;
     rdfs:comment "Distance Level is a topology concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:MistNode a owl:Class ;
+comon:MistNode a owl:Class ;
     rdfs:label "Mist Node" ;
     rdfs:comment "Closest node to the user. Minimal capacity, very low latency." ;
-    rdfs:subClassOf mc:ComputationalNode .
+    rdfs:subClassOf comon:ComputationalNode .
 
-mc:MobileDevice a owl:Class ;
+comon:MobileDevice a owl:Class ;
     rdfs:label "Mobile Device" ;
     rdfs:comment "User smartphone acting as a personal Mist node. It belongs to the local processing scope when associated with the user." ;
-    rdfs:subClassOf mc:MistNode .
+    rdfs:subClassOf comon:MistNode .
 
-mc:PopulationDensity a owl:Class ;
+comon:PopulationDensity a owl:Class ;
     rdfs:label "Population Density" ;
     rdfs:comment "Population Density is a topology concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:UrbanEnvironment a owl:Class ;
+comon:UrbanEnvironment a owl:Class ;
     rdfs:label "Urban Environment" ;
     rdfs:comment "Geographic and density context that conditions system connectivity and behaviour." .
 
@@ -166,21 +166,21 @@ geo:Geometry a owl:Class .
 
 geo:hasGeometry a owl:ObjectProperty .
 
-mc:ZoneType a owl:Class ;
+comon:ZoneType a owl:Class ;
     rdfs:label "Zone type" ;
     rdfs:comment "A zone classification referenced by policies. UrbanZone, RuralZone and RestrictedZone are both OWL classes and named ZoneType individuals; OWL 2 DL treats their class and individual interpretations separately." .
 
-mc:NodeUserRelation a owl:Class ;
+comon:NodeUserRelation a owl:Class ;
     rdfs:label "Node-User Relation" ;
     rdfs:comment "Captures distance and connectivity between a node and a user at a given instant." ;
-    rdfs:subClassOf mc:TemporalEntity .
+    rdfs:subClassOf comon:TemporalEntity .
 
-mc:CityArea a owl:Class ;
+comon:CityArea a owl:Class ;
     rdfs:label "City Area" ;
     rdfs:comment "City Area is a topology concept in the monitoring model. It specializes Urban Environment." ;
-    rdfs:subClassOf mc:UrbanEnvironment .
+    rdfs:subClassOf comon:UrbanEnvironment .
 
-mc:ComputationalNode a owl:Class ;
+comon:ComputationalNode a owl:Class ;
     rdfs:label "Computational Node" ;
     rdfs:comment "Continuum architecture node capable of hosting models and processing data." ;
     rdfs:subClassOf saref:Device .

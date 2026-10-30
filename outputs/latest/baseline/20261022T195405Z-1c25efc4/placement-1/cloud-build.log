@@ -1,0 +1,71 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 749B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.41kB done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.11-slim-bookworm
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [ 1/13] FROM docker.io/library/python:3.11-slim-bookworm@sha256:f06d01d4ba3f8ad5af45a3ec87df19c1d317d8e8961edc0fabda61811af6f7cf
+#5 resolve docker.io/library/python:3.11-slim-bookworm@sha256:f06d01d4ba3f8ad5af45a3ec87df19c1d317d8e8961edc0fabda61811af6f7cf 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 193.18kB 0.0s done
+#6 DONE 0.0s
+
+#7 [ 5/13] COPY tools/owl/pom.xml ./tools/owl/pom.xml
+#7 CACHED
+
+#8 [10/13] COPY queries ./queries
+#8 CACHED
+
+#9 [ 2/13] WORKDIR /app
+#9 CACHED
+
+#10 [ 8/13] COPY configs ./configs
+#10 CACHED
+
+#11 [12/13] RUN if [ "false" = "true" ]; then       python tools/install_owl_reasoners.py --verify-only --java-heap 512m; fi
+#11 CACHED
+
+#12 [ 3/13] COPY requirements-node.txt ./
+#12 CACHED
+
+#13 [ 4/13] RUN pip install --no-cache-dir -r requirements-node.txt
+#13 CACHED
+
+#14 [ 7/13] COPY src ./src
+#14 CACHED
+
+#15 [ 6/13] RUN if [ "false" = "true" ]; then       apt-get update && apt-get install -y --no-install-recommends default-jdk-headless maven konclude &&       mkdir -p /app/.runtime &&       for backend in hermit openllet jfact; do         mvn -f /app/tools/owl/pom.xml -P"$backend" dependency:build-classpath           -Dmdep.outputFile=/app/.runtime/owl-validation-"$backend".classpath || exit 1;       done &&       cp /app/.runtime/owl-validation-openllet.classpath /app/.runtime/owl-validation.classpath &&       rm -rf /var/lib/apt/lists/*; fi
+#15 CACHED
+
+#16 [ 9/13] COPY ontology ./ontology
+#16 CACHED
+
+#17 [11/13] COPY tools ./tools
+#17 CACHED
+
+#18 [13/13] RUN useradd --uid 10001 --create-home worker && chown -R worker:worker /app
+#18 CACHED
+
+#19 exporting to image
+#19 exporting layers done
+#19 exporting manifest sha256:c4f83588f006577f3436fa70488c36f81ed8360cdbef73953a0ff75f30f306b9 done
+#19 exporting config sha256:98b69489515040d934b1ed0a27ad91f959911b370bfc8e568a51d3863186356c done
+#19 exporting attestation manifest sha256:590478c4b2a0086ebc53365907cf6ec28efaf10334f19c1ee73d55bf9b7177db done
+#19 exporting manifest list sha256:c677527bf42bf94d983113b8ca92d1c747414bd49569fae6f86eff84ea29cb14 done
+#19 naming to docker.io/library/continuum-worker:container-scale-v1 done
+#19 unpacking to docker.io/library/continuum-worker:container-scale-v1 done
+#19 DONE 0.1s
+
+#20 resolving provenance for metadata file
+#20 DONE 0.0s

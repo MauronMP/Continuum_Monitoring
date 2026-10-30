@@ -21,7 +21,7 @@ dist/
 target/
 *.class
 # Benchmark outputs and scratch files
-outputs/
+outputs/*
 work/
 tmp/
 *.log
@@ -34,3 +34,8 @@ tmp/
 *~
 .DS_Store
 Thumbs.db
+
+# Publish the complete latest evidence, including failure logs.
+!outputs/latest/
+!outputs/latest/**
+outputs/latest/.report-venv/

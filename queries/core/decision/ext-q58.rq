@@ -3,7 +3,7 @@
 # Requirements: RF-24
 # Policies: P-FL-08
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,8 +16,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?subject ?kind ?target ?status WHERE {
-  { ?subject a :RollbackEvent . BIND("rollback-event" AS ?kind) OPTIONAL { ?subject :rollbackTarget ?target } }
+  { ?subject a comon:RollbackEvent . BIND("rollback-event" AS ?kind) OPTIONAL { ?subject comon:rollbackTarget ?target } }
   UNION
-  { ?subject a :AIModel . FILTER NOT EXISTS { ?subject :supersedesModel ?prev } BIND("model-without-predecessor" AS ?kind) OPTIONAL { ?subject :modelLineageStatus ?status } }
+  { ?subject a comon:AIModel . FILTER NOT EXISTS { ?subject comon:supersedesModel ?prev } BIND("model-without-predecessor" AS ?kind) OPTIONAL { ?subject comon:modelLineageStatus ?status } }
 }
 ORDER BY ?kind ?subject

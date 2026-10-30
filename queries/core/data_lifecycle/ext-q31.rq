@@ -3,7 +3,7 @@
 # Requirements: RF-08, RNF-12
 # Policies: P-DATA-05, P-DATA-07
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,11 +16,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?record ?type ?data ?from ?to ?security WHERE {
-  VALUES ?type { :BufferRecord :RetentionEvent }
+  VALUES ?type { comon:BufferRecord comon:RetentionEvent }
   ?record a ?type .
-  OPTIONAL { ?record :carriesData ?data }
-  OPTIONAL { ?record :validFrom ?from }
-  OPTIONAL { ?record :validTo ?to }
-  OPTIONAL { ?record :appliedSecurityMechanism ?security }
+  OPTIONAL { ?record comon:carriesData ?data }
+  OPTIONAL { ?record comon:validFrom ?from }
+  OPTIONAL { ?record comon:validTo ?to }
+  OPTIONAL { ?record comon:appliedSecurityMechanism ?security }
 }
 ORDER BY ?record

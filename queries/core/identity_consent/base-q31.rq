@@ -3,7 +3,7 @@
 # Requirements: RF-32, RF-68
 # Policies: P-CONS-01
 # Current v4.0.0 result: 3 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,7 +16,7 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?range (COUNT(DISTINCT ?user) AS ?users) WHERE {
-  ?user a :User ; :hasActiveConsentRange ?range .
+  ?user a comon:User ; comon:hasActiveConsentRange ?range .
 }
 GROUP BY ?range
 ORDER BY ?range

@@ -3,7 +3,7 @@
 # Requirements: RF-55, RNF-34
 # Policies: P-MODEL-04
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,12 +16,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?ratio ?threshold ?pairwiseCount WHERE {
-  ?evaluation a :EvaluationState ; :hasDecisionMethod :AHPDecisionMethod .
-  OPTIONAL { ?evaluation :hasConsistencyRatio ?ratio }
-  OPTIONAL { ?evaluation :hasConsistencyThreshold ?threshold }
+  ?evaluation a comon:EvaluationState ; comon:hasDecisionMethod comon:AHPDecisionMethod .
+  OPTIONAL { ?evaluation comon:hasConsistencyRatio ?ratio }
+  OPTIONAL { ?evaluation comon:hasConsistencyThreshold ?threshold }
   {
     SELECT ?evaluation (COUNT(?pc) AS ?pairwiseCount) WHERE {
-      ?evaluation a :EvaluationState . OPTIONAL { ?evaluation :hasPairwiseComparison ?pc }
+      ?evaluation a comon:EvaluationState . OPTIONAL { ?evaluation comon:hasPairwiseComparison ?pc }
     } GROUP BY ?evaluation
   }
   FILTER(!BOUND(?ratio) || !BOUND(?threshold) || ?pairwiseCount = 0 || ?ratio > ?threshold)

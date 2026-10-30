@@ -69,11 +69,13 @@ The system must capture physiological metrics relevant to stress and sleep, incl
 
 ### RF-07 — RF-07
 
-The system must manage preprocessing and energy strategy according to context. When connectivity is limited or effective consent restricts processing to the local scope, data must be preprocessed on the device itself or in the Mist tier. When the battery is low, the system must reduce model complexity and non-critical transmissions; when the battery is critical, it must prioritize offloading to the highest authorized tier only if sufficient connectivity exists and consent, the contract and zone policy allow it. If the battery is critical and transfer is not authorized, it must apply local degradation and temporary retention.
+The reference monitoring model must expose device battery, connection status and data readiness, together with the consent context used to interpret local operation. This requirement covers queryable decision inputs; automatic energy management, preprocessing and offloading on physical devices are outside this release.
 
+- Current verification scope: `model-query`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-ADAPT-02`, `P-DATA-06`
 - Direct mechanisms: `M-ADAPT-02`, `M-BUFFER-01`, `M-DEVICE-01`
-- Catalogued queries: None declared
+- Catalogued queries: `BASE-Q10`, `BASE-Q15`
 
 ### RF-08 — RF-08
 
@@ -341,11 +343,13 @@ Every formal policy must be classified under exactly one semantic type: obligati
 
 ### RF-41 — RF-41
 
-The system must link users, nodes, zones, contracts or evaluations to specific policies through `governedBy`.
+Reference semantic contracts must expose their governing policies through governedBy. Evaluation and action records must expose the policy justification checked by the audit queries. This requirement does not impose governedBy on every user, node or zone.
 
+- Current verification scope: `model-query`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-CONS-03`, `P-GOV-02`
 - Direct mechanisms: `M-AUD-01`, `M-CONS-01`, `M-GOV-02`
-- Catalogued queries: None declared
+- Catalogued queries: `EXT-Q12`, `EXT-Q72`
 
 ### RF-42 — RF-42
 
@@ -365,11 +369,13 @@ The system must block all processing or transfer outside the local scope defined
 
 ### RF-44 — RF-44
 
-The system must record the specific policy applied in every evaluation, degradation, migration, delegation or model-selection decision.
+Each reference evaluation that records an adaptation action must identify an applied policy, and each recorded adaptation action must identify its authorizing evaluation. Audit queries must detect missing links; the records do not prove physical execution of migration or degradation.
 
+- Current verification scope: `model-query`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-ADAPT-06`, `P-GOV-02`
 - Direct mechanisms: `M-ADAPT-02`, `M-AUD-01`, `M-GOV-02`
-- Catalogued queries: None declared
+- Catalogued queries: `EXT-Q72`
 
 ### RF-45 — RF-45
 
@@ -429,11 +435,13 @@ Every `EvaluationState` must record the AHP score of each evaluated tier alterna
 
 ### RF-52 — RF-52
 
-The system must favor local or Edge models when the privacy weight is dominant or when consent does not allow global aggregation.
+The reference model must expose privacy and other decision weights, the selected model tier and its justification. A recorded Cloud selection without global consent, a permitted zone and granted authorization must be detectable. Automatic privacy-weight optimization is outside this release.
 
+- Current verification scope: `model-query`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-MODEL-01`, `P-MODEL-06`
 - Direct mechanisms: `M-CONS-02`, `M-MODEL-01`, `M-NODE-02`, `M-ZONE-01`
-- Catalogued queries: None declared
+- Catalogued queries: `EXT-Q46`, `EXT-Q56`
 
 ### RF-53 — RF-53
 
@@ -565,8 +573,10 @@ The system must generate architecture-wide compliance metrics through SPARQL cov
 
 ### RF-69 — RF-69
 
-The system must expose the ontology through a SPARQL 1.1 endpoint. Apache Jena Fuseki is the reference environment for reproducibility; equivalent endpoints may be used in operation provided they remain compatible with RDF/OWL/Turtle and SPARQL 1.1 and pass the same validation battery.
+Physical workers must execute registered query identifiers from the versioned SPARQL catalogue through the project worker protocol. Arbitrary client-supplied SPARQL and a public SPARQL 1.1 HTTP endpoint are outside this release.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-VAL-01`
 - Direct mechanisms: `M-VAL-01`
 - Catalogued queries: None declared
@@ -615,8 +625,10 @@ A service migration or delegation must not cause an interruption longer than `T_
 
 ### RNF-03 — RNF-03
 
-Peak-load scenarios must maintain service within the limits declared in the acceptance profile and, when degradation, migration, delegation or retention is necessary, degradation must be controlled and auditable.
+Bounded monitoring experiments must record completion, timeout and failure separately. With keep-going enabled, independent later points must remain eligible for execution under the configured skip rules. These measurements do not guarantee service-level acceptance or automatic physical degradation.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-ADAPT-01`, `P-ADAPT-03`
 - Direct mechanisms: `M-ADAPT-01`, `M-ADAPT-02`, `M-NODE-02`, `M-OPS-02`
 - Catalogued queries: None declared
@@ -671,16 +683,20 @@ Onboarding a new Edge or Fog node must not require stopping the entire system, a
 
 ### RNF-10 — RNF-10
 
-The ontology must support adding new users, nodes, sensors, models, policies and contracts through instance extensions or compatible specializations, without modifying the central conceptual abstractions used by existing scenarios.
+The maintained synthetic workload must add supported user and related instance records deterministically, without changing the ontology schema. Module import closure must remain valid. Other instance types or specializations require explicit validation before they enter the baseline.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-INT-02`, `P-OPS-03`
 - Direct mechanisms: `M-INT-02`, `M-NODE-01`, `M-OPS-03`, `M-VAL-05`
 - Catalogued queries: None declared
 
 ### RNF-11 — RNF-11
 
-The query battery must support new `BASE-Q` or `EXT-Q` blocks without changing the meaning or breaking the execution of existing baseline queries.
+Query catalogue extensions must be introduced as versioned source changes that update the query inventory, routing plan, expectations and reference documentation together. The loader must reject inconsistent metadata; runtime insertion of arbitrary query identifiers is not supported.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-VAL-05`
 - Direct mechanisms: `M-VAL-04`, `M-VAL-05`
 - Catalogued queries: None declared
@@ -775,16 +791,20 @@ Constraint precedence must be deterministic: given the same states, contract, co
 
 ### RNF-23 — RNF-23
 
-Adding a new wearable-device type must be possible through the provided interfaces/adapters without modifying the conceptual core of user, device, observation and state.
+The optional wellbeing module must permit a wearable subtype to specialize the existing Wearable class while retaining inherited user-device relations under RDFS reasoning. This is semantic extensibility; physical device drivers and sensor adapters are outside this release.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-INT-02`
 - Direct mechanisms: `M-INT-02`, `M-VAL-05`
 - Catalogued queries: None declared
 
 ### RNF-24 — RNF-24
 
-Semantic representation and querying must use open standards compatible with RDF/OWL/Turtle and SPARQL 1.1.
+Maintained ontology files must parse as Turtle/RDF and catalogue queries must execute using the supported SPARQL 1.1 features in RDFLib. OWL axioms are interpreted under each declared reasoner contract; no HTTP endpoint interoperability is claimed.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-INT-01`, `P-VAL-01`
 - Direct mechanisms: `M-INT-01`, `M-VAL-01`
 - Catalogued queries: None declared
@@ -799,8 +819,10 @@ The ontology must reuse standard vocabularies where applicable, including SOSA/S
 
 ### RNF-26 — RNF-26
 
-The RDF/OWL representation must be loadable and queryable by standard reasoners and SPARQL endpoints compatible with the features used by the ontology.
+The supported RDFS, HermiT, Openllet, JFact and Konclude adapters must expose their execution contracts and reject unavailable or unsupported native configurations without silently substituting another reasoner. This requirement concerns these adapters, not arbitrary external SPARQL services.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-INT-01`, `P-VAL-01`
 - Direct mechanisms: `M-INT-01`, `M-VAL-01`
 - Catalogued queries: None declared
@@ -839,8 +861,10 @@ A decision must be reconstructible retrospectively from persisted semantic infor
 
 ### RNF-31 — RNF-31
 
-The audit battery must unambiguously distinguish inspection, warning and violation queries, and each query must document its type and interpretation criterion.
+Every catalogue query must declare its inventory, report, review or violation kind and its interpretation expectation. Catalogue validation must preserve the distinction between warnings, violations and descriptive results.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-VAL-02`
 - Direct mechanisms: `M-VAL-02`
 - Catalogued queries: None declared
@@ -887,16 +911,20 @@ Every new state must record `validFrom`; when a state ends, it must record `vali
 
 ### RNF-37 — RNF-37
 
-When a state is derived from an observation, an explicit `derivedFrom` or equivalent link must make the source evidence discoverable.
+The schema must provide derivedFrom from State to SOSA Observation so a supplied provenance assertion remains queryable after RDFS materialization. Missing source observations must not be fabricated; automatic provenance capture for every runtime metric is outside this release.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-GOV-05`
 - Direct mechanisms: `M-TIME-01`
 - Catalogued queries: None declared
 
 ### RNF-38 — RNF-38
 
-Extensions to the ontology, policies or queries must not break baseline scenarios or queries; any intentional breaking change must trigger a new major version and an explicit update of the traceability matrix.
+Maintained ontology, policy and query changes must pass the release inventory, query expectations and regression checks. Changed semantic content must produce a different semantic digest and an explicit revision; incompatible schema or query contracts require a major-version migration. This does not certify arbitrary downstream extensions.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Direct policies: `P-FL-08`, `P-GOV-04`, `P-INT-02`, `P-VAL-05`
 - Direct mechanisms: `M-GOV-02`, `M-GOV-04`, `M-INT-02`, `M-MODEL-05`, `M-VAL-04`, `M-VAL-05`
 - Catalogued queries: None declared

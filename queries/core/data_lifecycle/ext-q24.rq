@@ -3,7 +3,7 @@
 # Requirements: RF-09, RF-30
 # Policies: P-DATA-10
 # Current v4.0.0 result: 2 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,14 +16,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?data ?context ?deviceState ?nodeState ?processingLevel ?purpose ?zone ?from ?note WHERE {
-  ?data :hasDataContext ?context .
-  ?context a :DataContext .
-  OPTIONAL { ?context :contextDeviceState ?deviceState }
-  OPTIONAL { ?context :contextNodeState ?nodeState }
-  OPTIONAL { ?context :contextProcessingLevel ?processingLevel }
-  OPTIONAL { ?context :contextPurpose ?purpose }
-  OPTIONAL { ?context :contextZone ?zone }
-  OPTIONAL { ?context :validFrom ?from }
-  OPTIONAL { ?context :migrationNote ?note }
+  ?data comon:hasDataContext ?context .
+  ?context a comon:DataContext .
+  OPTIONAL { ?context comon:contextDeviceState ?deviceState }
+  OPTIONAL { ?context comon:contextNodeState ?nodeState }
+  OPTIONAL { ?context comon:contextProcessingLevel ?processingLevel }
+  OPTIONAL { ?context comon:contextPurpose ?purpose }
+  OPTIONAL { ?context comon:contextZone ?zone }
+  OPTIONAL { ?context comon:validFrom ?from }
+  OPTIONAL { ?context comon:migrationNote ?note }
 }
 ORDER BY ?data

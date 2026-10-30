@@ -3,7 +3,7 @@
 # Requirements: RF-06, RNF-25, RF-70
 # Policies: P-INT-01
 # Current v4.0.0 result: 5 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -17,8 +17,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?sensor ?sensorType ?device WHERE {
   ?sensor a ?sensorType .
-  ?sensorType rdfs:subClassOf* :PhysiologicalSensor .
-  FILTER(?sensorType != :PhysiologicalSensor)
+  ?sensorType rdfs:subClassOf* comon:PhysiologicalSensor .
+  FILTER(?sensorType != comon:PhysiologicalSensor)
   OPTIONAL { ?device saref:consistsOf ?sensor }
 }
 ORDER BY ?device ?sensor

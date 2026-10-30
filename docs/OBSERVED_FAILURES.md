@@ -261,7 +261,8 @@ The adapter now expands relative and abbreviated entity IRIs, IRI text nodes and
 datatype IRIs before creating the OWLlink request. Unresolved references fail
 explicitly. The previously failing seed matches all 115 query counts, ASK answers
 and digests for both five- and six-fragment local diagnostics at 100 users. The
-six-fragment diagnostic is local and does not contact the offline Mist host.
+six-fragment diagnostic is local and did not contact Mist, which was offline at the time. All six nodes passed
+the fresh health check on 14 October 2026.
 Physical confirmation is recorded separately in the remediation report. Historical
 invalid rows are unchanged and remain excluded.
 

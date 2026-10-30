@@ -3,7 +3,7 @@
 # Requirements: RF-61, RNF-17
 # Policies: P-DATA-02
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,10 +16,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?transfer ?destination ?identifier WHERE {
-  ?transfer a :TransferEvent ; :transferDestination ?destination .
+  ?transfer a comon:TransferEvent ; comon:transferDestination ?destination .
   ?destination a ?destType .
-  FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
-  OPTIONAL { ?transfer :usesIdentifier ?identifier }
-  FILTER(!BOUND(?identifier) || NOT EXISTS { ?identifier a ?safeType . FILTER(?safeType IN (:PseudonymousIdentifier,:AnonymousIdentifier)) })
+  FILTER(?destType IN (comon:EdgeNode,comon:FogNode,comon:CloudNode))
+  OPTIONAL { ?transfer comon:usesIdentifier ?identifier }
+  FILTER(!BOUND(?identifier) || NOT EXISTS { ?identifier a ?safeType . FILTER(?safeType IN (comon:PseudonymousIdentifier,comon:AnonymousIdentifier)) })
 }
 ORDER BY ?transfer

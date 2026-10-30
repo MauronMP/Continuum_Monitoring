@@ -3,7 +3,7 @@
 # Requirements: RF-20
 # Policies: P-ADAPT-02, P-ADAPT-03, P-ADAPT-06
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,13 +16,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?event ?scenario ?cause ?service ?model ?evaluation ?from ?to WHERE {
-  ?event a :DegradationEvent .
-  OPTIONAL { ?event :partOfScenario ?scenario }
-  OPTIONAL { ?event :hasDegradationCause ?cause }
-  OPTIONAL { ?event :affectsService ?service }
-  OPTIONAL { ?event :affectsModel ?model }
-  OPTIONAL { ?event :authorizedByEvaluation ?evaluation }
-  OPTIONAL { ?event :validFrom ?from }
-  OPTIONAL { ?event :validTo ?to }
+  ?event a comon:DegradationEvent .
+  OPTIONAL { ?event comon:partOfScenario ?scenario }
+  OPTIONAL { ?event comon:hasDegradationCause ?cause }
+  OPTIONAL { ?event comon:affectsService ?service }
+  OPTIONAL { ?event comon:affectsModel ?model }
+  OPTIONAL { ?event comon:authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?event comon:validFrom ?from }
+  OPTIONAL { ?event comon:validTo ?to }
 }
 ORDER BY ?event

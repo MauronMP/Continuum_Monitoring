@@ -153,7 +153,7 @@ Evaluates device, user and node operational state using the executable query in 
 - Category: `observability`
 - Kind: `report`
 - Expectation: non_empty; reference count `4`
-- Requirements: `RF-04`, `RF-26`, `RF-27`
+- Requirements: `RF-04`, `RF-26`, `RF-27`, `RF-07`
 - Policies: `P-DATA-04`, `P-DATA-06`, `P-DATA-07`
 
 ### BASE-Q11 — wellbeing / report
@@ -213,7 +213,7 @@ Evaluates identity, consent, contracts and authorization using the executable qu
 - Category: `identity_consent`
 - Kind: `report`
 - Expectation: non_empty; reference count `1`
-- Requirements: `RF-32`, `RF-36`, `RF-38`
+- Requirements: `RF-32`, `RF-36`, `RF-38`, `RF-07`
 - Policies: `P-CONS-01`, `P-CONS-04`, `P-MODEL-06`
 
 ### BASE-Q16 — federation / report
@@ -597,8 +597,8 @@ Evaluates identity, consent, contracts and authorization using the executable qu
 - Category: `identity_consent`
 - Kind: `report`
 - Expectation: non_empty; reference count `28`
-- Requirements: `RF-33`, `RF-34`
-- Policies: `P-CONS-02`, `P-CONS-03`
+- Requirements: `RF-33`, `RF-34`, `RF-41`
+- Policies: `P-CONS-02`, `P-CONS-03`, `P-GOV-02`
 
 ### EXT-Q13 — identity_consent / violation
 
@@ -862,7 +862,7 @@ Evaluates data context, buffering, replication and transmission using the execut
 - Kind: `violation`
 - Expectation: zero_rows; reference count `0`
 - Requirements: `RF-19`, `RNF-13`
-- Policies: `P-DATA-08`
+- Policies: `P-DATA-08`, `P-ADAPT-08`
 
 ### EXT-Q35 — data_lifecycle / report
 
@@ -898,7 +898,7 @@ Evaluates zone-aware and georestricted processing using the executable query in 
 - Kind: `violation`
 - Expectation: zero_rows; reference count `0`
 - Requirements: `RF-42`, `RF-43`, `RF-60`
-- Policies: `P-ZONE-01`, `P-GOV-03`
+- Policies: `P-ZONE-01`, `P-GOV-03`, `P-ZONE-04`
 
 ### EXT-Q38 — context_zones / review
 
@@ -1005,7 +1005,7 @@ Evaluates model-tier selection, AHP and model lifecycle using the executable que
 - Category: `decision`
 - Kind: `report`
 - Expectation: non_empty; reference count `11`
-- Requirements: `RF-15`, `RF-51`, `RF-66`
+- Requirements: `RF-15`, `RF-51`, `RF-66`, `RF-52`
 - Policies: `P-MODEL-01`, `P-MODEL-05`, `P-AUD-06`
 
 ### EXT-Q47 — decision / violation
@@ -1125,7 +1125,7 @@ Evaluates model-tier selection, AHP and model lifecycle using the executable que
 - Category: `decision`
 - Kind: `violation`
 - Expectation: zero_rows; reference count `0`
-- Requirements: `RF-53`
+- Requirements: `RF-53`, `RF-52`
 - Policies: `P-MODEL-07`, `P-ZONE-01`, `P-CONS-04`
 
 ### EXT-Q57 — decision / report
@@ -1246,7 +1246,7 @@ Evaluates federated learning and differential privacy using the executable query
 - Kind: `report`
 - Expectation: non_empty; reference count `2`
 - Requirements: `RF-21`, `RF-22`, `RF-23`, `RF-25`
-- Policies: `P-FL-01`, `P-FL-06`, `P-FL-07`
+- Policies: `P-FL-01`, `P-FL-06`, `P-FL-07`, `P-CONS-06`
 
 ### EXT-Q67 — federation / violation
 
@@ -1317,8 +1317,8 @@ Evaluates audit chains and temporal validity using the executable query in [`que
 - Category: `audit_temporal`
 - Kind: `violation`
 - Expectation: zero_rows; reference count `0`
-- Requirements: `RF-65`, `RF-66`
-- Policies: `P-AUD-05`
+- Requirements: `RF-65`, `RF-66`, `RF-41`, `RF-44`
+- Policies: `P-AUD-05`, `P-GOV-02`
 
 ### EXT-Q73 — audit_temporal / report
 

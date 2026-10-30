@@ -1,0 +1,1297 @@
+placement,cohort,reasoner,scenario,users,phase,layout,metric,unit,samples,median,minimum,maximum
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.364555997999894,28.88821543999945,47.21814821800046
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,32.06184809999989,30.827370714000352,32.34223921999962
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.60776647499922,35.94491690699999,42.18785576399942
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.51288704200026,60.62211902300029,69.60085219400032
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.19493891999919,91.44468545500017,113.6784486859998
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,31.434133213999594,29.556913303000766,36.0677306270007
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,30.782823908999465,30.602343244998735,32.29614832500122
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,37.78275576700049,35.74932506300226,39.63306718699996
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.59695462700074,64.36056045899701,70.1552026749979
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,106.8812918610008,97.21562879699864,109.53202356200127
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,130.51032282499844,34.0857448609993,188.540953952002
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.598174196,2.5841976300000002,2.890785042
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.9236675720000003,3.6853303379999995,3.936579252
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.625264228999999,4.601516181000001,4.64051394
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,25.9618241765,13.760219554999999,38.163428798
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.0309119845,26.395795538,43.666028431
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,89.61395989049998,71.64856483399998,107.579354947
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.51996134,2.478341806,2.5763792320000003
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.7613892739999994,3.6078206459999995,3.9217490839999996
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.632494492999999,4.582997065,4.819855491
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,13.740445471,13.491487027000003,13.947260915
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,31.737787453499998,26.663125808,36.812449099
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),1,59.692869388,59.692869388,59.692869388
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,1.9415966630000001,1.931524761,2.058125639
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.2612275800000003,2.159393745,2.493532916
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.467212929,2.378748309,2.503400249
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,4.529039581,4.391003667,4.63698513
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,7.173837581,7.166877069,7.234057429000001
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,1.987690409,1.884806538,2.045589575
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,2.231785054,2.129979411,2.270192536
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,2.3414680239999996,2.328202297,2.6682818569999998
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,4.318280934000001,4.291213365,4.414973455999999
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,7.084087728,6.826927874,7.099216351
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,12.958129284,12.530066173,13.402017336
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,2.2268904910000002,2.212052816,2.4579262319999997
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.2901917600000004,3.044370448,3.403091747
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.8517980179999998,3.841432701,4.237848024
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,11.701537797,11.70017177,11.702903824000002
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,22.5139200945,22.448924979,22.578915209999998
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,49.292630345999996,48.729735827,49.855524865
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,2.148156496,2.126495663,2.218272013
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,3.249834446,3.0233655450000003,3.2539838100000003
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,4.018234824,3.8773341279999998,4.096313272000001
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,11.556836365999999,11.531400593,11.869575525
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),2,22.617301634,22.615106531000002,22.619496737000002
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),1,49.881690273,49.881690273,49.881690273
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.654117421,11.64242161,14.828117824000001
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.915100812,12.844690688,16.490392776
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,14.231011839999999,14.181040266,18.200231242
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.929327078,24.410375741,32.035896660999995
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,38.425986895,38.252497656,49.573428549000006
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,10.531509488,10.50322224,13.380657123
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.62428285,11.545537233,14.807356250000002
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.545875591,12.541006084000001,16.121540031000002
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,21.853682806000002,21.552352932999998,28.686749856000002
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,34.443705708,34.058715334,43.275131441999996
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,60.396006907,59.65784073099999,76.748761891
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,13.079679186,13.021345925,17.079263305
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,18.674826153,18.547379971999998,24.247493605
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,24.103183529000002,24.079987574,31.297009256000003
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,83.453267446,73.349747842,93.55678705
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,161.03131048900002,143.475698426,178.586922552
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,344.7082422005,309.491091743,379.925392658
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,11.669730728000001,11.508858797999999,15.515061623
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,16.499454687,16.369446576,21.826330071
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,21.730397438,21.428124240000002,28.396343949000002
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,65.67676945599999,65.19657260700001,85.131523543
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),2,145.7704775765,129.369921433,162.17103372
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),1,280.511233501,280.511233501,280.511233501
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,354.34765625,350.140625,373.07421875
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,377.06640625,376.921875,394.6171875
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,406.4609375,406.03515625,434.671875
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,550.046875,546.703125,696.00390625
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,809.21484375,761.67578125,1051.625
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,385.9140625,377.765625,401.7265625
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,401.609375,399.43359375,429.80859375
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,414.546875,403.5859375,474.83984375
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,590.875,574.83203125,743.27734375
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,788.88671875,776.14453125,1095.97265625
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,1191.93359375,1166.7421875,1853.26171875
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,347.0390625,323.4921875,369.640625
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,376.08984375,366.69921875,410.734375
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,456.73046875,435.30859375,476.15234375
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,822.38671875,801.09765625,843.67578125
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1282.96484375,1268.89453125,1297.03515625
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,2296.857421875,2261.12890625,2332.5859375
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,378.37109375,359.26953125,405.953125
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,419.55078125,402.98046875,449.9765625
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,480.66796875,475.03125,522.05078125
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,889.8203125,884.3984375,941.6328125
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1426.46484375,1412.75390625,1440.17578125
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),1,2521.1953125,2521.1953125,2521.1953125
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,203.925,203.925,203.925
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,260.364,260.364,260.364
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,260.364,260.364,260.364
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),1,892.254,892.254,892.254
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,distributed,network_bytes,Preparation payload (MiB),3,6.686601638793945,6.686598777770996,6.687705993652344
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.280038833618164,7.280036926269531,7.281162261962891
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886652946472168
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805587768554688
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953035354614258,18.954198837280273
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,6.686598777770996,6.68659782409668,6.687726020812988
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.280037879943848,7.280036926269531,7.281142234802246
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.885531425476074,7.885529518127441,7.886655807495117
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,12.80444049835205,12.80444049835205,12.80557632446289
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,18.953035354614258,18.95303440093994,18.954187393188477
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,31.250226974487305,31.25022315979004,31.25139331817627
+1,distributed-attempt-1,rdfs,users-1,1,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008008956909179688,0.008004188537597656,0.009520530700683594
+1,distributed-attempt-1,rdfs,users-50,50,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008051872253417969,0.00804901123046875,0.009572982788085938
+1,distributed-attempt-1,rdfs,users-100,100,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008067131042480469,0.008065223693847656,0.009587287902832031
+1,distributed-attempt-1,rdfs,users-500,500,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008877277374267578,0.008103370666503906,0.00965118408203125
+1,distributed-attempt-1,rdfs,users-1000,1000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008888721466064453,0.008118629455566406,0.0096588134765625
+1,distributed-attempt-1,rdfs,users-2000,2000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.00814056396484375,0.009699821472167969
+1,distributed-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008007049560546875,0.008004188537597656,0.009507179260253906
+1,distributed-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008052825927734375,0.008050918579101562,0.009584426879882812
+1,distributed-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008068084716796875,0.00806427001953125,0.009593963623046875
+1,distributed-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008099555969238281,0.008097648620605469,0.009636878967285156
+1,distributed-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),2,0.008900165557861328,0.008121490478515625,0.009678840637207031
+1,distributed-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),1,0.00814056396484375,0.00814056396484375,0.00814056396484375
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.364555997999894,28.88821543999945,47.21814821800046
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,32.06184809999989,30.827370714000352,32.34223921999962
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.60776647499922,35.94491690699999,42.18785576399942
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.51288704200026,60.62211902300029,69.60085219400032
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.19493891999919,91.44468545500017,113.6784486859998
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,7.023109405000251,5.358136636000023,7.07633165300014
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,7.738079368000117,6.0415111849995276,7.917146645000425
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,9.221968900997691,6.549463734000134,9.565239626999665
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,17.566957967997354,10.912420120001066,17.933369721998446
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,31.44878689500009,16.76589130800011,31.832823871998652
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,118.20840623900139,31.657457151999424,124.91664301800031
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.598174196,2.5841976300000002,2.890785042
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.9236675720000003,3.6853303379999995,3.936579252
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.625264228999999,4.601516181000001,4.64051394
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,25.9618241765,13.760219554999999,38.163428798
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.0309119845,26.395795538,43.666028431
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,89.61395989049998,71.64856483399998,107.579354947
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.525839854,2.436785077,2.8897108709999997
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.552389508,3.5126723890000005,3.5605080879999997
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.928354468,4.731527206,5.035864625
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,13.798855947999998,13.680966376999999,14.310947719
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.581129522,27.272522036999998,43.889737006999994
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),1,70.80142674000001,70.80142674000001,70.80142674000001
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,1.9415966630000001,1.931524761,2.058125639
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.2612275800000003,2.159393745,2.493532916
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.467212929,2.378748309,2.503400249
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,4.529039581,4.391003667,4.63698513
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,7.173837581,7.166877069,7.234057429000001
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,1.94384844,1.90955189,2.003849851
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,2.1358987259999997,2.117658997,2.217103408
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,2.4789670609999996,2.4216436789999998,2.809836235
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,4.403368624,4.203851311999999,4.443703001
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,6.992928903,6.916890214,7.246388587999999
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,12.206534885,12.169355513000001,12.577285776999998
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,2.2268904910000002,2.212052816,2.4579262319999997
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.2901917600000004,3.044370448,3.403091747
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.8517980179999998,3.841432701,4.237848024
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,11.701537797,11.70017177,11.702903824000002
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,22.5139200945,22.448924979,22.578915209999998
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,49.292630345999996,48.729735827,49.855524865
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,2.172200593,2.088655682,2.511730048
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,3.010969828,2.954250541,3.030497427
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,4.038673729,3.930443674,4.442102342
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,11.927981839,11.525804096,12.173828066
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),2,22.649782712,22.610265438,22.689299986
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),1,49.588463978,49.588463978,49.588463978
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.654117421,11.64242161,14.828117824000001
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.915100812,12.844690688,16.490392776
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,14.231011839999999,14.181040266,18.200231242
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.929327078,24.410375741,32.035896660999995
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,38.425986895,38.252497656,49.573428549000006
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,9.345551549,9.244940344,11.846157473
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,10.24851246,10.199071907000002,13.099662313000001
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.365243765999999,11.233600128,14.460178062999999
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,19.437560227,19.103858903,24.673368617
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,30.165235719000002,29.444741892000003,38.29854685
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,52.581966395,51.143333762000005,68.75387322
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,13.079679186,13.021345925,17.079263305
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,18.674826153,18.547379971999998,24.247493605
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,24.103183529000002,24.079987574,31.297009256000003
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,83.453267446,73.349747842,93.55678705
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,161.03131048900002,143.475698426,178.586922552
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,344.7082422005,309.491091743,379.925392658
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,10.38167047,10.283947613,13.706873954
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,14.727256342,14.593390982,19.485877469
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,19.42421979,19.349781874,25.600482
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,58.45927323,58.238084023999996,76.341371122
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),2,131.256684621,116.942225876,145.571143366
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),1,247.533837682,247.533837682,247.533837682
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,354.34765625,350.140625,373.07421875
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,377.06640625,376.921875,394.6171875
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,406.4609375,406.03515625,434.671875
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,550.046875,546.703125,696.00390625
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,809.21484375,761.67578125,1051.625
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,423.0546875,415.54296875,435.41796875
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,437.10546875,433.640625,466.921875
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,452.12109375,447.83203125,520.76953125
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,651.25,643.10546875,818.48046875
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,859.21875,853.2109375,1199.203125
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,1301.46484375,1288.01171875,1994.89453125
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,347.0390625,323.4921875,369.640625
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,376.08984375,366.69921875,410.734375
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,456.73046875,435.30859375,476.15234375
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,822.38671875,801.09765625,843.67578125
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1282.96484375,1268.89453125,1297.03515625
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,2296.857421875,2261.12890625,2332.5859375
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,424.98046875,393.3671875,447.69921875
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,446.23828125,437.23046875,490.98046875
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,532.87890625,518.046875,571.64453125
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,977.359375,975.6640625,1030.18359375
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1567.986328125,1544.65234375,1591.3203125
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),1,2749.90625,2749.90625,2749.90625
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,203.925,203.925,203.925
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,260.364,260.364,260.364
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,260.364,260.364,260.364
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),1,892.254,892.254,892.254
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,distributed,network_bytes,Preparation payload (MiB),3,6.686601638793945,6.686598777770996,6.687705993652344
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.280038833618164,7.280036926269531,7.281162261962891
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886652946472168
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805587768554688
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953035354614258,18.954198837280273
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,6.686595916748047,6.686595916748047,6.687731742858887
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.280035018920898,7.280032157897949,7.281159400939941
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886670112609863
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,12.804445266723633,12.804445266723633,12.805587768554688
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,18.953036308288574,18.95303440093994,18.95419406890869
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,31.250224113464355,31.250222206115723,31.25139808654785
+1,distributed-attempt-2,rdfs,users-1,1,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008008956909179688,0.008004188537597656,0.009520530700683594
+1,distributed-attempt-2,rdfs,users-50,50,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008051872253417969,0.00804901123046875,0.009572982788085938
+1,distributed-attempt-2,rdfs,users-100,100,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008067131042480469,0.008065223693847656,0.009587287902832031
+1,distributed-attempt-2,rdfs,users-500,500,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008877277374267578,0.008103370666503906,0.00965118408203125
+1,distributed-attempt-2,rdfs,users-1000,1000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008888721466064453,0.008118629455566406,0.0096588134765625
+1,distributed-attempt-2,rdfs,users-2000,2000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.00814056396484375,0.009699821472167969
+1,distributed-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008006095886230469,0.008000373840332031,0.009516716003417969
+1,distributed-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008053779602050781,0.008051872253417969,0.009563446044921875
+1,distributed-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008069992065429688,0.008067131042480469,0.00959014892578125
+1,distributed-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008093833923339844,0.008092880249023438,0.009634971618652344
+1,distributed-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),2,0.008898735046386719,0.008115768432617188,0.00968170166015625
+1,distributed-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),1,0.00814056396484375,0.00814056396484375,0.00814056396484375
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.364555997999894,28.88821543999945,47.21814821800046
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,32.06184809999989,30.827370714000352,32.34223921999962
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.60776647499922,35.94491690699999,42.18785576399942
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.51288704200026,60.62211902300029,69.60085219400032
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.19493891999919,91.44468545500017,113.6784486859998
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,6.776950815000201,5.355587838000588,7.360066470000096
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,7.716832461998201,6.069935351002716,7.8384726829988765
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,8.673526631999978,6.741196305000026,8.88390671199934
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,17.71526809099799,11.029983627996597,17.91045388700155
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,28.16989095299944,19.231003864002375,31.025755175001752
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,81.66070267599652,34.88809299900303,82.65089084799824
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.598174196,2.5841976300000002,2.890785042
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.9236675720000003,3.6853303379999995,3.936579252
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.625264228999999,4.601516181000001,4.64051394
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,25.9618241765,13.760219554999999,38.163428798
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.0309119845,26.395795538,43.666028431
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,89.61395989049998,71.64856483399998,107.579354947
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.505623258,2.501777196,2.9199139619999994
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.832405713,3.5041693059999997,3.882362626
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.578497882,4.540158241,4.950747812
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,14.025441468999997,13.968148156,14.068292500000002
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,31.302434760000004,26.459954158000002,36.144915362000006
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),1,73.663747821,73.663747821,73.663747821
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,1.9415966630000001,1.931524761,2.058125639
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.2612275800000003,2.159393745,2.493532916
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.467212929,2.378748309,2.503400249
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,4.529039581,4.391003667,4.63698513
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,7.173837581,7.166877069,7.234057429000001
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,1.913654233,1.876930274,1.979099907
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,2.24913591,2.2377148929999997,2.258013611
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,2.353368041,2.3428831260000003,2.359499988
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,4.347648317,4.346588747,4.586699329
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,7.3327961429999995,7.09250725,7.457913522
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,12.287911894,12.242843522,12.593621176000001
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,2.2268904910000002,2.212052816,2.4579262319999997
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.2901917600000004,3.044370448,3.403091747
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.8517980179999998,3.841432701,4.237848024
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,11.701537797,11.70017177,11.702903824000002
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,22.5139200945,22.448924979,22.578915209999998
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,49.292630345999996,48.729735827,49.855524865
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,2.0753002080000003,2.064313164,2.563265305
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,3.2583386489999997,2.915749542,3.3206698919999997
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,3.98539068,3.859133998,4.141204178
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,11.791310401,11.70089965,11.807747774
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),2,22.2018145765,22.168747277999998,22.234881875
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),1,50.120250166,50.120250166,50.120250166
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.654117421,11.64242161,14.828117824000001
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.915100812,12.844690688,16.490392776
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,14.231011839999999,14.181040266,18.200231242
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.929327078,24.410375741,32.035896660999995
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,38.425986895,38.252497656,49.573428549000006
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,8.130730513,8.114258172,10.440202588
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,9.017515351,8.896914712,11.499600898
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,9.752133456,9.599320375,12.724646802999999
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,16.884553461,16.316640652,21.717954221
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,25.674954195,25.057328632,32.593437034
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,44.279959586,43.036888315000006,60.272960004
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,13.079679186,13.021345925,17.079263305
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,18.674826153,18.547379971999998,24.247493605
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,24.103183529000002,24.079987574,31.297009256000003
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,83.453267446,73.349747842,93.55678705
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,161.03131048900002,143.475698426,178.586922552
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,344.7082422005,309.491091743,379.925392658
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,9.063837985,8.877848226,12.085533679000001
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,12.843304316,12.811038125,17.213811678000003
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,17.011535103000003,16.855730021,22.413773292000002
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,51.799367335,51.58262767,67.726934001
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),2,114.19050745749999,101.84626520100001,126.53474971399999
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),1,217.315436223,217.315436223,217.315436223
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,354.34765625,350.140625,373.07421875
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,377.06640625,376.921875,394.6171875
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,406.4609375,406.03515625,434.671875
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,550.046875,546.703125,696.00390625
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,809.21484375,761.67578125,1051.625
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,450.703125,449.16015625,468.40234375
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,474.99609375,459.76953125,504.1640625
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,484.83203125,483.828125,561.515625
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,710.95703125,706.39453125,890.21875
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,958.3984375,953.26953125,1301.99609375
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,1437.77734375,1417.375,2295.32421875
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,347.0390625,323.4921875,369.640625
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,376.08984375,366.69921875,410.734375
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,456.73046875,435.30859375,476.15234375
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,822.38671875,801.09765625,843.67578125
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1282.96484375,1268.89453125,1297.03515625
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,2296.857421875,2261.12890625,2332.5859375
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,461.515625,428.5390625,486.51171875
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,501.5546875,479.515625,526.7734375
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,578.10546875,572.50390625,622.390625
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,1074.3984375,1063.45703125,1127.9609375
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1725.53515625,1699.328125,1751.7421875
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),1,3004.71875,3004.71875,3004.71875
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,203.925,203.925,203.925
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,260.364,260.364,260.364
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,260.364,260.364,260.364
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),1,892.254,892.254,892.254
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,distributed,network_bytes,Preparation payload (MiB),3,6.686601638793945,6.686598777770996,6.687705993652344
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.280038833618164,7.280036926269531,7.281162261962891
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886652946472168
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805587768554688
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953035354614258,18.954198837280273
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,6.686593055725098,6.686592102050781,6.687722206115723
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.280035972595215,7.280034065246582,7.281149864196777
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.885531425476074,7.885530471801758,7.886658668518066
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,12.804445266723633,12.804444313049316,12.805582046508789
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,18.953035354614258,18.953033447265625,18.95417881011963
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,31.250222206115723,31.250219345092773,31.251381874084473
+1,distributed-attempt-3,rdfs,users-1,1,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008008956909179688,0.008004188537597656,0.009520530700683594
+1,distributed-attempt-3,rdfs,users-50,50,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008051872253417969,0.00804901123046875,0.009572982788085938
+1,distributed-attempt-3,rdfs,users-100,100,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008067131042480469,0.008065223693847656,0.009587287902832031
+1,distributed-attempt-3,rdfs,users-500,500,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008877277374267578,0.008103370666503906,0.00965118408203125
+1,distributed-attempt-3,rdfs,users-1000,1000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008888721466064453,0.008118629455566406,0.0096588134765625
+1,distributed-attempt-3,rdfs,users-2000,2000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.00814056396484375,0.009699821472167969
+1,distributed-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008006095886230469,0.008005142211914062,0.009518623352050781
+1,distributed-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008054733276367188,0.008053779602050781,0.009579658508300781
+1,distributed-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008070945739746094,0.008067131042480469,0.009588241577148438
+1,distributed-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008091926574707031,0.008090019226074219,0.00963592529296875
+1,distributed-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),2,0.008895397186279297,0.00811767578125,0.009673118591308594
+1,distributed-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),1,0.008141517639160156,0.008141517639160156,0.008141517639160156
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.364555997999894,28.88821543999945,47.21814821800046
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,32.06184809999989,30.827370714000352,32.34223921999962
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.60776647499922,35.94491690699999,42.18785576399942
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.51288704200026,60.62211902300029,69.60085219400032
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.19493891999919,91.44468545500017,113.6784486859998
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,6.694144015001102,5.37988517699928,6.77886550600155
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,7.668376346000507,5.909968497001641,7.818012253998874
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,8.707610493997672,6.813429476998988,8.870788662998498
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,17.650353488001006,10.65854323499955,17.71839446200249
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,29.508268863995713,18.267068229997843,31.186641952998325
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,47.28112026700207,21.450334447005844,51.00557245499852
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.598174196,2.5841976300000002,2.890785042
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.9236675720000003,3.6853303379999995,3.936579252
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.625264228999999,4.601516181000001,4.64051394
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,25.9618241765,13.760219554999999,38.163428798
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.0309119845,26.395795538,43.666028431
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,89.61395989049998,71.64856483399998,107.579354947
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.570363031,2.468062725,2.804253773
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.5169917049999997,3.509060037,3.5732429949999998
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.556570208999999,4.540038027,4.617602703
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,14.377603863000001,13.911065316,14.403378845999999
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,31.446863976499998,26.645452389,36.248275564
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,57.477864806,56.083332938999995,58.872396673000004
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,1.9415966630000001,1.931524761,2.058125639
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.2612275800000003,2.159393745,2.493532916
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.467212929,2.378748309,2.503400249
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,4.529039581,4.391003667,4.63698513
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,7.173837581,7.166877069,7.234057429000001
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,1.930243804,1.9044065250000002,2.018361631
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,2.152507404,2.137290775,2.23103606
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,2.5113661,2.47262437,2.678904244
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,4.413060968,4.3518169019999995,4.540345657
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,6.784047159,6.777409633,7.069696645
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,5.687989867000001,5.52402048,6.0847292799999995
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,2.2268904910000002,2.212052816,2.4579262319999997
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.2901917600000004,3.044370448,3.403091747
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.8517980179999998,3.841432701,4.237848024
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,11.701537797,11.70017177,11.702903824000002
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,22.5139200945,22.448924979,22.578915209999998
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,49.292630345999996,48.729735827,49.855524865
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,2.093961313,2.0817877,2.409964477
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,2.9083368610000004,2.9081281600000004,3.009163448
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,3.793811192,3.7617128739999997,3.927822389
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,12.099782439,11.798012598,12.160337446
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),2,22.3973557645,22.332681564999998,22.462029964000003
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),2,50.0232680255,49.172076566,50.874459485
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.654117421,11.64242161,14.828117824000001
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.915100812,12.844690688,16.490392776
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,14.231011839999999,14.181040266,18.200231242
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.929327078,24.410375741,32.035896660999995
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,38.425986895,38.252497656,49.573428549000006
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,7.094140875999999,7.057106634,9.151748234000001
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,7.796387596000001,7.738104422999999,10.14511508
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,8.812678051999999,8.694449667,11.174527127
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,15.705166233,15.246118656,20.338869829
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.11102129,23.877057608999998,30.773748898999997
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,37.715126401,35.717219647,47.095001523
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,13.079679186,13.021345925,17.079263305
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,18.674826153,18.547379971999998,24.247493605
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,24.103183529000002,24.079987574,31.297009256000003
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,83.453267446,73.349747842,93.55678705
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,161.03131048900002,143.475698426,178.586922552
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,344.7082422005,309.491091743,379.925392658
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,7.838971327,7.637878971,10.334819183
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,10.955709944,10.954067445,14.923824192
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,14.521460931,14.363878464999999,19.419625787
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,44.219513115,44.002950531,58.932913895000006
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),2,99.1501063185,87.69947048799999,110.600742149
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),2,208.0253887045,186.93868681799998,229.112090591
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,354.34765625,350.140625,373.07421875
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,377.06640625,376.921875,394.6171875
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,406.4609375,406.03515625,434.671875
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,550.046875,546.703125,696.00390625
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,809.21484375,761.67578125,1051.625
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,489.25390625,473.93359375,500.4609375
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,503.71484375,498.3046875,539.6796875
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,535.171875,518.51953125,599.05859375
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,749.96484375,745.46875,950.40625
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,1023.54296875,1002.29296875,1394.90234375
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,1668.98046875,1642.69921875,2464.13671875
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,347.0390625,323.4921875,369.640625
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,376.08984375,366.69921875,410.734375
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,456.73046875,435.30859375,476.15234375
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,822.38671875,801.09765625,843.67578125
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1282.96484375,1268.89453125,1297.03515625
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,2296.857421875,2261.12890625,2332.5859375
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,492.7734375,460.3828125,516.07421875
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,525.03515625,510.22265625,563.359375
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,647.78125,617.5234375,678.24609375
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,1165.48828125,1152.56640625,1210.84765625
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1869.638671875,1852.484375,1886.79296875
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,3296.48828125,3275.890625,3317.0859375
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,203.925,203.925,203.925
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,260.364,260.364,260.364
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,260.364,260.364,260.364
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,distributed,network_bytes,Preparation payload (MiB),3,6.686601638793945,6.686598777770996,6.687705993652344
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.280038833618164,7.280036926269531,7.281162261962891
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886652946472168
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805587768554688
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953035354614258,18.954198837280273
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,6.686593055725098,6.686591148376465,6.687726020812988
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.280032157897949,7.280031204223633,7.281154632568359
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885526657104492,7.886658668518066
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,12.804445266723633,12.804444313049316,12.805577278137207
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,18.95303440093994,18.95303440093994,18.95416831970215
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,31.25022029876709,31.250219345092773,31.251358032226562
+1,distributed-attempt-4,rdfs,users-1,1,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008008956909179688,0.008004188537597656,0.009520530700683594
+1,distributed-attempt-4,rdfs,users-50,50,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008051872253417969,0.00804901123046875,0.009572982788085938
+1,distributed-attempt-4,rdfs,users-100,100,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008067131042480469,0.008065223693847656,0.009587287902832031
+1,distributed-attempt-4,rdfs,users-500,500,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008877277374267578,0.008103370666503906,0.00965118408203125
+1,distributed-attempt-4,rdfs,users-1000,1000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008888721466064453,0.008118629455566406,0.0096588134765625
+1,distributed-attempt-4,rdfs,users-2000,2000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.00814056396484375,0.009699821472167969
+1,distributed-attempt-4,rdfs,users-1,1,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008004188537597656,0.008004188537597656,0.009509086608886719
+1,distributed-attempt-4,rdfs,users-50,50,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008053779602050781,0.008050918579101562,0.00959014892578125
+1,distributed-attempt-4,rdfs,users-100,100,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008072853088378906,0.008066177368164062,0.009593963623046875
+1,distributed-attempt-4,rdfs,users-500,500,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008090019226074219,0.008087158203125,0.00963592529296875
+1,distributed-attempt-4,rdfs,users-1000,1000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),2,0.008891582489013672,0.008114814758300781,0.009668350219726562
+1,distributed-attempt-4,rdfs,users-2000,2000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.008136749267578125,0.009703636169433594
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.364555997999894,28.88821543999945,47.21814821800046
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,32.06184809999989,30.827370714000352,32.34223921999962
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.60776647499922,35.94491690699999,42.18785576399942
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.51288704200026,60.62211902300029,69.60085219400032
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.19493891999919,91.44468545500017,113.6784486859998
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,4.97523354600009,3.3272080670014748,5.000230215000043
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,5.577783194001434,3.541322018002704,5.599095143002789
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,5.854496451000323,4.093136366001188,6.389920132000419
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,12.863148384998919,7.026100233997956,13.525290530001822
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,22.656131507997507,11.931816936001853,28.791033026995763
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,76.6401889090027,32.99490522500571,78.2879434519964
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.598174196,2.5841976300000002,2.890785042
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.9236675720000003,3.6853303379999995,3.936579252
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.625264228999999,4.601516181000001,4.64051394
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,25.9618241765,13.760219554999999,38.163428798
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.0309119845,26.395795538,43.666028431
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,89.61395989049998,71.64856483399998,107.579354947
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,1.1124690540000002,1.035937986,1.333271814
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,1.587980886,1.569157689,1.6618563810000002
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.002721964,1.9656421440000005,2.373748308
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,8.925045544000001,8.912869988,9.091908323
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,12.24423808,11.756480326999998,12.399775791
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),1,67.57663001399999,67.57663001399999,67.57663001399999
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,1.9415966630000001,1.931524761,2.058125639
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.2612275800000003,2.159393745,2.493532916
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.467212929,2.378748309,2.503400249
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,4.529039581,4.391003667,4.63698513
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,7.173837581,7.166877069,7.234057429000001
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,0.8186944469999999,0.815381492,0.8764049209999999
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,0.898090453,0.8942217379999999,0.985592913
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,0.989678075,0.989314583,0.999189212
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,1.9387289109999999,1.826085315,1.972910231
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,3.127446237,2.9259362390000003,3.303569829
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,11.892513548999998,11.853727758000002,11.926619221000001
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,2.2268904910000002,2.212052816,2.4579262319999997
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.2901917600000004,3.044370448,3.403091747
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.8517980179999998,3.841432701,4.237848024
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,11.701537797,11.70017177,11.702903824000002
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,22.5139200945,22.448924979,22.578915209999998
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,49.292630345999996,48.729735827,49.855524865
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,0.969726745,0.9047836419999999,1.1674027530000002
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,1.3126060959999999,1.2473345260000002,1.316346675
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,1.723112558,1.652720513,1.965279576
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,7.431703424,7.404707875,7.581982546
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,10.148643692,9.913656707,10.280937389999998
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),1,49.450220693000006,49.450220693000006,49.450220693000006
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.654117421,11.64242161,14.828117824000001
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.915100812,12.844690688,16.490392776
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,14.231011839999999,14.181040266,18.200231242
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.929327078,24.410375741,32.035896660999995
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,38.425986895,38.252497656,49.573428549000006
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,5.776846304,5.712336881000001,7.708974124
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,6.440762103999999,6.3425119290000005,8.445703453
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,6.928463181,6.907108772,9.067993137
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.934288367,12.786177589,16.892093234
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,20.036371035,19.759587837999998,25.422912847
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,43.347289156,43.019552993,56.551319633
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,13.079679186,13.021345925,17.079263305
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,18.674826153,18.547379971999998,24.247493605
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,24.103183529000002,24.079987574,31.297009256000003
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,83.453267446,73.349747842,93.55678705
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,161.03131048900002,143.475698426,178.586922552
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,344.7082422005,309.491091743,379.925392658
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,6.39523856,6.380530952,8.685483934
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,9.116240597,9.042651239,12.462221207
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,12.096526417000002,11.859104075,15.978801181
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,39.293358161,39.217542451,52.103867198
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,71.350392192,70.875740116,93.628997202
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),1,217.414709133,217.414709133,217.414709133
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,354.34765625,350.140625,373.07421875
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,377.06640625,376.921875,394.6171875
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,406.4609375,406.03515625,434.671875
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,550.046875,546.703125,696.00390625
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,809.21484375,761.67578125,1051.625
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,523.05859375,517.375,538.8515625
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,541.21875,540.91015625,574.296875
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,553.77734375,553.37890625,643.99609375
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,818.48046875,813.109375,1024.6328125
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,1108.12109375,1103.6015625,1496.62109375
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,1576.15234375,1470.99609375,2272.39453125
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,347.0390625,323.4921875,369.640625
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,376.08984375,366.69921875,410.734375
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,456.73046875,435.30859375,476.15234375
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,822.38671875,801.09765625,843.67578125
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1282.96484375,1268.89453125,1297.03515625
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,2296.857421875,2261.12890625,2332.5859375
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,527.23828125,488.34375,564.40625
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,575.1171875,549.203125,622.7578125
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,684.859375,659.34765625,724.56640625
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,1254.89453125,1243.23046875,1303.296875
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,1985.1484375,1962.30078125,2034.38671875
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),1,3031.109375,3031.109375,3031.109375
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,203.925,203.925,203.925
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,260.364,260.364,260.364
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,260.364,260.364,260.364
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,470.994,470.994,470.994
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),1,892.254,892.254,892.254
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,distributed,network_bytes,Preparation payload (MiB),3,6.686601638793945,6.686598777770996,6.687705993652344
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.280038833618164,7.280036926269531,7.281162261962891
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886652946472168
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805587768554688
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953035354614258,18.954198837280273
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,6.686591148376465,6.686591148376465,6.687709808349609
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.280033111572266,7.280029296875,7.281167984008789
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,7.885530471801758,7.885529518127441,7.886659622192383
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,12.804449081420898,12.804448127746582,12.805585861206055
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,18.953033447265625,18.953033447265625,18.954176902770996
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,31.25022315979004,31.25022029876709,31.251381874084473
+1,distributed-attempt-5,rdfs,users-1,1,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008008956909179688,0.008004188537597656,0.009520530700683594
+1,distributed-attempt-5,rdfs,users-50,50,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008051872253417969,0.00804901123046875,0.009572982788085938
+1,distributed-attempt-5,rdfs,users-100,100,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008067131042480469,0.008065223693847656,0.009587287902832031
+1,distributed-attempt-5,rdfs,users-500,500,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008877277374267578,0.008103370666503906,0.00965118408203125
+1,distributed-attempt-5,rdfs,users-1000,1000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008888721466064453,0.008118629455566406,0.0096588134765625
+1,distributed-attempt-5,rdfs,users-2000,2000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.00814056396484375,0.009699821472167969
+1,distributed-attempt-5,rdfs,users-1,1,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.00800323486328125,0.008001327514648438,0.009520530700683594
+1,distributed-attempt-5,rdfs,users-50,50,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008054733276367188,0.008051872253417969,0.009566307067871094
+1,distributed-attempt-5,rdfs,users-100,100,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008069992065429688,0.008069038391113281,0.009586334228515625
+1,distributed-attempt-5,rdfs,users-500,500,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008086204528808594,0.00807952880859375,0.009631156921386719
+1,distributed-attempt-5,rdfs,users-1000,1000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008111953735351562,0.008109092712402344,0.009668350219726562
+1,distributed-attempt-5,rdfs,users-2000,2000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),1,0.008137702941894531,0.008137702941894531,0.008137702941894531
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.364555997999894,28.88821543999945,47.21814821800046
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,32.06184809999989,30.827370714000352,32.34223921999962
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.60776647499922,35.94491690699999,42.18785576399942
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.51288704200026,60.62211902300029,69.60085219400032
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.19493891999919,91.44468545500017,113.6784486859998
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.598174196,2.5841976300000002,2.890785042
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.9236675720000003,3.6853303379999995,3.936579252
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.625264228999999,4.601516181000001,4.64051394
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,25.9618241765,13.760219554999999,38.163428798
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.0309119845,26.395795538,43.666028431
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,89.61395989049998,71.64856483399998,107.579354947
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,65.1394045285,58.941662813,71.33714624399998
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,1.9415966630000001,1.931524761,2.058125639
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.2612275800000003,2.159393745,2.493532916
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.467212929,2.378748309,2.503400249
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,4.529039581,4.391003667,4.63698513
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,7.173837581,7.166877069,7.234057429000001
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,2.2268904910000002,2.212052816,2.4579262319999997
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.2901917600000004,3.044370448,3.403091747
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.8517980179999998,3.841432701,4.237848024
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,11.701537797,11.70017177,11.702903824000002
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,22.5139200945,22.448924979,22.578915209999998
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,49.292630345999996,48.729735827,49.855524865
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),2,49.533524261500006,48.89764381,50.169404713000006
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.654117421,11.64242161,14.828117824000001
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.915100812,12.844690688,16.490392776
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,14.231011839999999,14.181040266,18.200231242
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.929327078,24.410375741,32.035896660999995
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,38.425986895,38.252497656,49.573428549000006
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,13.079679186,13.021345925,17.079263305
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,18.674826153,18.547379971999998,24.247493605
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,24.103183529000002,24.079987574,31.297009256000003
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,83.453267446,73.349747842,93.55678705
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,161.03131048900002,143.475698426,178.586922552
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,344.7082422005,309.491091743,379.925392658
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),2,242.74496381999998,217.248885331,268.24104230899997
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,354.34765625,350.140625,373.07421875
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,377.06640625,376.921875,394.6171875
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,406.4609375,406.03515625,434.671875
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,550.046875,546.703125,696.00390625
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,809.21484375,761.67578125,1051.625
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,347.0390625,323.4921875,369.640625
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,376.08984375,366.69921875,410.734375
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,456.73046875,435.30859375,476.15234375
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,822.38671875,801.09765625,843.67578125
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1282.96484375,1268.89453125,1297.03515625
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,2296.857421875,2261.12890625,2332.5859375
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,3071.8828125,3011.65234375,3132.11328125
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,260.364,260.364,260.364
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,distributed,network_bytes,Preparation payload (MiB),3,6.686601638793945,6.686598777770996,6.687705993652344
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.280038833618164,7.280036926269531,7.281162261962891
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886652946472168
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805587768554688
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953035354614258,18.954198837280273
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1,1,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008008956909179688,0.008004188537597656,0.009520530700683594
+1,distributed-attempt-6,rdfs,users-50,50,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008051872253417969,0.00804901123046875,0.009572982788085938
+1,distributed-attempt-6,rdfs,users-100,100,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008067131042480469,0.008065223693847656,0.009587287902832031
+1,distributed-attempt-6,rdfs,users-500,500,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008877277374267578,0.008103370666503906,0.00965118408203125
+1,distributed-attempt-6,rdfs,users-1000,1000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008888721466064453,0.008118629455566406,0.0096588134765625
+1,distributed-attempt-6,rdfs,users-2000,2000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.00814056396484375,0.009699821472167969
+1,distributed-attempt-6,rdfs,users-1,1,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-50,50,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-100,100,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-500,500,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-1000,1000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,distributed-attempt-6,rdfs,users-2000,2000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),2,0.0089111328125,0.008135795593261719,0.009686470031738281
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.364555997999894,28.88821543999945,47.21814821800046
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,32.06184809999989,30.827370714000352,32.34223921999962
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.60776647499922,35.94491690699999,42.18785576399942
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.51288704200026,60.62211902300029,69.60085219400032
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.19493891999919,91.44468545500017,113.6784486859998
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,18.552444599003195,11.988730038997758,19.98171450999919
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,109.49582611000146,100.73842430499732,115.05627626400619
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.598174196,2.5841976300000002,2.890785042
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.9236675720000003,3.6853303379999995,3.936579252
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.625264228999999,4.601516181000001,4.64051394
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,25.9618241765,13.760219554999999,38.163428798
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.0309119845,26.395795538,43.666028431
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,89.61395989049998,71.64856483399998,107.579354947
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,13.711412547,13.679103693,13.716390802
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,26.69236953,26.448464334,27.091707563000003
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,1.9415966630000001,1.931524761,2.058125639
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.2612275800000003,2.159393745,2.493532916
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.467212929,2.378748309,2.503400249
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,4.529039581,4.391003667,4.63698513
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,7.173837581,7.166877069,7.234057429000001
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,4.290181723,4.248944907,4.630660814
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,6.90057628,6.835316776,7.041017654
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,2.2268904910000002,2.212052816,2.4579262319999997
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.2901917600000004,3.044370448,3.403091747
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.8517980179999998,3.841432701,4.237848024
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,11.701537797,11.70017177,11.702903824000002
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,22.5139200945,22.448924979,22.578915209999998
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,49.292630345999996,48.729735827,49.855524865
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,11.577327934000001,11.553605677,11.715029418
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,22.646351385000003,22.62429231,22.907131599
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.654117421,11.64242161,14.828117824000001
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.915100812,12.844690688,16.490392776
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,14.231011839999999,14.181040266,18.200231242
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.929327078,24.410375741,32.035896660999995
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,38.425986895,38.252497656,49.573428549000006
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,21.874603225999998,21.817889561,28.039481468
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,34.286864893,33.684975094,43.852670679999996
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,13.079679186,13.021345925,17.079263305
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,18.674826153,18.547379971999998,24.247493605
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,24.103183529000002,24.079987574,31.297009256000003
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,83.453267446,73.349747842,93.55678705
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,161.03131048900002,143.475698426,178.586922552
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,344.7082422005,309.491091743,379.925392658
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,65.50393556,65.00896222899999,85.04400978
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,127.30079485399999,126.772174483,162.274630704
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,354.34765625,350.140625,373.07421875
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,377.06640625,376.921875,394.6171875
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,406.4609375,406.03515625,434.671875
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,550.046875,546.703125,696.00390625
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,809.21484375,761.67578125,1051.625
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,587.30078125,577.30078125,744.328125
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,802.78515625,786.140625,1099.0234375
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,347.0390625,323.4921875,369.640625
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,376.08984375,366.69921875,410.734375
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,456.73046875,435.30859375,476.15234375
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,822.38671875,801.09765625,843.67578125
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1282.96484375,1268.89453125,1297.03515625
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,2296.857421875,2261.12890625,2332.5859375
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,894.20703125,887.2265625,937.16796875
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,1409.21484375,1399.62890625,1454.42578125
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,260.364,260.364,260.364
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,260.364,260.364,260.364
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,470.994,470.994,470.994
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,distributed,network_bytes,Preparation payload (MiB),3,6.686601638793945,6.686598777770996,6.687705993652344
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.280038833618164,7.280036926269531,7.281162261962891
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886652946472168
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805587768554688
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953035354614258,18.954198837280273
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805580139160156
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953036308288574,18.954197883605957
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-1,1,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008008956909179688,0.008004188537597656,0.009520530700683594
+1,replicated-attempt-1,rdfs,users-50,50,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008051872253417969,0.00804901123046875,0.009572982788085938
+1,replicated-attempt-1,rdfs,users-100,100,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008067131042480469,0.008065223693847656,0.009587287902832031
+1,replicated-attempt-1,rdfs,users-500,500,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008877277374267578,0.008103370666503906,0.00965118408203125
+1,replicated-attempt-1,rdfs,users-1000,1000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008888721466064453,0.008118629455566406,0.0096588134765625
+1,replicated-attempt-1,rdfs,users-2000,2000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.00814056396484375,0.009699821472167969
+1,replicated-attempt-1,rdfs,users-1,1,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-50,50,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-100,100,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-1,rdfs,users-500,500,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008095741271972656,0.008093833923339844,0.009652137756347656
+1,replicated-attempt-1,rdfs,users-1000,1000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008120536804199219,0.008119583129882812,0.009662628173828125
+1,replicated-attempt-1,rdfs,users-2000,2000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.364555997999894,28.88821543999945,47.21814821800046
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,32.06184809999989,30.827370714000352,32.34223921999962
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.60776647499922,35.94491690699999,42.18785576399942
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.51288704200026,60.62211902300029,69.60085219400032
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.19493891999919,91.44468545500017,113.6784486859998
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.50629290099796,100.10784281900006,113.54271189799903
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.598174196,2.5841976300000002,2.890785042
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.9236675720000003,3.6853303379999995,3.936579252
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.625264228999999,4.601516181000001,4.64051394
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,25.9618241765,13.760219554999999,38.163428798
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.0309119845,26.395795538,43.666028431
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,89.61395989049998,71.64856483399998,107.579354947
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,26.925180498000003,26.439036551999997,26.993575666
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,1.9415966630000001,1.931524761,2.058125639
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.2612275800000003,2.159393745,2.493532916
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.467212929,2.378748309,2.503400249
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,4.529039581,4.391003667,4.63698513
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,7.173837581,7.166877069,7.234057429000001
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,6.905821198,6.623708818,6.9488118839999995
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,2.2268904910000002,2.212052816,2.4579262319999997
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.2901917600000004,3.044370448,3.403091747
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.8517980179999998,3.841432701,4.237848024
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,11.701537797,11.70017177,11.702903824000002
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,22.5139200945,22.448924979,22.578915209999998
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,49.292630345999996,48.729735827,49.855524865
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,22.968006227,22.294996494,22.993500315000002
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.654117421,11.64242161,14.828117824000001
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.915100812,12.844690688,16.490392776
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,14.231011839999999,14.181040266,18.200231242
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.929327078,24.410375741,32.035896660999995
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,38.425986895,38.252497656,49.573428549000006
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,29.855424163,29.254652974,37.939660131
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,13.079679186,13.021345925,17.079263305
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,18.674826153,18.547379971999998,24.247493605
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,24.103183529000002,24.079987574,31.297009256000003
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,83.453267446,73.349747842,93.55678705
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,161.03131048900002,143.475698426,178.586922552
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,344.7082422005,309.491091743,379.925392658
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,112.64332037500002,111.928609455,143.567874435
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,354.34765625,350.140625,373.07421875
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,377.06640625,376.921875,394.6171875
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,406.4609375,406.03515625,434.671875
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,550.046875,546.703125,696.00390625
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,809.21484375,761.67578125,1051.625
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,897.64453125,883.1328125,1210.390625
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,347.0390625,323.4921875,369.640625
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,376.08984375,366.69921875,410.734375
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,456.73046875,435.30859375,476.15234375
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,822.38671875,801.09765625,843.67578125
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1282.96484375,1268.89453125,1297.03515625
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,2296.857421875,2261.12890625,2332.5859375
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,1560.30859375,1550.96484375,1607.59765625
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,260.364,260.364,260.364
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,470.994,470.994,470.994
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,distributed,network_bytes,Preparation payload (MiB),3,6.686601638793945,6.686598777770996,6.687705993652344
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.280038833618164,7.280036926269531,7.281162261962891
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886652946472168
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805587768554688
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953035354614258,18.954198837280273
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,18.953035354614258,18.95303440093994,18.954209327697754
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1,1,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008008956909179688,0.008004188537597656,0.009520530700683594
+1,replicated-attempt-2,rdfs,users-50,50,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008051872253417969,0.00804901123046875,0.009572982788085938
+1,replicated-attempt-2,rdfs,users-100,100,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008067131042480469,0.008065223693847656,0.009587287902832031
+1,replicated-attempt-2,rdfs,users-500,500,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008877277374267578,0.008103370666503906,0.00965118408203125
+1,replicated-attempt-2,rdfs,users-1000,1000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008888721466064453,0.008118629455566406,0.0096588134765625
+1,replicated-attempt-2,rdfs,users-2000,2000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.00814056396484375,0.009699821472167969
+1,replicated-attempt-2,rdfs,users-1,1,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-50,50,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-100,100,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-500,500,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-2,rdfs,users-1000,1000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008121490478515625,0.00811767578125,0.009664535522460938
+1,replicated-attempt-2,rdfs,users-2000,2000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.364555997999894,28.88821543999945,47.21814821800046
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,32.06184809999989,30.827370714000352,32.34223921999962
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,41.60776647499922,35.94491690699999,42.18785576399942
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,67.51288704200026,60.62211902300029,69.60085219400032
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,112.19493891999919,91.44468545500017,113.6784486859998
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),3,30.859955435999957,16.69365777599691,31.37289143300004
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,2.598174196,2.5841976300000002,2.890785042
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,3.9236675720000003,3.6853303379999995,3.936579252
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,4.625264228999999,4.601516181000001,4.64051394
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,25.9618241765,13.760219554999999,38.163428798
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,35.0309119845,26.395795538,43.666028431
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,replicated,benchmark_end_to_end_ms,Preparation wall time (s),2,89.61395989049998,71.64856483399998,107.579354947
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),3,26.204786172,26.170478468,26.419499435000002
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,benchmark_end_to_end_ms,Preparation wall time (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,1.9415966630000001,1.931524761,2.058125639
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.2612275800000003,2.159393745,2.493532916
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,2.467212929,2.378748309,2.503400249
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,4.529039581,4.391003667,4.63698513
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),3,7.173837581,7.166877069,7.234057429000001
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),3,6.863331504,6.624507118,6.897508735000001
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,2.2268904910000002,2.212052816,2.4579262319999997
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.2901917600000004,3.044370448,3.403091747
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,replicated,reasoning_ms,Reasoning critical path (s),3,3.8517980179999998,3.841432701,4.237848024
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,11.701537797,11.70017177,11.702903824000002
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,22.5139200945,22.448924979,22.578915209999998
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,replicated,reasoning_ms,Reasoning critical path (s),2,49.292630345999996,48.729735827,49.855524865
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),3,22.628085783,22.3317929,22.644439647
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,reasoning_ms,Reasoning critical path (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,11.654117421,11.64242161,14.828117824000001
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,12.915100812,12.844690688,16.490392776
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,14.231011839999999,14.181040266,18.200231242
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,24.929327078,24.410375741,32.035896660999995
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),3,38.425986895,38.252497656,49.573428549000006
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),3,25.522809854,24.878725212000003,32.158800712
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,13.079679186,13.021345925,17.079263305
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,18.674826153,18.547379971999998,24.247493605
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),3,24.103183529000002,24.079987574,31.297009256000003
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,83.453267446,73.349747842,93.55678705
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,161.03131048900002,143.475698426,178.586922552
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,replicated,process_cpu_ms,Aggregate participant CPU (s),2,344.7082422005,309.491091743,379.925392658
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),3,97.869324418,97.586950294,126.42856272899999
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,process_cpu_ms,Aggregate participant CPU (s),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,354.34765625,350.140625,373.07421875
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,377.06640625,376.921875,394.6171875
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,406.4609375,406.03515625,434.671875
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,550.046875,546.703125,696.00390625
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,809.21484375,761.67578125,1051.625
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),3,957.6328125,943.15625,1296.69140625
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,347.0390625,323.4921875,369.640625
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,376.08984375,366.69921875,410.734375
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,456.73046875,435.30859375,476.15234375
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,822.38671875,801.09765625,843.67578125
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,1282.96484375,1268.89453125,1297.03515625
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),2,2296.857421875,2261.12890625,2332.5859375
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),3,1688.26953125,1683.9453125,1740.20703125
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,current_rss_kib_sum,Aggregate process RSS (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,41.611,41.611,41.611
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,45.531,45.531,45.531
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,49.531,49.531,49.531
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,82.035,82.035,82.035
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),3,122.665,122.665,122.665
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,50.28,50.28,50.28
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,70.86,70.86,70.86
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,91.86,91.86,91.86
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,260.364,260.364,260.364
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,470.994,470.994,470.994
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,replicated,aggregate_input_triples,Stored input copies (thousand triples),2,892.254,892.254,892.254
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),3,470.994,470.994,470.994
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,aggregate_input_triples,Stored input copies (thousand triples),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,distributed,network_bytes,Preparation payload (MiB),3,6.686601638793945,6.686598777770996,6.687705993652344
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.280038833618164,7.280036926269531,7.281162261962891
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,distributed,network_bytes,Preparation payload (MiB),3,7.885532379150391,7.885529518127441,7.886652946472168
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,distributed,network_bytes,Preparation payload (MiB),3,12.804442405700684,12.804441452026367,12.805587768554688
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,distributed,network_bytes,Preparation payload (MiB),3,18.953038215637207,18.953035354614258,18.954198837280273
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),3,18.953035354614258,18.953035354614258,18.95417881011963
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,distributed,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1,1,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008008956909179688,0.008004188537597656,0.009520530700683594
+1,replicated-attempt-3,rdfs,users-50,50,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008051872253417969,0.00804901123046875,0.009572982788085938
+1,replicated-attempt-3,rdfs,users-100,100,Baseline,replicated,network_bytes,Preparation payload (MiB),3,0.008067131042480469,0.008065223693847656,0.009587287902832031
+1,replicated-attempt-3,rdfs,users-500,500,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008877277374267578,0.008103370666503906,0.00965118408203125
+1,replicated-attempt-3,rdfs,users-1000,1000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.008888721466064453,0.008118629455566406,0.0096588134765625
+1,replicated-attempt-3,rdfs,users-2000,2000,Baseline,replicated,network_bytes,Preparation payload (MiB),2,0.00892019271850586,0.00814056396484375,0.009699821472167969
+1,replicated-attempt-3,rdfs,users-1,1,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-50,50,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-100,100,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-500,500,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan
+1,replicated-attempt-3,rdfs,users-1000,1000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),3,0.008118629455566406,0.008116722106933594,0.009662628173828125
+1,replicated-attempt-3,rdfs,users-2000,2000,Adaptive trial,replicated,network_bytes,Preparation payload (MiB),0,nan,nan,nan

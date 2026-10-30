@@ -3,7 +3,7 @@
 # Requirements: RF-16, RF-17
 # Policies: P-ADAPT-05
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,15 +16,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?migration ?scenario ?origin ?target ?evaluation ?service ?cost ?time ?from ?to WHERE {
-  ?migration a :MigrationEvent .
-  OPTIONAL { ?migration :partOfScenario ?scenario }
-  OPTIONAL { ?migration :actionOriginNode ?origin }
-  OPTIONAL { ?migration :actionTargetNode ?target }
-  OPTIONAL { ?migration :authorizedByEvaluation ?evaluation }
-  OPTIONAL { ?migration :affectsService ?service }
-  OPTIONAL { ?evaluation :hasMigrationCost ?cost }
-  OPTIONAL { ?evaluation :hasMigrationTime ?time }
-  OPTIONAL { ?migration :validFrom ?from }
-  OPTIONAL { ?migration :validTo ?to }
+  ?migration a comon:MigrationEvent .
+  OPTIONAL { ?migration comon:partOfScenario ?scenario }
+  OPTIONAL { ?migration comon:actionOriginNode ?origin }
+  OPTIONAL { ?migration comon:actionTargetNode ?target }
+  OPTIONAL { ?migration comon:authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?migration comon:affectsService ?service }
+  OPTIONAL { ?evaluation comon:hasMigrationCost ?cost }
+  OPTIONAL { ?evaluation comon:hasMigrationTime ?time }
+  OPTIONAL { ?migration comon:validFrom ?from }
+  OPTIONAL { ?migration comon:validTo ?to }
 }
 ORDER BY ?migration

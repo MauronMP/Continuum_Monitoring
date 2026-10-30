@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 from rdflib import Graph, Namespace
-from rdflib.namespace import OWL, RDF, RDFS
+from rdflib.namespace import OWL, RDF
 from continuum_bench.owl_materialization import NativeOWLReasoner, InconsistentOntologyError
 
 
@@ -20,6 +20,13 @@ def main():
 :p a owl:ObjectProperty . :a :p :b . :b a :A .
 ''', format="turtle")
     name = sys.argv[1]
+    if name == "rdfs":
+        from continuum_bench.reasoners import get_reasoner
+        result = get_reasoner(name).materialize(graph)
+        if (ex.b, RDF.type, ex.B) not in result.graph or not set(graph) <= set(result.graph):
+            raise RuntimeError("rdfs: missing subclass entailment or lost source triples")
+        print("rdfs: subclass inference and source preservation verified; no DL inconsistency claim")
+        return 0
     backend = NativeOWLReasoner(name, timeout=60)
     result = backend.materialize(graph)
     if (ex.a, RDF.type, ex.C) not in result.graph or not set(graph) <= set(result.graph):

@@ -28,7 +28,8 @@ Package availability depends on the distribution/CPU. Use a distribution that
 provides native Konclude, or install an architecture-compatible build before
 continuing. Copying a binary from another architecture is not supported.
 Java backends are installed later from the project's pinned Maven profiles.
-No containers are used.
+Batteries 1 and 2 run native workers. Battery 3 additionally uses Docker Engine
+and Compose on the same physical hosts; see the installation section below.
 
 ## 2. Tailscale and SSH
 
@@ -124,3 +125,58 @@ Any later code/semantic edit requires synchronization and restart before a new
 campaign. Installation logs and virtual environments are local generated assets.
 Proceed to [Complete execution](COMPLETE_EXECUTION.md); outputs are explained in
 [Outputs](OUTPUTS.md).
+
+## Optional Battery 3: Docker Compose workers
+
+Follow [Container scalability installation](CONTAINER_SCALABILITY.md#installation-and-deployment)
+to install Docker Engine/Compose and configure SSH access on every host. The source
+image is `containers/worker/Dockerfile`; runtime settings are in
+`configs/container-scale.toml`. Docker ports start at 8491, separate from native
+workers. Verify actual free RAM/disk, enabled memory/swap cgroups and image architecture; do not treat 32 GB
+SD-card storage as available RAM. No registry or network shaping is required.
+
+On the Linux Cloud coordinator, install the native Docker Engine and enable its
+system service. Installing the CLI or Docker Desktop alone is insufficient for
+this deployment. Verify `docker context show` and `docker info`: commands must
+reach the intended host Engine, whose published ports bind to its Tailscale IP.
+Docker Desktop may coexist, but its VM is not the physical-host runtime evaluated
+by this module.
+
+After installation, continue with [Experiments](EXPERIMENTS.md) and
+[Complete execution](COMPLETE_EXECUTION.md#battery-3-container-scalability).
+
+### VPN time synchronization for Edge 2
+
+Edge 2's network did not provide usable public NTP responses. Fog is now the VPN
+time relay: it synchronizes externally with Chrony and permits only Edge 2 to
+query its Tailscale address. This supports comparable event timestamps; benchmark
+elapsed durations still use monotonic clocks. Fog must be available for fresh
+samples, and a synchronized flag does not guarantee a particular accuracy.
+
+On Fog, install `chrony` and put the following in
+`/etc/chrony/conf.d/continuum-vpn.conf`, then restart `chrony`:
+
+```conf
+bindaddress 100.93.73.27
+allow 100.70.9.117/32
+```
+
+On Edge 2, put the following in
+`/etc/systemd/timesyncd.conf.d/continuum-vpn.conf`, then restart
+`systemd-timesyncd`:
+
+```ini
+[Time]
+NTP=100.93.73.27
+FallbackNTP=
+PollIntervalMinSec=32
+PollIntervalMaxSec=128
+```
+
+Check `chronyc tracking` on Fog and `timedatectl timesync-status` plus
+`timedatectl show -p NTPSynchronized` on Edge 2. UDP 123 must be permitted between
+these two VPN addresses. Do not enable a public NTP listener or an unrestricted
+`allow` directive. The relay adds an explicit dependency on Fog and its upstream
+clock; archive time-service evidence when analysing cross-host timestamps.
+
+The optional [adaptive monitoring extension](ADAPTIVE_MONITORING.md) reuses the container-scale dependencies and cached worker images. Configure `configs/adaptive-monitoring.toml` with synthetic workload grants and trust values before execution. No additional daemon or package is required.

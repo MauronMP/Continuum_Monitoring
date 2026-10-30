@@ -74,6 +74,7 @@ def _prepare(
     benchmark: BenchmarkConfig, experiment: DistributedReasoningConfig,
     endpoints: list[Endpoint], layout: str, reasoner: str, target: int,
     validate_graph_digest: bool,
+    replica_endpoints: dict[str, list[Endpoint]] | None = None,
 ) -> tuple[float, dict[str, dict[str, Any]]]:
     if layout == "distributed":
         return distributed_prepare(
@@ -81,10 +82,12 @@ def _prepare(
             timeout_seconds=experiment.point_timeout_seconds,
             target_triples=target, padding_mode=experiment.padding_mode,
             validate_graph_digest=validate_graph_digest,
+            **({"replica_endpoints": replica_endpoints} if replica_endpoints else {}),
         )
     payload = _payload(experiment, reasoner, target, validate_graph_digest)
+    physical_endpoints = endpoints + [r for pool in (replica_endpoints or {}).values() for r in pool]
     return _parallel(
-        endpoints, "/prepare", {item.url: dict(payload) for item in endpoints},
+        physical_endpoints, "/prepare", {item.url: dict(payload) for item in physical_endpoints},
         phase="distributed-reasoning-replicated-prepare",
         timeout=experiment.request_timeout_seconds, retries=0,
     )
@@ -100,6 +103,7 @@ def _measurement(
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     aggregation_started = perf_counter_ns()
     items = list(prepared.values())
+    logical_items = [item for item in items if not item.get("replica_of")]
     inputs = [int(item["input_triples"]) for item in items]
     outputs = [int(item["output_triples"]) for item in items]
     inferred = [int(item.get("inferred_triples", 0)) for item in items]
@@ -121,7 +125,7 @@ def _measurement(
     fragments = np.asarray(inputs, dtype=float)
     closure = (
         max(outputs) if layout == "replicated"
-        else logical_input + sum(inferred)
+        else logical_input + sum(int(item.get("inferred_triples", 0)) for item in logical_items)
     )
     aggregation_ms = (perf_counter_ns() - aggregation_started) / 1_000_000
     benchmark_end_to_end_ms = benchmark_prepare_wall_ms + aggregation_ms
@@ -130,7 +134,7 @@ def _measurement(
         **common,
         "status": "completed", "censored": False, "error": "",
         "asserted_triples": logical_input,
-        "inferred_triples": max(inferred) if layout == "replicated" else sum(inferred),
+        "inferred_triples": max(inferred) if layout == "replicated" else sum(int(item.get("inferred_triples", 0)) for item in logical_items),
         "closure_triples": closure,
         "local_aggregate_inferred_triples": sum(inferred),
         "local_aggregate_closure_triples": sum(outputs),
@@ -174,6 +178,7 @@ def _measurement(
         {
             **common, "node_id": item.get("node_id", item.get("role", "")),
             "role": item.get("role", ""), "tier": item.get("tier_name", ""),
+            "replica_of": item.get("replica_of", ""),
             "input_triples": int(item["input_triples"]),
             "inferred_triples": int(item.get("inferred_triples", 0)),
             "closure_triples": int(item["output_triples"]),
@@ -275,10 +280,26 @@ def _derive_normalized_semantics(rows: list[dict[str, Any]]) -> None:
 
 def _query_client(
     endpoints: list[Endpoint], specs: list[QuerySpec], layout: str,
-    client_index: int, timeout: float,
+    client_index: int, timeout: float, router=None, context=None,
 ) -> tuple[float, int, int, str]:
     started = monotonic()
     try:
+        if router is not None:
+            context = context or {}
+            if layout == "replicated":
+                primary = endpoints[client_index % len(endpoints)]
+                assigned = [(primary, specs, client_index // len(endpoints))]
+            else:
+                assignment = distributed_assignment(specs, endpoints)
+                assigned = [(e, assignment[e.url], client_index) for e in endpoints if assignment.get(e.url)]
+            with ThreadPoolExecutor(max_workers=max(1,len(assigned))) as pool:
+                futures = [pool.submit(router.request, _request, e, index,
+                    {"query_ids": [spec.id for spec in selected], "phase_timeout_seconds": max(timeout-5,.1)},
+                    timeout, context) for e, selected, index in assigned]
+                responses = [f.result() for f in futures]
+            return ((monotonic()-started)*1000,
+                sum(int(r.get("query_count",0)) for r in responses),
+                sum(int(r.get("request_bytes",0))+int(r.get("response_bytes",0)) for r in responses), "")
         if layout == "replicated":
             endpoint = endpoints[client_index % len(endpoints)]
             response = _request(
@@ -306,21 +327,28 @@ def _query_client(
             network = sum(int(item.get("request_bytes", 0)) + int(item.get("response_bytes", 0)) for item in responses.values())
         return (monotonic() - started) * 1000, processed, network, ""
     except Exception as error:
-        return (monotonic() - started) * 1000, 0, 0, error_text(error)
+        detail = error_text(error)
+        if layout == "replicated" and endpoints and router is None:
+            endpoint = endpoints[client_index % len(endpoints)]
+            detail = f"role={endpoint.role} endpoint={endpoint.url}; {detail}"
+        return (monotonic() - started) * 1000, 0, 0, detail
 
 
 def _query_scalability(
     common: dict[str, Any], endpoints: list[Endpoint], specs: list[QuerySpec],
-    layout: str, config: DistributedReasoningConfig,
+    layout: str, config: DistributedReasoningConfig, router=None,
 ) -> list[dict[str, Any]]:
     rows = []
     for concurrency in config.query_concurrency:
         latencies = []
         processed = network = errors = 0
+        error_details = []
         wall_started = monotonic()
         for round_index in range(1, config.query_rounds + 1):
             with ThreadPoolExecutor(max_workers=concurrency) as executor:
-                futures = [executor.submit(_query_client, endpoints, specs, layout, index, config.request_timeout_seconds)
+                futures = [executor.submit(_query_client, endpoints, specs, layout,
+                    index + (round_index-1)*concurrency, config.request_timeout_seconds,
+                    **({"router": router, "context": {**common,"concurrency":concurrency,"round":round_index,"client":index}} if router else {}))
                            for index in range(concurrency)]
                 for future in as_completed(futures):
                     latency, count, transferred, error = future.result()
@@ -328,6 +356,8 @@ def _query_scalability(
                         latencies.append(latency)
                     processed += count; network += transferred
                     errors += bool(error)
+                    if error:
+                        error_details.append(error)
         wall_ms = (monotonic() - wall_started) * 1000
         attempts = concurrency * config.query_rounds
         rows.append({
@@ -339,6 +369,7 @@ def _query_scalability(
             "latency_p95_ms": float(np.percentile(latencies, 95)) if latencies else "",
             "latency_p99_ms": float(np.percentile(latencies, 99)) if latencies else "",
             "error_count": errors, "error_rate": errors / attempts,
+            "error_details": json.dumps(error_details),
             "network_bytes": network,
             "status": "completed" if not errors else "partial_failure",
         })
@@ -448,10 +479,14 @@ def _derive_semantic_validation(
             row["semantic_validation_queries"] = len(selected)
             row["semantic_validation_rate"] = valid_count / len(selected)
             row["semantic_equivalence_status"] = (
-                "query_projection_equivalent"
+                "replicated_reference_unavailable"
+                if any(item["status"] == "replicated_reference_unavailable" for item in selected)
+                else "query_projection_equivalent"
                 if valid_count == len(selected)
                 else "query_projection_mismatch"
             )
+            if row["semantic_equivalence_status"] == "replicated_reference_unavailable":
+                row["semantic_validation_rate"] = ""
         elif row.get("semantic_equivalence_status") == "validation_failed":
             row["semantic_validation_queries"] = 0
             row["semantic_validation_rate"] = ""
@@ -524,15 +559,33 @@ def run_distributed_reasoning_scalability(
     benchmark: BenchmarkConfig, experiment: DistributedReasoningConfig,
     target: str, output_root: Path, endpoint_urls: list[str] | None = None,
     topology: Topology | None = None,
+    query_each_repetition: bool = False,
+    replica_owners: dict[str, str] | None = None,
+    origin_topology: Topology | None = None,
 ) -> Path:
     if target != "physical":
         raise ValueError("Distributed reasoning scalability requires physical workers")
-    all_endpoints = discover(
-        endpoint_urls or [],
-        topology.active_nodes if topology else None,
-        topology.fingerprint if topology else None,
-        benchmark,
-    )
+    if replica_owners and origin_topology and topology:
+        originals = [n for n in topology.active_nodes if n.node_id not in replica_owners]
+        copies = [n for n in topology.active_nodes if n.node_id in replica_owners]
+        all_endpoints = discover([n.endpoint for n in originals], originals, origin_topology.fingerprint, benchmark)
+        all_endpoints += discover([n.endpoint for n in copies], copies, topology.fingerprint, benchmark)
+    else:
+        all_endpoints = discover(
+            endpoint_urls or [], topology.active_nodes if topology else None,
+            topology.fingerprint if topology else None, benchmark)
+    router = None
+    replica_endpoints = {}
+    if replica_owners:
+        from .adaptive_monitoring.pools import ReplicaRouter
+        router = ReplicaRouter(all_endpoints, replica_owners)
+        for endpoint in all_endpoints:
+            if endpoint.role in replica_owners:
+                health = _request(endpoint.url, "/health", timeout=benchmark.distributed.request_timeout_seconds, retries=0)
+                if health.get("logical_owner") != replica_owners[endpoint.role]:
+                    raise ValueError(f"Replica ownership mismatch: {endpoint.role}")
+        replica_endpoints = {owner: pool[1:] for owner, pool in router.pools.items() if len(pool)>1}
+        all_endpoints = [e for e in all_endpoints if e.role not in replica_owners]
     effective = replace(
         benchmark,
         distributed=replace(benchmark.distributed, request_timeout_seconds=experiment.request_timeout_seconds),
@@ -563,6 +616,8 @@ def run_distributed_reasoning_scalability(
                         "layout": layout, "reasoner": reasoner, **semantics,
                         "ontology_profile": "runtime-checked-rdf-owl-input",
                         "target_triples": triples, "node_count": node_count,
+                        "service_count": node_count + sum(len(pool) for pool in replica_endpoints.values()),
+                        "routing_contract": "origin-preserving-round-robin-v1" if router else "baseline",
                         "triples_per_node": triples_per_node, "repetition": repetition,
                         "seed": experiment.seed, "endpoint_roles": ",".join(item.role for item in endpoints),
                         "validation_sampled": bool(experiment.semantic_validation and repetition == 1),
@@ -585,7 +640,16 @@ def run_distributed_reasoning_scalability(
                         wall_ms, prepared = _prepare(
                             effective, experiment, endpoints, layout, reasoner,
                             triples, bool(experiment.semantic_validation and repetition == 1),
+                            **({"replica_endpoints": replica_endpoints} if router else {}),
                         )
+                        if router:
+                            by_id = {r["node_id"]: r for r in prepared.values()}
+                            for replica, owner in replica_owners.items():
+                                by_id[replica]["replica_of"] = owner
+                                if experiment.semantic_validation and repetition == 1:
+                                    for field in ("input_graph_digest", "closure_graph_digest"):
+                                        if not by_id[replica].get(field) or by_id[replica][field] != by_id[owner].get(field):
+                                            raise ValueError(f"Replica semantic mismatch: {replica} vs {owner}: {field}")
                         if (
                             not unlimited_execution()
                             and monotonic() - started > experiment.point_timeout_seconds
@@ -608,10 +672,10 @@ def run_distributed_reasoning_scalability(
                                 row["semantic_validation_error"] = error_text(validation_error)
                         if (
                             experiment.query_concurrency
-                            and repetition == 1
+                            and (repetition == 1 or query_each_repetition)
                             and scaling_mode == "strong"
                         ):
-                            query_rows.extend(_query_scalability(common, endpoints, specs, layout, experiment))
+                            query_rows.extend(_query_scalability(common, endpoints, specs, layout, experiment, **({"router": router} if router else {})))
                     except Exception as error:
                         status = failure_status(error)
                         message = error_text(error)
@@ -628,17 +692,29 @@ def run_distributed_reasoning_scalability(
                             stopped[key] = message
                         if profile_incompatible:
                             incompatible_profiles[profile_key] = message
+                    # Preserve completed points if a later phase or process fails.
+                    checkpoint = output_root / "distributed-reasoning-scalability"
+                    write_dict_rows(checkpoint / "distributed-reasoning-summary.csv", rows, empty_message="No measurements yet")
+                    if node_rows:
+                        write_dict_rows(checkpoint / "node-runs.csv", node_rows, empty_message="No node measurements yet")
+                    if router and router.records:
+                        write_dict_rows(checkpoint / "replica-routing.csv", router.records, empty_message="No routed requests")
+                    if query_rows:
+                        write_dict_rows(checkpoint / "query-scalability.csv", query_rows, empty_message="No queries yet")
     _derive_scaling(rows)
     _derive_normalized_semantics(rows)
     validation_rows = _derive_semantic_validation(rows, semantic_projections)
     output = output_root / "distributed-reasoning-scalability"
     write_dict_rows(output / "distributed-reasoning-summary.csv", rows, empty_message="No distributed reasoning rows")
-    write_dict_rows(output / "node-runs.csv", node_rows, empty_message="No distributed reasoning node rows")
+    if node_rows:
+        write_dict_rows(output / "node-runs.csv", node_rows, empty_message="No distributed reasoning node rows")
     if query_rows:
         write_dict_rows(output / "query-scalability.csv", query_rows, empty_message="No query scalability rows")
     if validation_rows:
         write_dict_rows(output / "semantic-validation.csv", validation_rows, empty_message="No semantic validation rows")
-    write_dict_rows(output / "distributed-reasoning-statistics.csv", _statistics(rows, experiment), empty_message="No distributed reasoning statistics")
+    statistics_rows = _statistics(rows, experiment)
+    if statistics_rows:
+        write_dict_rows(output / "distributed-reasoning-statistics.csv", statistics_rows, empty_message="No distributed reasoning statistics")
     write_dict_rows(output / "capacity-summary.csv", _capacity(rows), empty_message="No capacity observations")
     metadata = {
         **release_identity(), "semantic_assets_digest": semantic_assets_digest(benchmark), "generated_at": datetime.now(timezone.utc).isoformat(),

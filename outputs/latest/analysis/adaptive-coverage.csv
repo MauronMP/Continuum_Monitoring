@@ -1,0 +1,13 @@
+placement,scenario,users,layout,status
+1,users-1,1,distributed,execution_recovered
+1,users-1,1,replicated,not_needed
+1,users-50,50,distributed,execution_recovered
+1,users-50,50,replicated,not_needed
+1,users-100,100,distributed,execution_recovered
+1,users-100,100,replicated,not_needed
+1,users-500,500,distributed,execution_recovered
+1,users-500,500,replicated,execution_recovered
+1,users-1000,1000,distributed,execution_recovered
+1,users-1000,1000,replicated,execution_recovered
+1,users-2000,2000,distributed,not_recovered
+1,users-2000,2000,replicated,failed

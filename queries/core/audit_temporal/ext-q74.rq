@@ -3,7 +3,7 @@
 # Requirements: RNF-36
 # Policies: P-GOV-05
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,9 +16,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?entity ?from ?to ?reason WHERE {
-  ?entity a ?type . ?type rdfs:subClassOf* :TemporalEntity . FILTER(?type != :TemporalEntity && ?type != :TrustAssessment)
-  OPTIONAL { ?entity :validFrom ?from }
-  OPTIONAL { ?entity :validTo ?to }
+  ?entity a ?type . ?type rdfs:subClassOf* comon:TemporalEntity . FILTER(?type != comon:TemporalEntity && ?type != comon:TrustAssessment)
+  OPTIONAL { ?entity comon:validFrom ?from }
+  OPTIONAL { ?entity comon:validTo ?to }
   BIND(IF(!BOUND(?from), "missing-validFrom", IF(BOUND(?to) && ?to < ?from, "validTo-before-validFrom", "")) AS ?reason)
   FILTER(?reason != "")
 }

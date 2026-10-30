@@ -3,7 +3,7 @@
 # Requirements: RF-67, RNF-30
 # Policies: P-AUD-07
 # Current v4.0.0 result: 204 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,9 +16,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?user ?contract ?effectiveRange ?purpose ?zone ?policy ?node ?alternative ?altTier ?altScore ?trust ?selectedTier ?action ?from WHERE {
-  ?evaluation a :EvaluationState ; :evaluationUser ?user ; :auditsContract ?contract ; :hasAuthorizationDecision/:hasEffectiveConsentRange ?effectiveRange ; :evaluationPurpose ?purpose ; :evaluationZone ?zone ; :selectedModelTier ?selectedTier ; :resultedInAction ?action ; :validFrom ?from .
-  OPTIONAL { ?evaluation :appliedPolicy ?policy }
-  OPTIONAL { ?evaluation :evaluatesNode ?node . OPTIONAL { ?node :hasNodeState/:hasTrustAssessment/:hasTrustScore ?trust } }
-  OPTIONAL { ?evaluation :hasDecisionAlternative ?alternative . ?alternative :alternativeModelTier ?altTier . OPTIONAL { ?alternative :hasAHPScore ?altScore } }
+  ?evaluation a comon:EvaluationState ; comon:evaluationUser ?user ; comon:auditsContract ?contract ; comon:hasAuthorizationDecision/comon:hasEffectiveConsentRange ?effectiveRange ; comon:evaluationPurpose ?purpose ; comon:evaluationZone ?zone ; comon:selectedModelTier ?selectedTier ; comon:resultedInAction ?action ; comon:validFrom ?from .
+  OPTIONAL { ?evaluation comon:appliedPolicy ?policy }
+  OPTIONAL { ?evaluation comon:evaluatesNode ?node . OPTIONAL { ?node comon:hasNodeState/comon:hasTrustAssessment/comon:hasTrustScore ?trust } }
+  OPTIONAL { ?evaluation comon:hasDecisionAlternative ?alternative . ?alternative comon:alternativeModelTier ?altTier . OPTIONAL { ?alternative comon:hasAHPScore ?altScore } }
 }
 ORDER BY ?evaluation ?policy ?altTier

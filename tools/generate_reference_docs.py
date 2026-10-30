@@ -168,6 +168,17 @@ def _front_matter(title: str, source: str) -> list[str]:
     ]
 
 
+def _scope_notes(identifier: str) -> list[str]:
+    manifest = tomllib.loads((ROOT / "configs/scope-contracts.toml").read_text())
+    item = manifest["items"].get(identifier)
+    if item is None:
+        return []
+    return [
+        f"- Current verification scope: `{item['verification_kind']}`; see [scope adaptation](../SCOPE_ADAPTATION.md).",
+        "- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.",
+    ]
+
+
 def requirements_document(graph: Graph, queries: list[QueryRow]) -> str:
     lines = _front_matter(
         "Functional, non-functional and validation requirements",
@@ -221,6 +232,7 @@ def requirements_document(graph: Graph, queries: list[QueryRow]) -> str:
                     "",
                     statement,
                     "",
+                    *_scope_notes(identifier),
                     f"- Direct policies: {_codes(policies)}",
                     f"- Direct mechanisms: {_codes(mechanisms)}",
                     f"- Catalogued queries: {_codes(query_ids)}",
@@ -238,10 +250,10 @@ def policies_document(graph: Graph, queries: list[QueryRow]) -> str:
     lines.extend(
         [
             "The release declares 79 policies in 12 categories and 55",
-            "enforcement mechanisms. Hard constraints are applied before",
+            "declared enforcement mechanisms. The normative design requires hard constraints before",
             "optimization: effective authorization is the most restrictive",
             "intersection of consent, semantic contract, zone, security and",
-            "resource eligibility.",
+            "resource eligibility. These declarations do not establish complete runtime enforcement.",
             "",
             "## Policy categories",
             "",
@@ -278,6 +290,7 @@ def policies_document(graph: Graph, queries: list[QueryRow]) -> str:
                 "",
                 _literal(graph, resource, EX.hasPolicyStatement),
                 "",
+                *_scope_notes(identifier),
                 f"- Type: {_label(graph, policy_type)}",
                 "- Categories: " + "; ".join(f"{_label(graph, category)} (`{_ident(category)}`)" for category in policy_categories),
                 f"- Version: `{_literal(graph, resource, EX.policyVersion)}`",
@@ -410,7 +423,8 @@ def ontology_document(graph: Graph) -> str:
             "audit and validation. Federated learning is an optional module. The wellbeing domain",
             "adds wearables, physiological observations, stress and sleep.",
             "",
-            "Hard constraints are evaluated before optimization. Consent,",
+            "The normative design requires hard constraints before optimization;",
+            "full runtime enforcement is not established by this model. Consent,",
             "contract, zone and security remain independent normative sources.",
             "Decisions are reified so their inputs, alternatives, selected tier,",
             "policies, trust evidence and resulting action can be audited.",
@@ -418,7 +432,7 @@ def ontology_document(graph: Graph) -> str:
             "## Standards and serialization",
             "",
             "- RDF 1.1 and Turtle for serialization.",
-            "- OWL 2 DL modeling, with an optional HermiT release check.",
+            "- OWL 2 DL modeling; native consistency checks support HermiT, Openllet, JFact and Konclude.",
             "- SHACL for closed-world structural validation.",
             "- SPARQL 1.1 for inventory, reports, review gates and violations.",
             "- SOSA/SSN, SAREF, FOAF and GeoSPARQL reuse where applicable.",

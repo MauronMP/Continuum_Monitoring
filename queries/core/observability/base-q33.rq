@@ -3,7 +3,7 @@
 # Requirements: RF-29, RNF-27
 # Policies: P-OPS-05
 # Current v4.0.0 result: 5 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,9 +16,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?nodeType (AVG(?usage) AS ?avgUsage) (COUNT(?state) AS ?samples) WHERE {
-  ?node :hasNodeState ?state ; a ?nodeType .
-  ?state :resourceUsagePercent ?usage .
-  ?nodeType rdfs:subClassOf* :ComputationalNode .
+  ?node comon:hasNodeState ?state ; a ?nodeType .
+  ?state comon:resourceUsagePercent ?usage .
+  ?nodeType rdfs:subClassOf* comon:ComputationalNode .
 }
 GROUP BY ?nodeType
 ORDER BY ?nodeType

@@ -3,7 +3,7 @@
 # Requirements: RNF-15
 # Policies: P-DATA-03
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,7 +16,7 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?transfer ?data WHERE {
-  ?transfer a :TransferEvent ; :carriesData ?data .
-  ?data :hasDataSensitivity :SensitiveData .
-  FILTER NOT EXISTS { ?transfer :appliedSecurityMechanism ?m . ?m :protectsInTransit true }
+  ?transfer a comon:TransferEvent ; comon:carriesData ?data .
+  ?data comon:hasDataSensitivity comon:SensitiveData .
+  FILTER NOT EXISTS { ?transfer comon:appliedSecurityMechanism ?m . ?m comon:protectsInTransit true }
 }

@@ -9,9 +9,9 @@ require wellbeing or a federated-learning implementation.
 
 | Item | Value |
 | --- | --- |
-| Version / revision | `4.0.0` / `4.0.0-monitoringcontinuum-v1` |
+| Version / revision | `4.0.0` / `4.0.0-monitoringcontinuum-v2` |
 | Ontology IRI | `http://example.org/monitoringcontinuum` |
-| Term namespace / prefix | `http://example.org/monitoringcontinuum#` / `mc:` |
+| Term namespace / prefix | `http://example.org/monitoringcontinuum#` / `comon:` |
 | Full input manifest | `configs/benchmark.toml` |
 | Shape sources | `ontology/shapes/core-compliance.ttl`, `ontology/shapes/federated-learning.ttl` |
 
@@ -99,8 +99,8 @@ records dispositions. Three observations have unknown source measurement units;
 these are additional data-quality limitations, not part of the 57 warnings.
 Do not invent historical values to remove warnings.
 
-Query traceability covers 102 of 116 requirements and 69 of 79 policies. Missing
-coverage is recorded rather than represented as validated. Some declared concepts
+Query traceability covers 106 of 116 requirements and 73 of 79 policies. The remaining 10 requirements and 6 policies have software verification contracts,
+not SPARQL coverage. Some declared concepts
 model future capabilities, including learning and mobility; declarations do not
 establish an operational implementation. Multicategory policy cost attribution
 must account for shared queries rather than double counting their elapsed time.
@@ -110,3 +110,23 @@ plan conformance. They preclude claims of full policy enforcement, complete
 clinical validation or universal semantic correctness. Distribution-specific
 limits, production privacy boundaries, absent IoT workers and topology changes
 are documented only in [Ontology distribution](ONTOLOGY_DISTRIBUTION.md).
+
+For the revised statements and their verification boundaries, see
+[Scope adaptation](SCOPE_ADAPTATION.md). Historical failures and warning closure
+criteria remain in [Validation gaps](VALIDATION_GAPS.md).
+
+## Public namespace notation
+
+The maintained Turtle, SPARQL and reference documentation use `comon:` for
+Continuum Monitoring. Its namespace remains
+`http://example.org/monitoringcontinuum#`; this is a prefix change, not an entity
+or ontology-IRI migration. Existing full-IRI identifiers remain valid. The
+catalogue's former empty SPARQL prefix is now explicit as `comon:` as well.
+Historical experiment archives retain their original notation and checksums.
+
+The migration checks resolved query algebra for all 115 queries and graph
+isomorphism after normalizing the changed prefix wording in RDF comments.
+Resource identities, axioms, policies and query operations are unchanged.
+Semantic asset byte digests nevertheless change, so workers must be synchronized
+before new experiments. Use a fresh baseline for comparisons with the updated
+adaptive implementation.

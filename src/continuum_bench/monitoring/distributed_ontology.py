@@ -122,6 +122,7 @@ def _prepare(
     target_triples: int = 0,
     padding_mode: str = "neutral",
     validate_graph_digest: bool = True,
+    replica_endpoints: dict[str, list[Endpoint]] | None = None,
 ) -> tuple[float, dict[str, dict[str, Any]]]:
     # Placement and serialization are part of preparation wall time, just as
     # replicated worker graph construction is included in its HTTP phase.
@@ -175,6 +176,11 @@ def _prepare(
             for endpoint in endpoints
         }
         serialization_ms = (monotonic() - serialization_started) * 1000
+    physical_endpoints = list(endpoints)
+    for endpoint in endpoints:
+        for replica in (replica_endpoints or {}).get(endpoint.role, []):
+            payloads[replica.url] = dict(payloads[endpoint.url])
+            physical_endpoints.append(replica)
     placement_ms = (monotonic() - started) * 1000
     timeout = min(
         remaining_seconds(started, point_budget),
@@ -195,10 +201,10 @@ def _prepare(
         ), flush=True,
     )
     transport_wall_ms, prepared = _parallel(
-        endpoints, "/prepare", payloads, phase="distributed-prepare",
+        physical_endpoints, "/prepare", payloads, phase="distributed-prepare",
         timeout=timeout, retries=transport.request_retries,
     )
-    for endpoint in endpoints:
+    for endpoint in physical_endpoints:
         expected = payloads[endpoint.url]["fragment"]
         response = prepared[endpoint.url]
         if (
@@ -207,6 +213,7 @@ def _prepare(
             or response.get("input_triples") != expected["triples"]
         ):
             raise ValueError(f"Worker {endpoint.role!r} did not confirm its assigned fragment")
+        response["replica_of"] = expected["node_id"] if expected["node_id"] != endpoint.role else ""
         response["coordinator_placement_ms"] = placement_ms
         response["partition_ms"] = partition_ms
         response["serialization_ms"] = serialization_ms

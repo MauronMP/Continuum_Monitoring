@@ -1,0 +1,106 @@
+{
+  "status": "partial",
+  "steps": [
+    {
+      "scenario": "users-1",
+      "family": "users",
+      "containers_per_host": 1,
+      "logical_participants": 6,
+      "status": "partial",
+      "warmup_statuses": [
+        "completed",
+        "completed"
+      ],
+      "statuses": {
+        "completed": 6
+      },
+      "results": "placement-1/users-1/measured/distributed-reasoning-scalability"
+    },
+    {
+      "scenario": "users-50",
+      "family": "users",
+      "containers_per_host": 1,
+      "logical_participants": 6,
+      "status": "partial",
+      "recovery_action": "restart stopped module containers before next scenario",
+      "warmup_statuses": [
+        "completed",
+        "completed"
+      ],
+      "statuses": {
+        "completed": 6
+      },
+      "results": "placement-1/users-50/measured/distributed-reasoning-scalability"
+    },
+    {
+      "scenario": "users-100",
+      "family": "users",
+      "containers_per_host": 1,
+      "logical_participants": 6,
+      "status": "partial",
+      "recovery_action": "restart stopped module containers before next scenario",
+      "warmup_statuses": [
+        "completed",
+        "completed"
+      ],
+      "statuses": {
+        "completed": 6
+      },
+      "results": "placement-1/users-100/measured/distributed-reasoning-scalability"
+    },
+    {
+      "scenario": "users-500",
+      "family": "users",
+      "containers_per_host": 1,
+      "logical_participants": 6,
+      "status": "partial",
+      "recovery_action": "restart stopped module containers before next scenario",
+      "warmup_statuses": [
+        "completed",
+        "completed"
+      ],
+      "statuses": {
+        "completed": 5,
+        "timeout": 1
+      },
+      "results": "placement-1/users-500/measured/distributed-reasoning-scalability"
+    },
+    {
+      "scenario": "users-1000",
+      "family": "users",
+      "containers_per_host": 1,
+      "logical_participants": 6,
+      "status": "partial",
+      "recovery_action": "restart stopped module containers before next scenario",
+      "warmup_statuses": [
+        "completed",
+        "completed"
+      ],
+      "statuses": {
+        "completed": 5,
+        "timeout": 1
+      },
+      "results": "placement-1/users-1000/measured/distributed-reasoning-scalability"
+    },
+    {
+      "scenario": "users-2000",
+      "family": "users",
+      "containers_per_host": 1,
+      "logical_participants": 6,
+      "status": "partial",
+      "recovery_action": "restart stopped module containers before next scenario",
+      "warmup_statuses": [
+        "timeout",
+        "completed"
+      ],
+      "statuses": {
+        "completed": 2,
+        "timeout": 4
+      },
+      "results": "placement-1/users-2000/measured/distributed-reasoning-scalability"
+    }
+  ],
+  "scope": "Coordinated container participants on physical hosts; not decentralized",
+  "warmup_excluded": true,
+  "physical_host_count": 6
+}

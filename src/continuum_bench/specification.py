@@ -16,7 +16,7 @@ from . import __version__
 EX = Namespace("http://example.org/monitoringcontinuum#")
 ONTOLOGY_IRI = URIRef("http://example.org/monitoringcontinuum")
 ONTOLOGY_VERSION = "4.0.0"
-ONTOLOGY_REVISION = "4.0.0-monitoringcontinuum-v1"
+ONTOLOGY_REVISION = "4.0.0-monitoringcontinuum-v2"
 EXPECTED_QUERY_IDS = frozenset(
     {
         *{f"BASE-Q{i:02d}" for i in range(1, 36)},
@@ -57,7 +57,7 @@ def release_identity() -> dict[str, Any]:
         "ontology_revision": ONTOLOGY_REVISION,
         "query_contract": "BASE-Q01..BASE-Q35;EXT-Q01..EXT-Q80",
         "query_count": len(EXPECTED_QUERY_IDS),
-        "policy_artifact": "POLICIES-REV-01",
+        "policy_artifact": "POLICIES-REV-02",
         "reasoning_contract": REASONING_CONTRACT,
         "runtime_versions": installed_versions(),
     }

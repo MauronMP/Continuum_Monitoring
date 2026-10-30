@@ -3,7 +3,7 @@
 # Requirements: RF-14, RF-15, RF-66
 # Policies: P-AUD-06, P-MODEL-05
 # Current v4.0.0 result: 11 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,14 +16,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?scenario ?user ?node ?method ?tier ?profitability ?action ?from WHERE {
-  ?evaluation a :EvaluationState .
-  OPTIONAL { ?evaluation :partOfScenario ?scenario }
-  OPTIONAL { ?evaluation :evaluationUser ?user }
-  OPTIONAL { ?evaluation :evaluatesNode ?node }
-  OPTIONAL { ?evaluation :hasDecisionMethod ?method }
-  OPTIONAL { ?evaluation :selectedModelTier ?tier }
-  OPTIONAL { ?evaluation :hasProfitability ?profitability }
-  OPTIONAL { ?evaluation :resultedInAction ?action }
-  OPTIONAL { ?evaluation :validFrom ?from }
+  ?evaluation a comon:EvaluationState .
+  OPTIONAL { ?evaluation comon:partOfScenario ?scenario }
+  OPTIONAL { ?evaluation comon:evaluationUser ?user }
+  OPTIONAL { ?evaluation comon:evaluatesNode ?node }
+  OPTIONAL { ?evaluation comon:hasDecisionMethod ?method }
+  OPTIONAL { ?evaluation comon:selectedModelTier ?tier }
+  OPTIONAL { ?evaluation comon:hasProfitability ?profitability }
+  OPTIONAL { ?evaluation comon:resultedInAction ?action }
+  OPTIONAL { ?evaluation comon:validFrom ?from }
 }
 ORDER BY ?from ?evaluation

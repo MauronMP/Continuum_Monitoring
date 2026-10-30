@@ -3,7 +3,7 @@
 # Requirements: RF-18, RF-48
 # Policies: P-ADAPT-04, P-ADAPT-07
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,17 +16,17 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?action ?scenario ?origin ?target ?reason WHERE {
-  VALUES ?actionType { :MigrationEvent :DelegationEvent :OffloadingEvent }
-  ?action a ?actionType ; :actionOriginNode ?origin ; :actionTargetNode ?target ; :partOfScenario ?scenario .
-  ?target :hasNodeState ?ts . ?ts :partOfScenario ?scenario .
+  VALUES ?actionType { comon:MigrationEvent comon:DelegationEvent comon:OffloadingEvent }
+  ?action a ?actionType ; comon:actionOriginNode ?origin ; comon:actionTargetNode ?target ; comon:partOfScenario ?scenario .
+  ?target comon:hasNodeState ?ts . ?ts comon:partOfScenario ?scenario .
   {
-    { ?ts :hasAvailability :NotAvailable } UNION { ?ts :hasCommunication :NoConnectionComm } UNION { ?ts :hasWorkload :SaturatedWorkload } UNION { ?ts :hasOperationalStatus :Inoperative }
+    { ?ts comon:hasAvailability comon:NotAvailable } UNION { ?ts comon:hasCommunication comon:NoConnectionComm } UNION { ?ts comon:hasWorkload comon:SaturatedWorkload } UNION { ?ts comon:hasOperationalStatus comon:Inoperative }
     BIND("target-hard-ineligible" AS ?reason)
   }
   UNION
   {
-    ?origin :hasNodeState ?os . ?os :partOfScenario ?scenario ; :hasTrustAssessment/:hasTrustScore ?originTrust .
-    ?ts :hasTrustAssessment/:hasTrustScore ?targetTrust .
+    ?origin comon:hasNodeState ?os . ?os comon:partOfScenario ?scenario ; comon:hasTrustAssessment/comon:hasTrustScore ?originTrust .
+    ?ts comon:hasTrustAssessment/comon:hasTrustScore ?targetTrust .
     FILTER(?targetTrust < ?originTrust)
     BIND("target-lower-trust" AS ?reason)
   }

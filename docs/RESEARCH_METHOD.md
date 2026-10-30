@@ -7,10 +7,12 @@ experiments. Policies govern the selected monitoring plan; an ontology represent
 resources, context and relationships. Wellbeing/stress is the motivating domain,
 not the only possible domain and not a clinically validated outcome.
 
-The current evidence is organized into two batteries documented in
+The historical scientific acquisitions belong to the first two batteries documented in
 [Experiments](EXPERIMENTS.md). Battery 1 measures infrastructure/placement costs
 and contains local policy-plan diagnostics. Battery 2 compares three alternative
-decision implementations per host. The planned four-strategy extension is not
+decision implementations per host. Battery 3 now provides containerized scalability
+on the same hosts, with distinct participant and physical-resource accounting;
+engineering acceptance runs are not full scientific campaigns. The planned four-strategy extension is not
 implemented and requires raw observations and independent acceptance criteria.
 
 ## Mechanism versus model

@@ -3,7 +3,7 @@
 # Requirements: RF-61, RNF-19
 # Policies: P-DATA-02
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -17,11 +17,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?identifier ?identifierType ?scope ?value WHERE {
   VALUES ?identifierType {
-    :PseudonymousIdentifier :AnonymousIdentifier :DirectIdentifier
+    comon:PseudonymousIdentifier comon:AnonymousIdentifier comon:DirectIdentifier
   }
-  ?user a :User ; :hasIdentifier ?identifier .
+  ?user a comon:User ; comon:hasIdentifier ?identifier .
   ?identifier a ?identifierType .
-  OPTIONAL { ?identifier :identifierScope ?scope }
-  OPTIONAL { ?identifier :identifierValue ?value }
+  OPTIONAL { ?identifier comon:identifierScope ?scope }
+  OPTIONAL { ?identifier comon:identifierValue ?value }
 }
 ORDER BY ?user ?identifier

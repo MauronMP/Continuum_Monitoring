@@ -1,9 +1,9 @@
 # Type: report
 # Purpose: Evaluate federated learning session and payload report using the declared query contract.
 # Requirements: RF-21, RF-22, RF-23, RF-25
-# Policies: P-FL-01, P-FL-06, P-FL-07
+# Policies: P-FL-01, P-FL-06, P-FL-07, P-CONS-06
 # Current v4.0.0 result: 2 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,14 +16,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?session ?payload ?purpose ?requiredRange ?model ?data ?personal ?individualized ?persistent WHERE {
-  ?session a :FederatedLearningSession .
-  OPTIONAL { ?session :hasPayloadType ?payload }
-  OPTIONAL { ?session :hasProcessingPurpose ?purpose }
-  OPTIONAL { ?session :requiresConsentRange ?requiredRange }
-  OPTIONAL { ?session :updatesModel ?model }
-  OPTIONAL { ?session :transfersData ?data }
-  OPTIONAL { ?session :containsPersonalData ?personal }
-  OPTIONAL { ?session :containsIndividualizedGradients ?individualized }
-  OPTIONAL { ?session :containsPersistentIdentifier ?persistent }
+  ?session a comon:FederatedLearningSession .
+  OPTIONAL { ?session comon:hasPayloadType ?payload }
+  OPTIONAL { ?session comon:hasProcessingPurpose ?purpose }
+  OPTIONAL { ?session comon:requiresConsentRange ?requiredRange }
+  OPTIONAL { ?session comon:updatesModel ?model }
+  OPTIONAL { ?session comon:transfersData ?data }
+  OPTIONAL { ?session comon:containsPersonalData ?personal }
+  OPTIONAL { ?session comon:containsIndividualizedGradients ?individualized }
+  OPTIONAL { ?session comon:containsPersistentIdentifier ?persistent }
 }
 ORDER BY ?session

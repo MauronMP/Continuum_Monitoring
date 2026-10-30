@@ -3,7 +3,7 @@
 # Requirements: RF-17, RF-47, RNF-12
 # Policies: P-NODE-01, P-NODE-02
 # Current v4.0.0 result: 2 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,17 +16,17 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?node ?state ?workload ?availability ?communication ?operational WHERE {
-  ?node :hasNodeState ?state .
-  ?state a :NodeState .
-  OPTIONAL { ?state :hasWorkload ?workload }
-  OPTIONAL { ?state :hasAvailability ?availability }
-  OPTIONAL { ?state :hasCommunication ?communication }
-  OPTIONAL { ?state :hasOperationalStatus ?operational }
+  ?node comon:hasNodeState ?state .
+  ?state a comon:NodeState .
+  OPTIONAL { ?state comon:hasWorkload ?workload }
+  OPTIONAL { ?state comon:hasAvailability ?availability }
+  OPTIONAL { ?state comon:hasCommunication ?communication }
+  OPTIONAL { ?state comon:hasOperationalStatus ?operational }
   FILTER(
-    ?workload = :SaturatedWorkload ||
-    ?availability = :NotAvailable ||
-    ?communication = :NoConnectionComm ||
-    ?operational = :Inoperative
+    ?workload = comon:SaturatedWorkload ||
+    ?availability = comon:NotAvailable ||
+    ?communication = comon:NoConnectionComm ||
+    ?operational = comon:Inoperative
   )
 }
 ORDER BY ?node

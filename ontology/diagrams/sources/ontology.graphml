@@ -11,2772 +11,2772 @@
     <node id="n2ad15ced5934e3ffdea8">
       <data key="iri">http://example.org/monitoringcontinuum#AHP_consistency_threshold</data>
       <data key="label">AHP consistency threshold</data>
-      <data key="qname">mc:AHP_consistency_threshold</data>
+      <data key="qname">comon:AHP_consistency_threshold</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n3231a3a569698e5eb9a7">
       <data key="iri">http://example.org/monitoringcontinuum#AIModel</data>
       <data key="label">AI Model</data>
-      <data key="qname">mc:AIModel</data>
+      <data key="qname">comon:AIModel</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="n6a64d2e87fb50525d7d8">
       <data key="iri">http://example.org/monitoringcontinuum#AccelerometerSensor</data>
       <data key="label">Accelerometer Sensor</data>
-      <data key="qname">mc:AccelerometerSensor</data>
+      <data key="qname">comon:AccelerometerSensor</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="nd9145eb9744054503cf0">
       <data key="iri">http://example.org/monitoringcontinuum#AcceptanceProfile</data>
       <data key="label">Acceptance Profile</data>
-      <data key="qname">mc:AcceptanceProfile</data>
+      <data key="qname">comon:AcceptanceProfile</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="nbaaab63f8137d729f8ef">
       <data key="iri">http://example.org/monitoringcontinuum#AdaptabilityLevel</data>
       <data key="label">Adaptability Level</data>
-      <data key="qname">mc:AdaptabilityLevel</data>
+      <data key="qname">comon:AdaptabilityLevel</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nca58c239383afcb66cfc">
       <data key="iri">http://example.org/monitoringcontinuum#AdaptationAction</data>
       <data key="label">Adaptation Action</data>
-      <data key="qname">mc:AdaptationAction</data>
+      <data key="qname">comon:AdaptationAction</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nd367d529a0dd8ae19b8a">
       <data key="iri">http://example.org/monitoringcontinuum#AnonymousIdentifier</data>
       <data key="label">Anonymous Identifier</data>
-      <data key="qname">mc:AnonymousIdentifier</data>
+      <data key="qname">comon:AnonymousIdentifier</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n4ebe949261e7851b9b42">
       <data key="iri">http://example.org/monitoringcontinuum#Artifact</data>
       <data key="label">Artifact</data>
-      <data key="qname">mc:Artifact</data>
+      <data key="qname">comon:Artifact</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="n52408c9bbb56c0c875e4">
       <data key="iri">http://example.org/monitoringcontinuum#AuthorityScope</data>
       <data key="label">Authority scope</data>
-      <data key="qname">mc:AuthorityScope</data>
+      <data key="qname">comon:AuthorityScope</data>
       <data key="kind">class</data>
       <data key="module">deployment</data>
     </node>
     <node id="n183097dd4ece9ce8c359">
       <data key="iri">http://example.org/monitoringcontinuum#AuthorizationDecision</data>
       <data key="label">Authorization Decision</data>
-      <data key="qname">mc:AuthorizationDecision</data>
+      <data key="qname">comon:AuthorizationDecision</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="ndf562d6ff3a5e4ed8808">
       <data key="iri">http://example.org/monitoringcontinuum#AuthorizationOutcome</data>
       <data key="label">Authorization Outcome</data>
-      <data key="qname">mc:AuthorizationOutcome</data>
+      <data key="qname">comon:AuthorizationOutcome</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n3cf6e7331f4d0a3556bd">
       <data key="iri">http://example.org/monitoringcontinuum#AvailabilityLevel</data>
       <data key="label">Availability Level</data>
-      <data key="qname">mc:AvailabilityLevel</data>
+      <data key="qname">comon:AvailabilityLevel</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n07bf3472d4dcc214eea1">
       <data key="iri">http://example.org/monitoringcontinuum#BatteryLevel</data>
       <data key="label">Battery Level</data>
-      <data key="qname">mc:BatteryLevel</data>
+      <data key="qname">comon:BatteryLevel</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="ncaa5c6b616c41d7b9b9e">
       <data key="iri">http://example.org/monitoringcontinuum#BufferRecord</data>
       <data key="label">Buffer Record</data>
-      <data key="qname">mc:BufferRecord</data>
+      <data key="qname">comon:BufferRecord</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nbd441168eecaebc31b47">
       <data key="iri">http://example.org/monitoringcontinuum#CityArea</data>
       <data key="label">City Area</data>
-      <data key="qname">mc:CityArea</data>
+      <data key="qname">comon:CityArea</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n8a1e1ee8a76f40e11ff0">
       <data key="iri">http://example.org/monitoringcontinuum#CloudNode</data>
       <data key="label">Cloud Node</data>
-      <data key="qname">mc:CloudNode</data>
+      <data key="qname">comon:CloudNode</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="na7e00d253495e7fcecb0">
       <data key="iri">http://example.org/monitoringcontinuum#CommunicationLevel</data>
       <data key="label">Communication Level</data>
-      <data key="qname">mc:CommunicationLevel</data>
+      <data key="qname">comon:CommunicationLevel</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="nc866bddb662108fa4eea">
       <data key="iri">http://example.org/monitoringcontinuum#Community</data>
       <data key="label">Community</data>
-      <data key="qname">mc:Community</data>
+      <data key="qname">comon:Community</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="ndb664be394b7057df5fe">
       <data key="iri">http://example.org/monitoringcontinuum#ComplianceMetric</data>
       <data key="label">Compliance Metric</data>
-      <data key="qname">mc:ComplianceMetric</data>
+      <data key="qname">comon:ComplianceMetric</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="nae29bdf0fc26a84aa33b">
       <data key="iri">http://example.org/monitoringcontinuum#ComputationalNode</data>
       <data key="label">Computational Node</data>
-      <data key="qname">mc:ComputationalNode</data>
+      <data key="qname">comon:ComputationalNode</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n8dbba5955dfd70eab237">
       <data key="iri">http://example.org/monitoringcontinuum#ConflictResolutionStrategy</data>
       <data key="label">Conflict Resolution Strategy</data>
-      <data key="qname">mc:ConflictResolutionStrategy</data>
+      <data key="qname">comon:ConflictResolutionStrategy</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n0203668b62a48b9fae9c">
       <data key="iri">http://example.org/monitoringcontinuum#ConsentRange</data>
       <data key="label">Consent Range</data>
-      <data key="qname">mc:ConsentRange</data>
+      <data key="qname">comon:ConsentRange</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="na6ab34493f63b0e9d289">
       <data key="iri">http://example.org/monitoringcontinuum#ConsentRecord</data>
       <data key="label">Consent Record</data>
-      <data key="qname">mc:ConsentRecord</data>
+      <data key="qname">comon:ConsentRecord</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="nfc35bddcaf3c0654df48">
       <data key="iri">http://example.org/monitoringcontinuum#D_delegation_max</data>
       <data key="label">maximum delegation depth</data>
-      <data key="qname">mc:D_delegation_max</data>
+      <data key="qname">comon:D_delegation_max</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n23c3cd7fca9151bcec42">
       <data key="iri">http://example.org/monitoringcontinuum#DataCategory</data>
       <data key="label">Data Category</data>
-      <data key="qname">mc:DataCategory</data>
+      <data key="qname">comon:DataCategory</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n2e41ea130ae700eeda79">
       <data key="iri">http://example.org/monitoringcontinuum#DataContext</data>
       <data key="label">Data Context</data>
-      <data key="qname">mc:DataContext</data>
+      <data key="qname">comon:DataContext</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n1fcc32eca24b0a16f3c0">
       <data key="iri">http://example.org/monitoringcontinuum#DataCriticality</data>
       <data key="label">Data Criticality</data>
-      <data key="qname">mc:DataCriticality</data>
+      <data key="qname">comon:DataCriticality</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n1faed714ccdbf892eaf1">
       <data key="iri">http://example.org/monitoringcontinuum#DataSensitivity</data>
       <data key="label">Data Sensitivity</data>
-      <data key="qname">mc:DataSensitivity</data>
+      <data key="qname">comon:DataSensitivity</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="nddbeb746f82d373af550">
       <data key="iri">http://example.org/monitoringcontinuum#DecisionAlternative</data>
       <data key="label">Decision Alternative</data>
-      <data key="qname">mc:DecisionAlternative</data>
+      <data key="qname">comon:DecisionAlternative</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nc445f559fc07b15e18a9">
       <data key="iri">http://example.org/monitoringcontinuum#DecisionMethod</data>
       <data key="label">Decision Method</data>
-      <data key="qname">mc:DecisionMethod</data>
+      <data key="qname">comon:DecisionMethod</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n9f3e735478dec688bce5">
       <data key="iri">http://example.org/monitoringcontinuum#DegradationEvent</data>
       <data key="label">Degradation Event</data>
-      <data key="qname">mc:DegradationEvent</data>
+      <data key="qname">comon:DegradationEvent</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nd6f9c9b4388eb8711548">
       <data key="iri">http://example.org/monitoringcontinuum#DelegationEvent</data>
       <data key="label">Delegation Event</data>
-      <data key="qname">mc:DelegationEvent</data>
+      <data key="qname">comon:DelegationEvent</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n2d243cdc53965ed4e63f">
       <data key="iri">http://example.org/monitoringcontinuum#DeploymentFragment</data>
       <data key="label">Deployment fragment</data>
-      <data key="qname">mc:DeploymentFragment</data>
+      <data key="qname">comon:DeploymentFragment</data>
       <data key="kind">class</data>
       <data key="module">deployment</data>
     </node>
     <node id="n9f2deb6b92d59ac76811">
       <data key="iri">http://example.org/monitoringcontinuum#DeviceConnectionStatus</data>
       <data key="label">Device Connection Status</data>
-      <data key="qname">mc:DeviceConnectionStatus</data>
+      <data key="qname">comon:DeviceConnectionStatus</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n0c1bbeff1a99b8ee8c8e">
       <data key="iri">http://example.org/monitoringcontinuum#DeviceState</data>
       <data key="label">Device State</data>
-      <data key="qname">mc:DeviceState</data>
+      <data key="qname">comon:DeviceState</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n553110bd321a4f1e3859">
       <data key="iri">http://example.org/monitoringcontinuum#DifferentialPrivacyMechanism</data>
       <data key="label">Differential Privacy Mechanism</data>
-      <data key="qname">mc:DifferentialPrivacyMechanism</data>
+      <data key="qname">comon:DifferentialPrivacyMechanism</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n20b2b3c263525f58c7d0">
       <data key="iri">http://example.org/monitoringcontinuum#DirectIdentifier</data>
       <data key="label">Direct Identifier</data>
-      <data key="qname">mc:DirectIdentifier</data>
+      <data key="qname">comon:DirectIdentifier</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="na45a4769127f8ee02efa">
       <data key="iri">http://example.org/monitoringcontinuum#DistanceLevel</data>
       <data key="label">Distance Level</data>
-      <data key="qname">mc:DistanceLevel</data>
+      <data key="qname">comon:DistanceLevel</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="nf6135c64a097e7366994">
       <data key="iri">http://example.org/monitoringcontinuum#EDASensor</data>
       <data key="label">EDA Sensor</data>
-      <data key="qname">mc:EDASensor</data>
+      <data key="qname">comon:EDASensor</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n39e992c01ce8006357a2">
       <data key="iri">http://example.org/monitoringcontinuum#E_device_max</data>
       <data key="label">device energy threshold</data>
-      <data key="qname">mc:E_device_max</data>
+      <data key="qname">comon:E_device_max</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n419ba1e21fc6f8a88888">
       <data key="iri">http://example.org/monitoringcontinuum#EdgeNode</data>
       <data key="label">Edge Node</data>
-      <data key="qname">mc:EdgeNode</data>
+      <data key="qname">comon:EdgeNode</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="nee55a84349fd540f6da2">
       <data key="iri">http://example.org/monitoringcontinuum#EncryptionMechanism</data>
       <data key="label">Encryption Mechanism</data>
-      <data key="qname">mc:EncryptionMechanism</data>
+      <data key="qname">comon:EncryptionMechanism</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n3d18286cc76a655daba1">
       <data key="iri">http://example.org/monitoringcontinuum#EnergyLevel</data>
       <data key="label">Energy Level</data>
-      <data key="qname">mc:EnergyLevel</data>
+      <data key="qname">comon:EnergyLevel</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n199a509a3dcddc6f54b7">
       <data key="iri">http://example.org/monitoringcontinuum#EvaluationState</data>
       <data key="label">Evaluation State</data>
-      <data key="qname">mc:EvaluationState</data>
+      <data key="qname">comon:EvaluationState</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="nbda6fc1bd8b422ca55e3">
       <data key="iri">http://example.org/monitoringcontinuum#FederatedLearningSession</data>
       <data key="label">Federated Learning Session</data>
-      <data key="qname">mc:FederatedLearningSession</data>
+      <data key="qname">comon:FederatedLearningSession</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="n55b17e506ebd77615fe6">
       <data key="iri">http://example.org/monitoringcontinuum#FogNode</data>
       <data key="label">Fog Node</data>
-      <data key="qname">mc:FogNode</data>
+      <data key="qname">comon:FogNode</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n97f8c671ceb998256e04">
       <data key="iri">http://example.org/monitoringcontinuum#FunctionalRequirement</data>
       <data key="label">Functional Requirement</data>
-      <data key="qname">mc:FunctionalRequirement</data>
+      <data key="qname">comon:FunctionalRequirement</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n9b6fc9b95dc0226cddf0">
       <data key="iri">http://example.org/monitoringcontinuum#HeartRateSensor</data>
       <data key="label">Heart Rate Sensor</data>
-      <data key="qname">mc:HeartRateSensor</data>
+      <data key="qname">comon:HeartRateSensor</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="na7bf1c6fabfb274a6dd3">
       <data key="iri">http://example.org/monitoringcontinuum#Identifier</data>
       <data key="label">Identifier</data>
-      <data key="qname">mc:Identifier</data>
+      <data key="qname">comon:Identifier</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n9fba210d56e3cbe17523">
       <data key="iri">http://example.org/monitoringcontinuum#MAPESymptom</data>
       <data key="label">MAPE-K Symptom</data>
-      <data key="qname">mc:MAPESymptom</data>
+      <data key="qname">comon:MAPESymptom</data>
       <data key="kind">class</data>
       <data key="module">foundation</data>
     </node>
     <node id="n63f0c45d384f80bfb243">
       <data key="iri">http://example.org/monitoringcontinuum#MeasurementUnit</data>
       <data key="label">Measurement unit</data>
-      <data key="qname">mc:MeasurementUnit</data>
+      <data key="qname">comon:MeasurementUnit</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="nc24854ad5ef6577fad7b">
       <data key="iri">http://example.org/monitoringcontinuum#MechanismSpecification</data>
       <data key="label">Mechanism Specification</data>
-      <data key="qname">mc:MechanismSpecification</data>
+      <data key="qname">comon:MechanismSpecification</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n4bbc41465a7ee03755ea">
       <data key="iri">http://example.org/monitoringcontinuum#MigrationCostLevel</data>
       <data key="label">Migration Cost Level</data>
-      <data key="qname">mc:MigrationCostLevel</data>
+      <data key="qname">comon:MigrationCostLevel</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ne353b4efcc648f9aee07">
       <data key="iri">http://example.org/monitoringcontinuum#MigrationEvent</data>
       <data key="label">Migration Event</data>
-      <data key="qname">mc:MigrationEvent</data>
+      <data key="qname">comon:MigrationEvent</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nf38cd03aa13aac96e641">
       <data key="iri">http://example.org/monitoringcontinuum#MigrationTimeLevel</data>
       <data key="label">Migration Time Level</data>
-      <data key="qname">mc:MigrationTimeLevel</data>
+      <data key="qname">comon:MigrationTimeLevel</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n3b8b56bf5b559b6f8403">
       <data key="iri">http://example.org/monitoringcontinuum#MistNode</data>
       <data key="label">Mist Node</data>
-      <data key="qname">mc:MistNode</data>
+      <data key="qname">comon:MistNode</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n2677222b27b62bcf19e0">
       <data key="iri">http://example.org/monitoringcontinuum#MobileDevice</data>
       <data key="label">Mobile Device</data>
-      <data key="qname">mc:MobileDevice</data>
+      <data key="qname">comon:MobileDevice</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n7d25cb6b236316945248">
       <data key="iri">http://example.org/monitoringcontinuum#MobilityLevel</data>
       <data key="label">Mobility Level</data>
-      <data key="qname">mc:MobilityLevel</data>
+      <data key="qname">comon:MobilityLevel</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="neb14a095049f8106f8ec">
       <data key="iri">http://example.org/monitoringcontinuum#ModelDegradationCause</data>
       <data key="label">Model Degradation Cause</data>
-      <data key="qname">mc:ModelDegradationCause</data>
+      <data key="qname">comon:ModelDegradationCause</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n5b384b93c263e74f23bb">
       <data key="iri">http://example.org/monitoringcontinuum#ModelGradientUpdate</data>
       <data key="label">Model Gradient Update</data>
-      <data key="qname">mc:ModelGradientUpdate</data>
+      <data key="qname">comon:ModelGradientUpdate</data>
       <data key="kind">class</data>
       <data key="module">federation</data>
     </node>
     <node id="n65da18a00c07c511f152">
       <data key="iri">http://example.org/monitoringcontinuum#ModelSelectionAction</data>
       <data key="label">Model Selection Action</data>
-      <data key="qname">mc:ModelSelectionAction</data>
+      <data key="qname">comon:ModelSelectionAction</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n916755cecc1e32ceae31">
       <data key="iri">http://example.org/monitoringcontinuum#ModelTier</data>
       <data key="label">Model Tier</data>
-      <data key="qname">mc:ModelTier</data>
+      <data key="qname">comon:ModelTier</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="nfa804bf3b3cc5e1c1cc5">
       <data key="iri">http://example.org/monitoringcontinuum#N_agents</data>
       <data key="label">concurrent agent target</data>
-      <data key="qname">mc:N_agents</data>
+      <data key="qname">comon:N_agents</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n9f2fbd86849d78a8c514">
       <data key="iri">http://example.org/monitoringcontinuum#NodeState</data>
       <data key="label">Node State</data>
-      <data key="qname">mc:NodeState</data>
+      <data key="qname">comon:NodeState</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n7b59d540f396f1a06bf1">
       <data key="iri">http://example.org/monitoringcontinuum#NodeUserRelation</data>
       <data key="label">Node-User Relation</data>
-      <data key="qname">mc:NodeUserRelation</data>
+      <data key="qname">comon:NodeUserRelation</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n4bfd329902e1119772af">
       <data key="iri">http://example.org/monitoringcontinuum#NonFunctionalRequirement</data>
       <data key="label">Non-functional Requirement</data>
-      <data key="qname">mc:NonFunctionalRequirement</data>
+      <data key="qname">comon:NonFunctionalRequirement</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n2fa21f91edb45b67af09">
       <data key="iri">http://example.org/monitoringcontinuum#NonUser</data>
       <data key="label">Non-User</data>
-      <data key="qname">mc:NonUser</data>
+      <data key="qname">comon:NonUser</data>
       <data key="kind">class</data>
       <data key="module">foundation</data>
     </node>
     <node id="n77b6eb8566c283c49540">
       <data key="iri">http://example.org/monitoringcontinuum#OffloadingEvent</data>
       <data key="label">Offloading Event</data>
-      <data key="qname">mc:OffloadingEvent</data>
+      <data key="qname">comon:OffloadingEvent</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n19b0b8dd9503f86b4cbc">
       <data key="iri">http://example.org/monitoringcontinuum#OntologyArtifact</data>
       <data key="label">Ontology Artifact</data>
-      <data key="qname">mc:OntologyArtifact</data>
+      <data key="qname">comon:OntologyArtifact</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n0d18759144fa71657ad6">
       <data key="iri">http://example.org/monitoringcontinuum#OperationalStatus</data>
       <data key="label">Operational Status</data>
-      <data key="qname">mc:OperationalStatus</data>
+      <data key="qname">comon:OperationalStatus</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n23d11c8856f80d5ce4b5">
       <data key="iri">http://example.org/monitoringcontinuum#PairwiseComparison</data>
       <data key="label">Pairwise Comparison</data>
-      <data key="qname">mc:PairwiseComparison</data>
+      <data key="qname">comon:PairwiseComparison</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nc6994e6c25a21896be89">
       <data key="iri">http://example.org/monitoringcontinuum#ParametrizedData</data>
       <data key="label">Parametrized Data</data>
-      <data key="qname">mc:ParametrizedData</data>
+      <data key="qname">comon:ParametrizedData</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n728b08c468268b2b5696">
       <data key="iri">http://example.org/monitoringcontinuum#PayloadType</data>
       <data key="label">Payload Type</data>
-      <data key="qname">mc:PayloadType</data>
+      <data key="qname">comon:PayloadType</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="n285d4eecc7bdf2cd028f">
       <data key="iri">http://example.org/monitoringcontinuum#PerformanceLevel</data>
       <data key="label">Performance Level</data>
-      <data key="qname">mc:PerformanceLevel</data>
+      <data key="qname">comon:PerformanceLevel</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n14923ecf2b83c3fee337">
       <data key="iri">http://example.org/monitoringcontinuum#Permission</data>
       <data key="label">Permission</data>
-      <data key="qname">mc:Permission</data>
+      <data key="qname">comon:Permission</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="nc8e19292a9bc7cd05691">
       <data key="iri">http://example.org/monitoringcontinuum#PersonStatus</data>
       <data key="label">Person Status</data>
-      <data key="qname">mc:PersonStatus</data>
+      <data key="qname">comon:PersonStatus</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n37026efeb4bda9b64efe">
       <data key="iri">http://example.org/monitoringcontinuum#PhysiologicalObservation</data>
       <data key="label">Physiological Observation</data>
-      <data key="qname">mc:PhysiologicalObservation</data>
+      <data key="qname">comon:PhysiologicalObservation</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n893b45e4fee4b660537b">
       <data key="iri">http://example.org/monitoringcontinuum#PhysiologicalParametrizedData</data>
       <data key="label">Physiological Parametrized Data</data>
-      <data key="qname">mc:PhysiologicalParametrizedData</data>
+      <data key="qname">comon:PhysiologicalParametrizedData</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n544be46afdf776ccd348">
       <data key="iri">http://example.org/monitoringcontinuum#PhysiologicalSensor</data>
       <data key="label">Physiological Sensor</data>
-      <data key="qname">mc:PhysiologicalSensor</data>
+      <data key="qname">comon:PhysiologicalSensor</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="nab3c1b3c359d2ef84c05">
       <data key="iri">http://example.org/monitoringcontinuum#Policy</data>
       <data key="label">Policy</data>
-      <data key="qname">mc:Policy</data>
+      <data key="qname">comon:Policy</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="nd036580c9022c4db1b23">
       <data key="iri">http://example.org/monitoringcontinuum#PolicyArtifact</data>
       <data key="label">Policy Artifact</data>
-      <data key="qname">mc:PolicyArtifact</data>
+      <data key="qname">comon:PolicyArtifact</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n116dd5484e6aec8b36cd">
       <data key="iri">http://example.org/monitoringcontinuum#PolicyCategory</data>
       <data key="label">Policy Category</data>
-      <data key="qname">mc:PolicyCategory</data>
+      <data key="qname">comon:PolicyCategory</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n13757f47d8c7c99ddfb9">
       <data key="iri">http://example.org/monitoringcontinuum#PolicyCategoryRelation</data>
       <data key="label">Policy Category Relation</data>
-      <data key="qname">mc:PolicyCategoryRelation</data>
+      <data key="qname">comon:PolicyCategoryRelation</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n2c2e90cb160e70e80937">
       <data key="iri">http://example.org/monitoringcontinuum#PolicyRelationType</data>
       <data key="label">Policy Relation Type</data>
-      <data key="qname">mc:PolicyRelationType</data>
+      <data key="qname">comon:PolicyRelationType</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n2118a8dbdfffdad2aabf">
       <data key="iri">http://example.org/monitoringcontinuum#PolicyType</data>
       <data key="label">Policy Type</data>
-      <data key="qname">mc:PolicyType</data>
+      <data key="qname">comon:PolicyType</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="ndd0ad30b118458954a5c">
       <data key="iri">http://example.org/monitoringcontinuum#PopulationDensity</data>
       <data key="label">Population Density</data>
-      <data key="qname">mc:PopulationDensity</data>
+      <data key="qname">comon:PopulationDensity</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n68a75948509428e29450">
       <data key="iri">http://example.org/monitoringcontinuum#PrivacyBudgetAccount</data>
       <data key="label">Privacy Budget Account</data>
-      <data key="qname">mc:PrivacyBudgetAccount</data>
+      <data key="qname">comon:PrivacyBudgetAccount</data>
       <data key="kind">class</data>
       <data key="module">federation</data>
     </node>
     <node id="nd09664dcf38e150cd8c3">
       <data key="iri">http://example.org/monitoringcontinuum#PrivacyClass</data>
       <data key="label">Privacy class</data>
-      <data key="qname">mc:PrivacyClass</data>
+      <data key="qname">comon:PrivacyClass</data>
       <data key="kind">class</data>
       <data key="module">deployment</data>
     </node>
     <node id="nf13b6b9efe418413647e">
       <data key="iri">http://example.org/monitoringcontinuum#PrivacyMechanism</data>
       <data key="label">Privacy Mechanism</data>
-      <data key="qname">mc:PrivacyMechanism</data>
+      <data key="qname">comon:PrivacyMechanism</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="nb00e9f82c5e8957d28db">
       <data key="iri">http://example.org/monitoringcontinuum#ProcessingLevel</data>
       <data key="label">Processing Level</data>
-      <data key="qname">mc:ProcessingLevel</data>
+      <data key="qname">comon:ProcessingLevel</data>
       <data key="kind">class</data>
       <data key="module">foundation</data>
     </node>
     <node id="n6d8df828fd3b3919dd28">
       <data key="iri">http://example.org/monitoringcontinuum#ProcessingPurpose</data>
       <data key="label">Processing Purpose</data>
-      <data key="qname">mc:ProcessingPurpose</data>
+      <data key="qname">comon:ProcessingPurpose</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="n7f9a4d0b1e1849f359e8">
       <data key="iri">http://example.org/monitoringcontinuum#ProcessingScope</data>
       <data key="label">Processing Scope</data>
-      <data key="qname">mc:ProcessingScope</data>
+      <data key="qname">comon:ProcessingScope</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n2145dbae5040dbae30cd">
       <data key="iri">http://example.org/monitoringcontinuum#ProfitabilityLevel</data>
       <data key="label">Profitability Level</data>
-      <data key="qname">mc:ProfitabilityLevel</data>
+      <data key="qname">comon:ProfitabilityLevel</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ndc0ca2377f02a728db5d">
       <data key="iri">http://example.org/monitoringcontinuum#PseudonymousIdentifier</data>
       <data key="label">Pseudonymous Identifier</data>
-      <data key="qname">mc:PseudonymousIdentifier</data>
+      <data key="qname">comon:PseudonymousIdentifier</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="nfc45312b73333ea99ccc">
       <data key="iri">http://example.org/monitoringcontinuum#QueryCatalog</data>
       <data key="label">Query Catalog</data>
-      <data key="qname">mc:QueryCatalog</data>
+      <data key="qname">comon:QueryCatalog</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n6111e2449678144bbfb8">
       <data key="iri">http://example.org/monitoringcontinuum#QuerySpecification</data>
       <data key="label">Query Specification</data>
-      <data key="qname">mc:QuerySpecification</data>
+      <data key="qname">comon:QuerySpecification</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="nf0db90a68a3482935812">
       <data key="iri">http://example.org/monitoringcontinuum#QueryType</data>
       <data key="label">Query Type</data>
-      <data key="qname">mc:QueryType</data>
+      <data key="qname">comon:QueryType</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="na3228a8919369d1d0b1c">
       <data key="iri">http://example.org/monitoringcontinuum#RecoveryCondition</data>
       <data key="label">Recovery Condition</data>
-      <data key="qname">mc:RecoveryCondition</data>
+      <data key="qname">comon:RecoveryCondition</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="nfd1c06e3a78a1c168ab5">
       <data key="iri">http://example.org/monitoringcontinuum#ReplicationEvent</data>
       <data key="label">Replication Event</data>
-      <data key="qname">mc:ReplicationEvent</data>
+      <data key="qname">comon:ReplicationEvent</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n9a755e2f0a57742d42c0">
       <data key="iri">http://example.org/monitoringcontinuum#Requirement</data>
       <data key="label">Requirement</data>
-      <data key="qname">mc:Requirement</data>
+      <data key="qname">comon:Requirement</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n8336d6bc4443eea3b5ba">
       <data key="iri">http://example.org/monitoringcontinuum#RequirementsArtifact</data>
       <data key="label">Requirements Artifact</data>
-      <data key="qname">mc:RequirementsArtifact</data>
+      <data key="qname">comon:RequirementsArtifact</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="nc60c22a435f1009ff939">
       <data key="iri">http://example.org/monitoringcontinuum#ResidualCapacity</data>
       <data key="label">Residual Capacity</data>
-      <data key="qname">mc:ResidualCapacity</data>
+      <data key="qname">comon:ResidualCapacity</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="na829e53151d5cbfa5b05">
       <data key="iri">http://example.org/monitoringcontinuum#RestrictedZone</data>
       <data key="label">Restricted Zone</data>
-      <data key="qname">mc:RestrictedZone</data>
+      <data key="qname">comon:RestrictedZone</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n42bb4f3a1f283e5d1f53">
       <data key="iri">http://example.org/monitoringcontinuum#RetentionEvent</data>
       <data key="label">Retention Event</data>
-      <data key="qname">mc:RetentionEvent</data>
+      <data key="qname">comon:RetentionEvent</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n9166c982219769a86e0f">
       <data key="iri">http://example.org/monitoringcontinuum#Role</data>
       <data key="label">Access Role</data>
-      <data key="qname">mc:Role</data>
+      <data key="qname">comon:Role</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n06d2bae38e0aa7dbeb6b">
       <data key="iri">http://example.org/monitoringcontinuum#RollbackEvent</data>
       <data key="label">Rollback Event</data>
-      <data key="qname">mc:RollbackEvent</data>
+      <data key="qname">comon:RollbackEvent</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ncee06c6ef0ecf8d150d6">
       <data key="iri">http://example.org/monitoringcontinuum#RuralZone</data>
       <data key="label">Rural Zone</data>
-      <data key="qname">mc:RuralZone</data>
+      <data key="qname">comon:RuralZone</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n63f9b4b6f5a1a3537855">
       <data key="iri">http://example.org/monitoringcontinuum#ScalingEvent</data>
       <data key="label">Scaling Event</data>
-      <data key="qname">mc:ScalingEvent</data>
+      <data key="qname">comon:ScalingEvent</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nb5cd13560140eb6b87c8">
       <data key="iri">http://example.org/monitoringcontinuum#Scenario</data>
       <data key="label">Scenario</data>
-      <data key="qname">mc:Scenario</data>
+      <data key="qname">comon:Scenario</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n1d88c879ca7de6fa2ea0">
       <data key="iri">http://example.org/monitoringcontinuum#ScenarioArtifact</data>
       <data key="label">Scenario Artifact</data>
-      <data key="qname">mc:ScenarioArtifact</data>
+      <data key="qname">comon:ScenarioArtifact</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n158773ad52c382abdb7d">
       <data key="iri">http://example.org/monitoringcontinuum#SecurityMechanism</data>
       <data key="label">Security Mechanism</data>
-      <data key="qname">mc:SecurityMechanism</data>
+      <data key="qname">comon:SecurityMechanism</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n4c65b8fffd623dec7503">
       <data key="iri">http://example.org/monitoringcontinuum#SemanticContract</data>
       <data key="label">Semantic Contract</data>
-      <data key="qname">mc:SemanticContract</data>
+      <data key="qname">comon:SemanticContract</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n919c20184e02fc804f64">
       <data key="iri">http://example.org/monitoringcontinuum#SemanticNodeProfile</data>
       <data key="label">Semantic node profile</data>
-      <data key="qname">mc:SemanticNodeProfile</data>
+      <data key="qname">comon:SemanticNodeProfile</data>
       <data key="kind">class</data>
       <data key="module">deployment</data>
     </node>
     <node id="n1e9a93e7eec7718f2327">
       <data key="iri">http://example.org/monitoringcontinuum#Service</data>
       <data key="label">Service</data>
-      <data key="qname">mc:Service</data>
+      <data key="qname">comon:Service</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="nda26e19fb133c7b2ec3f">
       <data key="iri">http://example.org/monitoringcontinuum#ServiceState</data>
       <data key="label">Service State</data>
-      <data key="qname">mc:ServiceState</data>
+      <data key="qname">comon:ServiceState</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="nb539b64d0c2a9031c66c">
       <data key="iri">http://example.org/monitoringcontinuum#SleepObservation</data>
       <data key="label">Sleep Observation</data>
-      <data key="qname">mc:SleepObservation</data>
+      <data key="qname">comon:SleepObservation</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="nc889a20d8241266f6aca">
       <data key="iri">http://example.org/monitoringcontinuum#SleepParametrizedData</data>
       <data key="label">Sleep Parametrized Data</data>
-      <data key="qname">mc:SleepParametrizedData</data>
+      <data key="qname">comon:SleepParametrizedData</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n24b9ca7ec5ab0e9a2592">
       <data key="iri">http://example.org/monitoringcontinuum#SleepSensor</data>
       <data key="label">Sleep Sensor</data>
-      <data key="qname">mc:SleepSensor</data>
+      <data key="qname">comon:SleepSensor</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="ncb1ca274dd7bce26f3dd">
       <data key="iri">http://example.org/monitoringcontinuum#SmartBand</data>
       <data key="label">Smart Band</data>
-      <data key="qname">mc:SmartBand</data>
+      <data key="qname">comon:SmartBand</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n8d3eb0c7369ad8b6a51b">
       <data key="iri">http://example.org/monitoringcontinuum#SmartRing</data>
       <data key="label">Smart Ring</data>
-      <data key="qname">mc:SmartRing</data>
+      <data key="qname">comon:SmartRing</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n5d9b807fb4e1e3a57c81">
       <data key="iri">http://example.org/monitoringcontinuum#SmartWatch</data>
       <data key="label">Smart Watch</data>
-      <data key="qname">mc:SmartWatch</data>
+      <data key="qname">comon:SmartWatch</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n858150273ab72a9ec9f5">
       <data key="iri">http://example.org/monitoringcontinuum#SpO2Sensor</data>
       <data key="label">SpO2 Sensor</data>
-      <data key="qname">mc:SpO2Sensor</data>
+      <data key="qname">comon:SpO2Sensor</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="nc2adad52bd4f8b076d7c">
       <data key="iri">http://example.org/monitoringcontinuum#StandardSpecification</data>
       <data key="label">Standard Specification</data>
-      <data key="qname">mc:StandardSpecification</data>
+      <data key="qname">comon:StandardSpecification</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n5c6efa5e622e30a284cd">
       <data key="iri">http://example.org/monitoringcontinuum#State</data>
       <data key="label">State</data>
-      <data key="qname">mc:State</data>
+      <data key="qname">comon:State</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="n64797875b9e073625ce4">
       <data key="iri">http://example.org/monitoringcontinuum#StressLevel</data>
       <data key="label">Stress Level</data>
-      <data key="qname">mc:StressLevel</data>
+      <data key="qname">comon:StressLevel</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n6be53786fe8b7a51b1f9">
       <data key="iri">http://example.org/monitoringcontinuum#StressObservation</data>
       <data key="label">Stress Observation</data>
-      <data key="qname">mc:StressObservation</data>
+      <data key="qname">comon:StressObservation</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n855d16abcddc71612cff">
       <data key="iri">http://example.org/monitoringcontinuum#SynchronizationEvent</data>
       <data key="label">Synchronization Event</data>
-      <data key="qname">mc:SynchronizationEvent</data>
+      <data key="qname">comon:SynchronizationEvent</data>
       <data key="kind">class</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nd5fc3e0dd878bdd36d17">
       <data key="iri">http://example.org/monitoringcontinuum#T_decision_max</data>
       <data key="label">decision threshold</data>
-      <data key="qname">mc:T_decision_max</data>
+      <data key="qname">comon:T_decision_max</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n57f5809514bd12b51f8d">
       <data key="iri">http://example.org/monitoringcontinuum#T_inference_local</data>
       <data key="label">local inference latency threshold (ms)</data>
-      <data key="qname">mc:T_inference_local</data>
+      <data key="qname">comon:T_inference_local</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n760edc6b1ee5cedfff04">
       <data key="iri">http://example.org/monitoringcontinuum#T_migration_max</data>
       <data key="label">migration interruption threshold</data>
-      <data key="qname">mc:T_migration_max</data>
+      <data key="qname">comon:T_migration_max</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n72ec043775de95e3cd14">
       <data key="iri">http://example.org/monitoringcontinuum#T_node_join</data>
       <data key="label">node join threshold</data>
-      <data key="qname">mc:T_node_join</data>
+      <data key="qname">comon:T_node_join</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n5f0a7a1627ad09c49619">
       <data key="iri">http://example.org/monitoringcontinuum#T_reselection_max</data>
       <data key="label">reselection threshold</data>
-      <data key="qname">mc:T_reselection_max</data>
+      <data key="qname">comon:T_reselection_max</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nd039058d5e560ef1cb65">
       <data key="iri">http://example.org/monitoringcontinuum#T_sparql_monitor</data>
       <data key="label">SPARQL monitoring threshold</data>
-      <data key="qname">mc:T_sparql_monitor</data>
+      <data key="qname">comon:T_sparql_monitor</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="ne0793e436a370b6aa028">
       <data key="iri">http://example.org/monitoringcontinuum#TemperatureSensor</data>
       <data key="label">Skin Temperature Sensor</data>
-      <data key="qname">mc:TemperatureSensor</data>
+      <data key="qname">comon:TemperatureSensor</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n7ab94e9682c2cd03d0f0">
       <data key="iri">http://example.org/monitoringcontinuum#TemporalEntity</data>
       <data key="label">Temporal Entity</data>
-      <data key="qname">mc:TemporalEntity</data>
+      <data key="qname">comon:TemporalEntity</data>
       <data key="kind">class</data>
       <data key="module">foundation</data>
     </node>
     <node id="n206065a3fa528607d06c">
       <data key="iri">http://example.org/monitoringcontinuum#TrafficWindow</data>
       <data key="label">Traffic Window</data>
-      <data key="qname">mc:TrafficWindow</data>
+      <data key="qname">comon:TrafficWindow</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n23ca2f3bed3d7e589514">
       <data key="iri">http://example.org/monitoringcontinuum#TransferEvent</data>
       <data key="label">Transfer Event</data>
-      <data key="qname">mc:TransferEvent</data>
+      <data key="qname">comon:TransferEvent</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="n1f1d1f3aaca02a9983ac">
       <data key="iri">http://example.org/monitoringcontinuum#TrustAssessment</data>
       <data key="label">Trust Assessment</data>
-      <data key="qname">mc:TrustAssessment</data>
+      <data key="qname">comon:TrustAssessment</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n6e5c1d949589d23610b4">
       <data key="iri">http://example.org/monitoringcontinuum#TrustEvidence</data>
       <data key="label">Trust Evidence</data>
-      <data key="qname">mc:TrustEvidence</data>
+      <data key="qname">comon:TrustEvidence</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n897afa3592e0eeeb2e4c">
       <data key="iri">http://example.org/monitoringcontinuum#UrbanEnvironment</data>
       <data key="label">Urban Environment</data>
-      <data key="qname">mc:UrbanEnvironment</data>
+      <data key="qname">comon:UrbanEnvironment</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="nfb624ec387148adc2d84">
       <data key="iri">http://example.org/monitoringcontinuum#UrbanZone</data>
       <data key="label">Urban Zone</data>
-      <data key="qname">mc:UrbanZone</data>
+      <data key="qname">comon:UrbanZone</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n4bb0e442fbdbbb34ba14">
       <data key="iri">http://example.org/monitoringcontinuum#User</data>
       <data key="label">User</data>
-      <data key="qname">mc:User</data>
+      <data key="qname">comon:User</data>
       <data key="kind">class</data>
       <data key="module">foundation</data>
     </node>
     <node id="ncc86bbc2c5ad452b3804">
       <data key="iri">http://example.org/monitoringcontinuum#UserState</data>
       <data key="label">User State</data>
-      <data key="qname">mc:UserState</data>
+      <data key="qname">comon:UserState</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n20ec6e1b332c158ae932">
       <data key="iri">http://example.org/monitoringcontinuum#ValidationCampaign</data>
       <data key="label">Validation Campaign</data>
-      <data key="qname">mc:ValidationCampaign</data>
+      <data key="qname">comon:ValidationCampaign</data>
       <data key="kind">class</data>
       <data key="module">contracts</data>
     </node>
     <node id="nbc62f1c2caae53598930">
       <data key="iri">http://example.org/monitoringcontinuum#ValidationRequirement</data>
       <data key="label">Validation / Reproducibility Requirement</data>
-      <data key="qname">mc:ValidationRequirement</data>
+      <data key="qname">comon:ValidationRequirement</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n4eb9396b4d183a61dca0">
       <data key="iri">http://example.org/monitoringcontinuum#ValidationResult</data>
       <data key="label">Validation Result</data>
-      <data key="qname">mc:ValidationResult</data>
+      <data key="qname">comon:ValidationResult</data>
       <data key="kind">class</data>
       <data key="module">governance</data>
     </node>
     <node id="n5756bde11961b009dbd1">
       <data key="iri">http://example.org/monitoringcontinuum#Wearable</data>
       <data key="label">Wearable</data>
-      <data key="qname">mc:Wearable</data>
+      <data key="qname">comon:Wearable</data>
       <data key="kind">class</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n07afcd1b913dc5c04d35">
       <data key="iri">http://example.org/monitoringcontinuum#WorkloadLevel</data>
       <data key="label">Workload Level</data>
-      <data key="qname">mc:WorkloadLevel</data>
+      <data key="qname">comon:WorkloadLevel</data>
       <data key="kind">class</data>
       <data key="module">observability</data>
     </node>
     <node id="n1720a56c235d3061eac1">
       <data key="iri">http://example.org/monitoringcontinuum#ZoneType</data>
       <data key="label">Zone type</data>
-      <data key="qname">mc:ZoneType</data>
+      <data key="qname">comon:ZoneType</data>
       <data key="kind">class</data>
       <data key="module">topology</data>
     </node>
     <node id="n2866c77ee0ebee0009bd">
       <data key="iri">http://example.org/monitoringcontinuum#actionOriginNode</data>
       <data key="label">action origin node</data>
-      <data key="qname">mc:actionOriginNode</data>
+      <data key="qname">comon:actionOriginNode</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n18d9f22bd849467ad9d4">
       <data key="iri">http://example.org/monitoringcontinuum#actionTargetNode</data>
       <data key="label">action target node</data>
-      <data key="qname">mc:actionTargetNode</data>
+      <data key="qname">comon:actionTargetNode</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n985bc31a6794a9f3d7d8">
       <data key="iri">http://example.org/monitoringcontinuum#affectsModel</data>
       <data key="label">affects model</data>
-      <data key="qname">mc:affectsModel</data>
+      <data key="qname">comon:affectsModel</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ne0498c7dae2526941121">
       <data key="iri">http://example.org/monitoringcontinuum#affectsService</data>
       <data key="label">affects service</data>
-      <data key="qname">mc:affectsService</data>
+      <data key="qname">comon:affectsService</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n883cfe095c9ba322ece5">
       <data key="iri">http://example.org/monitoringcontinuum#aggregatesData</data>
       <data key="label">aggregates data</data>
-      <data key="qname">mc:aggregatesData</data>
+      <data key="qname">comon:aggregatesData</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n731df74c58f68531a587">
       <data key="iri">http://example.org/monitoringcontinuum#alternativeModelTier</data>
       <data key="label">alternative model tier</data>
-      <data key="qname">mc:alternativeModelTier</data>
+      <data key="qname">comon:alternativeModelTier</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n71c0f34e6f265858d4c1">
       <data key="iri">http://example.org/monitoringcontinuum#appliedMechanism</data>
       <data key="label">applied mechanism</data>
-      <data key="qname">mc:appliedMechanism</data>
+      <data key="qname">comon:appliedMechanism</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n6cbd1e178f0d5ea8d0e3">
       <data key="iri">http://example.org/monitoringcontinuum#appliedPolicy</data>
       <data key="label">applied policy</data>
-      <data key="qname">mc:appliedPolicy</data>
+      <data key="qname">comon:appliedPolicy</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n3ceebb4d4c4da95b8ace">
       <data key="iri">http://example.org/monitoringcontinuum#appliedSecurityMechanism</data>
       <data key="label">applied security mechanism</data>
-      <data key="qname">mc:appliedSecurityMechanism</data>
+      <data key="qname">comon:appliedSecurityMechanism</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="ne7c48a1f1f4503ea6f45">
       <data key="iri">http://example.org/monitoringcontinuum#appliesInZone</data>
       <data key="label">applies in zone</data>
-      <data key="qname">mc:appliesInZone</data>
+      <data key="qname">comon:appliesInZone</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n8f16a43639b45a87e28c">
       <data key="iri">http://example.org/monitoringcontinuum#appliesPolicy</data>
       <data key="label">applies policy</data>
-      <data key="qname">mc:appliesPolicy</data>
+      <data key="qname">comon:appliesPolicy</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n5d91dd548655aecfbe79">
       <data key="iri">http://example.org/monitoringcontinuum#appliesTo</data>
       <data key="label">applies to</data>
-      <data key="qname">mc:appliesTo</data>
+      <data key="qname">comon:appliesTo</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nb4d42ff91175646c206e">
       <data key="iri">http://example.org/monitoringcontinuum#appliesToZoneType</data>
       <data key="label">applies to zone type</data>
-      <data key="qname">mc:appliesToZoneType</data>
+      <data key="qname">comon:appliesToZoneType</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nb82c2b89c2b2b61e9148">
       <data key="iri">http://example.org/monitoringcontinuum#artifactIdentifier</data>
       <data key="label">artifact identifier</data>
-      <data key="qname">mc:artifactIdentifier</data>
+      <data key="qname">comon:artifactIdentifier</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="na3a796494e28775ba7b6">
       <data key="iri">http://example.org/monitoringcontinuum#artifactStatus</data>
       <data key="label">artifact status</data>
-      <data key="qname">mc:artifactStatus</data>
+      <data key="qname">comon:artifactStatus</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nb3eb8158dc6840bde4d7">
       <data key="iri">http://example.org/monitoringcontinuum#artifactVersion</data>
       <data key="label">artifact version</data>
-      <data key="qname">mc:artifactVersion</data>
+      <data key="qname">comon:artifactVersion</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="ne1f2a2d9cd7c292bba50">
       <data key="iri">http://example.org/monitoringcontinuum#auditsContract</data>
       <data key="label">audits contract</data>
-      <data key="qname">mc:auditsContract</data>
+      <data key="qname">comon:auditsContract</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nab732c78f00b3f00d8cf">
       <data key="iri">http://example.org/monitoringcontinuum#authoritativeFor</data>
       <data key="label">authoritative for</data>
-      <data key="qname">mc:authoritativeFor</data>
+      <data key="qname">comon:authoritativeFor</data>
       <data key="kind">object_property</data>
       <data key="module">deployment</data>
     </node>
     <node id="n8c4acc873f2a80491332">
       <data key="iri">http://example.org/monitoringcontinuum#authorizationReason</data>
       <data key="label">authorization reason</data>
-      <data key="qname">mc:authorizationReason</data>
+      <data key="qname">comon:authorizationReason</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n726180debbf788b8edf4">
       <data key="iri">http://example.org/monitoringcontinuum#authorizedByEvaluation</data>
       <data key="label">authorized by evaluation</data>
-      <data key="qname">mc:authorizedByEvaluation</data>
+      <data key="qname">comon:authorizedByEvaluation</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n5ffbe7e7754a07722faa">
       <data key="iri">http://example.org/monitoringcontinuum#basedOnConsentRecord</data>
       <data key="label">based on consent record</data>
-      <data key="qname">mc:basedOnConsentRecord</data>
+      <data key="qname">comon:basedOnConsentRecord</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="na3daf62da86620f1eeb9">
       <data key="iri">http://example.org/monitoringcontinuum#basedOnContract</data>
       <data key="label">based on contract</data>
-      <data key="qname">mc:basedOnContract</data>
+      <data key="qname">comon:basedOnContract</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n55869686c506cc495a88">
       <data key="iri">http://example.org/monitoringcontinuum#basedOnZone</data>
       <data key="label">based on zone</data>
-      <data key="qname">mc:basedOnZone</data>
+      <data key="qname">comon:basedOnZone</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n20ebccd6fff77bf73d81">
       <data key="iri">http://example.org/monitoringcontinuum#belongsToCommunity</data>
       <data key="label">belongs to community</data>
-      <data key="qname">mc:belongsToCommunity</data>
+      <data key="qname">comon:belongsToCommunity</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="nf4c38c5c97bf2a5372b2">
       <data key="iri">http://example.org/monitoringcontinuum#belongsToPolicyCategory</data>
       <data key="label">belongs to policy category</data>
-      <data key="qname">mc:belongsToPolicyCategory</data>
+      <data key="qname">comon:belongsToPolicyCategory</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n3afa32a6d07243b0d924">
       <data key="iri">http://example.org/monitoringcontinuum#belongsToQueryCatalog</data>
       <data key="label">belongs to query catalog</data>
-      <data key="qname">mc:belongsToQueryCatalog</data>
+      <data key="qname">comon:belongsToQueryCatalog</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="ne35302b41acf117ed1ca">
       <data key="iri">http://example.org/monitoringcontinuum#budgetForContract</data>
       <data key="label">budget for contract</data>
-      <data key="qname">mc:budgetForContract</data>
+      <data key="qname">comon:budgetForContract</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="nce9eb62bbbdf8b301126">
       <data key="iri">http://example.org/monitoringcontinuum#budgetForPurpose</data>
       <data key="label">budget for purpose</data>
-      <data key="qname">mc:budgetForPurpose</data>
+      <data key="qname">comon:budgetForPurpose</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n9c0e776183080f28399a">
       <data key="iri">http://example.org/monitoringcontinuum#carriesData</data>
       <data key="label">carries data</data>
-      <data key="qname">mc:carriesData</data>
+      <data key="qname">comon:carriesData</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="na6e00a67de7d3e323fb4">
       <data key="iri">http://example.org/monitoringcontinuum#categoryCode</data>
       <data key="label">category code</data>
-      <data key="qname">mc:categoryCode</data>
+      <data key="qname">comon:categoryCode</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n3a8f94f91d79feb333f0">
       <data key="iri">http://example.org/monitoringcontinuum#conditionExpression</data>
       <data key="label">condition expression</data>
-      <data key="qname">mc:conditionExpression</data>
+      <data key="qname">comon:conditionExpression</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="ndfe3438f3cc95f8f6786">
       <data key="iri">http://example.org/monitoringcontinuum#configurationStatus</data>
       <data key="label">configuration status</data>
-      <data key="qname">mc:configurationStatus</data>
+      <data key="qname">comon:configurationStatus</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n5f52efb824879b809752">
       <data key="iri">http://example.org/monitoringcontinuum#connectsTo</data>
       <data key="label">connects to</data>
-      <data key="qname">mc:connectsTo</data>
+      <data key="qname">comon:connectsTo</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="n399275374753b037346c">
       <data key="iri">http://example.org/monitoringcontinuum#consentSubject</data>
       <data key="label">consent subject</data>
-      <data key="qname">mc:consentSubject</data>
+      <data key="qname">comon:consentSubject</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n7359bc415ece56154bae">
       <data key="iri">http://example.org/monitoringcontinuum#containsIndividualizedGradients</data>
       <data key="label">contains individualized gradients</data>
-      <data key="qname">mc:containsIndividualizedGradients</data>
+      <data key="qname">comon:containsIndividualizedGradients</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n955158e95c66120a21c1">
       <data key="iri">http://example.org/monitoringcontinuum#containsPersistentIdentifier</data>
       <data key="label">contains persistent identifier</data>
-      <data key="qname">mc:containsPersistentIdentifier</data>
+      <data key="qname">comon:containsPersistentIdentifier</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n20c64e53edb6e5872b36">
       <data key="iri">http://example.org/monitoringcontinuum#containsPersonalData</data>
       <data key="label">contains personal data</data>
-      <data key="qname">mc:containsPersonalData</data>
+      <data key="qname">comon:containsPersonalData</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="na7a853e59823a48906b0">
       <data key="iri">http://example.org/monitoringcontinuum#contextDeviceState</data>
       <data key="label">context device state</data>
-      <data key="qname">mc:contextDeviceState</data>
+      <data key="qname">comon:contextDeviceState</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n8fe4350dd92741e92789">
       <data key="iri">http://example.org/monitoringcontinuum#contextNodeState</data>
       <data key="label">context node state</data>
-      <data key="qname">mc:contextNodeState</data>
+      <data key="qname">comon:contextNodeState</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n279487f66f15804a39be">
       <data key="iri">http://example.org/monitoringcontinuum#contextProcessingLevel</data>
       <data key="label">context processing level</data>
-      <data key="qname">mc:contextProcessingLevel</data>
+      <data key="qname">comon:contextProcessingLevel</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n08a4f60ac6a7b756ed60">
       <data key="iri">http://example.org/monitoringcontinuum#contextPurpose</data>
       <data key="label">context purpose</data>
-      <data key="qname">mc:contextPurpose</data>
+      <data key="qname">comon:contextPurpose</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n036382f5adebfb1f85c9">
       <data key="iri">http://example.org/monitoringcontinuum#contextZone</data>
       <data key="label">context zone</data>
-      <data key="qname">mc:contextZone</data>
+      <data key="qname">comon:contextZone</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n0ec5f022c15cc179f0df">
       <data key="iri">http://example.org/monitoringcontinuum#continuumLevel</data>
       <data key="label">continuum level</data>
-      <data key="qname">mc:continuumLevel</data>
+      <data key="qname">comon:continuumLevel</data>
       <data key="kind">datatype_property</data>
       <data key="module">topology</data>
     </node>
     <node id="n08dca17d506f6507edd4">
       <data key="iri">http://example.org/monitoringcontinuum#contractSubject</data>
       <data key="label">contract subject</data>
-      <data key="qname">mc:contractSubject</data>
+      <data key="qname">comon:contractSubject</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nf3094b232024fd130658">
       <data key="iri">http://example.org/monitoringcontinuum#coversArea</data>
       <data key="label">covers area</data>
-      <data key="qname">mc:coversArea</data>
+      <data key="qname">comon:coversArea</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="n1cad27a983d4e746a714">
       <data key="iri">http://example.org/monitoringcontinuum#criterionA</data>
       <data key="label">criterion A</data>
-      <data key="qname">mc:criterionA</data>
+      <data key="qname">comon:criterionA</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ne8de855ed00e2d0348eb">
       <data key="iri">http://example.org/monitoringcontinuum#criterionB</data>
       <data key="label">criterion B</data>
-      <data key="qname">mc:criterionB</data>
+      <data key="qname">comon:criterionB</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nec02cb1c912c68c926f3">
       <data key="iri">http://example.org/monitoringcontinuum#definedInArtifact</data>
       <data key="label">defined in artifact</data>
-      <data key="qname">mc:definedInArtifact</data>
+      <data key="qname">comon:definedInArtifact</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="ncc5c7aa6e4749eb61b37">
       <data key="iri">http://example.org/monitoringcontinuum#delegatedBy</data>
       <data key="label">delegated by</data>
-      <data key="qname">mc:delegatedBy</data>
+      <data key="qname">comon:delegatedBy</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nf3cd255ee3de6a7a0748">
       <data key="iri">http://example.org/monitoringcontinuum#delegatesTo</data>
       <data key="label">delegates requests to</data>
-      <data key="qname">mc:delegatesTo</data>
+      <data key="qname">comon:delegatesTo</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n06346b9f6e2a5b85ee9d">
       <data key="iri">http://example.org/monitoringcontinuum#delegationDepth</data>
       <data key="label">delegation depth</data>
-      <data key="qname">mc:delegationDepth</data>
+      <data key="qname">comon:delegationDepth</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n704aba40c9f98236c19e">
       <data key="iri">http://example.org/monitoringcontinuum#derivedFrom</data>
       <data key="label">derived from</data>
-      <data key="qname">mc:derivedFrom</data>
+      <data key="qname">comon:derivedFrom</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ncf2298078b4cd62dd72b">
       <data key="iri">http://example.org/monitoringcontinuum#eligibilityReason</data>
       <data key="label">eligibility reason</data>
-      <data key="qname">mc:eligibilityReason</data>
+      <data key="qname">comon:eligibilityReason</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n51606544d7370ce4e599">
       <data key="iri">http://example.org/monitoringcontinuum#estimatedPredictionError</data>
       <data key="label">estimated prediction error</data>
-      <data key="qname">mc:estimatedPredictionError</data>
+      <data key="qname">comon:estimatedPredictionError</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n191495318cf120a7d856">
       <data key="iri">http://example.org/monitoringcontinuum#evaluatesNode</data>
       <data key="label">evaluates node</data>
-      <data key="qname">mc:evaluatesNode</data>
+      <data key="qname">comon:evaluatesNode</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ncf2b101d3cce6e6bb43c">
       <data key="iri">http://example.org/monitoringcontinuum#evaluatesService</data>
       <data key="label">evaluates service</data>
-      <data key="qname">mc:evaluatesService</data>
+      <data key="qname">comon:evaluatesService</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n740d19a1379bd78dba8b">
       <data key="iri">http://example.org/monitoringcontinuum#evaluationOrder</data>
       <data key="label">evaluation order</data>
-      <data key="qname">mc:evaluationOrder</data>
+      <data key="qname">comon:evaluationOrder</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="na0180ba5908210748cdb">
       <data key="iri">http://example.org/monitoringcontinuum#evaluationPurpose</data>
       <data key="label">evaluation purpose</data>
-      <data key="qname">mc:evaluationPurpose</data>
+      <data key="qname">comon:evaluationPurpose</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nd3350f7ccb645c28fddc">
       <data key="iri">http://example.org/monitoringcontinuum#evaluationUser</data>
       <data key="label">evaluation user</data>
-      <data key="qname">mc:evaluationUser</data>
+      <data key="qname">comon:evaluationUser</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n2d600d443724e54675a9">
       <data key="iri">http://example.org/monitoringcontinuum#evaluationZone</data>
       <data key="label">evaluation zone</data>
-      <data key="qname">mc:evaluationZone</data>
+      <data key="qname">comon:evaluationZone</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n97f284672af4f4e1b65c">
       <data key="iri">http://example.org/monitoringcontinuum#evidenceContribution</data>
       <data key="label">evidence contribution</data>
-      <data key="qname">mc:evidenceContribution</data>
+      <data key="qname">comon:evidenceContribution</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="nfa6dbbe7de4bad7059be">
       <data key="iri">http://example.org/monitoringcontinuum#evidenceFactor</data>
       <data key="label">evidence factor</data>
-      <data key="qname">mc:evidenceFactor</data>
+      <data key="qname">comon:evidenceFactor</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="nf0f02a1ba7193551ef6a">
       <data key="iri">http://example.org/monitoringcontinuum#expiresOnRecoveryOf</data>
       <data key="label">expires on recovery of</data>
-      <data key="qname">mc:expiresOnRecoveryOf</data>
+      <data key="qname">comon:expiresOnRecoveryOf</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n9da69dca403ccb98186e">
       <data key="iri">http://example.org/monitoringcontinuum#generatedBy</data>
       <data key="label">generated by</data>
-      <data key="qname">mc:generatedBy</data>
+      <data key="qname">comon:generatedBy</data>
       <data key="kind">object_property</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n5534195781a0f2c3c5df">
       <data key="iri">http://example.org/monitoringcontinuum#governedBy</data>
       <data key="label">governed by</data>
-      <data key="qname">mc:governedBy</data>
+      <data key="qname">comon:governedBy</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n87400ec499c9112f1595">
       <data key="iri">http://example.org/monitoringcontinuum#graphIRI</data>
       <data key="label">graph IRI</data>
-      <data key="qname">mc:graphIRI</data>
+      <data key="qname">comon:graphIRI</data>
       <data key="kind">datatype_property</data>
       <data key="module">deployment</data>
     </node>
     <node id="n4ddab0a4d4e87bc24605">
       <data key="iri">http://example.org/monitoringcontinuum#hasAHPScore</data>
       <data key="label">has AHP / multicriteria score</data>
-      <data key="qname">mc:hasAHPScore</data>
+      <data key="qname">comon:hasAHPScore</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n3a87c9bd2cc493b21bf8">
       <data key="iri">http://example.org/monitoringcontinuum#hasActiveConsentRange</data>
       <data key="label">has active consent range</data>
-      <data key="qname">mc:hasActiveConsentRange</data>
+      <data key="qname">comon:hasActiveConsentRange</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n185a2e47a85317699b3e">
       <data key="iri">http://example.org/monitoringcontinuum#hasAdaptability</data>
       <data key="label">has adaptability</data>
-      <data key="qname">mc:hasAdaptability</data>
+      <data key="qname">comon:hasAdaptability</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n62eb5574a4ec67507cfd">
       <data key="iri">http://example.org/monitoringcontinuum#hasAnonymizationApplied</data>
       <data key="label">has anonymization applied</data>
-      <data key="qname">mc:hasAnonymizationApplied</data>
+      <data key="qname">comon:hasAnonymizationApplied</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="nd8eeacf1925f53960480">
       <data key="iri">http://example.org/monitoringcontinuum#hasAuthorizationDecision</data>
       <data key="label">has authorization decision</data>
-      <data key="qname">mc:hasAuthorizationDecision</data>
+      <data key="qname">comon:hasAuthorizationDecision</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n45ddbadd4879328af5f4">
       <data key="iri">http://example.org/monitoringcontinuum#hasAuthorizationOutcome</data>
       <data key="label">has authorization outcome</data>
-      <data key="qname">mc:hasAuthorizationOutcome</data>
+      <data key="qname">comon:hasAuthorizationOutcome</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n1b1d9eaf52e04086915c">
       <data key="iri">http://example.org/monitoringcontinuum#hasAuthorizedDataCategory</data>
       <data key="label">authorizes data category</data>
-      <data key="qname">mc:hasAuthorizedDataCategory</data>
+      <data key="qname">comon:hasAuthorizedDataCategory</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n220d70afc85454dd1cfa">
       <data key="iri">http://example.org/monitoringcontinuum#hasAvailability</data>
       <data key="label">has availability</data>
-      <data key="qname">mc:hasAvailability</data>
+      <data key="qname">comon:hasAvailability</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n1233bea0ee0a8a849711">
       <data key="iri">http://example.org/monitoringcontinuum#hasBatteryLevel</data>
       <data key="label">has battery level</data>
-      <data key="qname">mc:hasBatteryLevel</data>
+      <data key="qname">comon:hasBatteryLevel</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="ne4e288da7ac5923967dd">
       <data key="iri">http://example.org/monitoringcontinuum#hasCommunication</data>
       <data key="label">has communication level</data>
-      <data key="qname">mc:hasCommunication</data>
+      <data key="qname">comon:hasCommunication</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="nec618a63c2f1b8a5999f">
       <data key="iri">http://example.org/monitoringcontinuum#hasComplianceMetric</data>
       <data key="label">has compliance metric</data>
-      <data key="qname">mc:hasComplianceMetric</data>
+      <data key="qname">comon:hasComplianceMetric</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n5acc4d9cd5a0103a3241">
       <data key="iri">http://example.org/monitoringcontinuum#hasConnectionStatus</data>
       <data key="label">has connection status</data>
-      <data key="qname">mc:hasConnectionStatus</data>
+      <data key="qname">comon:hasConnectionStatus</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n7f6553cb00db789142bd">
       <data key="iri">http://example.org/monitoringcontinuum#hasConsentRange</data>
       <data key="label">has consent range</data>
-      <data key="qname">mc:hasConsentRange</data>
+      <data key="qname">comon:hasConsentRange</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n832b2961d18f4b2e531e">
       <data key="iri">http://example.org/monitoringcontinuum#hasConsentRecord</data>
       <data key="label">has consent record</data>
-      <data key="qname">mc:hasConsentRecord</data>
+      <data key="qname">comon:hasConsentRecord</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n355be240de936c562f96">
       <data key="iri">http://example.org/monitoringcontinuum#hasConsistencyRatio</data>
       <data key="label">has consistency ratio</data>
-      <data key="qname">mc:hasConsistencyRatio</data>
+      <data key="qname">comon:hasConsistencyRatio</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nc77cd2ed1cc41c5d2ce4">
       <data key="iri">http://example.org/monitoringcontinuum#hasConsistencyThreshold</data>
       <data key="label">has consistency threshold</data>
-      <data key="qname">mc:hasConsistencyThreshold</data>
+      <data key="qname">comon:hasConsistencyThreshold</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nbdb12d96bde0c5564e11">
       <data key="iri">http://example.org/monitoringcontinuum#hasDataCategory</data>
       <data key="label">has data category</data>
-      <data key="qname">mc:hasDataCategory</data>
+      <data key="qname">comon:hasDataCategory</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nf695e5809b028abda9f4">
       <data key="iri">http://example.org/monitoringcontinuum#hasDataContext</data>
       <data key="label">has data context</data>
-      <data key="qname">mc:hasDataContext</data>
+      <data key="qname">comon:hasDataContext</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n3ca430445bab028ad21b">
       <data key="iri">http://example.org/monitoringcontinuum#hasDataCriticality</data>
       <data key="label">has data criticality</data>
-      <data key="qname">mc:hasDataCriticality</data>
+      <data key="qname">comon:hasDataCriticality</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="na8e8ee908baf581b6492">
       <data key="iri">http://example.org/monitoringcontinuum#hasDataSensitivity</data>
       <data key="label">has data sensitivity</data>
-      <data key="qname">mc:hasDataSensitivity</data>
+      <data key="qname">comon:hasDataSensitivity</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n85583e8c143e42b41f26">
       <data key="iri">http://example.org/monitoringcontinuum#hasDecisionAlternative</data>
       <data key="label">has decision alternative</data>
-      <data key="qname">mc:hasDecisionAlternative</data>
+      <data key="qname">comon:hasDecisionAlternative</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nc4d553460964fa35074e">
       <data key="iri">http://example.org/monitoringcontinuum#hasDecisionMethod</data>
       <data key="label">has decision method</data>
-      <data key="qname">mc:hasDecisionMethod</data>
+      <data key="qname">comon:hasDecisionMethod</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nb964348d873e5d52f0e6">
       <data key="iri">http://example.org/monitoringcontinuum#hasDegradationCause</data>
       <data key="label">has degradation cause</data>
-      <data key="qname">mc:hasDegradationCause</data>
+      <data key="qname">comon:hasDegradationCause</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n4943cdd37464e946e7c1">
       <data key="iri">http://example.org/monitoringcontinuum#hasDelegation</data>
       <data key="label">has delegation</data>
-      <data key="qname">mc:hasDelegation</data>
+      <data key="qname">comon:hasDelegation</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="na1fba578b80ee296f559">
       <data key="iri">http://example.org/monitoringcontinuum#hasDetectedSymptom</data>
       <data key="label">has detected symptom</data>
-      <data key="qname">mc:hasDetectedSymptom</data>
+      <data key="qname">comon:hasDetectedSymptom</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ndab18443b7f50c9bcbb6">
       <data key="iri">http://example.org/monitoringcontinuum#hasDeviceState</data>
       <data key="label">has device state</data>
-      <data key="qname">mc:hasDeviceState</data>
+      <data key="qname">comon:hasDeviceState</data>
       <data key="kind">object_property</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="neb3098401f4cea5b626f">
       <data key="iri">http://example.org/monitoringcontinuum#hasDistance</data>
       <data key="label">has distance</data>
-      <data key="qname">mc:hasDistance</data>
+      <data key="qname">comon:hasDistance</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="n417e719d2b62f3a259c1">
       <data key="iri">http://example.org/monitoringcontinuum#hasEffectiveConsentRange</data>
       <data key="label">has effective consent range</data>
-      <data key="qname">mc:hasEffectiveConsentRange</data>
+      <data key="qname">comon:hasEffectiveConsentRange</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n7a5874845869b05e0b3f">
       <data key="iri">http://example.org/monitoringcontinuum#hasElasticity</data>
       <data key="label">has elasticity</data>
-      <data key="qname">mc:hasElasticity</data>
+      <data key="qname">comon:hasElasticity</data>
       <data key="kind">datatype_property</data>
       <data key="module">topology</data>
     </node>
     <node id="n77c6d88823b75845b1dd">
       <data key="iri">http://example.org/monitoringcontinuum#hasEnergyLevel</data>
       <data key="label">has energy level</data>
-      <data key="qname">mc:hasEnergyLevel</data>
+      <data key="qname">comon:hasEnergyLevel</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n4a7e914c5061d78d9fdd">
       <data key="iri">http://example.org/monitoringcontinuum#hasEvaluationTicketID</data>
       <data key="label">has evaluation ticket ID</data>
-      <data key="qname">mc:hasEvaluationTicketID</data>
+      <data key="qname">comon:hasEvaluationTicketID</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n02337f03748a18202659">
       <data key="iri">http://example.org/monitoringcontinuum#hasGeometry</data>
       <data key="label">has geometry</data>
-      <data key="qname">mc:hasGeometry</data>
+      <data key="qname">comon:hasGeometry</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="nb5c18d4c0d33aedca90b">
       <data key="iri">http://example.org/monitoringcontinuum#hasIdentifier</data>
       <data key="label">has identifier</data>
-      <data key="qname">mc:hasIdentifier</data>
+      <data key="qname">comon:hasIdentifier</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n2f047ed3b91082b9fdb7">
       <data key="iri">http://example.org/monitoringcontinuum#hasLatencyWeight</data>
       <data key="label">has latency weight</data>
-      <data key="qname">mc:hasLatencyWeight</data>
+      <data key="qname">comon:hasLatencyWeight</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n89497b8b57db5b94b02a">
       <data key="iri">http://example.org/monitoringcontinuum#hasMeasurementUnit</data>
       <data key="label">has Measurement Unit</data>
-      <data key="qname">mc:hasMeasurementUnit</data>
+      <data key="qname">comon:hasMeasurementUnit</data>
       <data key="kind">object_property</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n27f0440878a7b50e9c33">
       <data key="iri">http://example.org/monitoringcontinuum#hasMigrationCost</data>
       <data key="label">has migration cost</data>
-      <data key="qname">mc:hasMigrationCost</data>
+      <data key="qname">comon:hasMigrationCost</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nb9ae6b8678f3f26ec8c2">
       <data key="iri">http://example.org/monitoringcontinuum#hasMigrationTime</data>
       <data key="label">has migration time</data>
-      <data key="qname">mc:hasMigrationTime</data>
+      <data key="qname">comon:hasMigrationTime</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n5bcbc8cc02fd1ddb8188">
       <data key="iri">http://example.org/monitoringcontinuum#hasMobileDevice</data>
       <data key="label">has mobile device</data>
-      <data key="qname">mc:hasMobileDevice</data>
+      <data key="qname">comon:hasMobileDevice</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="nf98cead006f724b3f758">
       <data key="iri">http://example.org/monitoringcontinuum#hasMobility</data>
       <data key="label">has mobility</data>
-      <data key="qname">mc:hasMobility</data>
+      <data key="qname">comon:hasMobility</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="nbe2bddd81c6dc75e1000">
       <data key="iri">http://example.org/monitoringcontinuum#hasModelQualityWeight</data>
       <data key="label">has model quality weight</data>
-      <data key="qname">mc:hasModelQualityWeight</data>
+      <data key="qname">comon:hasModelQualityWeight</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nbdf20c8a7a053352a86a">
       <data key="iri">http://example.org/monitoringcontinuum#hasModelTier</data>
       <data key="label">has model tier</data>
-      <data key="qname">mc:hasModelTier</data>
+      <data key="qname">comon:hasModelTier</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nd9b7a9a739f07d01b5ed">
       <data key="iri">http://example.org/monitoringcontinuum#hasNeighborNode</data>
       <data key="label">has neighbor node</data>
-      <data key="qname">mc:hasNeighborNode</data>
+      <data key="qname">comon:hasNeighborNode</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="nf1d5545667c92c12a95c">
       <data key="iri">http://example.org/monitoringcontinuum#hasNodeState</data>
       <data key="label">has node state</data>
-      <data key="qname">mc:hasNodeState</data>
+      <data key="qname">comon:hasNodeState</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n63d91a44c11dabb7f0c9">
       <data key="iri">http://example.org/monitoringcontinuum#hasNoiseApplied</data>
       <data key="label">has noise applied</data>
-      <data key="qname">mc:hasNoiseApplied</data>
+      <data key="qname">comon:hasNoiseApplied</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n53871365519fa6d6b275">
       <data key="iri">http://example.org/monitoringcontinuum#hasOperationalStatus</data>
       <data key="label">has operational status</data>
-      <data key="qname">mc:hasOperationalStatus</data>
+      <data key="qname">comon:hasOperationalStatus</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="neb60ab58f718e0fe5d9f">
       <data key="iri">http://example.org/monitoringcontinuum#hasPairwiseComparison</data>
       <data key="label">has pairwise comparison</data>
-      <data key="qname">mc:hasPairwiseComparison</data>
+      <data key="qname">comon:hasPairwiseComparison</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n07c7186ff25efd8849a4">
       <data key="iri">http://example.org/monitoringcontinuum#hasPayloadType</data>
       <data key="label">has payload type</data>
-      <data key="qname">mc:hasPayloadType</data>
+      <data key="qname">comon:hasPayloadType</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n366a77944611e522edb9">
       <data key="iri">http://example.org/monitoringcontinuum#hasPerformance</data>
       <data key="label">has performance</data>
-      <data key="qname">mc:hasPerformance</data>
+      <data key="qname">comon:hasPerformance</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="nde8cef8548e0e0c97ddc">
       <data key="iri">http://example.org/monitoringcontinuum#hasPermission</data>
       <data key="label">has permission</data>
-      <data key="qname">mc:hasPermission</data>
+      <data key="qname">comon:hasPermission</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n6b90e144574c8221cd82">
       <data key="iri">http://example.org/monitoringcontinuum#hasPersonStatus</data>
       <data key="label">has person status</data>
-      <data key="qname">mc:hasPersonStatus</data>
+      <data key="qname">comon:hasPersonStatus</data>
       <data key="kind">object_property</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n6db3992d12da0f284526">
       <data key="iri">http://example.org/monitoringcontinuum#hasPolicyAction</data>
       <data key="label">has policy action</data>
-      <data key="qname">mc:hasPolicyAction</data>
+      <data key="qname">comon:hasPolicyAction</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n84e3d019d2ab28259b66">
       <data key="iri">http://example.org/monitoringcontinuum#hasPolicyRelationType</data>
       <data key="label">has policy relation type</data>
-      <data key="qname">mc:hasPolicyRelationType</data>
+      <data key="qname">comon:hasPolicyRelationType</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n90e4505c93e4746e70ce">
       <data key="iri">http://example.org/monitoringcontinuum#hasPolicyStatement</data>
       <data key="label">has policy statement</data>
-      <data key="qname">mc:hasPolicyStatement</data>
+      <data key="qname">comon:hasPolicyStatement</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nf4d2263182dfef564a24">
       <data key="iri">http://example.org/monitoringcontinuum#hasPolicyType</data>
       <data key="label">has policy type</data>
-      <data key="qname">mc:hasPolicyType</data>
+      <data key="qname">comon:hasPolicyType</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nb86a686ff5162d355a37">
       <data key="iri">http://example.org/monitoringcontinuum#hasPopulationDensity</data>
       <data key="label">has population density</data>
-      <data key="qname">mc:hasPopulationDensity</data>
+      <data key="qname">comon:hasPopulationDensity</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="n38721ee20424b3c821ca">
       <data key="iri">http://example.org/monitoringcontinuum#hasPredictedStressLevel</data>
       <data key="label">has predicted stress level</data>
-      <data key="qname">mc:hasPredictedStressLevel</data>
+      <data key="qname">comon:hasPredictedStressLevel</data>
       <data key="kind">object_property</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n9017437d94e040427efc">
       <data key="iri">http://example.org/monitoringcontinuum#hasPrivacyBudget</data>
       <data key="label">has privacy budget</data>
-      <data key="qname">mc:hasPrivacyBudget</data>
+      <data key="qname">comon:hasPrivacyBudget</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n77b915147e7ea304cac1">
       <data key="iri">http://example.org/monitoringcontinuum#hasPrivacyBudgetAccount</data>
       <data key="label">has privacy budget account</data>
-      <data key="qname">mc:hasPrivacyBudgetAccount</data>
+      <data key="qname">comon:hasPrivacyBudgetAccount</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n3ab90d6cb8410449ceec">
       <data key="iri">http://example.org/monitoringcontinuum#hasPrivacyClass</data>
       <data key="label">has privacy class</data>
-      <data key="qname">mc:hasPrivacyClass</data>
+      <data key="qname">comon:hasPrivacyClass</data>
       <data key="kind">object_property</data>
       <data key="module">deployment</data>
     </node>
     <node id="n7b800ea6738538792414">
       <data key="iri">http://example.org/monitoringcontinuum#hasPrivacyMechanism</data>
       <data key="label">has privacy mechanism</data>
-      <data key="qname">mc:hasPrivacyMechanism</data>
+      <data key="qname">comon:hasPrivacyMechanism</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n10c29eec30d8f8f11717">
       <data key="iri">http://example.org/monitoringcontinuum#hasPrivacyWeight</data>
       <data key="label">has privacy weight</data>
-      <data key="qname">mc:hasPrivacyWeight</data>
+      <data key="qname">comon:hasPrivacyWeight</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ne1f9fa4eaa6c25836923">
       <data key="iri">http://example.org/monitoringcontinuum#hasProcessingLevel</data>
       <data key="label">has processing level</data>
-      <data key="qname">mc:hasProcessingLevel</data>
+      <data key="qname">comon:hasProcessingLevel</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nff3bb1d4b3c9996e661a">
       <data key="iri">http://example.org/monitoringcontinuum#hasProcessingPurpose</data>
       <data key="label">has processing purpose</data>
-      <data key="qname">mc:hasProcessingPurpose</data>
+      <data key="qname">comon:hasProcessingPurpose</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="na52eccac0d734c3fd559">
       <data key="iri">http://example.org/monitoringcontinuum#hasProcessingScope</data>
       <data key="label">has processing scope</data>
-      <data key="qname">mc:hasProcessingScope</data>
+      <data key="qname">comon:hasProcessingScope</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n43bd35d69ff93185c84f">
       <data key="iri">http://example.org/monitoringcontinuum#hasProfitability</data>
       <data key="label">has profitability</data>
-      <data key="qname">mc:hasProfitability</data>
+      <data key="qname">comon:hasProfitability</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n7e6e2205f2a93fd9aeaa">
       <data key="iri">http://example.org/monitoringcontinuum#hasQueryType</data>
       <data key="label">has query type</data>
-      <data key="qname">mc:hasQueryType</data>
+      <data key="qname">comon:hasQueryType</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n895052a1c9344a71c671">
       <data key="iri">http://example.org/monitoringcontinuum#hasRecoveryCondition</data>
       <data key="label">has recovery condition</data>
-      <data key="qname">mc:hasRecoveryCondition</data>
+      <data key="qname">comon:hasRecoveryCondition</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nef22de702482ca7ec32d">
       <data key="iri">http://example.org/monitoringcontinuum#hasReplicationEvent</data>
       <data key="label">has replication event</data>
-      <data key="qname">mc:hasReplicationEvent</data>
+      <data key="qname">comon:hasReplicationEvent</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n7220b2ac58adca8d6ea7">
       <data key="iri">http://example.org/monitoringcontinuum#hasResidualCapacity</data>
       <data key="label">has residual capacity</data>
-      <data key="qname">mc:hasResidualCapacity</data>
+      <data key="qname">comon:hasResidualCapacity</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="nb3c2c6326ea3a387e54e">
       <data key="iri">http://example.org/monitoringcontinuum#hasRole</data>
       <data key="label">has role</data>
-      <data key="qname">mc:hasRole</data>
+      <data key="qname">comon:hasRole</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n9bb7c3010e8dfd46ac3c">
       <data key="iri">http://example.org/monitoringcontinuum#hasSelectionJustification</data>
       <data key="label">has selection justification</data>
-      <data key="qname">mc:hasSelectionJustification</data>
+      <data key="qname">comon:hasSelectionJustification</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nea745f07f3bf5b810f53">
       <data key="iri">http://example.org/monitoringcontinuum#hasSemanticContract</data>
       <data key="label">has semantic contract</data>
-      <data key="qname">mc:hasSemanticContract</data>
+      <data key="qname">comon:hasSemanticContract</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n201b87a98c8d9c6be77d">
       <data key="iri">http://example.org/monitoringcontinuum#hasServiceState</data>
       <data key="label">has service state</data>
-      <data key="qname">mc:hasServiceState</data>
+      <data key="qname">comon:hasServiceState</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n8c0343c107ac272ef90b">
       <data key="iri">http://example.org/monitoringcontinuum#hasTrustAssessment</data>
       <data key="label">has trust assessment</data>
-      <data key="qname">mc:hasTrustAssessment</data>
+      <data key="qname">comon:hasTrustAssessment</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n5ed15b43accbf5172536">
       <data key="iri">http://example.org/monitoringcontinuum#hasTrustEvidence</data>
       <data key="label">has trust evidence</data>
-      <data key="qname">mc:hasTrustEvidence</data>
+      <data key="qname">comon:hasTrustEvidence</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n1e3a6d93ed5879b94457">
       <data key="iri">http://example.org/monitoringcontinuum#hasTrustScore</data>
       <data key="label">has trust score</data>
-      <data key="qname">mc:hasTrustScore</data>
+      <data key="qname">comon:hasTrustScore</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="ne3d65c081ad860cd8def">
       <data key="iri">http://example.org/monitoringcontinuum#hasTrustWeight</data>
       <data key="label">has external trust weight</data>
-      <data key="qname">mc:hasTrustWeight</data>
+      <data key="qname">comon:hasTrustWeight</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n574da2281c58e4eaff5c">
       <data key="iri">http://example.org/monitoringcontinuum#hasUserState</data>
       <data key="label">has user state</data>
-      <data key="qname">mc:hasUserState</data>
+      <data key="qname">comon:hasUserState</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="na62fb042e3d364811de7">
       <data key="iri">http://example.org/monitoringcontinuum#hasValidationResult</data>
       <data key="label">has validation result</data>
-      <data key="qname">mc:hasValidationResult</data>
+      <data key="qname">comon:hasValidationResult</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n782cf0628e2a38e5a979">
       <data key="iri">http://example.org/monitoringcontinuum#hasWearable</data>
       <data key="label">has wearable</data>
-      <data key="qname">mc:hasWearable</data>
+      <data key="qname">comon:hasWearable</data>
       <data key="kind">object_property</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n8f1310f030af05eb5806">
       <data key="iri">http://example.org/monitoringcontinuum#hasWorkload</data>
       <data key="label">has workload</data>
-      <data key="qname">mc:hasWorkload</data>
+      <data key="qname">comon:hasWorkload</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n1f2e102d77f6d0dae47b">
       <data key="iri">http://example.org/monitoringcontinuum#hostedAt</data>
       <data key="label">hosted at</data>
-      <data key="qname">mc:hostedAt</data>
+      <data key="qname">comon:hostedAt</data>
       <data key="kind">object_property</data>
       <data key="module">deployment</data>
     </node>
     <node id="ne033049ce961d39208eb">
       <data key="iri">http://example.org/monitoringcontinuum#hostedOnNode</data>
       <data key="label">hosted on node</data>
-      <data key="qname">mc:hostedOnNode</data>
+      <data key="qname">comon:hostedOnNode</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n56dbaac3bc79bee01bb9">
       <data key="iri">http://example.org/monitoringcontinuum#hostsModel</data>
       <data key="label">hosts model</data>
-      <data key="qname">mc:hostsModel</data>
+      <data key="qname">comon:hostsModel</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n556a8aba79eab4e88b4a">
       <data key="iri">http://example.org/monitoringcontinuum#hostsService</data>
       <data key="label">hosts service</data>
-      <data key="qname">mc:hostsService</data>
+      <data key="qname">comon:hostsService</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n450d5bd3add6c8abcaac">
       <data key="iri">http://example.org/monitoringcontinuum#idempotencyKey</data>
       <data key="label">idempotency key</data>
-      <data key="qname">mc:idempotencyKey</data>
+      <data key="qname">comon:idempotencyKey</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n42eed228de6e2f585f67">
       <data key="iri">http://example.org/monitoringcontinuum#identifierScope</data>
       <data key="label">identifier scope</data>
-      <data key="qname">mc:identifierScope</data>
+      <data key="qname">comon:identifierScope</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n6d5c8012d060aac1941f">
       <data key="iri">http://example.org/monitoringcontinuum#identifierValue</data>
       <data key="label">identifier value</data>
-      <data key="qname">mc:identifierValue</data>
+      <data key="qname">comon:identifierValue</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n5f34ec9fb3a2f3a2a961">
       <data key="iri">http://example.org/monitoringcontinuum#involvedNode</data>
       <data key="label">involved node</data>
-      <data key="qname">mc:involvedNode</data>
+      <data key="qname">comon:involvedNode</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n3fb9bcbd1e02ac3f0b86">
       <data key="iri">http://example.org/monitoringcontinuum#isEligible</data>
       <data key="label">is eligible</data>
-      <data key="qname">mc:isEligible</data>
+      <data key="qname">comon:isEligible</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n63aac92395417db70650">
       <data key="iri">http://example.org/monitoringcontinuum#isPreferredNode</data>
       <data key="label">is preferred node</data>
-      <data key="qname">mc:isPreferredNode</data>
+      <data key="qname">comon:isPreferredNode</data>
       <data key="kind">datatype_property</data>
       <data key="module">topology</data>
     </node>
     <node id="nf873b505f08b63d2c4a4">
       <data key="iri">http://example.org/monitoringcontinuum#isRedundant</data>
       <data key="label">is redundant</data>
-      <data key="qname">mc:isRedundant</data>
+      <data key="qname">comon:isRedundant</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="nce64e34a214aa4758110">
       <data key="iri">http://example.org/monitoringcontinuum#lastUpdated</data>
       <data key="label">last updated</data>
-      <data key="qname">mc:lastUpdated</data>
+      <data key="qname">comon:lastUpdated</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nd74f463a22a34d769254">
       <data key="iri">http://example.org/monitoringcontinuum#legacyDecisionScore</data>
       <data key="label">legacy decision score</data>
-      <data key="qname">mc:legacyDecisionScore</data>
+      <data key="qname">comon:legacyDecisionScore</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nc5cd47dd2f6bc53aaf0b">
       <data key="iri">http://example.org/monitoringcontinuum#locatedIn</data>
       <data key="label">located in</data>
-      <data key="qname">mc:locatedIn</data>
+      <data key="qname">comon:locatedIn</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="nb787aecafe5d5cd4dab0">
       <data key="iri">http://example.org/monitoringcontinuum#locatedInZone</data>
       <data key="label">located in zone</data>
-      <data key="qname">mc:locatedInZone</data>
+      <data key="qname">comon:locatedInZone</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="nfcddab2f34722019cf7e">
       <data key="iri">http://example.org/monitoringcontinuum#measurementUnitStatus</data>
       <data key="label">measurement Unit Status</data>
-      <data key="qname">mc:measurementUnitStatus</data>
+      <data key="qname">comon:measurementUnitStatus</data>
       <data key="kind">datatype_property</data>
       <data key="module">wellbeing</data>
     </node>
     <node id="n847638251dbb0df01dc1">
       <data key="iri">http://example.org/monitoringcontinuum#mechanismDescription</data>
       <data key="label">mechanism description</data>
-      <data key="qname">mc:mechanismDescription</data>
+      <data key="qname">comon:mechanismDescription</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n3eaa0eb8d4c05772121c">
       <data key="iri">http://example.org/monitoringcontinuum#mechanismIdentifier</data>
       <data key="label">mechanism identifier</data>
-      <data key="qname">mc:mechanismIdentifier</data>
+      <data key="qname">comon:mechanismIdentifier</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="neb5f1c152f967cd081a1">
       <data key="iri">http://example.org/monitoringcontinuum#migrationNote</data>
       <data key="label">migration note</data>
-      <data key="qname">mc:migrationNote</data>
+      <data key="qname">comon:migrationNote</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n71481d8d87eea0af650e">
       <data key="iri">http://example.org/monitoringcontinuum#migrationStatus</data>
       <data key="label">migration status</data>
-      <data key="qname">mc:migrationStatus</data>
+      <data key="qname">comon:migrationStatus</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n30309d2e05c8a99d762c">
       <data key="iri">http://example.org/monitoringcontinuum#modelLineageStatus</data>
       <data key="label">model lineage status</data>
-      <data key="qname">mc:modelLineageStatus</data>
+      <data key="qname">comon:modelLineageStatus</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n86d0bf855991cb5f33cc">
       <data key="iri">http://example.org/monitoringcontinuum#modelVersion</data>
       <data key="label">model version</data>
-      <data key="qname">mc:modelVersion</data>
+      <data key="qname">comon:modelVersion</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nd36898a2c7bbafd6802b">
       <data key="iri">http://example.org/monitoringcontinuum#noiseLevel</data>
       <data key="label">noise level</data>
-      <data key="qname">mc:noiseLevel</data>
+      <data key="qname">comon:noiseLevel</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n3d8a215f0826f9ad7ce3">
       <data key="iri">http://example.org/monitoringcontinuum#observedModelQuality</data>
       <data key="label">observed model quality</data>
-      <data key="qname">mc:observedModelQuality</data>
+      <data key="qname">comon:observedModelQuality</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n6a4f8d19b8d4c45b2e21">
       <data key="iri">http://example.org/monitoringcontinuum#ontologyDigest</data>
       <data key="label">ontology digest</data>
-      <data key="qname">mc:ontologyDigest</data>
+      <data key="qname">comon:ontologyDigest</data>
       <data key="kind">datatype_property</data>
       <data key="module">deployment</data>
     </node>
     <node id="ned8804a3be1562bb7416">
       <data key="iri">http://example.org/monitoringcontinuum#originatesFromDevice</data>
       <data key="label">originates from device</data>
-      <data key="qname">mc:originatesFromDevice</data>
+      <data key="qname">comon:originatesFromDevice</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="nbfeaf1db1a8e77135ff0">
       <data key="iri">http://example.org/monitoringcontinuum#pairwiseValue</data>
       <data key="label">pairwise comparison value</data>
-      <data key="qname">mc:pairwiseValue</data>
+      <data key="qname">comon:pairwiseValue</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n077a34c728134133b868">
       <data key="iri">http://example.org/monitoringcontinuum#parametrizedDataReady</data>
       <data key="label">parametrized data ready</data>
-      <data key="qname">mc:parametrizedDataReady</data>
+      <data key="qname">comon:parametrizedDataReady</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="ne4a8adee2b17c9d037a8">
       <data key="iri">http://example.org/monitoringcontinuum#parentDelegation</data>
       <data key="label">parent delegation</data>
-      <data key="qname">mc:parentDelegation</data>
+      <data key="qname">comon:parentDelegation</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nb5180d90763de2583904">
       <data key="iri">http://example.org/monitoringcontinuum#partOfScenario</data>
       <data key="label">part of scenario</data>
-      <data key="qname">mc:partOfScenario</data>
+      <data key="qname">comon:partOfScenario</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n1caea1c1fb160b95b0a4">
       <data key="iri">http://example.org/monitoringcontinuum#plannedExpiry</data>
       <data key="label">planned expiry</data>
-      <data key="qname">mc:plannedExpiry</data>
+      <data key="qname">comon:plannedExpiry</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n34998e97011a8816e13f">
       <data key="iri">http://example.org/monitoringcontinuum#policyArtifactUsed</data>
       <data key="label">policy artifact used</data>
-      <data key="qname">mc:policyArtifactUsed</data>
+      <data key="qname">comon:policyArtifactUsed</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n703f311ab1c7c2f4561e">
       <data key="iri">http://example.org/monitoringcontinuum#policyIdentifier</data>
       <data key="label">policy identifier</data>
-      <data key="qname">mc:policyIdentifier</data>
+      <data key="qname">comon:policyIdentifier</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n384396b5ec8a881ee719">
       <data key="iri">http://example.org/monitoringcontinuum#policyVersion</data>
       <data key="label">policy version</data>
-      <data key="qname">mc:policyVersion</data>
+      <data key="qname">comon:policyVersion</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n924aca3d4ab26d9560cd">
       <data key="iri">http://example.org/monitoringcontinuum#predictionConfidence</data>
       <data key="label">prediction confidence</data>
-      <data key="qname">mc:predictionConfidence</data>
+      <data key="qname">comon:predictionConfidence</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nb21b2b3222789add6de0">
       <data key="iri">http://example.org/monitoringcontinuum#privacyBudgetConsumed</data>
       <data key="label">privacy budget consumed</data>
-      <data key="qname">mc:privacyBudgetConsumed</data>
+      <data key="qname">comon:privacyBudgetConsumed</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="nc70cb6955cde4cbfefcf">
       <data key="iri">http://example.org/monitoringcontinuum#privacyBudgetMaximum</data>
       <data key="label">privacy budget maximum</data>
-      <data key="qname">mc:privacyBudgetMaximum</data>
+      <data key="qname">comon:privacyBudgetMaximum</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n2071a282503bb4d10a75">
       <data key="iri">http://example.org/monitoringcontinuum#privacyBudgetRemaining</data>
       <data key="label">privacy budget remaining</data>
-      <data key="qname">mc:privacyBudgetRemaining</data>
+      <data key="qname">comon:privacyBudgetRemaining</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="na0c2a9bfebfb00229da1">
       <data key="iri">http://example.org/monitoringcontinuum#protectsAtRest</data>
       <data key="label">protects at rest</data>
-      <data key="qname">mc:protectsAtRest</data>
+      <data key="qname">comon:protectsAtRest</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n5ffb643b75977fac17c5">
       <data key="iri">http://example.org/monitoringcontinuum#protectsInTransit</data>
       <data key="label">protects in transit</data>
-      <data key="qname">mc:protectsInTransit</data>
+      <data key="qname">comon:protectsInTransit</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="ne900e1e5291faea9295e">
       <data key="iri">http://example.org/monitoringcontinuum#queryIdentifier</data>
       <data key="label">query identifier</data>
-      <data key="qname">mc:queryIdentifier</data>
+      <data key="qname">comon:queryIdentifier</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n9ce2c3fbc775b53e95b6">
       <data key="iri">http://example.org/monitoringcontinuum#queryInterpretation</data>
       <data key="label">query interpretation</data>
-      <data key="qname">mc:queryInterpretation</data>
+      <data key="qname">comon:queryInterpretation</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n273dc30e0271f768b3b6">
       <data key="iri">http://example.org/monitoringcontinuum#queryPurpose</data>
       <data key="label">query purpose</data>
-      <data key="qname">mc:queryPurpose</data>
+      <data key="qname">comon:queryPurpose</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nf2dfc6a81e9fb48f8493">
       <data key="iri">http://example.org/monitoringcontinuum#queuedRequests</data>
       <data key="label">queued requests</data>
-      <data key="qname">mc:queuedRequests</data>
+      <data key="qname">comon:queuedRequests</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n20d3dde592e9c006a4ca">
       <data key="iri">http://example.org/monitoringcontinuum#recommendedMechanism</data>
       <data key="label">recommended mechanism</data>
-      <data key="qname">mc:recommendedMechanism</data>
+      <data key="qname">comon:recommendedMechanism</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n3231088e39e3c6922045">
       <data key="iri">http://example.org/monitoringcontinuum#relatedRequirement</data>
       <data key="label">related requirement</data>
-      <data key="qname">mc:relatedRequirement</data>
+      <data key="qname">comon:relatedRequirement</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="na2850bf13197c0693dcb">
       <data key="iri">http://example.org/monitoringcontinuum#relatesNode</data>
       <data key="label">relates node</data>
-      <data key="qname">mc:relatesNode</data>
+      <data key="qname">comon:relatesNode</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="n7959cfb00b574e878b49">
       <data key="iri">http://example.org/monitoringcontinuum#relatesUser</data>
       <data key="label">relates user</data>
-      <data key="qname">mc:relatesUser</data>
+      <data key="qname">comon:relatesUser</data>
       <data key="kind">object_property</data>
       <data key="module">topology</data>
     </node>
     <node id="n85f80d39854de610d608">
       <data key="iri">http://example.org/monitoringcontinuum#relationCode</data>
       <data key="label">relation code</data>
-      <data key="qname">mc:relationCode</data>
+      <data key="qname">comon:relationCode</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nfb88edaedd46c1c8bf5a">
       <data key="iri">http://example.org/monitoringcontinuum#relationSourceCategory</data>
       <data key="label">relation source category</data>
-      <data key="qname">mc:relationSourceCategory</data>
+      <data key="qname">comon:relationSourceCategory</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n47628db6d1e2a6561f9b">
       <data key="iri">http://example.org/monitoringcontinuum#relationTargetCategory</data>
       <data key="label">relation target category</data>
-      <data key="qname">mc:relationTargetCategory</data>
+      <data key="qname">comon:relationTargetCategory</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="na316f2830a6f21bde97b">
       <data key="iri">http://example.org/monitoringcontinuum#replicaOf</data>
       <data key="label">replica of</data>
-      <data key="qname">mc:replicaOf</data>
+      <data key="qname">comon:replicaOf</data>
       <data key="kind">object_property</data>
       <data key="module">deployment</data>
     </node>
     <node id="n47078c246646330c5cef">
       <data key="iri">http://example.org/monitoringcontinuum#replicationSource</data>
       <data key="label">replication source</data>
-      <data key="qname">mc:replicationSource</data>
+      <data key="qname">comon:replicationSource</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n1d347124de716539f71c">
       <data key="iri">http://example.org/monitoringcontinuum#replicationTarget</data>
       <data key="label">replication target</data>
-      <data key="qname">mc:replicationTarget</data>
+      <data key="qname">comon:replicationTarget</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n5acaf04566fd91347a91">
       <data key="iri">http://example.org/monitoringcontinuum#replicationVersion</data>
       <data key="label">replication version</data>
-      <data key="qname">mc:replicationVersion</data>
+      <data key="qname">comon:replicationVersion</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n96151a23a709346eff08">
       <data key="iri">http://example.org/monitoringcontinuum#requirementIdentifier</data>
       <data key="label">requirement identifier</data>
-      <data key="qname">mc:requirementIdentifier</data>
+      <data key="qname">comon:requirementIdentifier</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n949d9596d8264d3cbe56">
       <data key="iri">http://example.org/monitoringcontinuum#requirementStatement</data>
       <data key="label">requirement statement</data>
-      <data key="qname">mc:requirementStatement</data>
+      <data key="qname">comon:requirementStatement</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n875656d508ce31dd8f3f">
       <data key="iri">http://example.org/monitoringcontinuum#requirementsArtifactUsed</data>
       <data key="label">requirements artifact used</data>
-      <data key="qname">mc:requirementsArtifactUsed</data>
+      <data key="qname">comon:requirementsArtifactUsed</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n1399d3a28af26a7d1919">
       <data key="iri">http://example.org/monitoringcontinuum#requiresConsentRange</data>
       <data key="label">requires consent range</data>
-      <data key="qname">mc:requiresConsentRange</data>
+      <data key="qname">comon:requiresConsentRange</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n8b963f425eac8660ca1d">
       <data key="iri">http://example.org/monitoringcontinuum#requiresRecalculation</data>
       <data key="label">requires recalculation</data>
-      <data key="qname">mc:requiresRecalculation</data>
+      <data key="qname">comon:requiresRecalculation</data>
       <data key="kind">datatype_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n47437dc3b3633584792c">
       <data key="iri">http://example.org/monitoringcontinuum#resourceUsagePercent</data>
       <data key="label">resource usage (%)</data>
-      <data key="qname">mc:resourceUsagePercent</data>
+      <data key="qname">comon:resourceUsagePercent</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="nea40962a25286d9037d1">
       <data key="iri">http://example.org/monitoringcontinuum#resultedInAction</data>
       <data key="label">resulted in action</data>
-      <data key="qname">mc:resultedInAction</data>
+      <data key="qname">comon:resultedInAction</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n20a7202c5fa57877bde1">
       <data key="iri">http://example.org/monitoringcontinuum#rollbackTarget</data>
       <data key="label">rollback target</data>
-      <data key="qname">mc:rollbackTarget</data>
+      <data key="qname">comon:rollbackTarget</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n00dfeb0b22ec9cf11290">
       <data key="iri">http://example.org/monitoringcontinuum#scenarioIdentifier</data>
       <data key="label">scenario identifier</data>
-      <data key="qname">mc:scenarioIdentifier</data>
+      <data key="qname">comon:scenarioIdentifier</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n50377bbc693705153397">
       <data key="iri">http://example.org/monitoringcontinuum#scenarioMechanism</data>
       <data key="label">scenario mechanism</data>
-      <data key="qname">mc:scenarioMechanism</data>
+      <data key="qname">comon:scenarioMechanism</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nc2f5ef60fca90eaa6ad1">
       <data key="iri">http://example.org/monitoringcontinuum#scenarioPolicy</data>
       <data key="label">scenario policy</data>
-      <data key="qname">mc:scenarioPolicy</data>
+      <data key="qname">comon:scenarioPolicy</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nc8bfae561ce19f90bfd1">
       <data key="iri">http://example.org/monitoringcontinuum#securityBaselineVersion</data>
       <data key="label">security baseline version</data>
-      <data key="qname">mc:securityBaselineVersion</data>
+      <data key="qname">comon:securityBaselineVersion</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n62b82abf0edf9fbd12cd">
       <data key="iri">http://example.org/monitoringcontinuum#selectedAlternative</data>
       <data key="label">selected alternative</data>
-      <data key="qname">mc:selectedAlternative</data>
+      <data key="qname">comon:selectedAlternative</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n25d821afe6627e6f4371">
       <data key="iri">http://example.org/monitoringcontinuum#selectedModelTier</data>
       <data key="label">selected model tier</data>
-      <data key="qname">mc:selectedModelTier</data>
+      <data key="qname">comon:selectedModelTier</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="ne3f5b425aedc8e47f9fc">
       <data key="iri">http://example.org/monitoringcontinuum#sendTimestamp</data>
       <data key="label">send timestamp</data>
-      <data key="qname">mc:sendTimestamp</data>
+      <data key="qname">comon:sendTimestamp</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="n3b1508006ff7a7e9ebd6">
       <data key="iri">http://example.org/monitoringcontinuum#sentToNode</data>
       <data key="label">sent to node</data>
-      <data key="qname">mc:sentToNode</data>
+      <data key="qname">comon:sentToNode</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="neec080cd2dd010726980">
       <data key="iri">http://example.org/monitoringcontinuum#sessionTime</data>
       <data key="label">session time</data>
-      <data key="qname">mc:sessionTime</data>
+      <data key="qname">comon:sessionTime</data>
       <data key="kind">datatype_property</data>
       <data key="module">federation</data>
     </node>
     <node id="nb937d434d4a92b527837">
       <data key="iri">http://example.org/monitoringcontinuum#stateDuration</data>
       <data key="label">state duration</data>
-      <data key="qname">mc:stateDuration</data>
+      <data key="qname">comon:stateDuration</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="ncc3249e198389c11557c">
       <data key="iri">http://example.org/monitoringcontinuum#strategyCode</data>
       <data key="label">strategy code</data>
-      <data key="qname">mc:strategyCode</data>
+      <data key="qname">comon:strategyCode</data>
       <data key="kind">datatype_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n4c72bffc3439f67374e8">
       <data key="iri">http://example.org/monitoringcontinuum#supersedesModel</data>
       <data key="label">supersedes model</data>
-      <data key="qname">mc:supersedesModel</data>
+      <data key="qname">comon:supersedesModel</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nddc03ae519627c2998e4">
       <data key="iri">http://example.org/monitoringcontinuum#supportsPolicy</data>
       <data key="label">supports policy</data>
-      <data key="qname">mc:supportsPolicy</data>
+      <data key="qname">comon:supportsPolicy</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="ndb02647af2a8f8b3432a">
       <data key="iri">http://example.org/monitoringcontinuum#tracedToMechanism</data>
       <data key="label">traced to mechanism</data>
-      <data key="qname">mc:tracedToMechanism</data>
+      <data key="qname">comon:tracedToMechanism</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n02844a96775004e202c6">
       <data key="iri">http://example.org/monitoringcontinuum#tracedToPolicy</data>
       <data key="label">traced to policy</data>
-      <data key="qname">mc:tracedToPolicy</data>
+      <data key="qname">comon:tracedToPolicy</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nce295a387bdd2e73d73e">
       <data key="iri">http://example.org/monitoringcontinuum#transferDestination</data>
       <data key="label">transfer destination</data>
-      <data key="qname">mc:transferDestination</data>
+      <data key="qname">comon:transferDestination</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nb051685c99914c318ae0">
       <data key="iri">http://example.org/monitoringcontinuum#transferSource</data>
       <data key="label">transfer source</data>
-      <data key="qname">mc:transferSource</data>
+      <data key="qname">comon:transferSource</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nd4047be1a9485c0e196f">
       <data key="iri">http://example.org/monitoringcontinuum#transfersData</data>
       <data key="label">transfers data</data>
-      <data key="qname">mc:transfersData</data>
+      <data key="qname">comon:transfersData</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="nce02118fc744be471488">
       <data key="iri">http://example.org/monitoringcontinuum#triggeredByState</data>
       <data key="label">triggered by state</data>
-      <data key="qname">mc:triggeredByState</data>
+      <data key="qname">comon:triggeredByState</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="n656144e87ca7f22d6290">
       <data key="iri">http://example.org/monitoringcontinuum#trustAssessmentForState</data>
       <data key="label">trust assessment for state</data>
-      <data key="qname">mc:trustAssessmentForState</data>
+      <data key="qname">comon:trustAssessmentForState</data>
       <data key="kind">object_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n68088a8913c46014f251">
       <data key="iri">http://example.org/monitoringcontinuum#trustRuleVersion</data>
       <data key="label">trust rule version</data>
-      <data key="qname">mc:trustRuleVersion</data>
+      <data key="qname">comon:trustRuleVersion</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="na0b182413f58f0f7bafc">
       <data key="iri">http://example.org/monitoringcontinuum#trustWindowEnd</data>
       <data key="label">trust window end</data>
-      <data key="qname">mc:trustWindowEnd</data>
+      <data key="qname">comon:trustWindowEnd</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n40afdb8db0d8047e31da">
       <data key="iri">http://example.org/monitoringcontinuum#trustWindowStart</data>
       <data key="label">trust window start</data>
-      <data key="qname">mc:trustWindowStart</data>
+      <data key="qname">comon:trustWindowStart</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n2eb6f35eba6b6b385095">
       <data key="iri">http://example.org/monitoringcontinuum#updatesModel</data>
       <data key="label">updates model</data>
-      <data key="qname">mc:updatesModel</data>
+      <data key="qname">comon:updatesModel</data>
       <data key="kind">object_property</data>
       <data key="module">federation</data>
     </node>
     <node id="nf707ba9dd4d8561b7f25">
       <data key="iri">http://example.org/monitoringcontinuum#userFeedbackScore</data>
       <data key="label">user feedback score</data>
-      <data key="qname">mc:userFeedbackScore</data>
+      <data key="qname">comon:userFeedbackScore</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="nf627cf1dd30260d530b2">
       <data key="iri">http://example.org/monitoringcontinuum#usesAcceptanceProfile</data>
       <data key="label">uses acceptance profile</data>
-      <data key="qname">mc:usesAcceptanceProfile</data>
+      <data key="qname">comon:usesAcceptanceProfile</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n71532afe605d5055cff1">
       <data key="iri">http://example.org/monitoringcontinuum#usesEntailmentProfile</data>
       <data key="label">uses entailment profile</data>
-      <data key="qname">mc:usesEntailmentProfile</data>
+      <data key="qname">comon:usesEntailmentProfile</data>
       <data key="kind">datatype_property</data>
       <data key="module">deployment</data>
     </node>
     <node id="n24ca9c642d10627db6c7">
       <data key="iri">http://example.org/monitoringcontinuum#usesIdentifier</data>
       <data key="label">uses identifier</data>
-      <data key="qname">mc:usesIdentifier</data>
+      <data key="qname">comon:usesIdentifier</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n837f4e26b29e13ee04ed">
       <data key="iri">http://example.org/monitoringcontinuum#usesModel</data>
       <data key="label">uses model</data>
-      <data key="qname">mc:usesModel</data>
+      <data key="qname">comon:usesModel</data>
       <data key="kind">object_property</data>
       <data key="module">orchestration</data>
     </node>
     <node id="nddb3001b3a2482bacbbc">
       <data key="iri">http://example.org/monitoringcontinuum#usesResolutionStrategy</data>
       <data key="label">uses resolution strategy</data>
-      <data key="qname">mc:usesResolutionStrategy</data>
+      <data key="qname">comon:usesResolutionStrategy</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n6f0cf7523a76b26b6833">
       <data key="iri">http://example.org/monitoringcontinuum#usesStandard</data>
       <data key="label">uses standard</data>
-      <data key="qname">mc:usesStandard</data>
+      <data key="qname">comon:usesStandard</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="ne021197dfc9f9fbfffcb">
       <data key="iri">http://example.org/monitoringcontinuum#validFrom</data>
       <data key="label">valid from</data>
-      <data key="qname">mc:validFrom</data>
+      <data key="qname">comon:validFrom</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n49b0adfeb2ad4eba1491">
       <data key="iri">http://example.org/monitoringcontinuum#validTo</data>
       <data key="label">valid to</data>
-      <data key="qname">mc:validTo</data>
+      <data key="qname">comon:validTo</data>
       <data key="kind">datatype_property</data>
       <data key="module">observability</data>
     </node>
     <node id="n8e31642bc80823239490">
       <data key="iri">http://example.org/monitoringcontinuum#validationUsesOntology</data>
       <data key="label">validation uses ontology</data>
-      <data key="qname">mc:validationUsesOntology</data>
+      <data key="qname">comon:validationUsesOntology</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="n5c83ff32dbd56fc63eee">
       <data key="iri">http://example.org/monitoringcontinuum#validationUsesPolicies</data>
       <data key="label">validation uses policies</data>
-      <data key="qname">mc:validationUsesPolicies</data>
+      <data key="qname">comon:validationUsesPolicies</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nd7581227cd1cb24f5e3d">
       <data key="iri">http://example.org/monitoringcontinuum#validationUsesQueries</data>
       <data key="label">validation uses queries</data>
-      <data key="qname">mc:validationUsesQueries</data>
+      <data key="qname">comon:validationUsesQueries</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>
     <node id="nbc360cc27eef59892831">
       <data key="iri">http://example.org/monitoringcontinuum#validationUsesScenarios</data>
       <data key="label">validation uses scenarios</data>
-      <data key="qname">mc:validationUsesScenarios</data>
+      <data key="qname">comon:validationUsesScenarios</data>
       <data key="kind">object_property</data>
       <data key="module">governance</data>
     </node>

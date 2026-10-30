@@ -3,7 +3,7 @@
 # Requirements: RNF-07
 # Policies: P-OPS-02
 # Current v4.0.0 result: true
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,6 +16,6 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 ASK {
-  ?node :hasElasticity true ; a ?type .
-  FILTER(?type IN (:FogNode, :CloudNode))
+  ?node comon:hasElasticity true ; a ?type .
+  FILTER(?type IN (comon:FogNode, comon:CloudNode))
 }

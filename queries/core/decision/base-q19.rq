@@ -3,7 +3,7 @@
 # Requirements: RF-18, RF-47, RF-48
 # Policies: P-NODE-02, P-NODE-05
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,10 +16,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?node ?state ?workload ?availability ?communication ?residual ?trust WHERE {
-  ?node :hasNodeState ?state .
-  ?state :hasAvailability :Available ; :hasCommunication :StableComm ; :hasWorkload ?workload ; :hasResidualCapacity ?residual .
-  FILTER(?workload IN (:LowWorkload, :MediumWorkload))
-  FILTER(?residual IN (:MediumResidual, :HighResidual))
-  OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
+  ?node comon:hasNodeState ?state .
+  ?state comon:hasAvailability comon:Available ; comon:hasCommunication comon:StableComm ; comon:hasWorkload ?workload ; comon:hasResidualCapacity ?residual .
+  FILTER(?workload IN (comon:LowWorkload, comon:MediumWorkload))
+  FILTER(?residual IN (comon:MediumResidual, comon:HighResidual))
+  OPTIONAL { ?state comon:hasTrustAssessment/comon:hasTrustScore ?trust }
 }
 ORDER BY DESC(?trust) ?node

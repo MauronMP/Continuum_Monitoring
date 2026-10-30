@@ -3,7 +3,7 @@
 # Requirements: RF-36, RF-66, RNF-28
 # Policies: P-CONS-04, P-AUD-06
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,7 +16,7 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation WHERE {
-  ?evaluation a :EvaluationState .
-  FILTER NOT EXISTS { ?evaluation :hasAuthorizationDecision/:hasAuthorizationOutcome :AuthorizationGranted }
+  ?evaluation a comon:EvaluationState .
+  FILTER NOT EXISTS { ?evaluation comon:hasAuthorizationDecision/comon:hasAuthorizationOutcome comon:AuthorizationGranted }
 }
 ORDER BY ?evaluation

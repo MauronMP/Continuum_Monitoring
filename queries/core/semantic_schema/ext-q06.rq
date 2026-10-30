@@ -3,7 +3,7 @@
 # Requirements: RF-39, RF-40
 # Policies: P-GOV-01
 # Current v4.0.0 result: 12 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,8 +16,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?category ?code ?label WHERE {
-  ?category a :PolicyCategory .
-  OPTIONAL { ?category :categoryCode ?code }
+  ?category a comon:PolicyCategory .
+  OPTIONAL { ?category comon:categoryCode ?code }
   OPTIONAL { ?category rdfs:label ?label }
 }
 ORDER BY ?code

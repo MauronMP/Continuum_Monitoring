@@ -171,13 +171,13 @@ def test_konclude_owllink_preserves_relative_and_prefixed_owlxml_iris():
     root = ET.fromstring('''<Ontology xmlns="http://www.w3.org/2002/07/owl#"
         xml:base="http://example.org/model" ontologyIRI="http://example.org/model">
         <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
-        <Prefix name="mc:" IRI="http://example.org/model#"/>
+        <Prefix name="comon:" IRI="http://example.org/model#"/>
         <ClassAssertion><Class IRI="#State"/><NamedIndividual IRI="#a"/></ClassAssertion>
-        <Declaration><Class abbreviatedIRI="mc:State"/></Declaration>
+        <Declaration><Class abbreviatedIRI="comon:State"/></Declaration>
         <AnnotationAssertion><AnnotationProperty IRI="#label"/><IRI>#a</IRI>
           <Literal datatypeIRI="http://www.w3.org/2001/XMLSchema#string">value</Literal></AnnotationAssertion>
         <DataPropertyRange><DataProperty IRI="#value"/><Datatype abbreviatedIRI="xsd:decimal"/></DataPropertyRange>
-        <AnnotationAssertion><AnnotationProperty IRI="#label"/><AbbreviatedIRI>mc:a</AbbreviatedIRI>
+        <AnnotationAssertion><AnnotationProperty IRI="#label"/><AbbreviatedIRI>comon:a</AbbreviatedIRI>
           <Literal>value</Literal></AnnotationAssertion>
         </Ontology>''')
     native._absolute_owlxml_iris(root)

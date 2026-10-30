@@ -1,7 +1,7 @@
-@prefix mc: <urn:continuum:owl-smoke#> .
+@prefix comon: <urn:continuum:owl-smoke#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 
 <urn:continuum:owl-smoke> a owl:Ontology .
 
-mc:MonitoredEntity a owl:Class .
-mc:fixture a mc:MonitoredEntity .
+comon:MonitoredEntity a owl:Class .
+comon:fixture a comon:MonitoredEntity .

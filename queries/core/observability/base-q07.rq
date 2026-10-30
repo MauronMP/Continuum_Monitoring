@@ -3,7 +3,7 @@
 # Requirements: RF-05, RF-29, RF-45, RF-70
 # Policies: P-NODE-01, P-NODE-03, P-OPS-05
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,15 +16,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?node ?state ?workload ?availability ?communication ?residual ?resourceUsage ?queued ?operational ?trust WHERE {
-  ?node :hasNodeState ?state .
-  ?state a :NodeState .
-  OPTIONAL { ?state :hasWorkload ?workload }
-  OPTIONAL { ?state :hasAvailability ?availability }
-  OPTIONAL { ?state :hasCommunication ?communication }
-  OPTIONAL { ?state :hasResidualCapacity ?residual }
-  OPTIONAL { ?state :resourceUsagePercent ?resourceUsage }
-  OPTIONAL { ?state :queuedRequests ?queued }
-  OPTIONAL { ?state :hasOperationalStatus ?operational }
-  OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
+  ?node comon:hasNodeState ?state .
+  ?state a comon:NodeState .
+  OPTIONAL { ?state comon:hasWorkload ?workload }
+  OPTIONAL { ?state comon:hasAvailability ?availability }
+  OPTIONAL { ?state comon:hasCommunication ?communication }
+  OPTIONAL { ?state comon:hasResidualCapacity ?residual }
+  OPTIONAL { ?state comon:resourceUsagePercent ?resourceUsage }
+  OPTIONAL { ?state comon:queuedRequests ?queued }
+  OPTIONAL { ?state comon:hasOperationalStatus ?operational }
+  OPTIONAL { ?state comon:hasTrustAssessment/comon:hasTrustScore ?trust }
 }
 ORDER BY ?node ?state

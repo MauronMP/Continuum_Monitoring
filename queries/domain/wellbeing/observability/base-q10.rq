@@ -1,9 +1,9 @@
 # Type: report
 # Purpose: Evaluate device states and transmission eligibility using the declared query contract.
-# Requirements: RF-04, RF-26, RF-27
+# Requirements: RF-04, RF-26, RF-27, RF-07
 # Policies: P-DATA-04, P-DATA-06, P-DATA-07
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,13 +16,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?device ?state ?battery ?connection ?dataReady ?from ?to WHERE {
-  ?user a :User .
-  { ?user :hasWearable ?device } UNION { ?user :hasMobileDevice ?device }
-  ?device :hasDeviceState ?state .
-  OPTIONAL { ?state :hasBatteryLevel ?battery }
-  OPTIONAL { ?state :hasConnectionStatus ?connection }
-  OPTIONAL { ?state :parametrizedDataReady ?dataReady }
-  OPTIONAL { ?state :validFrom ?from }
-  OPTIONAL { ?state :validTo ?to }
+  ?user a comon:User .
+  { ?user comon:hasWearable ?device } UNION { ?user comon:hasMobileDevice ?device }
+  ?device comon:hasDeviceState ?state .
+  OPTIONAL { ?state comon:hasBatteryLevel ?battery }
+  OPTIONAL { ?state comon:hasConnectionStatus ?connection }
+  OPTIONAL { ?state comon:parametrizedDataReady ?dataReady }
+  OPTIONAL { ?state comon:validFrom ?from }
+  OPTIONAL { ?state comon:validTo ?to }
 }
 ORDER BY ?user ?device ?from

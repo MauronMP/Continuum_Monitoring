@@ -67,6 +67,11 @@ def _parser() -> argparse.ArgumentParser:
     for scope in ("repetitions", "larger-points", "cumulative-stages"):
         parser.add_argument(f"--skip-{scope}", action=argparse.BooleanOptionalAction, default=None)
 
+    from .monitoring.container_scale.cli import register as register_container_scale
+    register_container_scale(subparsers)
+    from .monitoring.adaptive_monitoring.cli import register as register_adaptive
+    register_adaptive(subparsers)
+
     report = subparsers.add_parser("report", help="Audit physical evidence and generate scientific PNG figures")
     report.add_argument("--input-dir", default="outputs")
     report.add_argument("--validation-dir", help="Optional separate physical-load result directory")
@@ -386,6 +391,12 @@ def _dispatch(args) -> int:
         return doctor_main(options)
 
     config = load_config(args.config)
+    if args.command == "adaptive-monitoring":
+        from .monitoring.adaptive_monitoring.cli import dispatch
+        return dispatch(args, config)
+    if args.command == "container-scale":
+        from .monitoring.container_scale.cli import dispatch
+        return dispatch(args, config)
     if args.command == "physical" and args.reasoner:
         config = replace(config, reasoners=tuple(dict.fromkeys(args.reasoner)))
 
@@ -816,6 +827,10 @@ def main(argv: list[str] | None = None) -> int:
     started_ns = time.time_ns()
     args = _parser().parse_args(argv)
     physical_work = (
+        args.command == "adaptive-monitoring" and args.action == "run"
+        or
+        args.command == "container-scale" and args.action in {"deploy", "stop", "run", "validate-reasoners"} and not args.dry_run
+        or
         args.command == "campaign" and not args.validate_only
         or args.command == "physical" and args.action not in {"status", "authorize", "prepare"}
         or args.command in {"load", "experiment"} and getattr(args, "target", None) == "physical"

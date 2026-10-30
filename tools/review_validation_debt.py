@@ -27,7 +27,7 @@ def review(config, dispositions):
     specs = load_catalog(config.resolve(config.query_catalog), config.root)
     contract = validate_release_contract(graph, specs)
     gaps = set(contract['unreferenced_requirements'] + contract['unreferenced_policies'])
-    errors = []
+    errors = list(contract["errors"])
     if set(dispositions) != gaps:
         errors.append(f'Review mismatch: missing={sorted(gaps-set(dispositions))}, stale={sorted(set(dispositions)-gaps)}')
     for key, item in dispositions.items():
@@ -37,23 +37,33 @@ def review(config, dispositions):
             errors.append(f'{key}: evidence path does not exist')
     shapes = load_graph(config.resolve(p) for p in config.shape_files)
     conforms, report, _ = validate(graph, shacl_graph=shapes, allow_warnings=True)
+    if not conforms:
+        errors.append("SHACL contains blocking violations; reviewed warnings do not waive them")
     findings = []
     for result in report.subjects(RDF.type, SH.ValidationResult):
         path = str(report.value(result, SH.resultPath))
         field = path.rsplit('#',1)[-1]
+        severity = report.value(result, SH.resultSeverity)
+        constraint = report.value(result, SH.sourceConstraintComponent)
+        known_missing = severity == SH.Warning and constraint == SH.MinCountConstraintComponent
         action = ACTIONS.get(field)
         if field in THRESHOLDS:
             action = 'Define and justify a prospective campaign acceptance threshold before measuring; a timeout is not an acceptance threshold.'
-        if not action:
-            errors.append(f'Unreviewed SHACL finding: {path}')
+        if not action or not known_missing:
+            errors.append(f'Unreviewed SHACL finding: {path}; severity={severity}; constraint={constraint}')
+            action = 'Correct the invalid value or blocking constraint; missing-evidence dispositions do not cover this finding.'
         findings.append({'subject':str(report.value(result, SH.focusNode)), 'property':path,
-                         'severity':str(report.value(result, SH.resultSeverity)),
-                         'status':'blocked-on-source-evidence' if field in ACTIONS else 'requires-domain-decision',
+                         'severity':str(severity), 'constraint':str(constraint),
+                         'message':str(report.value(result, SH.resultMessage) or ''),
+                         'status':('blocked-on-source-evidence' if field in ACTIONS else 'requires-domain-decision') if known_missing and (field in ACTIONS or field in THRESHOLDS) else 'unreviewed-error',
                          'required_action': action})
     return {'review_complete':not errors,'scientific_acceptance_claimed':False,
             'interpretation':'Reviewed debt remains unresolved; dispositions are not waivers or compliance evidence.',
             'errors':errors,'shacl_conforms_allowing_warnings':conforms,
-            'warning_count':len(findings),'counts_by_property':dict(Counter(x['property'] for x in findings)),
+            'finding_count':len(findings),
+            'warning_count':sum(x['severity'] == str(SH.Warning) for x in findings),
+            'violation_count':sum(x['severity'] == str(SH.Violation) for x in findings),
+            'query_coverage':{k:contract[k] for k in ('referenced_requirement_count','referenced_policy_count','requirement_traceability_coverage','policy_traceability_coverage','unreferenced_requirements','unreferenced_policies')},'counts_by_property':dict(Counter(x['property'] for x in findings)),
             'findings':sorted(findings,key=lambda x:(x['property'],x['subject'])),
             'query_coverage_review':dispositions}
 

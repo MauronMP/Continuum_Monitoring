@@ -3,7 +3,7 @@
 # Requirements: RF-71, RF-72, RNF-39, RV-02, RV-03
 # Policies: P-VAL-03, P-VAL-04, P-VAL-07
 # Current v4.0.0 result: 6 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -19,11 +19,11 @@ SELECT ?check ?value WHERE {
   {
     BIND("ontology-version" AS ?check) <http://example.org/monitoringcontinuum> owl:versionInfo ?value
   }
-  UNION { BIND("ontology-artifact" AS ?check) ?a a :OntologyArtifact ; :artifactIdentifier ?value }
-  UNION { BIND("requirements-artifact" AS ?check) ?a a :RequirementsArtifact ; :artifactIdentifier ?value }
-  UNION { BIND("policy-artifact" AS ?check) ?a a :PolicyArtifact ; :artifactIdentifier ?value }
-  UNION { BIND("scenario-artifact" AS ?check) ?a a :ScenarioArtifact ; :artifactIdentifier ?value }
-  UNION { BIND("query-catalog-status" AS ?check) ?a a :QueryCatalog ; :artifactStatus ?value }
-  UNION { BIND("validation-campaign" AS ?check) ?a a :ValidationCampaign . BIND(STR(?a) AS ?value) }
+  UNION { BIND("ontology-artifact" AS ?check) ?a a comon:OntologyArtifact ; comon:artifactIdentifier ?value }
+  UNION { BIND("requirements-artifact" AS ?check) ?a a comon:RequirementsArtifact ; comon:artifactIdentifier ?value }
+  UNION { BIND("policy-artifact" AS ?check) ?a a comon:PolicyArtifact ; comon:artifactIdentifier ?value }
+  UNION { BIND("scenario-artifact" AS ?check) ?a a comon:ScenarioArtifact ; comon:artifactIdentifier ?value }
+  UNION { BIND("query-catalog-status" AS ?check) ?a a comon:QueryCatalog ; comon:artifactStatus ?value }
+  UNION { BIND("validation-campaign" AS ?check) ?a a comon:ValidationCampaign . BIND(STR(?a) AS ?value) }
 }
 ORDER BY ?check

@@ -7,10 +7,10 @@
 Authoritative release source: `configs/benchmark.toml [paths.ontology_files]`.
 
 The release declares 79 policies in 12 categories and 55
-enforcement mechanisms. Hard constraints are applied before
+declared enforcement mechanisms. The normative design requires hard constraints before
 optimization: effective authorization is the most restrictive
 intersection of consent, semantic contract, zone, security and
-resource eligibility.
+resource eligibility. These declarations do not establish complete runtime enforcement.
 
 ## Policy categories
 
@@ -37,7 +37,7 @@ Migration or offloading must be decided by jointly considering the adaptation ca
 
 - Type: Obligation
 - Categories: Migration, offloading, degradation and continuity (`PolicyCategory_ADAPT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-16`, `RF-17`, `RF-18`, `RNF-03`
 - Recommended mechanisms: `M-ADAPT-01`, `M-NODE-02`
 - Catalogued queries: `BASE-Q12`
@@ -48,7 +48,7 @@ When communication is lost or no eligible destination exists, the system must ma
 
 - Type: Obligation
 - Categories: Migration, offloading, degradation and continuity (`PolicyCategory_ADAPT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-07`, `RF-17`, `RNF-12`
 - Recommended mechanisms: `M-ADAPT-02`, `M-BUFFER-01`
 - Catalogued queries: `BASE-Q14`, `EXT-Q62`
@@ -59,7 +59,7 @@ Under overload, the system must apply controlled processing degradation, migrati
 
 - Type: Obligation
 - Categories: Migration, offloading, degradation and continuity (`PolicyCategory_ADAPT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-17`, `RF-20`, `RNF-03`
 - Recommended mechanisms: `M-ADAPT-01`, `M-ADAPT-02`, `M-OPS-02`
 - Catalogued queries: `EXT-Q62`
@@ -70,7 +70,7 @@ A migration must not target an ineligible node or proceed when estimated time/co
 
 - Type: Abstention
 - Categories: Migration, offloading, degradation and continuity (`PolicyCategory_ADAPT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-16`, `RF-17`, `RNF-02`
 - Recommended mechanisms: `M-ADAPT-01`, `M-AUD-01`, `M-NODE-02`
 - Catalogued queries: `EXT-Q45`
@@ -81,7 +81,7 @@ Migration or delegation must not automatically create a federated-learning sessi
 
 - Type: Prohibition
 - Categories: Migration, offloading, degradation and continuity (`PolicyCategory_ADAPT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-16`, `RF-22`, `RF-25`, `RF-62`
 - Recommended mechanisms: `M-ADAPT-03`, `M-FL-01`
 - Catalogued queries: `BASE-Q13`, `EXT-Q60`, `EXT-Q61`
@@ -92,7 +92,7 @@ Every model or service degradation must record an explicit cause and link to the
 
 - Type: Obligation
 - Categories: Migration, offloading, degradation and continuity (`PolicyCategory_ADAPT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-20`, `RF-44`, `RF-66`
 - Recommended mechanisms: `M-ADAPT-02`, `M-AUD-01`
 - Catalogued queries: `BASE-Q13`, `BASE-Q22`, `BASE-Q27`, `EXT-Q59`, `EXT-Q62`
@@ -103,21 +103,23 @@ When delegation is chosen, the preferred destination must be the highest-trust c
 
 - Type: Obligation
 - Categories: Migration, offloading, degradation and continuity (`PolicyCategory_ADAPT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-48`, `RF-62`, `RNF-14`
 - Recommended mechanisms: `M-DELEG-01`, `M-TRUST-02`
 - Catalogued queries: `EXT-Q45`
 
 ### P-ADAPT-08 — Recovery continuity and idempotency
 
-Migration, delegation, reconnection and recovery processes must not lose critical events or create accidental duplicates. Retryable operations must have idempotent semantics where applicable.
+Reference ReplicationEvent and SynchronizationEvent records must declare replicationVersion and idempotencyKey; the validation query must identify missing fields. This metadata contract does not guarantee exactly-once physical delivery, durable buffering or duplicate-free migration.
 
+- Current verification scope: `model-query`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Prohibition
 - Categories: Migration, offloading, degradation and continuity (`PolicyCategory_ADAPT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-19`, `RF-26`, `RNF-02`, `RNF-13`
 - Recommended mechanisms: `M-DELEG-02`, `M-REPL-01`, `M-TX-02`
-- Catalogued queries: None declared
+- Catalogued queries: `EXT-Q34`
 
 ### P-AUD-01 — Delegation as a semantic event
 
@@ -125,7 +127,7 @@ Every temporary delegation must be materialized as an explicit event, not merely
 
 - Type: Obligation
 - Categories: Temporal delegation, MAPE-K and audit (`PolicyCategory_AUD`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-62`
 - Recommended mechanisms: `M-DELEG-01`
 - Catalogued queries: `BASE-Q14`, `EXT-Q63`
@@ -136,7 +138,7 @@ Every delegation must record the source, destination, cause, start of validity a
 
 - Type: Obligation
 - Categories: Temporal delegation, MAPE-K and audit (`PolicyCategory_AUD`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-63`, `RNF-36`
 - Recommended mechanisms: `M-DELEG-01`, `M-TIME-01`
 - Catalogued queries: `EXT-Q63`, `EXT-Q64`, `EXT-Q73`
@@ -147,7 +149,7 @@ A delegation must close when its recovery condition is met or its planned expira
 
 - Type: Obligation
 - Categories: Temporal delegation, MAPE-K and audit (`PolicyCategory_AUD`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-64`, `RNF-36`
 - Recommended mechanisms: `M-DELEG-02`
 - Catalogued queries: `EXT-Q63`
@@ -158,7 +160,7 @@ A delegation chain must not exceed `D_delegation_max` or the equivalent stopping
 
 - Type: Prohibition
 - Categories: Temporal delegation, MAPE-K and audit (`PolicyCategory_AUD`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-14`
 - Recommended mechanisms: `M-DELEG-03`
 - Catalogued queries: `EXT-Q65`
@@ -169,7 +171,7 @@ Every relevant adaptive action must be justified by an identifiable MAPE-K sympt
 
 - Type: Obligation
 - Categories: Temporal delegation, MAPE-K and audit (`PolicyCategory_AUD`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-65`, `RF-66`, `RF-67`
 - Recommended mechanisms: `M-AUD-02`
 - Catalogued queries: `BASE-Q14`, `BASE-Q35`, `EXT-Q72`
@@ -180,7 +182,7 @@ Every relevant `EvaluationState` must record, at minimum, the symptom, applied p
 
 - Type: Obligation
 - Categories: Temporal delegation, MAPE-K and audit (`PolicyCategory_AUD`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-51`, `RF-54`, `RF-66`, `RNF-28`, `RNF-29`
 - Recommended mechanisms: `M-AUD-01`
 - Catalogued queries: `BASE-Q21`, `EXT-Q20`, `EXT-Q46`, `EXT-Q47`, `EXT-Q59`, `EXT-Q71`
@@ -191,7 +193,7 @@ Persisted information must allow retrospective reconstruction of the chain user 
 
 - Type: Obligation
 - Categories: Temporal delegation, MAPE-K and audit (`PolicyCategory_AUD`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-67`, `RNF-30`, `RNF-32`, `RNF-33`
 - Recommended mechanisms: `M-AUD-03`, `M-TIME-01`
 - Catalogued queries: `BASE-Q35`, `EXT-Q70`
@@ -202,7 +204,7 @@ Consent must be expressed through processing ranges covering at least local scop
 
 - Type: Obligation
 - Categories: Consent and semantic contracts (`PolicyCategory_CONS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-32`
 - Recommended mechanisms: `M-CONS-01`
 - Catalogued queries: `BASE-Q01`, `BASE-Q15`, `BASE-Q31`, `EXT-Q11`, `EXT-Q13`, `EXT-Q16`
@@ -213,7 +215,7 @@ Two effective semantic contracts must not coexist for the same user, purpose and
 
 - Type: Prohibition
 - Categories: Consent and semantic contracts (`PolicyCategory_CONS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-33`, `RNF-36`
 - Recommended mechanisms: `M-CONS-01`, `M-TIME-01`
 - Catalogued queries: `BASE-Q20`, `EXT-Q12`, `EXT-Q14`, `EXT-Q15`
@@ -224,7 +226,7 @@ Every effective semantic contract must identify the user, processing purpose, co
 
 - Type: Obligation
 - Categories: Consent and semantic contracts (`PolicyCategory_CONS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-34`, `RF-41`
 - Recommended mechanisms: `M-CONS-01`, `M-GOV-02`
 - Catalogued queries: `BASE-Q20`, `EXT-Q12`, `EXT-Q14`
@@ -235,7 +237,7 @@ When active consent, the contract and zone policy are incompatible, external pro
 
 - Type: Prohibition
 - Categories: Consent and semantic contracts (`PolicyCategory_CONS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-35`, `RF-36`, `RNF-22`
 - Recommended mechanisms: `M-CONS-02`, `M-GOV-03`
 - Catalogued queries: `BASE-Q15`, `BASE-Q25`, `BASE-Q28`, `EXT-Q11`, `EXT-Q16`, `EXT-Q17`, `EXT-Q18`, `EXT-Q19`, `EXT-Q20`, `EXT-Q39`, `EXT-Q56`
@@ -246,21 +248,23 @@ Every consent-dependent resource, permission, model, service, session or action 
 
 - Type: Obligation
 - Categories: Consent and semantic contracts (`PolicyCategory_CONS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-37`
 - Recommended mechanisms: `M-CONS-03`
 - Catalogued queries: `BASE-Q06`, `EXT-Q21`
 
 ### P-CONS-06 — Downstream reception without extending consent
 
-Improved generic models may be received without extending the consent range only when the downstream flow complies with the contract and active policies and contains no personal data, individualized gradients or persistent user-derived identifiers.
+Reference federated-learning session reports must expose payload type, required consent range and flags for personal data, individualized gradients and persistent identifiers. Missing fields must remain visible as missing evidence. These records do not authorize a physical model download or extend user consent.
 
+- Current verification scope: `model-query`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Abstention
 - Categories: Consent and semantic contracts (`PolicyCategory_CONS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-23`, `RF-38`
 - Recommended mechanisms: `M-CONS-02`, `M-FL-02`
-- Catalogued queries: None declared
+- Catalogued queries: `EXT-Q66`
 
 ### P-DATA-01 — Confinement of raw physiological observations
 
@@ -268,7 +272,7 @@ Raw physiological observations must not leave the local scope. They must not be 
 
 - Type: Prohibition
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-10`, `RF-60`, `RNF-17`
 - Recommended mechanisms: `M-DATA-01`, `M-TX-01`
 - Catalogued queries: `BASE-Q18`, `EXT-Q22`
@@ -279,7 +283,7 @@ No direct personal identifier may leave the local scope alongside parameterized 
 
 - Type: Prohibition
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-61`, `RNF-17`, `RNF-19`
 - Recommended mechanisms: `M-ID-01`, `M-TX-01`
 - Catalogued queries: `BASE-Q01`, `EXT-Q23`, `EXT-Q26`, `EXT-Q27`, `EXT-Q28`
@@ -290,7 +294,7 @@ All data classified as sensitive must be protected in transit and at rest accord
 
 - Type: Obligation
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-15`, `RNF-39`
 - Recommended mechanisms: `M-SEC-01`, `M-VAL-04`
 - Catalogued queries: `EXT-Q23`, `EXT-Q29`, `EXT-Q30`, `EXT-Q32`
@@ -301,7 +305,7 @@ Parameterized data must not be transmitted until marked as ready for transmissio
 
 - Type: Abstention
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-04`, `RF-09`, `RF-27`
 - Recommended mechanisms: `M-DATA-02`, `M-TX-01`
 - Catalogued queries: `BASE-Q10`, `BASE-Q28`
@@ -312,7 +316,7 @@ When data cannot be transmitted because of connectivity, energy, saturation, zon
 
 - Type: Obligation
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-08`, `RF-26`, `RNF-12`
 - Recommended mechanisms: `M-BUFFER-01`, `M-CONS-02`, `M-ZONE-01`
 - Catalogued queries: `EXT-Q31`, `EXT-Q32`
@@ -323,7 +327,7 @@ Low battery requires reduced model complexity and fewer non-critical transmissio
 
 - Type: Obligation
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-07`, `RF-27`, `RNF-06`
 - Recommended mechanisms: `M-ADAPT-02`, `M-BUFFER-01`, `M-DEVICE-01`
 - Catalogued queries: `BASE-Q10`
@@ -334,7 +338,7 @@ Pending flows must not resume merely because connectivity returns. Synchronizati
 
 - Type: Abstention
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-26`, `RF-27`, `RNF-12`, `RNF-13`
 - Recommended mechanisms: `M-CONS-02`, `M-NODE-02`, `M-TX-02`
 - Catalogued queries: `BASE-Q10`, `BASE-Q17`, `EXT-Q31`, `EXT-Q38`
@@ -345,7 +349,7 @@ Accidental duplicates or data marked as redundant without a replication purpose 
 
 - Type: Prohibition
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-19`, `RF-28`, `RNF-13`
 - Recommended mechanisms: `M-REPL-01`, `M-TX-01`
 - Catalogued queries: `EXT-Q33`, `EXT-Q34`
@@ -356,7 +360,7 @@ Transmission scheduling must prioritize critical data over secondary data using 
 
 - Type: Obligation
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-27`, `RF-28`
 - Recommended mechanisms: `M-BUFFER-01`, `M-TX-03`
 - Catalogued queries: `EXT-Q35`
@@ -367,7 +371,7 @@ Data used beyond their immediate observation must retain the minimum context nee
 
 - Type: Obligation
 - Categories: Data, privacy, identity and transmission (`PolicyCategory_DATA`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-09`, `RF-30`, `RNF-27`
 - Recommended mechanisms: `M-DATA-02`, `M-TIME-01`
 - Catalogued queries: `EXT-Q23`, `EXT-Q24`, `EXT-Q25`
@@ -378,7 +382,7 @@ A federated session must not start while any required participant fails the elig
 
 - Type: Abstention
 - Categories: Federated learning and model lifecycle (`PolicyCategory_FL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-21`, `RF-22`, `RF-25`, `RNF-12`
 - Recommended mechanisms: `M-FL-01`, `M-NODE-02`
 - Catalogued queries: `BASE-Q16`, `BASE-Q30`, `EXT-Q66`
@@ -389,7 +393,7 @@ No parameter, personalized model or gradient may be sent to higher tiers if effe
 
 - Type: Prohibition
 - Categories: Federated learning and model lifecycle (`PolicyCategory_FL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-21`, `RF-35`, `RF-42`
 - Recommended mechanisms: `M-CONS-02`, `M-FL-01`, `M-ZONE-01`
 - Catalogued queries: `BASE-Q24`, `BASE-Q25`, `EXT-Q67`
@@ -400,7 +404,7 @@ Every session carrying gradients must declare a privacy budget and noise level. 
 
 - Type: Obligation
 - Categories: Federated learning and model lifecycle (`PolicyCategory_FL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-56`, `RF-57`, `RNF-16`, `RNF-17`
 - Recommended mechanisms: `M-FL-03`, `M-ID-01`
 - Catalogued queries: `BASE-Q16`, `EXT-Q67`, `EXT-Q68`
@@ -411,7 +415,7 @@ The epsilon budget must be controlled per operation or session according to the 
 
 - Type: Obligation
 - Categories: Federated learning and model lifecycle (`PolicyCategory_FL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-59`, `RNF-18`
 - Recommended mechanisms: `M-AUD-01`, `M-FL-04`
 - Catalogued queries: `BASE-Q24`, `EXT-Q69`
@@ -422,7 +426,7 @@ Every protected federated session or flow must explicitly link to the privacy, a
 
 - Type: Obligation
 - Categories: Federated learning and model lifecycle (`PolicyCategory_FL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-58`, `RNF-19`
 - Recommended mechanisms: `M-FL-03`, `M-ID-01`
 - Catalogued queries: `BASE-Q16`, `EXT-Q68`
@@ -433,7 +437,7 @@ Improved models distributed to lower tiers must not include personal data, raw o
 
 - Type: Prohibition
 - Categories: Federated learning and model lifecycle (`PolicyCategory_FL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-23`, `RF-38`, `RNF-17`
 - Recommended mechanisms: `M-CONS-02`, `M-FL-02`, `M-ZONE-01`
 - Catalogued queries: `EXT-Q66`
@@ -444,7 +448,7 @@ Every HFL session must record at least the session time, participating nodes, up
 
 - Type: Obligation
 - Categories: Federated learning and model lifecycle (`PolicyCategory_FL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-25`, `RNF-16`
 - Recommended mechanisms: `M-AUD-01`, `M-FL-01`, `M-FL-02`
 - Catalogued queries: `BASE-Q16`, `BASE-Q24`, `EXT-Q66`
@@ -455,7 +459,7 @@ Every model update must produce an identifiable version and record its update da
 
 - Type: Obligation
 - Categories: Federated learning and model lifecycle (`PolicyCategory_FL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-24`, `RNF-38`, `RNF-39`
 - Recommended mechanisms: `M-MODEL-05`, `M-VAL-04`
 - Catalogued queries: `BASE-Q04`, `BASE-Q22`, `EXT-Q57`, `EXT-Q58`
@@ -466,21 +470,23 @@ Every formal system policy must be represented as an explicit entity and classif
 
 - Type: Obligation
 - Categories: Governance, precedence and lifecycle (`PolicyCategory_GOV`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-39`, `RF-40`
 - Recommended mechanisms: `M-GOV-01`
 - Catalogued queries: `EXT-Q03`, `EXT-Q06`, `EXT-Q10`
 
 ### P-GOV-02 — Explicit governance links
 
-Every governed entity or decision must maintain an explicit relationship to its governing policy or policy set. Every evaluation, migration, degradation, delegation or model selection must record the specific policy applied.
+Governance evidence in the reference graph must expose governedBy for semantic contracts and appliedPolicy for evaluations with actions. Missing action-evaluation or evaluation-policy links must be reported. Other declared mechanisms are not evidence of runtime enforcement.
 
+- Current verification scope: `model-query`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Obligation
 - Categories: Governance, precedence and lifecycle (`PolicyCategory_GOV`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-41`, `RF-44`, `RNF-28`, `RNF-30`
 - Recommended mechanisms: `M-AUD-01`, `M-GOV-02`
-- Catalogued queries: None declared
+- Catalogued queries: `EXT-Q12`, `EXT-Q72`
 
 ### P-GOV-03 — Strictest-constraint precedence
 
@@ -488,7 +494,7 @@ No action may be authorized if it exceeds any current constraint imposed by cons
 
 - Type: Prohibition
 - Categories: Governance, precedence and lifecycle (`PolicyCategory_GOV`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-35`, `RF-42`, `RF-43`, `RNF-22`
 - Recommended mechanisms: `M-CONS-02`, `M-GOV-03`, `M-ZONE-01`
 - Catalogued queries: `EXT-Q07`, `EXT-Q17`, `EXT-Q19`, `EXT-Q37`, `EXT-Q78`, `EXT-Q79`
@@ -499,7 +505,7 @@ Adaptation policies must be versioned. Given the same input state, consent, cont
 
 - Type: Obligation
 - Categories: Governance, precedence and lifecycle (`PolicyCategory_GOV`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-20`, `RNF-22`, `RNF-38`, `RNF-39`, `RV-04`
 - Recommended mechanisms: `M-GOV-02`, `M-GOV-04`, `M-VAL-04`
 - Catalogued queries: `EXT-Q03`, `EXT-Q10`
@@ -510,7 +516,7 @@ Every state must be modeled as a first-class temporal entity. It must record `va
 
 - Type: Obligation
 - Categories: Governance, precedence and lifecycle (`PolicyCategory_GOV`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-35`, `RNF-36`, `RNF-37`
 - Recommended mechanisms: `M-TIME-01`
 - Catalogued queries: `BASE-Q09`, `EXT-Q73`, `EXT-Q74`
@@ -521,7 +527,7 @@ Semantic representation and querying must use open standards compatible with RDF
 
 - Type: Obligation
 - Categories: Interoperability and semantic extensibility (`PolicyCategory_INT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-24`, `RNF-25`, `RNF-26`
 - Recommended mechanisms: `M-INT-01`, `M-VAL-01`
 - Catalogued queries: `BASE-Q05`
@@ -532,7 +538,7 @@ Adding new users, nodes, sensors, models, policies, contracts or wearable types 
 
 - Type: Prohibition
 - Categories: Interoperability and semantic extensibility (`PolicyCategory_INT`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-10`, `RNF-23`, `RNF-38`
 - Recommended mechanisms: `M-INT-02`, `M-VAL-05`
 - Catalogued queries: `BASE-Q03`
@@ -543,7 +549,7 @@ The system must select the most suitable tier among eligible alternatives, not t
 
 - Type: Obligation
 - Categories: Model selection and AHP (`PolicyCategory_MODEL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-15`, `RF-52`, `RF-53`
 - Recommended mechanisms: `M-MODEL-01`, `M-NODE-02`
 - Catalogued queries: `BASE-Q04`, `BASE-Q32`, `EXT-Q46`
@@ -554,7 +560,7 @@ When AHP is used, normalized weights must correspond to latency, privacy and mod
 
 - Type: Obligation
 - Categories: Model selection and AHP (`PolicyCategory_MODEL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-50`, `RF-55`, `RNF-34`
 - Recommended mechanisms: `M-MODEL-02`
 - Catalogued queries: `EXT-Q48`
@@ -565,7 +571,7 @@ The trust score or trust weight must not be included as a fourth weight in AHP n
 
 - Type: Prohibition
 - Categories: Model selection and AHP (`PolicyCategory_MODEL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-46`, `RF-50`, `RF-55`, `RNF-05`, `RNF-33`
 - Recommended mechanisms: `M-MODEL-02`, `M-TRUST-02`
 - Catalogued queries: `EXT-Q42`, `EXT-Q44`, `EXT-Q48`
@@ -576,7 +582,7 @@ An evaluation labeled as AHP must not be considered valid if its weights are not
 
 - Type: Prohibition
 - Categories: Model selection and AHP (`PolicyCategory_MODEL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-55`, `RNF-34`
 - Recommended mechanisms: `M-MODEL-03`
 - Catalogued queries: `EXT-Q49`, `EXT-Q50`
@@ -587,7 +593,7 @@ Every selection evaluation must retain the score of each evaluated candidate tie
 
 - Type: Obligation
 - Categories: Model selection and AHP (`PolicyCategory_MODEL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-51`, `RF-54`, `RNF-29`, `RNF-33`
 - Recommended mechanisms: `M-AUD-01`, `M-MODEL-01`
 - Catalogued queries: `BASE-Q21`, `EXT-Q46`, `EXT-Q51`, `EXT-Q52`, `EXT-Q53`
@@ -598,7 +604,7 @@ When privacy is the dominant criterion or effective consent limits aggregation, 
 
 - Type: Obligation
 - Categories: Model selection and AHP (`PolicyCategory_MODEL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-35`, `RF-42`, `RF-52`
 - Recommended mechanisms: `M-CONS-02`, `M-MODEL-01`, `M-ZONE-01`
 - Catalogued queries: `BASE-Q15`
@@ -609,7 +615,7 @@ Cloud must not be selected until effective consent, the contract, zone, node eli
 
 - Type: Abstention
 - Categories: Model selection and AHP (`PolicyCategory_MODEL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-53`, `RF-56`, `RF-59`
 - Recommended mechanisms: `M-FL-03`, `M-MODEL-01`
 - Catalogued queries: `EXT-Q56`
@@ -620,18 +626,20 @@ Prediction confidence, estimated error, local feedback and observed model qualit
 
 - Type: Obligation
 - Categories: Model selection and AHP (`PolicyCategory_MODEL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-14`, `RNF-27`
 - Recommended mechanisms: `M-AUD-01`, `M-METRIC-01`
 - Catalogued queries: `EXT-Q54`, `EXT-Q55`
 
 ### P-MODEL-09 — Reevaluation of the current selection
 
-When context, consent, contract, zone, connectivity, load or trust changes and the current selection becomes invalid, a new evaluation must start and complete within the configured reselection limit.
+For each supplied context in the controlled monitoring experiment, the policy engine must recompute the active rules and resulting monitoring plan and record its evaluation time. It must not reuse a previous context plan implicitly. Live context detection and model-reselection deadlines are outside this release.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Obligation
 - Categories: Model selection and AHP (`PolicyCategory_MODEL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-15`, `RF-17`, `RNF-21`
 - Recommended mechanisms: `M-CTX-01`, `M-MODEL-04`
 - Catalogued queries: None declared
@@ -642,7 +650,7 @@ An `Inoperative` node must not be selected as a processing, migration, HFL or de
 
 - Type: Prohibition
 - Categories: Nodes and dynamic trust (`PolicyCategory_NODE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-05`, `RF-17`, `RNF-12`
 - Recommended mechanisms: `M-NODE-01`, `M-NODE-02`
 - Catalogued queries: `BASE-Q07`, `BASE-Q08`, `BASE-Q26`, `EXT-Q41`
@@ -653,7 +661,7 @@ No node may enter the optimization phase if it fails minimum availability, neces
 
 - Type: Prohibition
 - Categories: Nodes and dynamic trust (`PolicyCategory_NODE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-15`, `RF-18`, `RF-47`
 - Recommended mechanisms: `M-CONS-02`, `M-NODE-02`, `M-ZONE-01`
 - Catalogued queries: `BASE-Q08`, `BASE-Q12`, `BASE-Q19`, `BASE-Q23`, `EXT-Q41`, `EXT-Q42`
@@ -664,7 +672,7 @@ Every node state used in an adaptive decision must have a normalized trust score
 
 - Type: Obligation
 - Categories: Nodes and dynamic trust (`PolicyCategory_NODE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-45`, `RF-49`, `RNF-32`
 - Recommended mechanisms: `M-TRUST-01`, `M-VAL-04`
 - Catalogued queries: `BASE-Q07`, `EXT-Q40`, `EXT-Q43`
@@ -675,7 +683,7 @@ The trust-update rule may consider failures, disconnections, saturation and poli
 
 - Type: Prohibition
 - Categories: Nodes and dynamic trust (`PolicyCategory_NODE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-49`, `RNF-32`, `RNF-33`
 - Recommended mechanisms: `M-AUD-01`, `M-TRUST-01`
 - Catalogued queries: `EXT-Q40`
@@ -686,18 +694,20 @@ After hard filters are applied, eligible candidates must be ranked or prioritize
 
 - Type: Obligation
 - Categories: Nodes and dynamic trust (`PolicyCategory_NODE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-46`, `RF-47`, `RF-48`
 - Recommended mechanisms: `M-NODE-02`, `M-TRUST-02`
 - Catalogued queries: `BASE-Q19`, `EXT-Q42`, `EXT-Q44`
 
 ### P-NODE-06 — Absence of trustworthy alternatives
 
-If no external node meets minimum eligibility and trust requirements, the system must not force a higher tier. It must prefer retention, local degradation or deferral and record the absence of alternatives.
+If no configured resource tier matches the active monitoring rules, the policy engine must return an empty resource selection rather than silently selecting a higher tier. This is a planning boundary, not an operational trust assessment or a physical retention actuator.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Abstention
 - Categories: Nodes and dynamic trust (`PolicyCategory_NODE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-47`, `RF-48`, `RF-53`
 - Recommended mechanisms: `M-ADAPT-02`, `M-AUD-01`, `M-NODE-02`
 - Catalogued queries: None declared
@@ -708,7 +718,7 @@ Before an acceptance campaign, operational thresholds required by the non-functi
 
 - Type: Obligation
 - Categories: Operations, scalability and QoS (`PolicyCategory_OPS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-01`, `RNF-02`, `RNF-04`, `RNF-05`, `RNF-06`, `RNF-08`, `RNF-09`, `RNF-14`, `RNF-21`, `RNF-39`
 - Recommended mechanisms: `M-OPS-01`, `M-VAL-04`
 - Catalogued queries: `EXT-Q65`, `EXT-Q76`
@@ -719,7 +729,7 @@ The scalability policy must allow horizontal scaling in Cloud and, where support
 
 - Type: Obligation
 - Categories: Operations, scalability and QoS (`PolicyCategory_OPS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-17`, `RNF-07`
 - Recommended mechanisms: `M-OPS-02`
 - Catalogued queries: `BASE-Q02`, `BASE-Q29`
@@ -730,18 +740,20 @@ A new Edge or Fog node must be able to register and enter evaluation without sto
 
 - Type: Obligation
 - Categories: Operations, scalability and QoS (`PolicyCategory_OPS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-09`, `RNF-10`
 - Recommended mechanisms: `M-NODE-01`, `M-OPS-03`
 - Catalogued queries: `BASE-Q02`
 
 ### P-OPS-04 — Continuity of critical functions
 
-During partial failures, critical functions authorized for local execution must remain operational and pending data/events must retain integrity until synchronization or authorized disposal.
+A failed or timed-out monitoring point must remain an explicit outcome. Under keep-going, subsequent independent points may execute according to the configured skip rules. This policy does not guarantee continuity of application services or durable synchronization during a physical failure.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Obligation
 - Categories: Operations, scalability and QoS (`PolicyCategory_OPS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-12`, `RNF-13`
 - Recommended mechanisms: `M-ADAPT-02`, `M-BUFFER-01`
 - Catalogued queries: None declared
@@ -752,18 +764,20 @@ Evaluation scenarios must record the metrics needed to measure latency, energy c
 
 - Type: Obligation
 - Categories: Operations, scalability and QoS (`PolicyCategory_OPS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-29`, `RF-30`, `RNF-27`
 - Recommended mechanisms: `M-METRIC-01`, `M-TIME-01`
 - Catalogued queries: `BASE-Q07`, `BASE-Q09`, `BASE-Q33`, `EXT-Q54`
 
 ### P-OPS-06 — Restoration and safe buffer draining
 
-Recovery from load or connectivity problems does not automatically authorize restoring the maximum processing level or draining all buffers. Restoration and synchronization must occur only while their enabling conditions remain valid for each service or pending data item.
+A supplied recovery context must be evaluated against its configured rules, producing a fresh monitoring plan rather than automatically restoring the largest resource set or shortest sampling interval. Per-item buffer-drain authorization and physical synchronization are outside this release.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Abstention
 - Categories: Operations, scalability and QoS (`PolicyCategory_OPS`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-08`, `RF-15`, `RF-26`, `RNF-12`
 - Recommended mechanisms: `M-BUFFER-01`, `M-MODEL-04`, `M-TX-02`
 - Catalogued queries: None declared
@@ -774,18 +788,20 @@ The ontology must be exposed through SPARQL 1.1. Apache Jena Fuseki is the refer
 
 - Type: Obligation
 - Categories: Validation, reproducibility and maintainability (`PolicyCategory_VAL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-69`, `RNF-24`, `RNF-26`, `RV-03`
 - Recommended mechanisms: `M-VAL-01`
 - Catalogued queries: `EXT-Q01`
 
 ### P-VAL-02 — Audit-query classification
 
-Every validation query must be explicitly classified as inspection/reporting, warning or violation, and its interpretation criterion must be documented before it enters the baseline.
+Each registered query must declare a supported kind and an explicit interpretation expectation before catalogue loading succeeds. Inventory and report queries are descriptive; review queries expose evidence debt; violation queries are interpreted using their configured expectations.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Obligation
 - Categories: Validation, reproducibility and maintainability (`PolicyCategory_VAL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-70`, `RF-71`, `RNF-31`, `RV-01`
 - Recommended mechanisms: `M-VAL-02`
 - Catalogued queries: None declared
@@ -796,7 +812,7 @@ A zero-row result from a violation query must not be considered evidence of comp
 
 - Type: Prohibition
 - Categories: Validation, reproducibility and maintainability (`PolicyCategory_VAL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-71`, `RV-02`
 - Recommended mechanisms: `M-VAL-03`
 - Catalogued queries: `EXT-Q75`, `EXT-Q76`, `EXT-Q77`
@@ -807,18 +823,20 @@ Every validation campaign must record unambiguous versions of the ontology, poli
 
 - Type: Obligation
 - Categories: Validation, reproducibility and maintainability (`PolicyCategory_VAL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-68`, `RNF-39`, `RV-01`, `RV-03`
 - Recommended mechanisms: `M-GOV-04`, `M-VAL-04`
 - Catalogued queries: `EXT-Q01`, `EXT-Q77`
 
 ### P-VAL-05 — Baseline compatibility and major changes
 
-An ontology, policy or query extension must not silently break declared baseline scenarios or queries. Every incompatible change must trigger a new major version and an explicit traceability update.
+Ontology, policy and query changes must preserve the maintained release checks or explicitly revise the contract and migration documentation. Source and semantic fingerprints must distinguish changed versions from earlier measurements; compatibility with all future integrations is not promised.
 
+- Current verification scope: `software-check`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Prohibition
 - Categories: Validation, reproducibility and maintainability (`PolicyCategory_VAL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RNF-11`, `RNF-38`
 - Recommended mechanisms: `M-VAL-04`, `M-VAL-05`
 - Catalogued queries: None declared
@@ -829,7 +847,7 @@ The final documentation must maintain an individual matrix linking every RF, RNF
 
 - Type: Obligation
 - Categories: Validation, reproducibility and maintainability (`PolicyCategory_VAL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RV-04`, `RV-05`
 - Recommended mechanisms: `M-VAL-05`
 - Catalogued queries: `EXT-Q02`, `EXT-Q04`, `EXT-Q08`, `EXT-Q09`
@@ -840,7 +858,7 @@ Scenarios S1–S17 must be defined in a versioned artifact or annex and executed
 
 - Type: Obligation
 - Categories: Validation, reproducibility and maintainability (`PolicyCategory_VAL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-31`, `RF-72`, `RV-03`
 - Recommended mechanisms: `M-VAL-04`, `M-VAL-06`
 - Catalogued queries: `BASE-Q11`, `EXT-Q05`, `EXT-Q77`
@@ -851,7 +869,7 @@ The validation campaign must produce coverage and overall compliance metrics for
 
 - Type: Obligation
 - Categories: Validation, reproducibility and maintainability (`PolicyCategory_VAL`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-68`, `RNF-39`, `RV-05`
 - Recommended mechanisms: `M-VAL-04`, `M-VAL-07`
 - Catalogued queries: `EXT-Q80`
@@ -862,7 +880,7 @@ When processing originates in a restricted zone, user data and associated proces
 
 - Type: Prohibition
 - Categories: Zones and georestriction (`PolicyCategory_ZONE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-42`, `RF-43`, `RF-53`, `RNF-22`
 - Recommended mechanisms: `M-CONS-02`, `M-ZONE-01`
 - Catalogued queries: `BASE-Q18`, `BASE-Q34`, `EXT-Q22`, `EXT-Q36`, `EXT-Q37`, `EXT-Q56`
@@ -873,7 +891,7 @@ In a rural zone, pending data must be retained locally by default and transmitte
 
 - Type: Obligation
 - Categories: Zones and georestriction (`PolicyCategory_ZONE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-08`, `RF-26`, `RF-42`
 - Recommended mechanisms: `M-BUFFER-01`, `M-TX-02`, `M-ZONE-01`
 - Catalogued queries: `BASE-Q17`, `EXT-Q38`
@@ -884,21 +902,23 @@ The presence of urban infrastructure does not itself authorize Edge/Fog aggregat
 
 - Type: Abstention
 - Categories: Zones and georestriction (`PolicyCategory_ZONE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-15`, `RF-36`, `RF-42`
 - Recommended mechanisms: `M-CONS-02`, `M-NODE-02`, `M-ZONE-01`
 - Catalogued queries: `EXT-Q39`
 
 ### P-ZONE-04 — Zone change and reevaluation
 
-Every zone change that may alter authorization or tier eligibility must invalidate the previous decision and trigger reevaluation before new flows or external processing continue.
+For a supplied reference zone assignment, validation must detect a selected external tier or recorded external transfer that violates restricted-zone confinement. This is a graph-validation policy; live mobility detection and automatic invalidation before physical transmission are future work.
 
+- Current verification scope: `model-query`; see [scope adaptation](../SCOPE_ADAPTATION.md).
+- Original broader statement is preserved in `configs/scope-contracts.toml`; it is not a current implementation claim.
 - Type: Obligation
 - Categories: Zones and georestriction (`PolicyCategory_ZONE`)
-- Version: `POLICIES-REV-01`
+- Version: `POLICIES-REV-02`
 - Related requirements: `RF-03`, `RF-15`, `RF-17`, `RNF-21`
 - Recommended mechanisms: `M-CTX-01`, `M-MODEL-04`
-- Catalogued queries: None declared
+- Catalogued queries: `EXT-Q37`
 
 ## Enforcement mechanisms
 

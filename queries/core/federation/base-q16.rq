@@ -3,7 +3,7 @@
 # Requirements: RF-21, RF-22, RF-25, RF-56, RF-58
 # Policies: P-FL-01, P-FL-03, P-FL-05, P-FL-07
 # Current v4.0.0 result: 3 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,13 +16,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?session ?payload ?model ?budget ?noise ?privacy ?personal ?individualized WHERE {
-  ?session a :FederatedLearningSession ; :partOfScenario :S6 .
-  OPTIONAL { ?session :hasPayloadType ?payload }
-  OPTIONAL { ?session :updatesModel ?model }
-  OPTIONAL { ?session :hasPrivacyBudget ?budget }
-  OPTIONAL { ?session :noiseLevel ?noise }
-  OPTIONAL { ?session :hasPrivacyMechanism ?privacy }
-  OPTIONAL { ?session :containsPersonalData ?personal }
-  OPTIONAL { ?session :containsIndividualizedGradients ?individualized }
+  ?session a comon:FederatedLearningSession ; comon:partOfScenario comon:S6 .
+  OPTIONAL { ?session comon:hasPayloadType ?payload }
+  OPTIONAL { ?session comon:updatesModel ?model }
+  OPTIONAL { ?session comon:hasPrivacyBudget ?budget }
+  OPTIONAL { ?session comon:noiseLevel ?noise }
+  OPTIONAL { ?session comon:hasPrivacyMechanism ?privacy }
+  OPTIONAL { ?session comon:containsPersonalData ?personal }
+  OPTIONAL { ?session comon:containsIndividualizedGradients ?individualized }
 }
 ORDER BY ?session ?privacy

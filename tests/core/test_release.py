@@ -24,13 +24,9 @@ def test_release_release_inventory_and_traceability(config):
         "scenarios": 17,
         "policy_categories": 12,
     }
-    assert contract["referenced_requirement_count"] == 102
-    assert contract["referenced_policy_count"] == 69
+    assert contract["referenced_requirement_count"] == 106
+    assert contract["referenced_policy_count"] == 73
     assert contract["unreferenced_requirements"] == [
-        "RF-07",
-        "RF-41",
-        "RF-44",
-        "RF-52",
         "RF-69",
         "RNF-03",
         "RNF-10",
@@ -43,16 +39,12 @@ def test_release_release_inventory_and_traceability(config):
         "RNF-38",
     ]
     assert contract["unreferenced_policies"] == [
-        "P-ADAPT-08",
-        "P-CONS-06",
-        "P-GOV-02",
         "P-MODEL-09",
         "P-NODE-06",
         "P-OPS-04",
         "P-OPS-06",
         "P-VAL-02",
         "P-VAL-05",
-        "P-ZONE-04",
     ]
     assert ONTOLOGY_VERSION in {
         str(value)

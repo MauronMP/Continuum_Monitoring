@@ -3,7 +3,7 @@
 # Requirements: RF-08, RF-27, RF-31
 # Policies: P-ZONE-02, P-DATA-07
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,9 +16,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?zone ?deviceState ?connection ?retention ?sync WHERE {
-  ?user a :User ; :locatedInZone ?zone .
-  ?zone a :RuralZone .
-  OPTIONAL { ?user (:hasWearable|:hasMobileDevice)/:hasDeviceState ?deviceState . ?deviceState :hasConnectionStatus ?connection }
-  OPTIONAL { ?retention a :RetentionEvent ; :partOfScenario :S7 }
-  OPTIONAL { ?sync a :SynchronizationEvent ; :partOfScenario :S7 }
+  ?user a comon:User ; comon:locatedInZone ?zone .
+  ?zone a comon:RuralZone .
+  OPTIONAL { ?user (comon:hasWearable|comon:hasMobileDevice)/comon:hasDeviceState ?deviceState . ?deviceState comon:hasConnectionStatus ?connection }
+  OPTIONAL { ?retention a comon:RetentionEvent ; comon:partOfScenario comon:S7 }
+  OPTIONAL { ?sync a comon:SynchronizationEvent ; comon:partOfScenario comon:S7 }
 }

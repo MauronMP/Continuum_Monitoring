@@ -1,0 +1,141 @@
+attempt,reasoner,layout,phase,preparations,preparations_completed,catalog_requests,catalog_requests_completed
+users-1-distributed-1-1,rdfs,distributed,Baseline,3,3,45,40
+users-1-distributed-1-1,rdfs,replicated,Baseline,3,3,45,45
+users-1-distributed-1-1,rdfs,distributed,After relocation,3,3,45,39
+users-1-distributed-1-1,rdfs,replicated,After relocation,3,3,45,45
+users-1-distributed-1-2,rdfs,distributed,Baseline,3,3,45,40
+users-1-distributed-1-2,rdfs,replicated,Baseline,3,3,45,45
+users-1-distributed-1-2,rdfs,distributed,After relocation,3,3,45,41
+users-1-distributed-1-2,rdfs,replicated,After relocation,3,3,45,45
+users-1-distributed-1-3,rdfs,distributed,Baseline,3,3,45,40
+users-1-distributed-1-3,rdfs,replicated,Baseline,3,3,45,45
+users-1-distributed-1-3,rdfs,distributed,After relocation,3,3,45,42
+users-1-distributed-1-3,rdfs,replicated,After relocation,3,3,45,45
+users-1-distributed-1-4,rdfs,distributed,Baseline,3,3,45,40
+users-1-distributed-1-4,rdfs,replicated,Baseline,3,3,45,45
+users-1-distributed-1-4,rdfs,distributed,After relocation,3,3,45,42
+users-1-distributed-1-4,rdfs,replicated,After relocation,3,3,45,45
+users-1-distributed-1-5,rdfs,distributed,Baseline,3,3,45,40
+users-1-distributed-1-5,rdfs,replicated,Baseline,3,3,45,45
+users-1-distributed-1-5,rdfs,distributed,After relocation,3,3,45,45
+users-1-distributed-1-5,rdfs,replicated,After relocation,3,3,45,45
+users-50-distributed-1-1,rdfs,distributed,Baseline,3,3,45,40
+users-50-distributed-1-1,rdfs,replicated,Baseline,3,3,45,45
+users-50-distributed-1-1,rdfs,distributed,After relocation,3,3,45,39
+users-50-distributed-1-1,rdfs,replicated,After relocation,3,3,45,45
+users-50-distributed-1-2,rdfs,distributed,Baseline,3,3,45,40
+users-50-distributed-1-2,rdfs,replicated,Baseline,3,3,45,45
+users-50-distributed-1-2,rdfs,distributed,After relocation,3,3,45,39
+users-50-distributed-1-2,rdfs,replicated,After relocation,3,3,45,45
+users-50-distributed-1-3,rdfs,distributed,Baseline,3,3,45,40
+users-50-distributed-1-3,rdfs,replicated,Baseline,3,3,45,45
+users-50-distributed-1-3,rdfs,distributed,After relocation,3,3,45,42
+users-50-distributed-1-3,rdfs,replicated,After relocation,3,3,45,45
+users-50-distributed-1-4,rdfs,distributed,Baseline,3,3,45,40
+users-50-distributed-1-4,rdfs,replicated,Baseline,3,3,45,45
+users-50-distributed-1-4,rdfs,distributed,After relocation,3,3,45,42
+users-50-distributed-1-4,rdfs,replicated,After relocation,3,3,45,45
+users-50-distributed-1-5,rdfs,distributed,Baseline,3,3,45,40
+users-50-distributed-1-5,rdfs,replicated,Baseline,3,3,45,45
+users-50-distributed-1-5,rdfs,distributed,After relocation,3,3,45,45
+users-50-distributed-1-5,rdfs,replicated,After relocation,3,3,45,45
+users-100-distributed-1-1,rdfs,distributed,Baseline,3,3,45,40
+users-100-distributed-1-1,rdfs,replicated,Baseline,3,3,45,45
+users-100-distributed-1-1,rdfs,distributed,After relocation,3,3,45,40
+users-100-distributed-1-1,rdfs,replicated,After relocation,3,3,45,45
+users-100-distributed-1-2,rdfs,distributed,Baseline,3,3,45,40
+users-100-distributed-1-2,rdfs,replicated,Baseline,3,3,45,45
+users-100-distributed-1-2,rdfs,distributed,After relocation,3,3,45,41
+users-100-distributed-1-2,rdfs,replicated,After relocation,3,3,45,45
+users-100-distributed-1-3,rdfs,distributed,Baseline,3,3,45,40
+users-100-distributed-1-3,rdfs,replicated,Baseline,3,3,45,45
+users-100-distributed-1-3,rdfs,distributed,After relocation,3,3,45,42
+users-100-distributed-1-3,rdfs,replicated,After relocation,3,3,45,45
+users-100-distributed-1-4,rdfs,distributed,Baseline,3,3,45,40
+users-100-distributed-1-4,rdfs,replicated,Baseline,3,3,45,45
+users-100-distributed-1-4,rdfs,distributed,After relocation,3,3,45,42
+users-100-distributed-1-4,rdfs,replicated,After relocation,3,3,45,45
+users-100-distributed-1-5,rdfs,distributed,Baseline,3,3,45,40
+users-100-distributed-1-5,rdfs,replicated,Baseline,3,3,45,45
+users-100-distributed-1-5,rdfs,distributed,After relocation,3,3,45,45
+users-100-distributed-1-5,rdfs,replicated,After relocation,3,3,45,45
+users-500-distributed-1-1,rdfs,distributed,Baseline,3,3,45,40
+users-500-distributed-1-1,rdfs,replicated,Baseline,3,2,30,30
+users-500-distributed-1-1,rdfs,distributed,After relocation,3,3,45,40
+users-500-distributed-1-1,rdfs,replicated,After relocation,3,3,45,45
+users-500-distributed-1-2,rdfs,distributed,Baseline,3,3,45,40
+users-500-distributed-1-2,rdfs,replicated,Baseline,3,2,30,30
+users-500-distributed-1-2,rdfs,distributed,After relocation,3,3,45,39
+users-500-distributed-1-2,rdfs,replicated,After relocation,3,3,45,45
+users-500-distributed-1-3,rdfs,distributed,Baseline,3,3,45,40
+users-500-distributed-1-3,rdfs,replicated,Baseline,3,2,30,30
+users-500-distributed-1-3,rdfs,distributed,After relocation,3,3,45,42
+users-500-distributed-1-3,rdfs,replicated,After relocation,3,3,45,45
+users-500-distributed-1-4,rdfs,distributed,Baseline,3,3,45,40
+users-500-distributed-1-4,rdfs,replicated,Baseline,3,2,30,30
+users-500-distributed-1-4,rdfs,distributed,After relocation,3,3,45,42
+users-500-distributed-1-4,rdfs,replicated,After relocation,3,3,45,45
+users-500-distributed-1-5,rdfs,distributed,Baseline,3,3,45,40
+users-500-distributed-1-5,rdfs,replicated,Baseline,3,2,30,30
+users-500-distributed-1-5,rdfs,distributed,After relocation,3,3,45,45
+users-500-distributed-1-5,rdfs,replicated,After relocation,3,3,45,45
+users-500-replicated-1-1,rdfs,distributed,Baseline,3,3,45,40
+users-500-replicated-1-1,rdfs,replicated,Baseline,3,2,30,30
+users-500-replicated-1-1,rdfs,distributed,After relocation,3,3,45,40
+users-500-replicated-1-1,rdfs,replicated,After relocation,3,3,45,45
+users-1000-distributed-1-1,rdfs,distributed,Baseline,3,3,45,39
+users-1000-distributed-1-1,rdfs,replicated,Baseline,3,2,30,22
+users-1000-distributed-1-1,rdfs,distributed,After relocation,3,3,45,40
+users-1000-distributed-1-1,rdfs,replicated,After relocation,3,2,30,28
+users-1000-distributed-1-2,rdfs,distributed,Baseline,3,3,45,39
+users-1000-distributed-1-2,rdfs,replicated,Baseline,3,2,30,22
+users-1000-distributed-1-2,rdfs,distributed,After relocation,3,3,45,42
+users-1000-distributed-1-2,rdfs,replicated,After relocation,3,2,30,22
+users-1000-distributed-1-3,rdfs,distributed,Baseline,3,3,45,39
+users-1000-distributed-1-3,rdfs,replicated,Baseline,3,2,30,22
+users-1000-distributed-1-3,rdfs,distributed,After relocation,3,3,45,42
+users-1000-distributed-1-3,rdfs,replicated,After relocation,3,2,30,28
+users-1000-distributed-1-4,rdfs,distributed,Baseline,3,3,45,39
+users-1000-distributed-1-4,rdfs,replicated,Baseline,3,2,30,22
+users-1000-distributed-1-4,rdfs,distributed,After relocation,3,3,45,42
+users-1000-distributed-1-4,rdfs,replicated,After relocation,3,2,30,28
+users-1000-distributed-1-5,rdfs,distributed,Baseline,3,3,45,39
+users-1000-distributed-1-5,rdfs,replicated,Baseline,3,2,30,22
+users-1000-distributed-1-5,rdfs,distributed,After relocation,3,3,45,45
+users-1000-distributed-1-5,rdfs,replicated,After relocation,3,3,45,45
+users-1000-replicated-1-1,rdfs,distributed,Baseline,3,3,45,39
+users-1000-replicated-1-1,rdfs,replicated,Baseline,3,2,30,22
+users-1000-replicated-1-1,rdfs,distributed,After relocation,3,3,45,40
+users-1000-replicated-1-1,rdfs,replicated,After relocation,3,3,45,39
+users-1000-replicated-1-2,rdfs,distributed,Baseline,3,3,45,39
+users-1000-replicated-1-2,rdfs,replicated,Baseline,3,2,30,22
+users-1000-replicated-1-2,rdfs,distributed,After relocation,3,3,45,38
+users-1000-replicated-1-2,rdfs,replicated,After relocation,3,3,45,44
+users-1000-replicated-1-3,rdfs,distributed,Baseline,3,3,45,39
+users-1000-replicated-1-3,rdfs,replicated,Baseline,3,2,30,22
+users-1000-replicated-1-3,rdfs,distributed,After relocation,3,3,45,41
+users-1000-replicated-1-3,rdfs,replicated,After relocation,3,3,45,45
+users-2000-distributed-1-1,rdfs,distributed,Baseline,3,0,0,0
+users-2000-distributed-1-1,rdfs,replicated,Baseline,3,2,30,0
+users-2000-distributed-1-1,rdfs,distributed,After relocation,3,3,45,21
+users-2000-distributed-1-1,rdfs,replicated,After relocation,3,1,15,0
+users-2000-distributed-1-2,rdfs,distributed,Baseline,3,0,0,0
+users-2000-distributed-1-2,rdfs,replicated,Baseline,3,2,30,0
+users-2000-distributed-1-2,rdfs,distributed,After relocation,3,3,45,22
+users-2000-distributed-1-2,rdfs,replicated,After relocation,3,1,15,0
+users-2000-distributed-1-3,rdfs,distributed,Baseline,3,0,0,0
+users-2000-distributed-1-3,rdfs,replicated,Baseline,3,2,30,0
+users-2000-distributed-1-3,rdfs,distributed,After relocation,3,3,45,24
+users-2000-distributed-1-3,rdfs,replicated,After relocation,3,1,15,0
+users-2000-distributed-1-4,rdfs,distributed,Baseline,3,0,0,0
+users-2000-distributed-1-4,rdfs,replicated,Baseline,3,2,30,0
+users-2000-distributed-1-4,rdfs,distributed,After relocation,3,3,45,37
+users-2000-distributed-1-4,rdfs,replicated,After relocation,3,2,30,0
+users-2000-distributed-1-5,rdfs,distributed,Baseline,3,0,0,0
+users-2000-distributed-1-5,rdfs,replicated,Baseline,3,2,30,0
+users-2000-distributed-1-5,rdfs,distributed,After relocation,3,3,45,24
+users-2000-distributed-1-5,rdfs,replicated,After relocation,3,1,15,0
+users-2000-distributed-1-6,rdfs,distributed,Baseline,3,0,0,0
+users-2000-distributed-1-6,rdfs,replicated,Baseline,3,2,30,0
+users-2000-distributed-1-6,rdfs,distributed,After relocation,3,0,0,0
+users-2000-distributed-1-6,rdfs,replicated,After relocation,3,2,30,0

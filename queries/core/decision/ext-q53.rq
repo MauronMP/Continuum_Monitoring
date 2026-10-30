@@ -3,7 +3,7 @@
 # Requirements: RF-51, RF-54
 # Policies: P-MODEL-05
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,8 +16,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?selected ?selectedTier ?alternativeTier ?eligible ?reason WHERE {
-  ?evaluation a :EvaluationState ; :selectedModelTier ?selectedTier .
-  OPTIONAL { ?evaluation :selectedAlternative ?selected . OPTIONAL { ?selected :alternativeModelTier ?alternativeTier } OPTIONAL { ?selected :isEligible ?eligible } }
+  ?evaluation a comon:EvaluationState ; comon:selectedModelTier ?selectedTier .
+  OPTIONAL { ?evaluation comon:selectedAlternative ?selected . OPTIONAL { ?selected comon:alternativeModelTier ?alternativeTier } OPTIONAL { ?selected comon:isEligible ?eligible } }
   BIND(IF(!BOUND(?selected), "missing-selectedAlternative", IF(BOUND(?eligible) && ?eligible = false, "selected-not-eligible", IF(BOUND(?alternativeTier) && ?alternativeTier != ?selectedTier, "tier-mismatch", ""))) AS ?reason)
   FILTER(?reason != "")
 }

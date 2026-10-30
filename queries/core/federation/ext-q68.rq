@@ -3,7 +3,7 @@
 # Requirements: RF-57, RF-58, RNF-16, RNF-19
 # Policies: P-FL-03, P-FL-05
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,8 +16,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?gradient ?noiseApplied ?anonApplied WHERE {
-  ?gradient a :ModelGradientUpdate ; :originatesFromDevice ?device ; :sentToNode ?dest .
-  OPTIONAL { ?gradient :hasNoiseApplied ?noiseApplied }
-  OPTIONAL { ?gradient :hasAnonymizationApplied ?anonApplied }
-  FILTER(!BOUND(?noiseApplied) || ?noiseApplied != true || !BOUND(?anonApplied) || ?anonApplied != true || NOT EXISTS { ?gradient :hasPrivacyMechanism ?m })
+  ?gradient a comon:ModelGradientUpdate ; comon:originatesFromDevice ?device ; comon:sentToNode ?dest .
+  OPTIONAL { ?gradient comon:hasNoiseApplied ?noiseApplied }
+  OPTIONAL { ?gradient comon:hasAnonymizationApplied ?anonApplied }
+  FILTER(!BOUND(?noiseApplied) || ?noiseApplied != true || !BOUND(?anonApplied) || ?anonApplied != true || NOT EXISTS { ?gradient comon:hasPrivacyMechanism ?m })
 }

@@ -3,7 +3,7 @@
 # Requirements: RF-35, RF-36
 # Policies: P-CONS-04
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,14 +16,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?authorization ?missing WHERE {
-  ?authorization a :AuthorizationDecision .
+  ?authorization a comon:AuthorizationDecision .
   VALUES (?prop ?missing) {
-    (:hasAuthorizationOutcome "hasAuthorizationOutcome")
-    (:hasEffectiveConsentRange "hasEffectiveConsentRange")
-    (:basedOnConsentRecord "basedOnConsentRecord")
-    (:basedOnContract "basedOnContract")
-    (:basedOnZone "basedOnZone")
-    (:validFrom "validFrom")
+    (comon:hasAuthorizationOutcome "hasAuthorizationOutcome")
+    (comon:hasEffectiveConsentRange "hasEffectiveConsentRange")
+    (comon:basedOnConsentRecord "basedOnConsentRecord")
+    (comon:basedOnContract "basedOnContract")
+    (comon:basedOnZone "basedOnZone")
+    (comon:validFrom "validFrom")
   }
   FILTER NOT EXISTS { ?authorization ?prop ?v }
 }

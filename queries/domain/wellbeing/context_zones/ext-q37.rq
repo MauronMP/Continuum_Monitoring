@@ -1,9 +1,9 @@
 # Type: violation
 # Purpose: Evaluate violation: external processing or transfer in restricted areas using the declared query contract.
 # Requirements: RF-42, RF-43, RF-60
-# Policies: P-ZONE-01, P-GOV-03
+# Policies: P-ZONE-01, P-GOV-03, P-ZONE-04
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -17,17 +17,17 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?subject ?violationType ?destinationOrTier WHERE {
   {
-    ?evaluation a :EvaluationState ; :evaluationZone ?zone ; :selectedModelTier ?tier .
-    ?zone a :RestrictedZone .
-    FILTER(?tier IN (:EdgeModelTier,:FogModelTier,:CloudModelTier))
+    ?evaluation a comon:EvaluationState ; comon:evaluationZone ?zone ; comon:selectedModelTier ?tier .
+    ?zone a comon:RestrictedZone .
+    FILTER(?tier IN (comon:EdgeModelTier,comon:FogModelTier,comon:CloudModelTier))
     BIND(?evaluation AS ?subject) BIND("external-tier" AS ?violationType) BIND(?tier AS ?destinationOrTier)
   }
   UNION
   {
-    ?user a :User ; :locatedInZone ?zone . ?zone a :RestrictedZone .
-    ?user (:hasWearable|:hasMobileDevice) ?device .
-    ?transfer a :TransferEvent ; :transferSource ?device ; :transferDestination ?dest .
-    ?dest a ?destType . FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
+    ?user a comon:User ; comon:locatedInZone ?zone . ?zone a comon:RestrictedZone .
+    ?user (comon:hasWearable|comon:hasMobileDevice) ?device .
+    ?transfer a comon:TransferEvent ; comon:transferSource ?device ; comon:transferDestination ?dest .
+    ?dest a ?destType . FILTER(?destType IN (comon:EdgeNode,comon:FogNode,comon:CloudNode))
     BIND(?transfer AS ?subject) BIND("external-transfer" AS ?violationType) BIND(?dest AS ?destinationOrTier)
   }
 }

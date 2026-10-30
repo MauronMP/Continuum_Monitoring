@@ -1,218 +1,218 @@
-@prefix mc: <http://example.org/monitoringcontinuum#> .
+@prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-mc:TrafficWindow a owl:Class ;
+comon:TrafficWindow a owl:Class ;
     rdfs:label "Traffic Window" ;
     rdfs:comment "Time interval with high demand (morning: wake-up; night: physiological data upload)." .
 
-mc:contextDeviceState a owl:ObjectProperty ;
+comon:contextDeviceState a owl:ObjectProperty ;
     rdfs:label "context device state" ;
     rdfs:comment "context device state links resources. Declared domain: Data Context. Declared range: Device State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DataContext ;
-    rdfs:range mc:DeviceState .
+    rdfs:domain comon:DataContext ;
+    rdfs:range comon:DeviceState .
 
-mc:contextNodeState a owl:ObjectProperty ;
+comon:contextNodeState a owl:ObjectProperty ;
     rdfs:label "context node state" ;
     rdfs:comment "context node state links resources. Declared domain: Data Context. Declared range: Node State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DataContext ;
-    rdfs:range mc:NodeState .
+    rdfs:domain comon:DataContext ;
+    rdfs:range comon:NodeState .
 
-mc:contextProcessingLevel a owl:ObjectProperty ;
+comon:contextProcessingLevel a owl:ObjectProperty ;
     rdfs:label "context processing level" ;
     rdfs:comment "context processing level links resources. Declared domain: Data Context. Declared range: Processing Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DataContext ;
-    rdfs:range mc:ProcessingLevel .
+    rdfs:domain comon:DataContext ;
+    rdfs:range comon:ProcessingLevel .
 
-mc:contextPurpose a owl:ObjectProperty ;
+comon:contextPurpose a owl:ObjectProperty ;
     rdfs:label "context purpose" ;
     rdfs:comment "context purpose links resources. Declared domain: Data Context. Declared range: Processing Purpose. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DataContext ;
-    rdfs:range mc:ProcessingPurpose .
+    rdfs:domain comon:DataContext ;
+    rdfs:range comon:ProcessingPurpose .
 
-mc:contextZone a owl:ObjectProperty ;
+comon:contextZone a owl:ObjectProperty ;
     rdfs:label "context zone" ;
     rdfs:comment "context zone links resources. Declared domain: Data Context. Declared range: City Area. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DataContext ;
-    rdfs:range mc:CityArea .
+    rdfs:domain comon:DataContext ;
+    rdfs:range comon:CityArea .
 
-mc:evidenceContribution a owl:DatatypeProperty ;
+comon:evidenceContribution a owl:DatatypeProperty ;
     rdfs:label "evidence contribution" ;
     rdfs:comment "evidence contribution records a literal value. Declared domain: Trust Evidence. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:TrustEvidence ;
+    rdfs:domain comon:TrustEvidence ;
     rdfs:range xsd:decimal .
 
-mc:evidenceFactor a owl:DatatypeProperty ;
+comon:evidenceFactor a owl:DatatypeProperty ;
     rdfs:label "evidence factor" ;
     rdfs:comment "evidence factor records a literal value. Declared domain: Trust Evidence. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:TrustEvidence ;
+    rdfs:domain comon:TrustEvidence ;
     rdfs:range xsd:string .
 
-mc:hasAvailability a owl:ObjectProperty ;
+comon:hasAvailability a owl:ObjectProperty ;
     rdfs:label "has availability" ;
     rdfs:comment "has availability links resources. Declared domain: Node State. Declared range: Availability Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
-    rdfs:range mc:AvailabilityLevel .
+    rdfs:domain comon:NodeState ;
+    rdfs:range comon:AvailabilityLevel .
 
-mc:hasBatteryLevel a owl:ObjectProperty ;
+comon:hasBatteryLevel a owl:ObjectProperty ;
     rdfs:label "has battery level" ;
     rdfs:comment "has battery level links resources. Declared domain: Device State. Declared range: Battery Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DeviceState ;
-    rdfs:range mc:BatteryLevel .
+    rdfs:domain comon:DeviceState ;
+    rdfs:range comon:BatteryLevel .
 
-mc:hasCommunication a owl:ObjectProperty ;
+comon:hasCommunication a owl:ObjectProperty ;
     rdfs:label "has communication level" ;
     rdfs:comment "has communication level links resources. Declared domain: Node State. Declared range: Communication Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
-    rdfs:range mc:CommunicationLevel .
+    rdfs:domain comon:NodeState ;
+    rdfs:range comon:CommunicationLevel .
 
-mc:hasComplianceMetric a owl:ObjectProperty ;
+comon:hasComplianceMetric a owl:ObjectProperty ;
     rdfs:label "has compliance metric" ;
     rdfs:comment "has compliance metric links resources. Declared domain: Validation Campaign. Declared range: Compliance Metric. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:ValidationCampaign ;
-    rdfs:range mc:ComplianceMetric .
+    rdfs:domain comon:ValidationCampaign ;
+    rdfs:range comon:ComplianceMetric .
 
-mc:hasConnectionStatus a owl:ObjectProperty ;
+comon:hasConnectionStatus a owl:ObjectProperty ;
     rdfs:label "has connection status" ;
     rdfs:comment "has connection status links resources. Declared domain: Device State. Declared range: Device Connection Status. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DeviceState ;
-    rdfs:range mc:DeviceConnectionStatus .
+    rdfs:domain comon:DeviceState ;
+    rdfs:range comon:DeviceConnectionStatus .
 
-mc:hasDataContext a owl:ObjectProperty ;
+comon:hasDataContext a owl:ObjectProperty ;
     rdfs:label "has data context" ;
     rdfs:comment "has data context links resources. The domain is intentionally open for reuse across governed resources. Declared range: Data Context. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:range mc:DataContext .
+    rdfs:range comon:DataContext .
 
-mc:hasEnergyLevel a owl:ObjectProperty ;
+comon:hasEnergyLevel a owl:ObjectProperty ;
     rdfs:label "has energy level" ;
     rdfs:comment "has energy level links resources. Declared domain: Node State. Declared range: Energy Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
-    rdfs:range mc:EnergyLevel .
+    rdfs:domain comon:NodeState ;
+    rdfs:range comon:EnergyLevel .
 
-mc:hasMobility a owl:ObjectProperty ;
+comon:hasMobility a owl:ObjectProperty ;
     rdfs:label "has mobility" ;
     rdfs:comment "has mobility links resources. Declared domain: User State. Declared range: Mobility Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:UserState ;
-    rdfs:range mc:MobilityLevel .
+    rdfs:domain comon:UserState ;
+    rdfs:range comon:MobilityLevel .
 
-mc:hasNodeState a owl:ObjectProperty ;
+comon:hasNodeState a owl:ObjectProperty ;
     rdfs:label "has node state" ;
     rdfs:comment "has node state links resources. Declared domain: Computational Node. Declared range: Node State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:ComputationalNode ;
-    rdfs:range mc:NodeState .
+    rdfs:domain comon:ComputationalNode ;
+    rdfs:range comon:NodeState .
 
-mc:hasOperationalStatus a owl:ObjectProperty ;
+comon:hasOperationalStatus a owl:ObjectProperty ;
     rdfs:label "has operational status" ;
     rdfs:comment "has operational status links resources. Declared domain: Node State. Declared range: Operational Status. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
-    rdfs:range mc:OperationalStatus .
+    rdfs:domain comon:NodeState ;
+    rdfs:range comon:OperationalStatus .
 
-mc:hasPerformance a owl:ObjectProperty ;
+comon:hasPerformance a owl:ObjectProperty ;
     rdfs:label "has performance" ;
     rdfs:comment "has performance links resources. Declared domain: Node State. Declared range: Performance Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
-    rdfs:range mc:PerformanceLevel .
+    rdfs:domain comon:NodeState ;
+    rdfs:range comon:PerformanceLevel .
 
-mc:hasResidualCapacity a owl:ObjectProperty ;
+comon:hasResidualCapacity a owl:ObjectProperty ;
     rdfs:label "has residual capacity" ;
     rdfs:comment "has residual capacity links resources. Declared domain: Node State. Declared range: Residual Capacity. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
-    rdfs:range mc:ResidualCapacity .
+    rdfs:domain comon:NodeState ;
+    rdfs:range comon:ResidualCapacity .
 
-mc:hasTrustAssessment a owl:ObjectProperty ;
+comon:hasTrustAssessment a owl:ObjectProperty ;
     rdfs:label "has trust assessment" ;
     rdfs:comment "has trust assessment links resources. Declared domain: Node State. Declared range: Trust Assessment. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
-    rdfs:range mc:TrustAssessment .
+    rdfs:domain comon:NodeState ;
+    rdfs:range comon:TrustAssessment .
 
-mc:hasTrustEvidence a owl:ObjectProperty ;
+comon:hasTrustEvidence a owl:ObjectProperty ;
     rdfs:label "has trust evidence" ;
     rdfs:comment "has trust evidence links resources. Declared domain: Trust Assessment. Declared range: Trust Evidence. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:TrustAssessment ;
-    rdfs:range mc:TrustEvidence .
+    rdfs:domain comon:TrustAssessment ;
+    rdfs:range comon:TrustEvidence .
 
-mc:hasTrustScore a owl:DatatypeProperty ;
+comon:hasTrustScore a owl:DatatypeProperty ;
     rdfs:label "has trust score" ;
     rdfs:comment "Normalized historical reliability score [0,1]. A v3-compliant scientific use should also reference TrustAssessment with rule version and historical window." ;
     rdfs:range xsd:decimal .
 
-mc:hasUserState a owl:ObjectProperty ;
+comon:hasUserState a owl:ObjectProperty ;
     rdfs:label "has user state" ;
     rdfs:comment "has user state links resources. Declared domain: User. Declared range: User State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:User ;
-    rdfs:range mc:UserState .
+    rdfs:domain comon:User ;
+    rdfs:range comon:UserState .
 
-mc:hasWorkload a owl:ObjectProperty ;
+comon:hasWorkload a owl:ObjectProperty ;
     rdfs:label "has workload" ;
     rdfs:comment "has workload links resources. Declared domain: Node State. Declared range: Workload Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
-    rdfs:range mc:WorkloadLevel .
+    rdfs:domain comon:NodeState ;
+    rdfs:range comon:WorkloadLevel .
 
-mc:parametrizedDataReady a owl:DatatypeProperty ;
+comon:parametrizedDataReady a owl:DatatypeProperty ;
     rdfs:label "parametrized data ready" ;
     rdfs:comment "parametrized data ready records a literal value. Declared domain: Device State. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DeviceState ;
+    rdfs:domain comon:DeviceState ;
     rdfs:range xsd:boolean .
 
-mc:queuedRequests a owl:DatatypeProperty ;
+comon:queuedRequests a owl:DatatypeProperty ;
     rdfs:label "queued requests" ;
     rdfs:comment "queued requests records a literal value. Declared domain: Node State. Declared range: integer. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
+    rdfs:domain comon:NodeState ;
     rdfs:range xsd:integer .
 
-mc:resourceUsagePercent a owl:DatatypeProperty ;
+comon:resourceUsagePercent a owl:DatatypeProperty ;
     rdfs:label "resource usage (%)" ;
     rdfs:comment "resource usage (%) records a literal value. Declared domain: Node State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:NodeState ;
+    rdfs:domain comon:NodeState ;
     rdfs:range xsd:decimal .
 
-mc:stateDuration a owl:DatatypeProperty ;
+comon:stateDuration a owl:DatatypeProperty ;
     rdfs:label "state duration" ;
     rdfs:comment "Computed as validTo - validFrom." ;
-    rdfs:domain mc:State ;
+    rdfs:domain comon:State ;
     rdfs:range xsd:duration .
 
-mc:trustAssessmentForState a owl:ObjectProperty ;
+comon:trustAssessmentForState a owl:ObjectProperty ;
     rdfs:label "trust assessment for state" ;
     rdfs:comment "trust assessment for state links resources. Declared domain: Trust Assessment. Declared range: Node State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:TrustAssessment ;
-    rdfs:range mc:NodeState .
+    rdfs:domain comon:TrustAssessment ;
+    rdfs:range comon:NodeState .
 
-mc:trustRuleVersion a owl:DatatypeProperty ;
+comon:trustRuleVersion a owl:DatatypeProperty ;
     rdfs:label "trust rule version" ;
     rdfs:comment "trust rule version records a literal value. Declared domain: Trust Assessment. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:TrustAssessment ;
+    rdfs:domain comon:TrustAssessment ;
     rdfs:range xsd:string .
 
-mc:trustWindowEnd a owl:DatatypeProperty ;
+comon:trustWindowEnd a owl:DatatypeProperty ;
     rdfs:label "trust window end" ;
     rdfs:comment "trust window end records a literal value. Declared domain: Trust Assessment. Declared range: dateTime. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:TrustAssessment ;
+    rdfs:domain comon:TrustAssessment ;
     rdfs:range xsd:dateTime .
 
-mc:trustWindowStart a owl:DatatypeProperty ;
+comon:trustWindowStart a owl:DatatypeProperty ;
     rdfs:label "trust window start" ;
     rdfs:comment "trust window start records a literal value. Declared domain: Trust Assessment. Declared range: dateTime. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:TrustAssessment ;
+    rdfs:domain comon:TrustAssessment ;
     rdfs:range xsd:dateTime .
 
-mc:userFeedbackScore a owl:DatatypeProperty ;
+comon:userFeedbackScore a owl:DatatypeProperty ;
     rdfs:label "user feedback score" ;
     rdfs:comment "User rating of the previous day's prediction (local model without consent)." ;
-    rdfs:domain mc:UserState ;
+    rdfs:domain comon:UserState ;
     rdfs:range xsd:integer .
 
-mc:validFrom a owl:DatatypeProperty ;
+comon:validFrom a owl:DatatypeProperty ;
     rdfs:label "valid from" ;
     rdfs:comment "Effective start timestamp of a temporal entity." ;
-    rdfs:domain mc:TemporalEntity ;
+    rdfs:domain comon:TemporalEntity ;
     rdfs:range xsd:dateTime .
 
-mc:validTo a owl:DatatypeProperty ;
+comon:validTo a owl:DatatypeProperty ;
     rdfs:label "valid to" ;
     rdfs:comment "Effective closure timestamp. It must not be used for a planned expiration before actual closure." ;
-    rdfs:domain mc:TemporalEntity ;
+    rdfs:domain comon:TemporalEntity ;
     rdfs:range xsd:dateTime .
 
 <http://example.org/monitoringcontinuum/modules/observability> a owl:Ontology ;
@@ -222,75 +222,75 @@ mc:validTo a owl:DatatypeProperty ;
         <http://example.org/monitoringcontinuum/modules/topology> ;
     owl:versionInfo "4.0.0" .
 
-mc:AvailabilityLevel a owl:Class ;
+comon:AvailabilityLevel a owl:Class ;
     rdfs:label "Availability Level" ;
     rdfs:comment "Availability Level is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:BatteryLevel a owl:Class ;
+comon:BatteryLevel a owl:Class ;
     rdfs:label "Battery Level" ;
     rdfs:comment "Battery Level is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:CommunicationLevel a owl:Class ;
+comon:CommunicationLevel a owl:Class ;
     rdfs:label "Communication Level" ;
     rdfs:comment "Communication Level is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:ComplianceMetric a owl:Class ;
+comon:ComplianceMetric a owl:Class ;
     rdfs:label "Compliance Metric" ;
     rdfs:comment "Compliance Metric is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:DeviceConnectionStatus a owl:Class ;
+comon:DeviceConnectionStatus a owl:Class ;
     rdfs:label "Device Connection Status" ;
     rdfs:comment "Device Connection Status is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:EnergyLevel a owl:Class ;
+comon:EnergyLevel a owl:Class ;
     rdfs:label "Energy Level" ;
     rdfs:comment "Energy Level is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:MobilityLevel a owl:Class ;
+comon:MobilityLevel a owl:Class ;
     rdfs:label "Mobility Level" ;
     rdfs:comment "Mobility Level is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:OperationalStatus a owl:Class ;
+comon:OperationalStatus a owl:Class ;
     rdfs:label "Operational Status" ;
     rdfs:comment "Operational Status is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:PerformanceLevel a owl:Class ;
+comon:PerformanceLevel a owl:Class ;
     rdfs:label "Performance Level" ;
     rdfs:comment "Performance Level is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:ResidualCapacity a owl:Class ;
+comon:ResidualCapacity a owl:Class ;
     rdfs:label "Residual Capacity" ;
     rdfs:comment "Residual Capacity is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:WorkloadLevel a owl:Class ;
+comon:WorkloadLevel a owl:Class ;
     rdfs:label "Workload Level" ;
     rdfs:comment "Workload Level is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:TrustEvidence a owl:Class ;
+comon:TrustEvidence a owl:Class ;
     rdfs:label "Trust Evidence" ;
     rdfs:comment "Trust Evidence is a observability concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:UserState a owl:Class ;
+comon:UserState a owl:Class ;
     rdfs:label "User State" ;
     rdfs:comment "User State is a observability concept in the monitoring model. It specializes State." ;
-    rdfs:subClassOf mc:State .
+    rdfs:subClassOf comon:State .
 
-mc:DeviceState a owl:Class ;
+comon:DeviceState a owl:Class ;
     rdfs:label "Device State" ;
     rdfs:comment "Device State is a observability concept in the monitoring model. It specializes State." ;
-    rdfs:subClassOf mc:State .
+    rdfs:subClassOf comon:State .
 
-mc:DataContext a owl:Class ;
+comon:DataContext a owl:Class ;
     rdfs:label "Data Context" ;
     rdfs:comment "Operational context associated with data or a processing/transfer event." ;
-    rdfs:subClassOf mc:TemporalEntity .
+    rdfs:subClassOf comon:TemporalEntity .
 
-mc:TrustAssessment a owl:Class ;
+comon:TrustAssessment a owl:Class ;
     rdfs:label "Trust Assessment" ;
     rdfs:comment "Versioned assessment explaining a trust score." ;
-    rdfs:subClassOf mc:TemporalEntity .
+    rdfs:subClassOf comon:TemporalEntity .
 
-mc:NodeState a owl:Class ;
+comon:NodeState a owl:Class ;
     rdfs:label "Node State" ;
     rdfs:comment "Node State is a observability concept in the monitoring model. It specializes State." ;
-    rdfs:subClassOf mc:State .
+    rdfs:subClassOf comon:State .

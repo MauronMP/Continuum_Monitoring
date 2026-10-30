@@ -3,7 +3,7 @@
 # Requirements: RF-61, RNF-17
 # Policies: P-DATA-02
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,8 +16,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?transfer ?identifier ?destination WHERE {
-  ?transfer a :TransferEvent ; :usesIdentifier ?identifier ; :transferDestination ?destination .
-  ?identifier a :DirectIdentifier .
+  ?transfer a comon:TransferEvent ; comon:usesIdentifier ?identifier ; comon:transferDestination ?destination .
+  ?identifier a comon:DirectIdentifier .
   ?destination a ?destType .
-  FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
+  FILTER(?destType IN (comon:EdgeNode,comon:FogNode,comon:CloudNode))
 }

@@ -3,7 +3,7 @@
 # Requirements: RF-05, RF-29
 # Policies: P-NODE-01
 # Current v4.0.0 result: true
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -15,4 +15,4 @@ PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-ASK { ?state a :NodeState ; :hasWorkload :SaturatedWorkload . }
+ASK { ?state a comon:NodeState ; comon:hasWorkload comon:SaturatedWorkload . }

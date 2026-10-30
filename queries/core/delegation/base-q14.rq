@@ -3,7 +3,7 @@
 # Requirements: RF-17, RF-20, RF-62, RF-65
 # Policies: P-ADAPT-02, P-AUD-01, P-AUD-05
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,8 +16,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?failedState ?symptom ?delegation ?target ?degradation ?evaluation WHERE {
-  ?failedState a :NodeState ; :partOfScenario :S4 .
-  OPTIONAL { ?evaluation a :EvaluationState ; :partOfScenario :S4 ; :hasDetectedSymptom ?symptom }
-  OPTIONAL { ?delegation a :DelegationEvent ; :partOfScenario :S4 ; :actionTargetNode ?target }
-  OPTIONAL { ?degradation a :DegradationEvent ; :partOfScenario :S4 }
+  ?failedState a comon:NodeState ; comon:partOfScenario comon:S4 .
+  OPTIONAL { ?evaluation a comon:EvaluationState ; comon:partOfScenario comon:S4 ; comon:hasDetectedSymptom ?symptom }
+  OPTIONAL { ?delegation a comon:DelegationEvent ; comon:partOfScenario comon:S4 ; comon:actionTargetNode ?target }
+  OPTIONAL { ?degradation a comon:DegradationEvent ; comon:partOfScenario comon:S4 }
 }

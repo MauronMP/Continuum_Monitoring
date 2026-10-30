@@ -1,0 +1,186 @@
+# Generated effective topology; edit the source manifests instead.
+[manifest]
+version = 1
+
+[topologies.container-scale]
+kind = "physical"
+description = "Logical participants on physical hosts; storage and network are shared"
+ssh_user = "pi"
+remote_dir = "/home/pi/continuum-bench"
+remote_python = "/home/pi/continuum-bench/.venv-node/bin/python"
+
+[[topologies.container-scale.nodes]]
+id = "cloud-c1"
+tier = "cloud"
+endpoint = "http://100.86.63.53:8591"
+host = "100.86.63.53"
+port = 8591
+local = true
+authority = false
+enabled = true
+device_type = "container-on-coordinator"
+categories = [
+  "semantic_schema",
+  "decision",
+  "policy_governance",
+  "validation",
+]
+
+[topologies.container-scale.nodes.resources]
+cpu_cores = 1.0
+cpu_architecture = "x86_64"
+ram = "1536m"
+storage_mib = 0
+processing_capacity = 1.0
+network_mbps = 1000.0
+
+[topologies.container-scale.nodes.location]
+region = "local-lab"
+
+[[topologies.container-scale.nodes]]
+id = "fog-c1"
+tier = "fog"
+endpoint = "http://100.93.73.27:8591"
+host = "100.93.73.27"
+port = 8591
+local = false
+authority = false
+enabled = true
+device_type = "container-on-raspberry-pi-500"
+categories = [
+  "topology",
+  "data_lifecycle",
+  "trust",
+  "adaptation",
+  "delegation",
+  "federation",
+  "audit_temporal",
+]
+
+[topologies.container-scale.nodes.resources]
+cpu_cores = 1.0
+cpu_architecture = "aarch64"
+ram = "1536m"
+storage_mib = 0
+processing_capacity = 0.45
+network_mbps = 100.0
+
+[topologies.container-scale.nodes.location]
+region = "physical-lab"
+
+[[topologies.container-scale.nodes]]
+id = "mist-c1"
+tier = "mist"
+endpoint = "http://100.72.111.107:8591"
+host = "100.72.111.107"
+port = 8591
+local = false
+authority = true
+enabled = true
+device_type = "container-on-raspberry-pi-500"
+categories = [
+  "topology",
+  "observability",
+  "data_lifecycle",
+  "context_zones",
+  "trust",
+  "adaptation",
+]
+
+[topologies.container-scale.nodes.resources]
+cpu_cores = 1.0
+cpu_architecture = "aarch64"
+ram = "1536m"
+storage_mib = 0
+processing_capacity = 0.4
+network_mbps = 100.0
+
+[topologies.container-scale.nodes.location]
+region = "physical-lab"
+
+[[topologies.container-scale.nodes]]
+id = "edge1-c1"
+tier = "edge"
+endpoint = "http://100.86.63.53:8592"
+host = "100.86.63.53"
+port = 8592
+local = true
+authority = true
+enabled = true
+device_type = "container-on-raspberry-pi-500"
+categories = [
+  "observability",
+  "identity_consent",
+  "security_identity",
+  "context_zones",
+  "wellbeing",
+]
+
+[topologies.container-scale.nodes.resources]
+cpu_cores = 1.0
+cpu_architecture = "aarch64"
+ram = "1536m"
+storage_mib = 0
+processing_capacity = 0.4
+network_mbps = 100.0
+
+[topologies.container-scale.nodes.location]
+region = "local-lab"
+
+[[topologies.container-scale.nodes]]
+id = "edge2-c1"
+tier = "edge"
+endpoint = "http://100.70.9.117:8591"
+host = "100.70.9.117"
+port = 8591
+local = false
+authority = true
+enabled = true
+device_type = "container-on-raspberry-pi-500"
+categories = [
+  "observability",
+  "identity_consent",
+  "security_identity",
+  "context_zones",
+  "wellbeing",
+]
+
+[topologies.container-scale.nodes.resources]
+cpu_cores = 1.0
+cpu_architecture = "aarch64"
+ram = "1536m"
+storage_mib = 0
+processing_capacity = 0.4
+network_mbps = 100.0
+
+[topologies.container-scale.nodes.location]
+region = "physical-lab"
+
+[[topologies.container-scale.nodes]]
+id = "edge3-c1"
+tier = "edge"
+endpoint = "http://100.121.135.60:8591"
+host = "100.121.135.60"
+port = 8591
+local = false
+authority = true
+enabled = true
+device_type = "container-on-raspberry-pi-500"
+categories = [
+  "observability",
+  "identity_consent",
+  "security_identity",
+  "context_zones",
+  "wellbeing",
+]
+
+[topologies.container-scale.nodes.resources]
+cpu_cores = 1.0
+cpu_architecture = "aarch64"
+ram = "1536m"
+storage_mib = 0
+processing_capacity = 0.4
+network_mbps = 100.0
+
+[topologies.container-scale.nodes.location]
+region = "physical-lab"

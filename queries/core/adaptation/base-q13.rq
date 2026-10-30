@@ -3,7 +3,7 @@
 # Requirements: RF-16, RF-17, RF-31
 # Policies: P-ADAPT-05, P-ADAPT-06
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,11 +16,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?migration ?origin ?target ?service ?evaluation ?from ?to WHERE {
-  ?migration a :MigrationEvent ; :partOfScenario :S3 .
-  OPTIONAL { ?migration :actionOriginNode ?origin }
-  OPTIONAL { ?migration :actionTargetNode ?target }
-  OPTIONAL { ?migration :affectsService ?service }
-  OPTIONAL { ?migration :authorizedByEvaluation ?evaluation }
-  OPTIONAL { ?migration :validFrom ?from }
-  OPTIONAL { ?migration :validTo ?to }
+  ?migration a comon:MigrationEvent ; comon:partOfScenario comon:S3 .
+  OPTIONAL { ?migration comon:actionOriginNode ?origin }
+  OPTIONAL { ?migration comon:actionTargetNode ?target }
+  OPTIONAL { ?migration comon:affectsService ?service }
+  OPTIONAL { ?migration comon:authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?migration comon:validFrom ?from }
+  OPTIONAL { ?migration comon:validTo ?to }
 }

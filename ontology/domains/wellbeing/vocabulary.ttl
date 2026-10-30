@@ -1,39 +1,39 @@
-@prefix mc: <http://example.org/monitoringcontinuum#> .
+@prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
 
-mc:Agitated a mc:PersonStatus,
+comon:Agitated a comon:PersonStatus,
         owl:NamedIndividual ;
     rdfs:label "Agitated" .
 
-mc:Asleep a mc:PersonStatus,
+comon:Asleep a comon:PersonStatus,
         owl:NamedIndividual ;
     rdfs:label "Asleep" .
 
-mc:Calm a mc:PersonStatus,
+comon:Calm a comon:PersonStatus,
         owl:NamedIndividual ;
     rdfs:label "Calm" .
 
-mc:EDAProperty a sosa:ObservableProperty .
+comon:EDAProperty a sosa:ObservableProperty .
 
-mc:HeartRateProperty a sosa:ObservableProperty .
+comon:HeartRateProperty a sosa:ObservableProperty .
 
-mc:SleepQualityProperty a sosa:ObservableProperty .
+comon:SleepQualityProperty a sosa:ObservableProperty .
 
-mc:StressCritical a mc:StressLevel,
+comon:StressCritical a comon:StressLevel,
         owl:NamedIndividual ;
     rdfs:label "Critical" .
 
-mc:StressHigh a mc:StressLevel,
+comon:StressHigh a comon:StressLevel,
         owl:NamedIndividual ;
     rdfs:label "High" .
 
-mc:StressLow a mc:StressLevel,
+comon:StressLow a comon:StressLevel,
         owl:NamedIndividual ;
     rdfs:label "Low" .
 
-mc:StressMedium a mc:StressLevel,
+comon:StressMedium a comon:StressLevel,
         owl:NamedIndividual ;
     rdfs:label "Medium" .
 

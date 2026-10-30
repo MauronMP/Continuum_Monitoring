@@ -3,7 +3,7 @@
 # Requirements: RF-14, RF-54
 # Policies: P-MODEL-08
 # Current v4.0.0 result: 8 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,9 +16,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?qualityWeight WHERE {
-  ?evaluation a :EvaluationState ; :hasModelQualityWeight ?qualityWeight .
-  FILTER NOT EXISTS { ?evaluation :observedModelQuality ?q }
-  FILTER NOT EXISTS { ?evaluation :predictionConfidence ?c }
-  FILTER NOT EXISTS { ?evaluation :estimatedPredictionError ?e }
+  ?evaluation a comon:EvaluationState ; comon:hasModelQualityWeight ?qualityWeight .
+  FILTER NOT EXISTS { ?evaluation comon:observedModelQuality ?q }
+  FILTER NOT EXISTS { ?evaluation comon:predictionConfidence ?c }
+  FILTER NOT EXISTS { ?evaluation comon:estimatedPredictionError ?e }
 }
 ORDER BY ?evaluation

@@ -20,7 +20,7 @@ Evaluate users, active consent and external identifiers using the declared query
 # Requirements: RF-01, RF-32, RF-61, RF-70
 # Policies: P-CONS-01, P-DATA-02
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -33,13 +33,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?name ?activeRange ?identifier ?identifierType WHERE {
-  ?user a :User .
+  ?user a comon:User .
   OPTIONAL { ?user foaf:name ?name }
-  OPTIONAL { ?user :hasActiveConsentRange ?activeRange }
+  OPTIONAL { ?user comon:hasActiveConsentRange ?activeRange }
   OPTIONAL {
-    ?user :hasIdentifier ?identifier .
+    ?user comon:hasIdentifier ?identifier .
     ?identifier a ?identifierType .
-    FILTER(?identifierType IN (:PseudonymousIdentifier, :AnonymousIdentifier, :DirectIdentifier))
+    FILTER(?identifierType IN (comon:PseudonymousIdentifier, comon:AnonymousIdentifier, comon:DirectIdentifier))
   }
 }
 ORDER BY ?user
@@ -59,7 +59,7 @@ Evaluate compute nodes, types and elasticity using the declared query contract.
 # Requirements: RF-02, RF-05, RF-70
 # Policies: P-OPS-02, P-OPS-03
 # Current v4.0.0 result: 8 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -73,9 +73,9 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?node ?nodeType ?elasticity WHERE {
   ?node a ?nodeType .
-  ?nodeType rdfs:subClassOf* :ComputationalNode .
-  FILTER(?nodeType != :ComputationalNode)
-  OPTIONAL { ?node :hasElasticity ?elasticity }
+  ?nodeType rdfs:subClassOf* comon:ComputationalNode .
+  FILTER(?nodeType != comon:ComputationalNode)
+  OPTIONAL { ?node comon:hasElasticity ?elasticity }
 }
 ORDER BY ?node ?nodeType
 ```
@@ -94,7 +94,7 @@ Evaluate wearables associated with users using the declared query contract.
 # Requirements: RF-01, RF-70
 # Policies: P-INT-02
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -107,10 +107,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?wearable ?wearableType WHERE {
-  ?user a :User ; :hasWearable ?wearable .
+  ?user a comon:User ; comon:hasWearable ?wearable .
   ?wearable a ?wearableType .
-  ?wearableType rdfs:subClassOf* :Wearable .
-  FILTER(?wearableType != :Wearable)
+  ?wearableType rdfs:subClassOf* comon:Wearable .
+  FILTER(?wearableType != comon:Wearable)
 }
 ORDER BY ?user ?wearable
 ```
@@ -129,7 +129,7 @@ Evaluate models, tiers, versions, hosts and lineage using the declared query con
 # Requirements: RF-11, RF-12, RF-13, RF-24, RF-70
 # Policies: P-FL-08, P-MODEL-01
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -142,12 +142,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?model ?tier ?version ?updated ?host ?supersedes WHERE {
-  ?model a :AIModel .
-  OPTIONAL { ?model :hasModelTier ?tier }
-  OPTIONAL { ?model :modelVersion ?version }
-  OPTIONAL { ?model :lastUpdated ?updated }
-  OPTIONAL { ?model :hostedOnNode ?host }
-  OPTIONAL { ?model :supersedesModel ?supersedes }
+  ?model a comon:AIModel .
+  OPTIONAL { ?model comon:hasModelTier ?tier }
+  OPTIONAL { ?model comon:modelVersion ?version }
+  OPTIONAL { ?model comon:lastUpdated ?updated }
+  OPTIONAL { ?model comon:hostedOnNode ?host }
+  OPTIONAL { ?model comon:supersedesModel ?supersedes }
 }
 ORDER BY ?model
 ```
@@ -166,7 +166,7 @@ Evaluate physiological sensors and host devices using the declared query contrac
 # Requirements: RF-06, RNF-25, RF-70
 # Policies: P-INT-01
 # Current v4.0.0 result: 5 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -180,8 +180,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?sensor ?sensorType ?device WHERE {
   ?sensor a ?sensorType .
-  ?sensorType rdfs:subClassOf* :PhysiologicalSensor .
-  FILTER(?sensorType != :PhysiologicalSensor)
+  ?sensorType rdfs:subClassOf* comon:PhysiologicalSensor .
+  FILTER(?sensorType != comon:PhysiologicalSensor)
   OPTIONAL { ?device saref:consistsOf ?sensor }
 }
 ORDER BY ?device ?sensor
@@ -201,7 +201,7 @@ Evaluate rBAC roles and permissions using the declared query contract.
 # Requirements: RF-37, RF-70
 # Policies: P-CONS-05
 # Current v4.0.0 result: 10 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -214,9 +214,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?role ?permission ?requiredRange WHERE {
-  ?role a :Role .
-  OPTIONAL { ?role :hasPermission ?permission }
-  OPTIONAL { ?permission :requiresConsentRange ?requiredRange }
+  ?role a comon:Role .
+  OPTIONAL { ?role comon:hasPermission ?permission }
+  OPTIONAL { ?permission comon:requiresConsentRange ?requiredRange }
 }
 ORDER BY ?role ?permission
 ```
@@ -235,7 +235,7 @@ Evaluate node states and operational metrics using the declared query contract.
 # Requirements: RF-05, RF-29, RF-45, RF-70
 # Policies: P-NODE-01, P-NODE-03, P-OPS-05
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -248,16 +248,16 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?node ?state ?workload ?availability ?communication ?residual ?resourceUsage ?queued ?operational ?trust WHERE {
-  ?node :hasNodeState ?state .
-  ?state a :NodeState .
-  OPTIONAL { ?state :hasWorkload ?workload }
-  OPTIONAL { ?state :hasAvailability ?availability }
-  OPTIONAL { ?state :hasCommunication ?communication }
-  OPTIONAL { ?state :hasResidualCapacity ?residual }
-  OPTIONAL { ?state :resourceUsagePercent ?resourceUsage }
-  OPTIONAL { ?state :queuedRequests ?queued }
-  OPTIONAL { ?state :hasOperationalStatus ?operational }
-  OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
+  ?node comon:hasNodeState ?state .
+  ?state a comon:NodeState .
+  OPTIONAL { ?state comon:hasWorkload ?workload }
+  OPTIONAL { ?state comon:hasAvailability ?availability }
+  OPTIONAL { ?state comon:hasCommunication ?communication }
+  OPTIONAL { ?state comon:hasResidualCapacity ?residual }
+  OPTIONAL { ?state comon:resourceUsagePercent ?resourceUsage }
+  OPTIONAL { ?state comon:queuedRequests ?queued }
+  OPTIONAL { ?state comon:hasOperationalStatus ?operational }
+  OPTIONAL { ?state comon:hasTrustAssessment/comon:hasTrustScore ?trust }
 }
 ORDER BY ?node ?state
 ```
@@ -276,7 +276,7 @@ Evaluate saturated, unavailable or disconnected nodes using the declared query c
 # Requirements: RF-17, RF-47, RNF-12
 # Policies: P-NODE-01, P-NODE-02
 # Current v4.0.0 result: 2 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -289,17 +289,17 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?node ?state ?workload ?availability ?communication ?operational WHERE {
-  ?node :hasNodeState ?state .
-  ?state a :NodeState .
-  OPTIONAL { ?state :hasWorkload ?workload }
-  OPTIONAL { ?state :hasAvailability ?availability }
-  OPTIONAL { ?state :hasCommunication ?communication }
-  OPTIONAL { ?state :hasOperationalStatus ?operational }
+  ?node comon:hasNodeState ?state .
+  ?state a comon:NodeState .
+  OPTIONAL { ?state comon:hasWorkload ?workload }
+  OPTIONAL { ?state comon:hasAvailability ?availability }
+  OPTIONAL { ?state comon:hasCommunication ?communication }
+  OPTIONAL { ?state comon:hasOperationalStatus ?operational }
   FILTER(
-    ?workload = :SaturatedWorkload ||
-    ?availability = :NotAvailable ||
-    ?communication = :NoConnectionComm ||
-    ?operational = :Inoperative
+    ?workload = comon:SaturatedWorkload ||
+    ?availability = comon:NotAvailable ||
+    ?communication = comon:NoConnectionComm ||
+    ?operational = comon:Inoperative
   )
 }
 ORDER BY ?node
@@ -319,7 +319,7 @@ Evaluate user states, mobility and stress using the declared query contract.
 # Requirements: RF-03, RF-30, RNF-35
 # Policies: P-GOV-05, P-OPS-05
 # Current v4.0.0 result: 6 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -332,13 +332,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?state ?mobility ?stress ?personStatus ?from ?to WHERE {
-  ?user :hasUserState ?state .
-  ?state a :UserState .
-  OPTIONAL { ?state :hasMobility ?mobility }
-  OPTIONAL { ?state :hasPredictedStressLevel ?stress }
-  OPTIONAL { ?state :hasPersonStatus ?personStatus }
-  OPTIONAL { ?state :validFrom ?from }
-  OPTIONAL { ?state :validTo ?to }
+  ?user comon:hasUserState ?state .
+  ?state a comon:UserState .
+  OPTIONAL { ?state comon:hasMobility ?mobility }
+  OPTIONAL { ?state comon:hasPredictedStressLevel ?stress }
+  OPTIONAL { ?state comon:hasPersonStatus ?personStatus }
+  OPTIONAL { ?state comon:validFrom ?from }
+  OPTIONAL { ?state comon:validTo ?to }
 }
 ORDER BY ?user ?from
 ```
@@ -354,10 +354,10 @@ Evaluate device states and transmission eligibility using the declared query con
 ```sparql
 # Type: report
 # Purpose: Evaluate device states and transmission eligibility using the declared query contract.
-# Requirements: RF-04, RF-26, RF-27
+# Requirements: RF-04, RF-26, RF-27, RF-07
 # Policies: P-DATA-04, P-DATA-06, P-DATA-07
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -370,14 +370,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?device ?state ?battery ?connection ?dataReady ?from ?to WHERE {
-  ?user a :User .
-  { ?user :hasWearable ?device } UNION { ?user :hasMobileDevice ?device }
-  ?device :hasDeviceState ?state .
-  OPTIONAL { ?state :hasBatteryLevel ?battery }
-  OPTIONAL { ?state :hasConnectionStatus ?connection }
-  OPTIONAL { ?state :parametrizedDataReady ?dataReady }
-  OPTIONAL { ?state :validFrom ?from }
-  OPTIONAL { ?state :validTo ?to }
+  ?user a comon:User .
+  { ?user comon:hasWearable ?device } UNION { ?user comon:hasMobileDevice ?device }
+  ?device comon:hasDeviceState ?state .
+  OPTIONAL { ?state comon:hasBatteryLevel ?battery }
+  OPTIONAL { ?state comon:hasConnectionStatus ?connection }
+  OPTIONAL { ?state comon:parametrizedDataReady ?dataReady }
+  OPTIONAL { ?state comon:validFrom ?from }
+  OPTIONAL { ?state comon:validTo ?to }
 }
 ORDER BY ?user ?device ?from
 ```
@@ -396,7 +396,7 @@ Evaluate scenario S1: normal operation using the declared query contract.
 # Requirements: RF-31, RF-72
 # Policies: P-VAL-07
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -409,11 +409,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?node ?tier ?action ?profitability WHERE {
-  ?evaluation a :EvaluationState ; :partOfScenario :S1 .
-  OPTIONAL { ?evaluation :evaluatesNode ?node }
-  OPTIONAL { ?evaluation :selectedModelTier ?tier }
-  OPTIONAL { ?evaluation :resultedInAction ?action }
-  OPTIONAL { ?evaluation :hasProfitability ?profitability }
+  ?evaluation a comon:EvaluationState ; comon:partOfScenario comon:S1 .
+  OPTIONAL { ?evaluation comon:evaluatesNode ?node }
+  OPTIONAL { ?evaluation comon:selectedModelTier ?tier }
+  OPTIONAL { ?evaluation comon:resultedInAction ?action }
+  OPTIONAL { ?evaluation comon:hasProfitability ?profitability }
 }
 ```
 
@@ -431,7 +431,7 @@ Evaluate scenario S2: saturation and fog candidates using the declared query con
 # Requirements: RF-17, RF-31
 # Policies: P-ADAPT-01, P-NODE-02
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -444,10 +444,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?edgeState ?edgeTrust ?fogState ?fogTrust WHERE {
-  ?edgeState a :NodeState ; :partOfScenario :S2 ; :hasWorkload :SaturatedWorkload .
-  OPTIONAL { ?edgeState :hasTrustAssessment/:hasTrustScore ?edgeTrust }
-  ?fogState a :NodeState ; :partOfScenario :S2 ; :hasAvailability :Available .
-  OPTIONAL { ?fogState :hasTrustAssessment/:hasTrustScore ?fogTrust }
+  ?edgeState a comon:NodeState ; comon:partOfScenario comon:S2 ; comon:hasWorkload comon:SaturatedWorkload .
+  OPTIONAL { ?edgeState comon:hasTrustAssessment/comon:hasTrustScore ?edgeTrust }
+  ?fogState a comon:NodeState ; comon:partOfScenario comon:S2 ; comon:hasAvailability comon:Available .
+  OPTIONAL { ?fogState comon:hasTrustAssessment/comon:hasTrustScore ?fogTrust }
 }
 ```
 
@@ -465,7 +465,7 @@ Evaluate scenario S3: edge-to-fog migration using the declared query contract.
 # Requirements: RF-16, RF-17, RF-31
 # Policies: P-ADAPT-05, P-ADAPT-06
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -478,13 +478,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?migration ?origin ?target ?service ?evaluation ?from ?to WHERE {
-  ?migration a :MigrationEvent ; :partOfScenario :S3 .
-  OPTIONAL { ?migration :actionOriginNode ?origin }
-  OPTIONAL { ?migration :actionTargetNode ?target }
-  OPTIONAL { ?migration :affectsService ?service }
-  OPTIONAL { ?migration :authorizedByEvaluation ?evaluation }
-  OPTIONAL { ?migration :validFrom ?from }
-  OPTIONAL { ?migration :validTo ?to }
+  ?migration a comon:MigrationEvent ; comon:partOfScenario comon:S3 .
+  OPTIONAL { ?migration comon:actionOriginNode ?origin }
+  OPTIONAL { ?migration comon:actionTargetNode ?target }
+  OPTIONAL { ?migration comon:affectsService ?service }
+  OPTIONAL { ?migration comon:authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?migration comon:validFrom ?from }
+  OPTIONAL { ?migration comon:validTo ?to }
 }
 ```
 
@@ -502,7 +502,7 @@ Evaluate scenario S4: failure, delegation and degradation using the declared que
 # Requirements: RF-17, RF-20, RF-62, RF-65
 # Policies: P-ADAPT-02, P-AUD-01, P-AUD-05
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -515,10 +515,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?failedState ?symptom ?delegation ?target ?degradation ?evaluation WHERE {
-  ?failedState a :NodeState ; :partOfScenario :S4 .
-  OPTIONAL { ?evaluation a :EvaluationState ; :partOfScenario :S4 ; :hasDetectedSymptom ?symptom }
-  OPTIONAL { ?delegation a :DelegationEvent ; :partOfScenario :S4 ; :actionTargetNode ?target }
-  OPTIONAL { ?degradation a :DegradationEvent ; :partOfScenario :S4 }
+  ?failedState a comon:NodeState ; comon:partOfScenario comon:S4 .
+  OPTIONAL { ?evaluation a comon:EvaluationState ; comon:partOfScenario comon:S4 ; comon:hasDetectedSymptom ?symptom }
+  OPTIONAL { ?delegation a comon:DelegationEvent ; comon:partOfScenario comon:S4 ; comon:actionTargetNode ?target }
+  OPTIONAL { ?degradation a comon:DegradationEvent ; comon:partOfScenario comon:S4 }
 }
 ```
 
@@ -533,10 +533,10 @@ Evaluate scenario S5: local consent using the declared query contract.
 ```sparql
 # Type: report
 # Purpose: Evaluate scenario S5: local consent using the declared query contract.
-# Requirements: RF-32, RF-36, RF-38
+# Requirements: RF-32, RF-36, RF-38, RF-07
 # Policies: P-CONS-01, P-CONS-04, P-MODEL-06
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -549,10 +549,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?activeRange ?authorization ?effectiveRange ?tier ?action WHERE {
-  ?evaluation a :EvaluationState ; :partOfScenario :S5 ; :evaluationUser ?user ; :hasAuthorizationDecision ?authorization ; :selectedModelTier ?tier .
-  ?user :hasActiveConsentRange ?activeRange .
-  ?authorization :hasEffectiveConsentRange ?effectiveRange .
-  OPTIONAL { ?evaluation :resultedInAction ?action }
+  ?evaluation a comon:EvaluationState ; comon:partOfScenario comon:S5 ; comon:evaluationUser ?user ; comon:hasAuthorizationDecision ?authorization ; comon:selectedModelTier ?tier .
+  ?user comon:hasActiveConsentRange ?activeRange .
+  ?authorization comon:hasEffectiveConsentRange ?effectiveRange .
+  OPTIONAL { ?evaluation comon:resultedInAction ?action }
 }
 ```
 
@@ -570,7 +570,7 @@ Evaluate scenario S6: protected federated learning using the declared query cont
 # Requirements: RF-21, RF-22, RF-25, RF-56, RF-58
 # Policies: P-FL-01, P-FL-03, P-FL-05, P-FL-07
 # Current v4.0.0 result: 3 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -583,14 +583,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?session ?payload ?model ?budget ?noise ?privacy ?personal ?individualized WHERE {
-  ?session a :FederatedLearningSession ; :partOfScenario :S6 .
-  OPTIONAL { ?session :hasPayloadType ?payload }
-  OPTIONAL { ?session :updatesModel ?model }
-  OPTIONAL { ?session :hasPrivacyBudget ?budget }
-  OPTIONAL { ?session :noiseLevel ?noise }
-  OPTIONAL { ?session :hasPrivacyMechanism ?privacy }
-  OPTIONAL { ?session :containsPersonalData ?personal }
-  OPTIONAL { ?session :containsIndividualizedGradients ?individualized }
+  ?session a comon:FederatedLearningSession ; comon:partOfScenario comon:S6 .
+  OPTIONAL { ?session comon:hasPayloadType ?payload }
+  OPTIONAL { ?session comon:updatesModel ?model }
+  OPTIONAL { ?session comon:hasPrivacyBudget ?budget }
+  OPTIONAL { ?session comon:noiseLevel ?noise }
+  OPTIONAL { ?session comon:hasPrivacyMechanism ?privacy }
+  OPTIONAL { ?session comon:containsPersonalData ?personal }
+  OPTIONAL { ?session comon:containsIndividualizedGradients ?individualized }
 }
 ORDER BY ?session ?privacy
 ```
@@ -609,7 +609,7 @@ Evaluate scenario S7: rural areas and retention using the declared query contrac
 # Requirements: RF-08, RF-27, RF-31
 # Policies: P-ZONE-02, P-DATA-07
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -622,11 +622,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?zone ?deviceState ?connection ?retention ?sync WHERE {
-  ?user a :User ; :locatedInZone ?zone .
-  ?zone a :RuralZone .
-  OPTIONAL { ?user (:hasWearable|:hasMobileDevice)/:hasDeviceState ?deviceState . ?deviceState :hasConnectionStatus ?connection }
-  OPTIONAL { ?retention a :RetentionEvent ; :partOfScenario :S7 }
-  OPTIONAL { ?sync a :SynchronizationEvent ; :partOfScenario :S7 }
+  ?user a comon:User ; comon:locatedInZone ?zone .
+  ?zone a comon:RuralZone .
+  OPTIONAL { ?user (comon:hasWearable|comon:hasMobileDevice)/comon:hasDeviceState ?deviceState . ?deviceState comon:hasConnectionStatus ?connection }
+  OPTIONAL { ?retention a comon:RetentionEvent ; comon:partOfScenario comon:S7 }
+  OPTIONAL { ?sync a comon:SynchronizationEvent ; comon:partOfScenario comon:S7 }
 }
 ```
 
@@ -644,7 +644,7 @@ Evaluate scenario S8: restricted areas and local confinement using the declared 
 # Requirements: RF-42, RF-43, RF-60
 # Policies: P-ZONE-01, P-DATA-01
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -657,8 +657,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?zone ?evaluation ?tier ?action WHERE {
-  ?evaluation a :EvaluationState ; :partOfScenario :S8 ; :evaluationUser ?user ; :evaluationZone ?zone ; :selectedModelTier ?tier .
-  OPTIONAL { ?evaluation :resultedInAction ?action }
+  ?evaluation a comon:EvaluationState ; comon:partOfScenario comon:S8 ; comon:evaluationUser ?user ; comon:evaluationZone ?zone ; comon:selectedModelTier ?tier .
+  OPTIONAL { ?evaluation comon:resultedInAction ?action }
 }
 ```
 
@@ -676,7 +676,7 @@ Evaluate operationally eligible candidates using the declared query contract.
 # Requirements: RF-18, RF-47, RF-48
 # Policies: P-NODE-02, P-NODE-05
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -689,11 +689,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?node ?state ?workload ?availability ?communication ?residual ?trust WHERE {
-  ?node :hasNodeState ?state .
-  ?state :hasAvailability :Available ; :hasCommunication :StableComm ; :hasWorkload ?workload ; :hasResidualCapacity ?residual .
-  FILTER(?workload IN (:LowWorkload, :MediumWorkload))
-  FILTER(?residual IN (:MediumResidual, :HighResidual))
-  OPTIONAL { ?state :hasTrustAssessment/:hasTrustScore ?trust }
+  ?node comon:hasNodeState ?state .
+  ?state comon:hasAvailability comon:Available ; comon:hasCommunication comon:StableComm ; comon:hasWorkload ?workload ; comon:hasResidualCapacity ?residual .
+  FILTER(?workload IN (comon:LowWorkload, comon:MediumWorkload))
+  FILTER(?residual IN (comon:MediumResidual, comon:HighResidual))
+  OPTIONAL { ?state comon:hasTrustAssessment/comon:hasTrustScore ?trust }
 }
 ORDER BY DESC(?trust) ?node
 ```
@@ -712,7 +712,7 @@ Evaluate complete user semantic profile using the declared query contract.
 # Requirements: RF-02, RF-33, RF-34, RF-70
 # Policies: P-CONS-02, P-CONS-03
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -725,14 +725,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?name ?zone ?wearable ?mobile ?activeRange ?consentRecord ?contract WHERE {
-  ?user a :User .
+  ?user a comon:User .
   OPTIONAL { ?user foaf:name ?name }
-  OPTIONAL { ?user :locatedInZone ?zone }
-  OPTIONAL { ?user :hasWearable ?wearable }
-  OPTIONAL { ?user :hasMobileDevice ?mobile }
-  OPTIONAL { ?user :hasActiveConsentRange ?activeRange }
-  OPTIONAL { ?user :hasConsentRecord ?consentRecord }
-  OPTIONAL { ?user :hasSemanticContract ?contract }
+  OPTIONAL { ?user comon:locatedInZone ?zone }
+  OPTIONAL { ?user comon:hasWearable ?wearable }
+  OPTIONAL { ?user comon:hasMobileDevice ?mobile }
+  OPTIONAL { ?user comon:hasActiveConsentRange ?activeRange }
+  OPTIONAL { ?user comon:hasConsentRecord ?consentRecord }
+  OPTIONAL { ?user comon:hasSemanticContract ?contract }
 }
 ORDER BY ?user
 ```
@@ -751,7 +751,7 @@ Evaluate evaluation states and executed actions using the declared query contrac
 # Requirements: RF-14, RF-15, RF-66
 # Policies: P-AUD-06, P-MODEL-05
 # Current v4.0.0 result: 11 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -764,15 +764,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?scenario ?user ?node ?method ?tier ?profitability ?action ?from WHERE {
-  ?evaluation a :EvaluationState .
-  OPTIONAL { ?evaluation :partOfScenario ?scenario }
-  OPTIONAL { ?evaluation :evaluationUser ?user }
-  OPTIONAL { ?evaluation :evaluatesNode ?node }
-  OPTIONAL { ?evaluation :hasDecisionMethod ?method }
-  OPTIONAL { ?evaluation :selectedModelTier ?tier }
-  OPTIONAL { ?evaluation :hasProfitability ?profitability }
-  OPTIONAL { ?evaluation :resultedInAction ?action }
-  OPTIONAL { ?evaluation :validFrom ?from }
+  ?evaluation a comon:EvaluationState .
+  OPTIONAL { ?evaluation comon:partOfScenario ?scenario }
+  OPTIONAL { ?evaluation comon:evaluationUser ?user }
+  OPTIONAL { ?evaluation comon:evaluatesNode ?node }
+  OPTIONAL { ?evaluation comon:hasDecisionMethod ?method }
+  OPTIONAL { ?evaluation comon:selectedModelTier ?tier }
+  OPTIONAL { ?evaluation comon:hasProfitability ?profitability }
+  OPTIONAL { ?evaluation comon:resultedInAction ?action }
+  OPTIONAL { ?evaluation comon:validFrom ?from }
 }
 ORDER BY ?from ?evaluation
 ```
@@ -791,7 +791,7 @@ Evaluate models and degradation events using the declared query contract.
 # Requirements: RF-20, RF-24
 # Policies: P-ADAPT-06, P-FL-08
 # Current v4.0.0 result: 3 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -804,9 +804,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?model ?cause ?event ?service ?scenario WHERE {
-  { ?model a :AIModel ; :hasDegradationCause ?cause }
+  { ?model a comon:AIModel ; comon:hasDegradationCause ?cause }
   UNION
-  { ?event a :DegradationEvent . OPTIONAL { ?event :affectsModel ?model } OPTIONAL { ?event :affectsService ?service } OPTIONAL { ?event :hasDegradationCause ?cause } OPTIONAL { ?event :partOfScenario ?scenario } }
+  { ?event a comon:DegradationEvent . OPTIONAL { ?event comon:affectsModel ?model } OPTIONAL { ?event comon:affectsService ?service } OPTIONAL { ?event comon:hasDegradationCause ?cause } OPTIONAL { ?event comon:partOfScenario ?scenario } }
 }
 ORDER BY ?scenario ?model ?event
 ```
@@ -825,7 +825,7 @@ Evaluate user-node relationships and distance using the declared query contract.
 # Requirements: RF-02, RF-03, RF-18
 # Policies: P-NODE-02
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -838,11 +838,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?relation ?user ?node ?distance ?preferred ?from ?to WHERE {
-  ?relation a :NodeUserRelation ; :relatesUser ?user ; :relatesNode ?node .
-  OPTIONAL { ?relation :hasDistance ?distance }
-  OPTIONAL { ?relation :isPreferredNode ?preferred }
-  OPTIONAL { ?relation :validFrom ?from }
-  OPTIONAL { ?relation :validTo ?to }
+  ?relation a comon:NodeUserRelation ; comon:relatesUser ?user ; comon:relatesNode ?node .
+  OPTIONAL { ?relation comon:hasDistance ?distance }
+  OPTIONAL { ?relation comon:isPreferredNode ?preferred }
+  OPTIONAL { ?relation comon:validFrom ?from }
+  OPTIONAL { ?relation comon:validTo ?to }
 }
 ORDER BY ?user ?from
 ```
@@ -861,7 +861,7 @@ Evaluate federated learning chain using the declared query contract.
 # Requirements: RF-21, RF-22, RF-25, RF-59
 # Policies: P-FL-02, P-FL-04, P-FL-07
 # Current v4.0.0 result: 5 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -874,15 +874,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?session ?scenario ?node ?payload ?model ?data ?budgetAccount ?budget ?noise WHERE {
-  ?session a :FederatedLearningSession .
-  OPTIONAL { ?session :partOfScenario ?scenario }
-  OPTIONAL { ?session :involvedNode ?node }
-  OPTIONAL { ?session :hasPayloadType ?payload }
-  OPTIONAL { ?session :updatesModel ?model }
-  OPTIONAL { ?session :transfersData ?data }
-  OPTIONAL { ?session :hasPrivacyBudgetAccount ?budgetAccount }
-  OPTIONAL { ?session :hasPrivacyBudget ?budget }
-  OPTIONAL { ?session :noiseLevel ?noise }
+  ?session a comon:FederatedLearningSession .
+  OPTIONAL { ?session comon:partOfScenario ?scenario }
+  OPTIONAL { ?session comon:involvedNode ?node }
+  OPTIONAL { ?session comon:hasPayloadType ?payload }
+  OPTIONAL { ?session comon:updatesModel ?model }
+  OPTIONAL { ?session comon:transfersData ?data }
+  OPTIONAL { ?session comon:hasPrivacyBudgetAccount ?budgetAccount }
+  OPTIONAL { ?session comon:hasPrivacyBudget ?budget }
+  OPTIONAL { ?session comon:noiseLevel ?noise }
 }
 ORDER BY ?session ?node
 ```
@@ -901,7 +901,7 @@ Evaluate users authorized for global federated learning using the declared query
 # Requirements: RF-21, RF-32, RF-36
 # Policies: P-CONS-04, P-FL-02
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -914,8 +914,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?user ?authorization ?effectiveRange ?contract WHERE {
-  ?authorization a :AuthorizationDecision ; :hasEffectiveConsentRange :RangeGlobalAgg ; :basedOnContract ?contract .
-  ?evaluation a :EvaluationState ; :hasAuthorizationDecision ?authorization ; :evaluationUser ?user ; :evaluationPurpose :PurposeGlobalFederatedLearning .
+  ?authorization a comon:AuthorizationDecision ; comon:hasEffectiveConsentRange comon:RangeGlobalAgg ; comon:basedOnContract ?contract .
+  ?evaluation a comon:EvaluationState ; comon:hasAuthorizationDecision ?authorization ; comon:evaluationUser ?user ; comon:evaluationPurpose comon:PurposeGlobalFederatedLearning .
 }
 ORDER BY ?user
 ```
@@ -934,7 +934,7 @@ Evaluate aSK: a saturated node exists using the declared query contract.
 # Requirements: RF-05, RF-29
 # Policies: P-NODE-01
 # Current v4.0.0 result: true
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -946,7 +946,7 @@ PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-ASK { ?state a :NodeState ; :hasWorkload :SaturatedWorkload . }
+ASK { ?state a comon:NodeState ; comon:hasWorkload comon:SaturatedWorkload . }
 ```
 
 ## BASE-Q27: ASK: a degradation event exists
@@ -963,7 +963,7 @@ Evaluate aSK: a degradation event exists using the declared query contract.
 # Requirements: RF-20
 # Policies: P-ADAPT-06
 # Current v4.0.0 result: true
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -975,7 +975,7 @@ PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-ASK { { ?event a :DegradationEvent } UNION { ?model a :AIModel ; :hasDegradationCause ?cause } }
+ASK { { ?event a comon:DegradationEvent } UNION { ?model a comon:AIModel ; comon:hasDegradationCause ?cause } }
 ```
 
 ## BASE-Q28: ASK: an external transfer violates confinement or identity
@@ -992,7 +992,7 @@ Evaluate aSK: an external transfer violates confinement or identity using the de
 # Requirements: RF-36, RF-60, RF-61
 # Policies: P-CONS-04, P-DATA-04
 # Current v4.0.0 result: false
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1005,14 +1005,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 ASK {
-  ?transfer a :TransferEvent ; :transferDestination ?dest ; :carriesData ?data .
+  ?transfer a comon:TransferEvent ; comon:transferDestination ?dest ; comon:carriesData ?data .
   ?dest a ?destType .
-  FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
-  { ?data a ?rawType . FILTER(?rawType IN (:PhysiologicalObservation,:SleepObservation)) }
+  FILTER(?destType IN (comon:EdgeNode,comon:FogNode,comon:CloudNode))
+  { ?data a ?rawType . FILTER(?rawType IN (comon:PhysiologicalObservation,comon:SleepObservation)) }
   UNION
-  { ?transfer :usesIdentifier ?id . ?id a :DirectIdentifier }
+  { ?transfer comon:usesIdentifier ?id . ?id a comon:DirectIdentifier }
   UNION
-  { FILTER NOT EXISTS { ?transfer :usesIdentifier ?safe . ?safe a ?safeType . FILTER(?safeType IN (:PseudonymousIdentifier,:AnonymousIdentifier)) } }
+  { FILTER NOT EXISTS { ?transfer comon:usesIdentifier ?safe . ?safe a ?safeType . FILTER(?safeType IN (comon:PseudonymousIdentifier,comon:AnonymousIdentifier)) } }
 }
 ```
 
@@ -1030,7 +1030,7 @@ Evaluate aSK: fog or cloud elastic capacity exists using the declared query cont
 # Requirements: RNF-07
 # Policies: P-OPS-02
 # Current v4.0.0 result: true
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1043,8 +1043,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 ASK {
-  ?node :hasElasticity true ; a ?type .
-  FILTER(?type IN (:FogNode, :CloudNode))
+  ?node comon:hasElasticity true ; a ?type .
+  FILTER(?type IN (comon:FogNode, comon:CloudNode))
 }
 ```
 
@@ -1062,7 +1062,7 @@ Evaluate aSK: a federated learning session includes cloud using the declared que
 # Requirements: RF-22
 # Policies: P-FL-01
 # Current v4.0.0 result: true
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1074,7 +1074,7 @@ PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-ASK { ?session a :FederatedLearningSession ; :involvedNode ?cloud . ?cloud a :CloudNode . }
+ASK { ?session a comon:FederatedLearningSession ; comon:involvedNode ?cloud . ?cloud a comon:CloudNode . }
 ```
 
 ## BASE-Q31: User counts by active consent range
@@ -1091,7 +1091,7 @@ Evaluate user counts by active consent range using the declared query contract.
 # Requirements: RF-32, RF-68
 # Policies: P-CONS-01
 # Current v4.0.0 result: 3 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1104,7 +1104,7 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?range (COUNT(DISTINCT ?user) AS ?users) WHERE {
-  ?user a :User ; :hasActiveConsentRange ?range .
+  ?user a comon:User ; comon:hasActiveConsentRange ?range .
 }
 GROUP BY ?range
 ORDER BY ?range
@@ -1124,7 +1124,7 @@ Evaluate model counts by tier using the declared query contract.
 # Requirements: RF-13, RF-68
 # Policies: P-MODEL-01
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1137,7 +1137,7 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?tier (COUNT(DISTINCT ?model) AS ?models) WHERE {
-  ?model a :AIModel ; :hasModelTier ?tier .
+  ?model a comon:AIModel ; comon:hasModelTier ?tier .
 }
 GROUP BY ?tier
 ORDER BY ?tier
@@ -1157,7 +1157,7 @@ Evaluate mean resource usage by node type using the declared query contract.
 # Requirements: RF-29, RNF-27
 # Policies: P-OPS-05
 # Current v4.0.0 result: 5 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1170,9 +1170,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?nodeType (AVG(?usage) AS ?avgUsage) (COUNT(?state) AS ?samples) WHERE {
-  ?node :hasNodeState ?state ; a ?nodeType .
-  ?state :resourceUsagePercent ?usage .
-  ?nodeType rdfs:subClassOf* :ComputationalNode .
+  ?node comon:hasNodeState ?state ; a ?nodeType .
+  ?state comon:resourceUsagePercent ?usage .
+  ?nodeType rdfs:subClassOf* comon:ComputationalNode .
 }
 GROUP BY ?nodeType
 ORDER BY ?nodeType
@@ -1192,7 +1192,7 @@ Evaluate nodes covering restricted areas using the declared query contract.
 # Requirements: RF-42, RF-43
 # Policies: P-ZONE-01
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1205,8 +1205,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?node ?zone WHERE {
-  ?zone a :RestrictedZone .
-  ?node :coversArea ?zone .
+  ?zone a comon:RestrictedZone .
+  ?node comon:coversArea ?zone .
 }
 ORDER BY ?zone ?node
 ```
@@ -1225,7 +1225,7 @@ Evaluate failure, evaluation and action chain using the declared query contract.
 # Requirements: RF-20, RF-65, RF-67
 # Policies: P-AUD-05, P-AUD-07
 # Current v4.0.0 result: 86 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1238,10 +1238,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?scenario ?symptom ?node ?policy ?action ?actionType WHERE {
-  ?evaluation a :EvaluationState ; :hasDetectedSymptom ?symptom ; :resultedInAction ?action .
-  OPTIONAL { ?evaluation :partOfScenario ?scenario }
-  OPTIONAL { ?evaluation :evaluatesNode ?node }
-  OPTIONAL { ?evaluation :appliedPolicy ?policy }
+  ?evaluation a comon:EvaluationState ; comon:hasDetectedSymptom ?symptom ; comon:resultedInAction ?action .
+  OPTIONAL { ?evaluation comon:partOfScenario ?scenario }
+  OPTIONAL { ?evaluation comon:evaluatesNode ?node }
+  OPTIONAL { ?evaluation comon:appliedPolicy ?policy }
   OPTIONAL { ?action a ?actionType . FILTER(?actionType != owl:NamedIndividual) }
 }
 ORDER BY ?scenario ?evaluation ?policy
@@ -1261,7 +1261,7 @@ Evaluate version and release artifact inventory using the declared query contrac
 # Requirements: RF-68, RNF-39, RV-01, RV-03
 # Policies: P-VAL-01, P-VAL-04
 # Current v4.0.0 result: 6 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1279,13 +1279,13 @@ SELECT ?ontology ?versionInfo ?versionIRI ?artifact ?artifactType ?identifier ?a
   OPTIONAL { ?ontology owl:versionIRI ?versionIRI }
   OPTIONAL {
     VALUES ?artifactType {
-      :OntologyArtifact :RequirementsArtifact :PolicyArtifact
-      :ScenarioArtifact :QueryCatalog :AcceptanceProfile
+      comon:OntologyArtifact comon:RequirementsArtifact comon:PolicyArtifact
+      comon:ScenarioArtifact comon:QueryCatalog comon:AcceptanceProfile
     }
     ?artifact a ?artifactType .
-    OPTIONAL { ?artifact :artifactIdentifier ?identifier }
-    OPTIONAL { ?artifact :artifactVersion ?artifactVersion }
-    OPTIONAL { ?artifact :artifactStatus ?status }
+    OPTIONAL { ?artifact comon:artifactIdentifier ?identifier }
+    OPTIONAL { ?artifact comon:artifactVersion ?artifactVersion }
+    OPTIONAL { ?artifact comon:artifactStatus ?status }
   }
 }
 ORDER BY ?artifactType ?artifact
@@ -1305,7 +1305,7 @@ Evaluate functional, non-functional and validation requirement coverage using th
 # Requirements: RV-04, RF-68
 # Policies: P-VAL-06
 # Current v4.0.0 result: 3 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1319,7 +1319,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?requirementType (COUNT(DISTINCT ?r) AS ?count) WHERE {
   VALUES ?requirementType {
-    :FunctionalRequirement :NonFunctionalRequirement :ValidationRequirement
+    comon:FunctionalRequirement comon:NonFunctionalRequirement comon:ValidationRequirement
   }
   ?r a ?requirementType .
 }
@@ -1341,7 +1341,7 @@ Evaluate complete policy inventory using the declared query contract.
 # Requirements: RF-39, RF-40, RF-70
 # Policies: P-GOV-01, P-GOV-04
 # Current v4.0.0 result: 79 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1354,11 +1354,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?policy ?id ?category ?type ?version ?statement WHERE {
-  ?policy a :Policy ; :policyIdentifier ?id .
-  OPTIONAL { ?policy :belongsToPolicyCategory ?category }
-  OPTIONAL { ?policy :hasPolicyType ?type }
-  OPTIONAL { ?policy :policyVersion ?version }
-  OPTIONAL { ?policy :hasPolicyStatement ?statement }
+  ?policy a comon:Policy ; comon:policyIdentifier ?id .
+  OPTIONAL { ?policy comon:belongsToPolicyCategory ?category }
+  OPTIONAL { ?policy comon:hasPolicyType ?type }
+  OPTIONAL { ?policy comon:policyVersion ?version }
+  OPTIONAL { ?policy comon:hasPolicyStatement ?statement }
 }
 ORDER BY ?id
 ```
@@ -1377,7 +1377,7 @@ Evaluate complete mechanism inventory using the declared query contract.
 # Requirements: RV-04
 # Policies: P-VAL-06
 # Current v4.0.0 result: 55 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1390,9 +1390,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?mechanism ?id ?description (GROUP_CONCAT(DISTINCT STR(?policy); separator=", ") AS ?policies) WHERE {
-  ?mechanism a :MechanismSpecification ; :mechanismIdentifier ?id .
-  OPTIONAL { ?mechanism :mechanismDescription ?description }
-  OPTIONAL { ?mechanism :supportsPolicy ?policy }
+  ?mechanism a comon:MechanismSpecification ; comon:mechanismIdentifier ?id .
+  OPTIONAL { ?mechanism comon:mechanismDescription ?description }
+  OPTIONAL { ?mechanism comon:supportsPolicy ?policy }
 }
 GROUP BY ?mechanism ?id ?description
 ORDER BY ?id
@@ -1412,7 +1412,7 @@ Evaluate scenario S1-S17 inventory using the declared query contract.
 # Requirements: RF-31, RF-72, RV-03
 # Policies: P-VAL-07
 # Current v4.0.0 result: 17 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1427,10 +1427,10 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 SELECT ?scenario ?id ?artifact
        (GROUP_CONCAT(DISTINCT STR(?policy); separator=", ") AS ?policies)
        (GROUP_CONCAT(DISTINCT STR(?mechanism); separator=", ") AS ?mechanisms) WHERE {
-  ?scenario a :Scenario ; :scenarioIdentifier ?id .
-  OPTIONAL { ?scenario :definedInArtifact ?artifact }
-  OPTIONAL { ?scenario :scenarioPolicy ?policy }
-  OPTIONAL { ?scenario :scenarioMechanism ?mechanism }
+  ?scenario a comon:Scenario ; comon:scenarioIdentifier ?id .
+  OPTIONAL { ?scenario comon:definedInArtifact ?artifact }
+  OPTIONAL { ?scenario comon:scenarioPolicy ?policy }
+  OPTIONAL { ?scenario comon:scenarioMechanism ?mechanism }
 }
 GROUP BY ?scenario ?id ?artifact
 ORDER BY ?id
@@ -1450,7 +1450,7 @@ Evaluate policy categories using the declared query contract.
 # Requirements: RF-39, RF-40
 # Policies: P-GOV-01
 # Current v4.0.0 result: 12 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1463,8 +1463,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?category ?code ?label WHERE {
-  ?category a :PolicyCategory .
-  OPTIONAL { ?category :categoryCode ?code }
+  ?category a comon:PolicyCategory .
+  OPTIONAL { ?category comon:categoryCode ?code }
   OPTIONAL { ?category rdfs:label ?label }
 }
 ORDER BY ?code
@@ -1484,7 +1484,7 @@ Evaluate relationships between policy categories using the declared query contra
 # Requirements: RNF-22, RV-04
 # Policies: P-GOV-03
 # Current v4.0.0 result: 67 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1497,9 +1497,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?relation ?source ?target ?relationType ?code ?strategy WHERE {
-  ?relation a :PolicyCategoryRelation ; :relationSourceCategory ?source ; :relationTargetCategory ?target ; :hasPolicyRelationType ?relationType .
-  OPTIONAL { ?relationType :relationCode ?code }
-  OPTIONAL { ?relation :usesResolutionStrategy ?strategy }
+  ?relation a comon:PolicyCategoryRelation ; comon:relationSourceCategory ?source ; comon:relationTargetCategory ?target ; comon:hasPolicyRelationType ?relationType .
+  OPTIONAL { ?relationType comon:relationCode ?code }
+  OPTIONAL { ?relation comon:usesResolutionStrategy ?strategy }
 }
 ORDER BY ?source ?target
 ```
@@ -1518,7 +1518,7 @@ Evaluate requirement, policy and mechanism traceability using the declared query
 # Requirements: RV-04, RNF-39
 # Policies: P-VAL-06
 # Current v4.0.0 result: 1089 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1532,11 +1532,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?requirement ?rid ?rtype ?policy ?mechanism WHERE {
   VALUES ?rtype {
-    :FunctionalRequirement :NonFunctionalRequirement :ValidationRequirement
+    comon:FunctionalRequirement comon:NonFunctionalRequirement comon:ValidationRequirement
   }
-  ?requirement a ?rtype ; :requirementIdentifier ?rid .
-  OPTIONAL { ?requirement :tracedToPolicy ?policy }
-  OPTIONAL { ?requirement :tracedToMechanism ?mechanism }
+  ?requirement a ?rtype ; comon:requirementIdentifier ?rid .
+  OPTIONAL { ?requirement comon:tracedToPolicy ?policy }
+  OPTIONAL { ?requirement comon:tracedToMechanism ?mechanism }
 }
 ORDER BY ?rid ?policy ?mechanism
 ```
@@ -1555,7 +1555,7 @@ Evaluate review: requirements without explicit policies or mechanisms using the 
 # Requirements: RV-04
 # Policies: P-VAL-06
 # Current v4.0.0 result: 6 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1568,9 +1568,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?requirement ?rid WHERE {
-  ?requirement a :Requirement ; :requirementIdentifier ?rid .
-  FILTER NOT EXISTS { ?requirement :tracedToPolicy ?p }
-  FILTER NOT EXISTS { ?requirement :tracedToMechanism ?m }
+  ?requirement a comon:Requirement ; comon:requirementIdentifier ?rid .
+  FILTER NOT EXISTS { ?requirement comon:tracedToPolicy ?p }
+  FILTER NOT EXISTS { ?requirement comon:tracedToMechanism ?m }
 }
 ORDER BY ?rid
 ```
@@ -1589,7 +1589,7 @@ Evaluate violation: incomplete policies or mechanisms using the declared query c
 # Requirements: RF-39, RF-40, RNF-20
 # Policies: P-GOV-01, P-GOV-04
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1603,24 +1603,24 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?resource ?kind ?missing WHERE {
   {
-    ?resource a :Policy . BIND("Policy" AS ?kind)
+    ?resource a comon:Policy . BIND("Policy" AS ?kind)
     VALUES (?prop ?missing) {
-      (:policyIdentifier "policyIdentifier")
-      (:belongsToPolicyCategory "belongsToPolicyCategory")
-      (:hasPolicyType "hasPolicyType")
-      (:policyVersion "policyVersion")
-      (:hasPolicyStatement "hasPolicyStatement")
-      (:recommendedMechanism "recommendedMechanism")
+      (comon:policyIdentifier "policyIdentifier")
+      (comon:belongsToPolicyCategory "belongsToPolicyCategory")
+      (comon:hasPolicyType "hasPolicyType")
+      (comon:policyVersion "policyVersion")
+      (comon:hasPolicyStatement "hasPolicyStatement")
+      (comon:recommendedMechanism "recommendedMechanism")
     }
     FILTER NOT EXISTS { ?resource ?prop ?v }
   }
   UNION
   {
-    ?resource a :MechanismSpecification . BIND("Mechanism" AS ?kind)
+    ?resource a comon:MechanismSpecification . BIND("Mechanism" AS ?kind)
     VALUES (?prop ?missing) {
-      (:mechanismIdentifier "mechanismIdentifier")
-      (:mechanismDescription "mechanismDescription")
-      (:supportsPolicy "supportsPolicy")
+      (comon:mechanismIdentifier "mechanismIdentifier")
+      (comon:mechanismDescription "mechanismDescription")
+      (comon:supportsPolicy "supportsPolicy")
     }
     FILTER NOT EXISTS { ?resource ?prop ?v }
   }
@@ -1642,7 +1642,7 @@ Evaluate consent record report using the declared query contract.
 # Requirements: RF-32, RF-35
 # Policies: P-CONS-01, P-CONS-04
 # Current v4.0.0 result: 25 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1655,11 +1655,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?record ?user ?range ?purpose ?dataCategory ?from ?to WHERE {
-  ?record a :ConsentRecord ; :consentSubject ?user ; :hasConsentRange ?range .
-  OPTIONAL { ?record :hasProcessingPurpose ?purpose }
-  OPTIONAL { ?record :hasAuthorizedDataCategory ?dataCategory }
-  OPTIONAL { ?record :validFrom ?from }
-  OPTIONAL { ?record :validTo ?to }
+  ?record a comon:ConsentRecord ; comon:consentSubject ?user ; comon:hasConsentRange ?range .
+  OPTIONAL { ?record comon:hasProcessingPurpose ?purpose }
+  OPTIONAL { ?record comon:hasAuthorizedDataCategory ?dataCategory }
+  OPTIONAL { ?record comon:validFrom ?from }
+  OPTIONAL { ?record comon:validTo ?to }
 }
 ORDER BY ?user ?record ?purpose ?dataCategory
 ```
@@ -1675,10 +1675,10 @@ Evaluate semantic contract report using the declared query contract.
 ```sparql
 # Type: report
 # Purpose: Evaluate semantic contract report using the declared query contract.
-# Requirements: RF-33, RF-34
-# Policies: P-CONS-02, P-CONS-03
+# Requirements: RF-33, RF-34, RF-41
+# Policies: P-CONS-02, P-CONS-03, P-GOV-02
 # Current v4.0.0 result: 28 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1691,11 +1691,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?contract ?user ?range ?purpose ?policy ?from ?to WHERE {
-  ?contract a :SemanticContract ; :contractSubject ?user ; :hasConsentRange ?range .
-  OPTIONAL { ?contract :hasProcessingPurpose ?purpose }
-  OPTIONAL { ?contract :governedBy ?policy }
-  OPTIONAL { ?contract :validFrom ?from }
-  OPTIONAL { ?contract :validTo ?to }
+  ?contract a comon:SemanticContract ; comon:contractSubject ?user ; comon:hasConsentRange ?range .
+  OPTIONAL { ?contract comon:hasProcessingPurpose ?purpose }
+  OPTIONAL { ?contract comon:governedBy ?policy }
+  OPTIONAL { ?contract comon:validFrom ?from }
+  OPTIONAL { ?contract comon:validTo ?to }
 }
 ORDER BY ?user ?contract ?purpose ?policy
 ```
@@ -1714,7 +1714,7 @@ Evaluate violation: incomplete consent records using the declared query contract
 # Requirements: RF-32, RF-35
 # Policies: P-CONS-01
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1727,13 +1727,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?record ?missing WHERE {
-  ?record a :ConsentRecord .
+  ?record a comon:ConsentRecord .
   VALUES (?prop ?missing) {
-    (:consentSubject "consentSubject")
-    (:hasConsentRange "hasConsentRange")
-    (:hasProcessingPurpose "hasProcessingPurpose")
-    (:hasAuthorizedDataCategory "hasAuthorizedDataCategory")
-    (:validFrom "validFrom")
+    (comon:consentSubject "consentSubject")
+    (comon:hasConsentRange "hasConsentRange")
+    (comon:hasProcessingPurpose "hasProcessingPurpose")
+    (comon:hasAuthorizedDataCategory "hasAuthorizedDataCategory")
+    (comon:validFrom "validFrom")
   }
   FILTER NOT EXISTS { ?record ?prop ?v }
 }
@@ -1754,7 +1754,7 @@ Evaluate violation: incomplete semantic contracts using the declared query contr
 # Requirements: RF-33, RF-34
 # Policies: P-CONS-02, P-CONS-03
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1767,13 +1767,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?contract ?missing WHERE {
-  ?contract a :SemanticContract .
+  ?contract a comon:SemanticContract .
   VALUES (?prop ?missing) {
-    (:contractSubject "contractSubject")
-    (:hasConsentRange "hasConsentRange")
-    (:hasProcessingPurpose "hasProcessingPurpose")
-    (:governedBy "governedBy")
-    (:validFrom "validFrom")
+    (comon:contractSubject "contractSubject")
+    (comon:hasConsentRange "hasConsentRange")
+    (comon:hasProcessingPurpose "hasProcessingPurpose")
+    (comon:governedBy "governedBy")
+    (comon:validFrom "validFrom")
   }
   FILTER NOT EXISTS { ?contract ?prop ?v }
 }
@@ -1794,7 +1794,7 @@ Evaluate violation: overlapping contracts for a user and purpose using the decla
 # Requirements: RF-33, RNF-22
 # Policies: P-CONS-02
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1807,11 +1807,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?user ?purpose ?c1 ?c2 WHERE {
-  ?c1 a :SemanticContract ; :contractSubject ?user ; :hasProcessingPurpose ?purpose ; :validFrom ?f1 .
-  ?c2 a :SemanticContract ; :contractSubject ?user ; :hasProcessingPurpose ?purpose ; :validFrom ?f2 .
+  ?c1 a comon:SemanticContract ; comon:contractSubject ?user ; comon:hasProcessingPurpose ?purpose ; comon:validFrom ?f1 .
+  ?c2 a comon:SemanticContract ; comon:contractSubject ?user ; comon:hasProcessingPurpose ?purpose ; comon:validFrom ?f2 .
   FILTER(STR(?c1) < STR(?c2))
-  OPTIONAL { ?c1 :validTo ?t1 }
-  OPTIONAL { ?c2 :validTo ?t2 }
+  OPTIONAL { ?c1 comon:validTo ?t1 }
+  OPTIONAL { ?c2 comon:validTo ?t2 }
   FILTER((!BOUND(?t1) || ?f2 < ?t1) && (!BOUND(?t2) || ?f1 < ?t2))
 }
 ORDER BY ?user ?purpose
@@ -1831,7 +1831,7 @@ Evaluate violation: active consent range without a supporting record using the d
 # Requirements: RF-35
 # Policies: P-CONS-01, P-CONS-04
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1844,10 +1844,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?activeRange WHERE {
-  ?user a :User ; :hasActiveConsentRange ?activeRange .
+  ?user a comon:User ; comon:hasActiveConsentRange ?activeRange .
   FILTER NOT EXISTS {
-    ?user :hasConsentRecord ?record .
-    ?record :hasConsentRange ?activeRange .
+    ?user comon:hasConsentRecord ?record .
+    ?record comon:hasConsentRange ?activeRange .
   }
 }
 ORDER BY ?user
@@ -1867,7 +1867,7 @@ Evaluate effective authorization report using the declared query contract.
 # Requirements: RF-35, RF-36, RF-66
 # Policies: P-CONS-04, P-GOV-03
 # Current v4.0.0 result: 8 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1880,14 +1880,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?authorization ?outcome ?effectiveRange ?record ?contract ?zone ?from WHERE {
-  ?evaluation a :EvaluationState ; :hasAuthorizationDecision ?authorization .
-  ?authorization a :AuthorizationDecision .
-  OPTIONAL { ?authorization :hasAuthorizationOutcome ?outcome }
-  OPTIONAL { ?authorization :hasEffectiveConsentRange ?effectiveRange }
-  OPTIONAL { ?authorization :basedOnConsentRecord ?record }
-  OPTIONAL { ?authorization :basedOnContract ?contract }
-  OPTIONAL { ?authorization :basedOnZone ?zone }
-  OPTIONAL { ?authorization :validFrom ?from }
+  ?evaluation a comon:EvaluationState ; comon:hasAuthorizationDecision ?authorization .
+  ?authorization a comon:AuthorizationDecision .
+  OPTIONAL { ?authorization comon:hasAuthorizationOutcome ?outcome }
+  OPTIONAL { ?authorization comon:hasEffectiveConsentRange ?effectiveRange }
+  OPTIONAL { ?authorization comon:basedOnConsentRecord ?record }
+  OPTIONAL { ?authorization comon:basedOnContract ?contract }
+  OPTIONAL { ?authorization comon:basedOnZone ?zone }
+  OPTIONAL { ?authorization comon:validFrom ?from }
 }
 ORDER BY ?evaluation
 ```
@@ -1906,7 +1906,7 @@ Evaluate violation: incomplete effective authorization using the declared query 
 # Requirements: RF-35, RF-36
 # Policies: P-CONS-04
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1919,14 +1919,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?authorization ?missing WHERE {
-  ?authorization a :AuthorizationDecision .
+  ?authorization a comon:AuthorizationDecision .
   VALUES (?prop ?missing) {
-    (:hasAuthorizationOutcome "hasAuthorizationOutcome")
-    (:hasEffectiveConsentRange "hasEffectiveConsentRange")
-    (:basedOnConsentRecord "basedOnConsentRecord")
-    (:basedOnContract "basedOnContract")
-    (:basedOnZone "basedOnZone")
-    (:validFrom "validFrom")
+    (comon:hasAuthorizationOutcome "hasAuthorizationOutcome")
+    (comon:hasEffectiveConsentRange "hasEffectiveConsentRange")
+    (comon:basedOnConsentRecord "basedOnConsentRecord")
+    (comon:basedOnContract "basedOnContract")
+    (comon:basedOnZone "basedOnZone")
+    (comon:validFrom "validFrom")
   }
   FILTER NOT EXISTS { ?authorization ?prop ?v }
 }
@@ -1947,7 +1947,7 @@ Evaluate violation: authorization exceeds consent or contract using the declared
 # Requirements: RF-35, RF-36
 # Policies: P-CONS-04, P-GOV-03
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1960,10 +1960,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?authorization ?effective ?consentRange ?contractRange WHERE {
-  VALUES (?effective ?eLevel) { (:RangeDenied 0) (:RangeLocalOnly 1) (:RangeCommunityAgg 2) (:RangeGlobalAgg 3) }
-  VALUES (?consentRange ?cLevel) { (:RangeDenied 0) (:RangeLocalOnly 1) (:RangeCommunityAgg 2) (:RangeGlobalAgg 3) }
-  VALUES (?contractRange ?kLevel) { (:RangeDenied 0) (:RangeLocalOnly 1) (:RangeCommunityAgg 2) (:RangeGlobalAgg 3) }
-  ?authorization a :AuthorizationDecision ; :hasEffectiveConsentRange ?effective ; :basedOnConsentRecord/:hasConsentRange ?consentRange ; :basedOnContract/:hasConsentRange ?contractRange .
+  VALUES (?effective ?eLevel) { (comon:RangeDenied 0) (comon:RangeLocalOnly 1) (comon:RangeCommunityAgg 2) (comon:RangeGlobalAgg 3) }
+  VALUES (?consentRange ?cLevel) { (comon:RangeDenied 0) (comon:RangeLocalOnly 1) (comon:RangeCommunityAgg 2) (comon:RangeGlobalAgg 3) }
+  VALUES (?contractRange ?kLevel) { (comon:RangeDenied 0) (comon:RangeLocalOnly 1) (comon:RangeCommunityAgg 2) (comon:RangeGlobalAgg 3) }
+  ?authorization a comon:AuthorizationDecision ; comon:hasEffectiveConsentRange ?effective ; comon:basedOnConsentRecord/comon:hasConsentRange ?consentRange ; comon:basedOnContract/comon:hasConsentRange ?contractRange .
   FILTER(?eLevel > ?cLevel || ?eLevel > ?kLevel)
 }
 ```
@@ -1982,7 +1982,7 @@ Evaluate violation: evaluation without granted authorization using the declared 
 # Requirements: RF-36, RF-66, RNF-28
 # Policies: P-CONS-04, P-AUD-06
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -1995,8 +1995,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation WHERE {
-  ?evaluation a :EvaluationState .
-  FILTER NOT EXISTS { ?evaluation :hasAuthorizationDecision/:hasAuthorizationOutcome :AuthorizationGranted }
+  ?evaluation a comon:EvaluationState .
+  FILTER NOT EXISTS { ?evaluation comon:hasAuthorizationDecision/comon:hasAuthorizationOutcome comon:AuthorizationGranted }
 }
 ORDER BY ?evaluation
 ```
@@ -2015,7 +2015,7 @@ Evaluate required minimum consent range inventory using the declared query contr
 # Requirements: RF-37
 # Policies: P-CONS-05
 # Current v4.0.0 result: 11 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2028,7 +2028,7 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?resource ?type ?requiredRange WHERE {
-  ?resource :requiresConsentRange ?requiredRange .
+  ?resource comon:requiresConsentRange ?requiredRange .
   OPTIONAL { ?resource a ?type . FILTER(?type != owl:NamedIndividual) }
 }
 ORDER BY ?resource ?type
@@ -2048,7 +2048,7 @@ Evaluate violation: raw physiological observations outside local scope using the
 # Requirements: RF-10, RF-60, RNF-17
 # Policies: P-DATA-01, P-ZONE-01
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2061,16 +2061,16 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?raw ?destination ?via WHERE {
-  VALUES ?rawType { :PhysiologicalObservation :SleepObservation }
+  VALUES ?rawType { comon:PhysiologicalObservation comon:SleepObservation }
   ?raw a ?rawType .
   {
-    ?raw :sentToNode ?destination . BIND("sentToNode" AS ?via)
+    ?raw comon:sentToNode ?destination . BIND("sentToNode" AS ?via)
   }
   UNION
   {
-    ?transfer a :TransferEvent ; :carriesData ?raw ; :transferDestination ?destination . BIND("TransferEvent" AS ?via)
+    ?transfer a comon:TransferEvent ; comon:carriesData ?raw ; comon:transferDestination ?destination . BIND("TransferEvent" AS ?via)
   }
-  VALUES ?destType { :EdgeNode :FogNode :CloudNode }
+  VALUES ?destType { comon:EdgeNode comon:FogNode comon:CloudNode }
   ?destination a ?destType .
 }
 ORDER BY ?raw
@@ -2090,7 +2090,7 @@ Evaluate external data transfer report using the declared query contract.
 # Requirements: RF-09, RF-27, RF-61
 # Policies: P-DATA-02, P-DATA-03, P-DATA-10
 # Current v4.0.0 result: 3 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2103,13 +2103,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?transfer ?data ?category ?sensitivity ?criticality ?source ?destination ?identifier ?security ?from WHERE {
-  ?transfer a :TransferEvent ; :carriesData ?data ; :transferSource ?source ; :transferDestination ?destination .
-  OPTIONAL { ?data :hasDataCategory ?category }
-  OPTIONAL { ?data :hasDataSensitivity ?sensitivity }
-  OPTIONAL { ?data :hasDataCriticality ?criticality }
-  OPTIONAL { ?transfer :usesIdentifier ?identifier }
-  OPTIONAL { ?transfer :appliedSecurityMechanism ?security }
-  OPTIONAL { ?transfer :validFrom ?from }
+  ?transfer a comon:TransferEvent ; comon:carriesData ?data ; comon:transferSource ?source ; comon:transferDestination ?destination .
+  OPTIONAL { ?data comon:hasDataCategory ?category }
+  OPTIONAL { ?data comon:hasDataSensitivity ?sensitivity }
+  OPTIONAL { ?data comon:hasDataCriticality ?criticality }
+  OPTIONAL { ?transfer comon:usesIdentifier ?identifier }
+  OPTIONAL { ?transfer comon:appliedSecurityMechanism ?security }
+  OPTIONAL { ?transfer comon:validFrom ?from }
 }
 ORDER BY ?from ?transfer
 ```
@@ -2128,7 +2128,7 @@ Evaluate data context report using the declared query contract.
 # Requirements: RF-09, RF-30
 # Policies: P-DATA-10
 # Current v4.0.0 result: 2 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2141,15 +2141,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?data ?context ?deviceState ?nodeState ?processingLevel ?purpose ?zone ?from ?note WHERE {
-  ?data :hasDataContext ?context .
-  ?context a :DataContext .
-  OPTIONAL { ?context :contextDeviceState ?deviceState }
-  OPTIONAL { ?context :contextNodeState ?nodeState }
-  OPTIONAL { ?context :contextProcessingLevel ?processingLevel }
-  OPTIONAL { ?context :contextPurpose ?purpose }
-  OPTIONAL { ?context :contextZone ?zone }
-  OPTIONAL { ?context :validFrom ?from }
-  OPTIONAL { ?context :migrationNote ?note }
+  ?data comon:hasDataContext ?context .
+  ?context a comon:DataContext .
+  OPTIONAL { ?context comon:contextDeviceState ?deviceState }
+  OPTIONAL { ?context comon:contextNodeState ?nodeState }
+  OPTIONAL { ?context comon:contextProcessingLevel ?processingLevel }
+  OPTIONAL { ?context comon:contextPurpose ?purpose }
+  OPTIONAL { ?context comon:contextZone ?zone }
+  OPTIONAL { ?context comon:validFrom ?from }
+  OPTIONAL { ?context comon:migrationNote ?note }
 }
 ORDER BY ?data
 ```
@@ -2168,7 +2168,7 @@ Evaluate violation: incomplete data context using the declared query contract.
 # Requirements: RF-09
 # Policies: P-DATA-10
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2181,29 +2181,29 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?data ?context ?missing WHERE {
-  VALUES ?dataType { :PhysiologicalParametrizedData :SleepParametrizedData }
+  VALUES ?dataType { comon:PhysiologicalParametrizedData comon:SleepParametrizedData }
   ?data a ?dataType .
   {
-    FILTER NOT EXISTS { ?data :hasDataContext ?anyContext }
+    FILTER NOT EXISTS { ?data comon:hasDataContext ?anyContext }
     VALUES (?prop ?missing) {
-      (:contextDeviceState "contextDeviceState")
-      (:contextNodeState "contextNodeState")
-      (:contextProcessingLevel "contextProcessingLevel")
-      (:contextPurpose "contextPurpose")
-      (:contextZone "contextZone")
-      (:validFrom "validFrom")
+      (comon:contextDeviceState "contextDeviceState")
+      (comon:contextNodeState "contextNodeState")
+      (comon:contextProcessingLevel "contextProcessingLevel")
+      (comon:contextPurpose "contextPurpose")
+      (comon:contextZone "contextZone")
+      (comon:validFrom "validFrom")
     }
   }
   UNION
   {
-    ?data :hasDataContext ?context .
+    ?data comon:hasDataContext ?context .
     VALUES (?prop ?missing) {
-      (:contextDeviceState "contextDeviceState")
-      (:contextNodeState "contextNodeState")
-      (:contextProcessingLevel "contextProcessingLevel")
-      (:contextPurpose "contextPurpose")
-      (:contextZone "contextZone")
-      (:validFrom "validFrom")
+      (comon:contextDeviceState "contextDeviceState")
+      (comon:contextNodeState "contextNodeState")
+      (comon:contextProcessingLevel "contextProcessingLevel")
+      (comon:contextPurpose "contextPurpose")
+      (comon:contextZone "contextZone")
+      (comon:validFrom "validFrom")
     }
     FILTER NOT EXISTS { ?context ?prop ?v }
   }
@@ -2225,7 +2225,7 @@ Evaluate identifier inventory using the declared query contract.
 # Requirements: RF-61, RNF-19
 # Policies: P-DATA-02
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2239,12 +2239,12 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?identifier ?identifierType ?scope ?value WHERE {
   VALUES ?identifierType {
-    :PseudonymousIdentifier :AnonymousIdentifier :DirectIdentifier
+    comon:PseudonymousIdentifier comon:AnonymousIdentifier comon:DirectIdentifier
   }
-  ?user a :User ; :hasIdentifier ?identifier .
+  ?user a comon:User ; comon:hasIdentifier ?identifier .
   ?identifier a ?identifierType .
-  OPTIONAL { ?identifier :identifierScope ?scope }
-  OPTIONAL { ?identifier :identifierValue ?value }
+  OPTIONAL { ?identifier comon:identifierScope ?scope }
+  OPTIONAL { ?identifier comon:identifierValue ?value }
 }
 ORDER BY ?user ?identifier
 ```
@@ -2263,7 +2263,7 @@ Evaluate violation: external transfer without a safe identifier using the declar
 # Requirements: RF-61, RNF-17
 # Policies: P-DATA-02
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2276,11 +2276,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?transfer ?destination ?identifier WHERE {
-  ?transfer a :TransferEvent ; :transferDestination ?destination .
+  ?transfer a comon:TransferEvent ; comon:transferDestination ?destination .
   ?destination a ?destType .
-  FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
-  OPTIONAL { ?transfer :usesIdentifier ?identifier }
-  FILTER(!BOUND(?identifier) || NOT EXISTS { ?identifier a ?safeType . FILTER(?safeType IN (:PseudonymousIdentifier,:AnonymousIdentifier)) })
+  FILTER(?destType IN (comon:EdgeNode,comon:FogNode,comon:CloudNode))
+  OPTIONAL { ?transfer comon:usesIdentifier ?identifier }
+  FILTER(!BOUND(?identifier) || NOT EXISTS { ?identifier a ?safeType . FILTER(?safeType IN (comon:PseudonymousIdentifier,comon:AnonymousIdentifier)) })
 }
 ORDER BY ?transfer
 ```
@@ -2299,7 +2299,7 @@ Evaluate violation: direct identifiers in external flows using the declared quer
 # Requirements: RF-61, RNF-17
 # Policies: P-DATA-02
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2312,10 +2312,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?transfer ?identifier ?destination WHERE {
-  ?transfer a :TransferEvent ; :usesIdentifier ?identifier ; :transferDestination ?destination .
-  ?identifier a :DirectIdentifier .
+  ?transfer a comon:TransferEvent ; comon:usesIdentifier ?identifier ; comon:transferDestination ?destination .
+  ?identifier a comon:DirectIdentifier .
   ?destination a ?destType .
-  FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
+  FILTER(?destType IN (comon:EdgeNode,comon:FogNode,comon:CloudNode))
 }
 ```
 
@@ -2333,7 +2333,7 @@ Evaluate encryption baseline report using the declared query contract.
 # Requirements: RNF-15
 # Policies: P-DATA-03
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2346,10 +2346,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?mechanism ?version ?inTransit ?atRest WHERE {
-  ?mechanism a :EncryptionMechanism .
-  OPTIONAL { ?mechanism :securityBaselineVersion ?version }
-  OPTIONAL { ?mechanism :protectsInTransit ?inTransit }
-  OPTIONAL { ?mechanism :protectsAtRest ?atRest }
+  ?mechanism a comon:EncryptionMechanism .
+  OPTIONAL { ?mechanism comon:securityBaselineVersion ?version }
+  OPTIONAL { ?mechanism comon:protectsInTransit ?inTransit }
+  OPTIONAL { ?mechanism comon:protectsAtRest ?atRest }
 }
 ORDER BY ?mechanism
 ```
@@ -2368,7 +2368,7 @@ Evaluate violation: sensitive transfer without encryption in transit using the d
 # Requirements: RNF-15
 # Policies: P-DATA-03
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2381,9 +2381,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?transfer ?data WHERE {
-  ?transfer a :TransferEvent ; :carriesData ?data .
-  ?data :hasDataSensitivity :SensitiveData .
-  FILTER NOT EXISTS { ?transfer :appliedSecurityMechanism ?m . ?m :protectsInTransit true }
+  ?transfer a comon:TransferEvent ; comon:carriesData ?data .
+  ?data comon:hasDataSensitivity comon:SensitiveData .
+  FILTER NOT EXISTS { ?transfer comon:appliedSecurityMechanism ?m . ?m comon:protectsInTransit true }
 }
 ```
 
@@ -2401,7 +2401,7 @@ Evaluate buffer and retention report using the declared query contract.
 # Requirements: RF-08, RNF-12
 # Policies: P-DATA-05, P-DATA-07
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2414,12 +2414,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?record ?type ?data ?from ?to ?security WHERE {
-  VALUES ?type { :BufferRecord :RetentionEvent }
+  VALUES ?type { comon:BufferRecord comon:RetentionEvent }
   ?record a ?type .
-  OPTIONAL { ?record :carriesData ?data }
-  OPTIONAL { ?record :validFrom ?from }
-  OPTIONAL { ?record :validTo ?to }
-  OPTIONAL { ?record :appliedSecurityMechanism ?security }
+  OPTIONAL { ?record comon:carriesData ?data }
+  OPTIONAL { ?record comon:validFrom ?from }
+  OPTIONAL { ?record comon:validTo ?to }
+  OPTIONAL { ?record comon:appliedSecurityMechanism ?security }
 }
 ORDER BY ?record
 ```
@@ -2438,7 +2438,7 @@ Evaluate violation: sensitive buffer without protection at rest using the declar
 # Requirements: RNF-15, RNF-12
 # Policies: P-DATA-03, P-DATA-05
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2451,9 +2451,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?buffer ?data WHERE {
-  ?buffer a :BufferRecord ; :carriesData ?data .
-  ?data :hasDataSensitivity :SensitiveData .
-  FILTER NOT EXISTS { ?buffer :appliedSecurityMechanism ?m . ?m :protectsAtRest true }
+  ?buffer a comon:BufferRecord ; comon:carriesData ?data .
+  ?data comon:hasDataSensitivity comon:SensitiveData .
+  FILTER NOT EXISTS { ?buffer comon:appliedSecurityMechanism ?m . ?m comon:protectsAtRest true }
 }
 ```
 
@@ -2471,7 +2471,7 @@ Evaluate replication and synchronization report using the declared query contrac
 # Requirements: RF-19, RNF-13
 # Policies: P-DATA-08
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2484,14 +2484,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?event ?type ?source ?target ?replica ?version ?idempotencyKey ?from WHERE {
-  VALUES ?type { :ReplicationEvent :SynchronizationEvent }
+  VALUES ?type { comon:ReplicationEvent comon:SynchronizationEvent }
   ?event a ?type .
-  OPTIONAL { ?event :replicationSource ?source }
-  OPTIONAL { ?event :replicationTarget ?target }
-  OPTIONAL { ?event :replicaOf ?replica }
-  OPTIONAL { ?event :replicationVersion ?version }
-  OPTIONAL { ?event :idempotencyKey ?idempotencyKey }
-  OPTIONAL { ?event :validFrom ?from }
+  OPTIONAL { ?event comon:replicationSource ?source }
+  OPTIONAL { ?event comon:replicationTarget ?target }
+  OPTIONAL { ?event comon:replicaOf ?replica }
+  OPTIONAL { ?event comon:replicationVersion ?version }
+  OPTIONAL { ?event comon:idempotencyKey ?idempotencyKey }
+  OPTIONAL { ?event comon:validFrom ?from }
 }
 ORDER BY ?event
 ```
@@ -2508,9 +2508,9 @@ Evaluate violation: replication without versioning or idempotency using the decl
 # Type: violation
 # Purpose: Evaluate violation: replication without versioning or idempotency using the declared query contract.
 # Requirements: RF-19, RNF-13
-# Policies: P-DATA-08
+# Policies: P-DATA-08, P-ADAPT-08
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2523,9 +2523,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?event ?missing WHERE {
-  VALUES ?type { :ReplicationEvent :SynchronizationEvent }
+  VALUES ?type { comon:ReplicationEvent comon:SynchronizationEvent }
   ?event a ?type .
-  VALUES (?prop ?missing) { (:replicationVersion "replicationVersion") (:idempotencyKey "idempotencyKey") }
+  VALUES (?prop ?missing) { (comon:replicationVersion "replicationVersion") (comon:idempotencyKey "idempotencyKey") }
   FILTER NOT EXISTS { ?event ?prop ?v }
 }
 ORDER BY ?event ?missing
@@ -2545,7 +2545,7 @@ Evaluate data criticality and priority report using the declared query contract.
 # Requirements: RF-28
 # Policies: P-DATA-09
 # Current v4.0.0 result: 6 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2558,9 +2558,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?data ?category ?criticality ?redundant WHERE {
-  ?data :hasDataCategory ?category .
-  OPTIONAL { ?data :hasDataCriticality ?criticality }
-  OPTIONAL { ?data :isRedundant ?redundant }
+  ?data comon:hasDataCategory ?category .
+  OPTIONAL { ?data comon:hasDataCriticality ?criticality }
+  OPTIONAL { ?data comon:isRedundant ?redundant }
 }
 ORDER BY ?criticality ?data
 ```
@@ -2579,7 +2579,7 @@ Evaluate restricted area report using the declared query contract.
 # Requirements: RF-42, RF-43
 # Policies: P-ZONE-01
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2592,9 +2592,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?zone ?user ?evaluation ?tier ?action WHERE {
-  ?zone a :RestrictedZone .
-  OPTIONAL { ?user a :User ; :locatedInZone ?zone }
-  OPTIONAL { ?evaluation a :EvaluationState ; :evaluationZone ?zone ; :selectedModelTier ?tier . OPTIONAL { ?evaluation :resultedInAction ?action } }
+  ?zone a comon:RestrictedZone .
+  OPTIONAL { ?user a comon:User ; comon:locatedInZone ?zone }
+  OPTIONAL { ?evaluation a comon:EvaluationState ; comon:evaluationZone ?zone ; comon:selectedModelTier ?tier . OPTIONAL { ?evaluation comon:resultedInAction ?action } }
 }
 ORDER BY ?zone ?user ?evaluation
 ```
@@ -2611,9 +2611,9 @@ Evaluate violation: external processing or transfer in restricted areas using th
 # Type: violation
 # Purpose: Evaluate violation: external processing or transfer in restricted areas using the declared query contract.
 # Requirements: RF-42, RF-43, RF-60
-# Policies: P-ZONE-01, P-GOV-03
+# Policies: P-ZONE-01, P-GOV-03, P-ZONE-04
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2627,17 +2627,17 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?subject ?violationType ?destinationOrTier WHERE {
   {
-    ?evaluation a :EvaluationState ; :evaluationZone ?zone ; :selectedModelTier ?tier .
-    ?zone a :RestrictedZone .
-    FILTER(?tier IN (:EdgeModelTier,:FogModelTier,:CloudModelTier))
+    ?evaluation a comon:EvaluationState ; comon:evaluationZone ?zone ; comon:selectedModelTier ?tier .
+    ?zone a comon:RestrictedZone .
+    FILTER(?tier IN (comon:EdgeModelTier,comon:FogModelTier,comon:CloudModelTier))
     BIND(?evaluation AS ?subject) BIND("external-tier" AS ?violationType) BIND(?tier AS ?destinationOrTier)
   }
   UNION
   {
-    ?user a :User ; :locatedInZone ?zone . ?zone a :RestrictedZone .
-    ?user (:hasWearable|:hasMobileDevice) ?device .
-    ?transfer a :TransferEvent ; :transferSource ?device ; :transferDestination ?dest .
-    ?dest a ?destType . FILTER(?destType IN (:EdgeNode,:FogNode,:CloudNode))
+    ?user a comon:User ; comon:locatedInZone ?zone . ?zone a comon:RestrictedZone .
+    ?user (comon:hasWearable|comon:hasMobileDevice) ?device .
+    ?transfer a comon:TransferEvent ; comon:transferSource ?device ; comon:transferDestination ?dest .
+    ?dest a ?destType . FILTER(?destType IN (comon:EdgeNode,comon:FogNode,comon:CloudNode))
     BIND(?transfer AS ?subject) BIND("external-transfer" AS ?violationType) BIND(?dest AS ?destinationOrTier)
   }
 }
@@ -2658,7 +2658,7 @@ Evaluate rural area and transmission window report using the declared query cont
 # Requirements: RF-08, RF-27
 # Policies: P-ZONE-02, P-DATA-07
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2671,10 +2671,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?zone ?device ?state ?connection ?retention ?sync WHERE {
-  ?user a :User ; :locatedInZone ?zone . ?zone a :RuralZone .
-  OPTIONAL { ?user (:hasWearable|:hasMobileDevice) ?device . ?device :hasDeviceState ?state . OPTIONAL { ?state :hasConnectionStatus ?connection } }
-  OPTIONAL { ?retention a :RetentionEvent ; :partOfScenario ?scenario . FILTER(?scenario = :S7) }
-  OPTIONAL { ?sync a :SynchronizationEvent ; :partOfScenario ?scenario2 . FILTER(?scenario2 = :S7) }
+  ?user a comon:User ; comon:locatedInZone ?zone . ?zone a comon:RuralZone .
+  OPTIONAL { ?user (comon:hasWearable|comon:hasMobileDevice) ?device . ?device comon:hasDeviceState ?state . OPTIONAL { ?state comon:hasConnectionStatus ?connection } }
+  OPTIONAL { ?retention a comon:RetentionEvent ; comon:partOfScenario ?scenario . FILTER(?scenario = comon:S7) }
+  OPTIONAL { ?sync a comon:SynchronizationEvent ; comon:partOfScenario ?scenario2 . FILTER(?scenario2 = comon:S7) }
 }
 ORDER BY ?user ?device
 ```
@@ -2693,7 +2693,7 @@ Evaluate conditional urban processing report using the declared query contract.
 # Requirements: RF-42
 # Policies: P-ZONE-03, P-CONS-04
 # Current v4.0.0 result: 5 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2706,10 +2706,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?zone ?authorization ?effectiveRange ?tier ?node WHERE {
-  ?evaluation a :EvaluationState ; :evaluationZone ?zone ; :hasAuthorizationDecision ?authorization ; :selectedModelTier ?tier .
-  ?zone a :UrbanZone .
-  ?authorization :hasEffectiveConsentRange ?effectiveRange .
-  OPTIONAL { ?evaluation :evaluatesNode ?node }
+  ?evaluation a comon:EvaluationState ; comon:evaluationZone ?zone ; comon:hasAuthorizationDecision ?authorization ; comon:selectedModelTier ?tier .
+  ?zone a comon:UrbanZone .
+  ?authorization comon:hasEffectiveConsentRange ?effectiveRange .
+  OPTIONAL { ?evaluation comon:evaluatesNode ?node }
 }
 ORDER BY ?evaluation
 ```
@@ -2728,7 +2728,7 @@ Evaluate node state and reproducible trust report using the declared query contr
 # Requirements: RF-45, RF-49, RNF-32
 # Policies: P-NODE-03, P-NODE-04
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2741,14 +2741,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?node ?state ?trustAssessment ?score ?ruleVersion ?windowStart ?windowEnd ?configStatus WHERE {
-  ?node :hasNodeState ?state . ?state a :NodeState .
+  ?node comon:hasNodeState ?state . ?state a comon:NodeState .
   OPTIONAL {
-    ?state :hasTrustAssessment ?trustAssessment .
-    OPTIONAL { ?trustAssessment :hasTrustScore ?score }
-    OPTIONAL { ?trustAssessment :trustRuleVersion ?ruleVersion }
-    OPTIONAL { ?trustAssessment :trustWindowStart ?windowStart }
-    OPTIONAL { ?trustAssessment :trustWindowEnd ?windowEnd }
-    OPTIONAL { ?trustAssessment :configurationStatus ?configStatus }
+    ?state comon:hasTrustAssessment ?trustAssessment .
+    OPTIONAL { ?trustAssessment comon:hasTrustScore ?score }
+    OPTIONAL { ?trustAssessment comon:trustRuleVersion ?ruleVersion }
+    OPTIONAL { ?trustAssessment comon:trustWindowStart ?windowStart }
+    OPTIONAL { ?trustAssessment comon:trustWindowEnd ?windowEnd }
+    OPTIONAL { ?trustAssessment comon:configurationStatus ?configStatus }
   }
 }
 ORDER BY ?node ?state
@@ -2768,7 +2768,7 @@ Evaluate violation: node state without eligibility fields using the declared que
 # Requirements: RF-05, RF-47
 # Policies: P-NODE-01, P-NODE-02
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2781,13 +2781,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?state ?missing WHERE {
-  ?state a :NodeState .
+  ?state a comon:NodeState .
   VALUES (?prop ?missing) {
-    (:hasAvailability "hasAvailability")
-    (:hasWorkload "hasWorkload")
-    (:hasCommunication "hasCommunication")
-    (:hasResidualCapacity "hasResidualCapacity")
-    (:hasOperationalStatus "hasOperationalStatus")
+    (comon:hasAvailability "hasAvailability")
+    (comon:hasWorkload "hasWorkload")
+    (comon:hasCommunication "hasCommunication")
+    (comon:hasResidualCapacity "hasResidualCapacity")
+    (comon:hasOperationalStatus "hasOperationalStatus")
   }
   FILTER NOT EXISTS { ?state ?prop ?v }
 }
@@ -2808,7 +2808,7 @@ Evaluate eligible candidates ranked by trust using the declared query contract.
 # Requirements: RF-47, RF-48
 # Policies: P-NODE-02, P-NODE-05, P-MODEL-03
 # Current v4.0.0 result: 4 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2821,11 +2821,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?node ?state ?trust WHERE {
-  VALUES ?workload { :LowWorkload :MediumWorkload }
-  VALUES ?residual { :MediumResidual :HighResidual }
-  ?node :hasNodeState ?state .
-  ?state :hasAvailability :Available ; :hasCommunication :StableComm ; :hasWorkload ?workload ; :hasResidualCapacity ?residual ; :hasOperationalStatus :Operational .
-  ?state :hasTrustAssessment/:hasTrustScore ?trust .
+  VALUES ?workload { comon:LowWorkload comon:MediumWorkload }
+  VALUES ?residual { comon:MediumResidual comon:HighResidual }
+  ?node comon:hasNodeState ?state .
+  ?state comon:hasAvailability comon:Available ; comon:hasCommunication comon:StableComm ; comon:hasWorkload ?workload ; comon:hasResidualCapacity ?residual ; comon:hasOperationalStatus comon:Operational .
+  ?state comon:hasTrustAssessment/comon:hasTrustScore ?trust .
 }
 ORDER BY DESC(?trust) ?node
 ```
@@ -2844,7 +2844,7 @@ Evaluate review: trust assessment is not fully reproducible using the declared q
 # Requirements: RF-49, RNF-32
 # Policies: P-NODE-03
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2857,13 +2857,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?assessment ?state ?score ?ruleVersion ?windowStart ?windowEnd ?evidence ?configStatus WHERE {
-  ?assessment a :TrustAssessment ; :trustAssessmentForState ?state .
-  OPTIONAL { ?assessment :hasTrustScore ?score }
-  OPTIONAL { ?assessment :trustRuleVersion ?ruleVersion }
-  OPTIONAL { ?assessment :trustWindowStart ?windowStart }
-  OPTIONAL { ?assessment :trustWindowEnd ?windowEnd }
-  OPTIONAL { ?assessment :hasTrustEvidence ?evidence }
-  OPTIONAL { ?assessment :configurationStatus ?configStatus }
+  ?assessment a comon:TrustAssessment ; comon:trustAssessmentForState ?state .
+  OPTIONAL { ?assessment comon:hasTrustScore ?score }
+  OPTIONAL { ?assessment comon:trustRuleVersion ?ruleVersion }
+  OPTIONAL { ?assessment comon:trustWindowStart ?windowStart }
+  OPTIONAL { ?assessment comon:trustWindowEnd ?windowEnd }
+  OPTIONAL { ?assessment comon:hasTrustEvidence ?evidence }
+  OPTIONAL { ?assessment comon:configurationStatus ?configStatus }
   FILTER(!BOUND(?score) || !BOUND(?ruleVersion) || !BOUND(?windowStart) || !BOUND(?windowEnd) || !BOUND(?evidence))
 }
 ORDER BY ?assessment
@@ -2883,7 +2883,7 @@ Evaluate external trust used in evaluation using the declared query contract.
 # Requirements: RF-46, RF-55
 # Policies: P-MODEL-03, P-NODE-05
 # Current v4.0.0 result: 10 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2896,12 +2896,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?latencyWeight ?privacyWeight ?qualityWeight ?externalTrustWeight ?nodeTrust WHERE {
-  ?evaluation a :EvaluationState .
-  OPTIONAL { ?evaluation :hasLatencyWeight ?latencyWeight }
-  OPTIONAL { ?evaluation :hasPrivacyWeight ?privacyWeight }
-  OPTIONAL { ?evaluation :hasModelQualityWeight ?qualityWeight }
-  OPTIONAL { ?evaluation :hasTrustWeight ?externalTrustWeight }
-  OPTIONAL { ?evaluation :evaluatesNode/:hasNodeState/:hasTrustAssessment/:hasTrustScore ?nodeTrust }
+  ?evaluation a comon:EvaluationState .
+  OPTIONAL { ?evaluation comon:hasLatencyWeight ?latencyWeight }
+  OPTIONAL { ?evaluation comon:hasPrivacyWeight ?privacyWeight }
+  OPTIONAL { ?evaluation comon:hasModelQualityWeight ?qualityWeight }
+  OPTIONAL { ?evaluation comon:hasTrustWeight ?externalTrustWeight }
+  OPTIONAL { ?evaluation comon:evaluatesNode/comon:hasNodeState/comon:hasTrustAssessment/comon:hasTrustScore ?nodeTrust }
 }
 ORDER BY ?evaluation
 ```
@@ -2920,7 +2920,7 @@ Evaluate violation: explicitly ineligible adaptive destination using the declare
 # Requirements: RF-18, RF-48
 # Policies: P-ADAPT-04, P-ADAPT-07
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2933,17 +2933,17 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?action ?scenario ?origin ?target ?reason WHERE {
-  VALUES ?actionType { :MigrationEvent :DelegationEvent :OffloadingEvent }
-  ?action a ?actionType ; :actionOriginNode ?origin ; :actionTargetNode ?target ; :partOfScenario ?scenario .
-  ?target :hasNodeState ?ts . ?ts :partOfScenario ?scenario .
+  VALUES ?actionType { comon:MigrationEvent comon:DelegationEvent comon:OffloadingEvent }
+  ?action a ?actionType ; comon:actionOriginNode ?origin ; comon:actionTargetNode ?target ; comon:partOfScenario ?scenario .
+  ?target comon:hasNodeState ?ts . ?ts comon:partOfScenario ?scenario .
   {
-    { ?ts :hasAvailability :NotAvailable } UNION { ?ts :hasCommunication :NoConnectionComm } UNION { ?ts :hasWorkload :SaturatedWorkload } UNION { ?ts :hasOperationalStatus :Inoperative }
+    { ?ts comon:hasAvailability comon:NotAvailable } UNION { ?ts comon:hasCommunication comon:NoConnectionComm } UNION { ?ts comon:hasWorkload comon:SaturatedWorkload } UNION { ?ts comon:hasOperationalStatus comon:Inoperative }
     BIND("target-hard-ineligible" AS ?reason)
   }
   UNION
   {
-    ?origin :hasNodeState ?os . ?os :partOfScenario ?scenario ; :hasTrustAssessment/:hasTrustScore ?originTrust .
-    ?ts :hasTrustAssessment/:hasTrustScore ?targetTrust .
+    ?origin comon:hasNodeState ?os . ?os comon:partOfScenario ?scenario ; comon:hasTrustAssessment/comon:hasTrustScore ?originTrust .
+    ?ts comon:hasTrustAssessment/comon:hasTrustScore ?targetTrust .
     FILTER(?targetTrust < ?originTrust)
     BIND("target-lower-trust" AS ?reason)
   }
@@ -2962,10 +2962,10 @@ Evaluate complete model decision report using the declared query contract.
 ```sparql
 # Type: report
 # Purpose: Evaluate complete model decision report using the declared query contract.
-# Requirements: RF-15, RF-51, RF-66
+# Requirements: RF-15, RF-51, RF-66, RF-52
 # Policies: P-MODEL-01, P-MODEL-05, P-AUD-06
 # Current v4.0.0 result: 11 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -2978,16 +2978,16 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?user ?method ?latency ?privacy ?quality ?trustExternal ?tier ?justification ?action WHERE {
-  ?evaluation a :EvaluationState .
-  OPTIONAL { ?evaluation :evaluationUser ?user }
-  OPTIONAL { ?evaluation :hasDecisionMethod ?method }
-  OPTIONAL { ?evaluation :hasLatencyWeight ?latency }
-  OPTIONAL { ?evaluation :hasPrivacyWeight ?privacy }
-  OPTIONAL { ?evaluation :hasModelQualityWeight ?quality }
-  OPTIONAL { ?evaluation :hasTrustWeight ?trustExternal }
-  OPTIONAL { ?evaluation :selectedModelTier ?tier }
-  OPTIONAL { ?evaluation :hasSelectionJustification ?justification }
-  OPTIONAL { ?evaluation :resultedInAction ?action }
+  ?evaluation a comon:EvaluationState .
+  OPTIONAL { ?evaluation comon:evaluationUser ?user }
+  OPTIONAL { ?evaluation comon:hasDecisionMethod ?method }
+  OPTIONAL { ?evaluation comon:hasLatencyWeight ?latency }
+  OPTIONAL { ?evaluation comon:hasPrivacyWeight ?privacy }
+  OPTIONAL { ?evaluation comon:hasModelQualityWeight ?quality }
+  OPTIONAL { ?evaluation comon:hasTrustWeight ?trustExternal }
+  OPTIONAL { ?evaluation comon:selectedModelTier ?tier }
+  OPTIONAL { ?evaluation comon:hasSelectionJustification ?justification }
+  OPTIONAL { ?evaluation comon:resultedInAction ?action }
 }
 ORDER BY ?evaluation
 ```
@@ -3006,7 +3006,7 @@ Evaluate violation: evaluation without minimum decision fields using the declare
 # Requirements: RF-54, RF-66, RNF-28
 # Policies: P-AUD-06
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3019,21 +3019,21 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?missing WHERE {
-  ?evaluation a :EvaluationState .
+  ?evaluation a comon:EvaluationState .
   VALUES (?prop ?missing) {
-    (:evaluationUser "evaluationUser")
-    (:evaluationPurpose "evaluationPurpose")
-    (:evaluationZone "evaluationZone")
-    (:auditsContract "auditsContract")
-    (:hasAuthorizationDecision "hasAuthorizationDecision")
-    (:hasDecisionMethod "hasDecisionMethod")
-    (:hasLatencyWeight "hasLatencyWeight")
-    (:hasPrivacyWeight "hasPrivacyWeight")
-    (:hasModelQualityWeight "hasModelQualityWeight")
-    (:selectedModelTier "selectedModelTier")
-    (:hasSelectionJustification "hasSelectionJustification")
-    (:validFrom "validFrom")
-    (:resultedInAction "resultedInAction")
+    (comon:evaluationUser "evaluationUser")
+    (comon:evaluationPurpose "evaluationPurpose")
+    (comon:evaluationZone "evaluationZone")
+    (comon:auditsContract "auditsContract")
+    (comon:hasAuthorizationDecision "hasAuthorizationDecision")
+    (comon:hasDecisionMethod "hasDecisionMethod")
+    (comon:hasLatencyWeight "hasLatencyWeight")
+    (comon:hasPrivacyWeight "hasPrivacyWeight")
+    (comon:hasModelQualityWeight "hasModelQualityWeight")
+    (comon:selectedModelTier "selectedModelTier")
+    (comon:hasSelectionJustification "hasSelectionJustification")
+    (comon:validFrom "validFrom")
+    (comon:resultedInAction "resultedInAction")
   }
   FILTER NOT EXISTS { ?evaluation ?prop ?v }
 }
@@ -3054,7 +3054,7 @@ Evaluate violation: unnormalized multicriteria weights using the declared query 
 # Requirements: RF-50, RF-55, RNF-34
 # Policies: P-MODEL-02, P-MODEL-03
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3067,7 +3067,7 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?latency ?privacy ?quality ((?latency + ?privacy + ?quality) AS ?sum) WHERE {
-  ?evaluation a :EvaluationState ; :hasLatencyWeight ?latency ; :hasPrivacyWeight ?privacy ; :hasModelQualityWeight ?quality .
+  ?evaluation a comon:EvaluationState ; comon:hasLatencyWeight ?latency ; comon:hasPrivacyWeight ?privacy ; comon:hasModelQualityWeight ?quality .
   FILTER(ABS((?latency + ?privacy + ?quality) - 1.0) > 0.000001)
 }
 ORDER BY ?evaluation
@@ -3087,7 +3087,7 @@ Evaluate decision method and consistency report using the declared query contrac
 # Requirements: RF-55, RNF-33, RNF-34
 # Policies: P-MODEL-04
 # Current v4.0.0 result: 8 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3100,12 +3100,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?method ?ratio ?threshold ?pairwiseCount WHERE {
-  ?evaluation a :EvaluationState ; :hasDecisionMethod ?method .
-  OPTIONAL { ?evaluation :hasConsistencyRatio ?ratio }
-  OPTIONAL { ?evaluation :hasConsistencyThreshold ?threshold }
+  ?evaluation a comon:EvaluationState ; comon:hasDecisionMethod ?method .
+  OPTIONAL { ?evaluation comon:hasConsistencyRatio ?ratio }
+  OPTIONAL { ?evaluation comon:hasConsistencyThreshold ?threshold }
   {
     SELECT ?evaluation (COUNT(?pc) AS ?pairwiseCount) WHERE {
-      ?evaluation a :EvaluationState . OPTIONAL { ?evaluation :hasPairwiseComparison ?pc }
+      ?evaluation a comon:EvaluationState . OPTIONAL { ?evaluation comon:hasPairwiseComparison ?pc }
     } GROUP BY ?evaluation
   }
 }
@@ -3126,7 +3126,7 @@ Evaluate violation: AHP evaluation without valid consistency using the declared 
 # Requirements: RF-55, RNF-34
 # Policies: P-MODEL-04
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3139,12 +3139,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?ratio ?threshold ?pairwiseCount WHERE {
-  ?evaluation a :EvaluationState ; :hasDecisionMethod :AHPDecisionMethod .
-  OPTIONAL { ?evaluation :hasConsistencyRatio ?ratio }
-  OPTIONAL { ?evaluation :hasConsistencyThreshold ?threshold }
+  ?evaluation a comon:EvaluationState ; comon:hasDecisionMethod comon:AHPDecisionMethod .
+  OPTIONAL { ?evaluation comon:hasConsistencyRatio ?ratio }
+  OPTIONAL { ?evaluation comon:hasConsistencyThreshold ?threshold }
   {
     SELECT ?evaluation (COUNT(?pc) AS ?pairwiseCount) WHERE {
-      ?evaluation a :EvaluationState . OPTIONAL { ?evaluation :hasPairwiseComparison ?pc }
+      ?evaluation a comon:EvaluationState . OPTIONAL { ?evaluation comon:hasPairwiseComparison ?pc }
     } GROUP BY ?evaluation
   }
   FILTER(!BOUND(?ratio) || !BOUND(?threshold) || ?pairwiseCount = 0 || ?ratio > ?threshold)
@@ -3165,7 +3165,7 @@ Evaluate alternatives by evaluation using the declared query contract.
 # Requirements: RF-51, RNF-29
 # Policies: P-MODEL-05
 # Current v4.0.0 result: 32 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3178,12 +3178,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?alternative ?tier ?eligible ?score ?reason ?selected WHERE {
-  ?evaluation a :EvaluationState ; :hasDecisionAlternative ?alternative .
-  ?alternative :alternativeModelTier ?tier .
-  OPTIONAL { ?alternative :isEligible ?eligible }
-  OPTIONAL { ?alternative :hasAHPScore ?score }
-  OPTIONAL { ?alternative :eligibilityReason ?reason }
-  BIND(EXISTS { ?evaluation :selectedAlternative ?alternative } AS ?selected)
+  ?evaluation a comon:EvaluationState ; comon:hasDecisionAlternative ?alternative .
+  ?alternative comon:alternativeModelTier ?tier .
+  OPTIONAL { ?alternative comon:isEligible ?eligible }
+  OPTIONAL { ?alternative comon:hasAHPScore ?score }
+  OPTIONAL { ?alternative comon:eligibilityReason ?reason }
+  BIND(EXISTS { ?evaluation comon:selectedAlternative ?alternative } AS ?selected)
 }
 ORDER BY ?evaluation ?tier
 ```
@@ -3202,7 +3202,7 @@ Evaluate review: alternatives pending recalculation using the declared query con
 # Requirements: RF-51, RNF-29, RNF-33
 # Policies: P-MODEL-05
 # Current v4.0.0 result: 32 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3215,11 +3215,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?alternative ?tier ?eligible ?score ?reason WHERE {
-  ?evaluation a :EvaluationState ; :hasDecisionAlternative ?alternative .
-  ?alternative :alternativeModelTier ?tier .
-  OPTIONAL { ?alternative :isEligible ?eligible }
-  OPTIONAL { ?alternative :hasAHPScore ?score }
-  OPTIONAL { ?alternative :eligibilityReason ?reason }
+  ?evaluation a comon:EvaluationState ; comon:hasDecisionAlternative ?alternative .
+  ?alternative comon:alternativeModelTier ?tier .
+  OPTIONAL { ?alternative comon:isEligible ?eligible }
+  OPTIONAL { ?alternative comon:hasAHPScore ?score }
+  OPTIONAL { ?alternative comon:eligibilityReason ?reason }
   FILTER(!BOUND(?eligible) || !BOUND(?score))
 }
 ORDER BY ?evaluation ?tier
@@ -3239,7 +3239,7 @@ Evaluate violation: invalid selected alternative using the declared query contra
 # Requirements: RF-51, RF-54
 # Policies: P-MODEL-05
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3252,8 +3252,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?selected ?selectedTier ?alternativeTier ?eligible ?reason WHERE {
-  ?evaluation a :EvaluationState ; :selectedModelTier ?selectedTier .
-  OPTIONAL { ?evaluation :selectedAlternative ?selected . OPTIONAL { ?selected :alternativeModelTier ?alternativeTier } OPTIONAL { ?selected :isEligible ?eligible } }
+  ?evaluation a comon:EvaluationState ; comon:selectedModelTier ?selectedTier .
+  OPTIONAL { ?evaluation comon:selectedAlternative ?selected . OPTIONAL { ?selected comon:alternativeModelTier ?alternativeTier } OPTIONAL { ?selected comon:isEligible ?eligible } }
   BIND(IF(!BOUND(?selected), "missing-selectedAlternative", IF(BOUND(?eligible) && ?eligible = false, "selected-not-eligible", IF(BOUND(?alternativeTier) && ?alternativeTier != ?selectedTier, "tier-mismatch", ""))) AS ?reason)
   FILTER(?reason != "")
 }
@@ -3274,7 +3274,7 @@ Evaluate observed model quality report using the declared query contract.
 # Requirements: RF-14, RF-29, RNF-27
 # Policies: P-MODEL-08, P-OPS-05
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3288,13 +3288,13 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?subject ?observedQuality ?predictionConfidence ?estimatedError ?feedback WHERE {
   VALUES ?type {
-    :EvaluationState :AIModel :StressObservation :SleepObservation
+    comon:EvaluationState comon:AIModel comon:StressObservation comon:SleepObservation
   }
   ?subject a ?type .
-  OPTIONAL { ?subject :observedModelQuality ?observedQuality }
-  OPTIONAL { ?subject :predictionConfidence ?predictionConfidence }
-  OPTIONAL { ?subject :estimatedPredictionError ?estimatedError }
-  OPTIONAL { ?subject :userFeedbackScore ?feedback }
+  OPTIONAL { ?subject comon:observedModelQuality ?observedQuality }
+  OPTIONAL { ?subject comon:predictionConfidence ?predictionConfidence }
+  OPTIONAL { ?subject comon:estimatedPredictionError ?estimatedError }
+  OPTIONAL { ?subject comon:userFeedbackScore ?feedback }
   FILTER(BOUND(?observedQuality) || BOUND(?predictionConfidence) || BOUND(?estimatedError) || BOUND(?feedback))
 }
 ORDER BY ?subject
@@ -3314,7 +3314,7 @@ Evaluate review: insufficient quality evidence using the declared query contract
 # Requirements: RF-14, RF-54
 # Policies: P-MODEL-08
 # Current v4.0.0 result: 8 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3327,10 +3327,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?qualityWeight WHERE {
-  ?evaluation a :EvaluationState ; :hasModelQualityWeight ?qualityWeight .
-  FILTER NOT EXISTS { ?evaluation :observedModelQuality ?q }
-  FILTER NOT EXISTS { ?evaluation :predictionConfidence ?c }
-  FILTER NOT EXISTS { ?evaluation :estimatedPredictionError ?e }
+  ?evaluation a comon:EvaluationState ; comon:hasModelQualityWeight ?qualityWeight .
+  FILTER NOT EXISTS { ?evaluation comon:observedModelQuality ?q }
+  FILTER NOT EXISTS { ?evaluation comon:predictionConfidence ?c }
+  FILTER NOT EXISTS { ?evaluation comon:estimatedPredictionError ?e }
 }
 ORDER BY ?evaluation
 ```
@@ -3346,10 +3346,10 @@ Evaluate violation: cloud selected without sufficient conditions using the decla
 ```sparql
 # Type: violation
 # Purpose: Evaluate violation: cloud selected without sufficient conditions using the declared query contract.
-# Requirements: RF-53
+# Requirements: RF-53, RF-52
 # Policies: P-MODEL-07, P-ZONE-01, P-CONS-04
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3362,10 +3362,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?effectiveRange ?zone ?outcome ?reason WHERE {
-  ?evaluation a :EvaluationState ; :selectedModelTier :CloudModelTier ; :evaluationZone ?zone ; :hasAuthorizationDecision ?authorization .
-  OPTIONAL { ?authorization :hasEffectiveConsentRange ?effectiveRange }
-  OPTIONAL { ?authorization :hasAuthorizationOutcome ?outcome }
-  BIND(IF(!BOUND(?effectiveRange) || ?effectiveRange != :RangeGlobalAgg, "range-not-global", IF(EXISTS { ?zone a :RestrictedZone }, "restricted-zone", IF(!BOUND(?outcome) || ?outcome != :AuthorizationGranted, "authorization-not-granted", ""))) AS ?reason)
+  ?evaluation a comon:EvaluationState ; comon:selectedModelTier comon:CloudModelTier ; comon:evaluationZone ?zone ; comon:hasAuthorizationDecision ?authorization .
+  OPTIONAL { ?authorization comon:hasEffectiveConsentRange ?effectiveRange }
+  OPTIONAL { ?authorization comon:hasAuthorizationOutcome ?outcome }
+  BIND(IF(!BOUND(?effectiveRange) || ?effectiveRange != comon:RangeGlobalAgg, "range-not-global", IF(EXISTS { ?zone a comon:RestrictedZone }, "restricted-zone", IF(!BOUND(?outcome) || ?outcome != comon:AuthorizationGranted, "authorization-not-granted", ""))) AS ?reason)
   FILTER(?reason != "")
 }
 ORDER BY ?evaluation
@@ -3385,7 +3385,7 @@ Evaluate model versioning and lineage report using the declared query contract.
 # Requirements: RF-24
 # Policies: P-FL-08
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3398,11 +3398,11 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?model ?version ?updated ?supersedes ?lineageStatus WHERE {
-  ?model a :AIModel .
-  OPTIONAL { ?model :modelVersion ?version }
-  OPTIONAL { ?model :lastUpdated ?updated }
-  OPTIONAL { ?model :supersedesModel ?supersedes }
-  OPTIONAL { ?model :modelLineageStatus ?lineageStatus }
+  ?model a comon:AIModel .
+  OPTIONAL { ?model comon:modelVersion ?version }
+  OPTIONAL { ?model comon:lastUpdated ?updated }
+  OPTIONAL { ?model comon:supersedesModel ?supersedes }
+  OPTIONAL { ?model comon:modelLineageStatus ?lineageStatus }
 }
 ORDER BY ?model
 ```
@@ -3421,7 +3421,7 @@ Evaluate review: rollback readiness using the declared query contract.
 # Requirements: RF-24
 # Policies: P-FL-08
 # Current v4.0.0 result: 7 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3434,9 +3434,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?subject ?kind ?target ?status WHERE {
-  { ?subject a :RollbackEvent . BIND("rollback-event" AS ?kind) OPTIONAL { ?subject :rollbackTarget ?target } }
+  { ?subject a comon:RollbackEvent . BIND("rollback-event" AS ?kind) OPTIONAL { ?subject comon:rollbackTarget ?target } }
   UNION
-  { ?subject a :AIModel . FILTER NOT EXISTS { ?subject :supersedesModel ?prev } BIND("model-without-predecessor" AS ?kind) OPTIONAL { ?subject :modelLineageStatus ?status } }
+  { ?subject a comon:AIModel . FILTER NOT EXISTS { ?subject comon:supersedesModel ?prev } BIND("model-without-predecessor" AS ?kind) OPTIONAL { ?subject comon:modelLineageStatus ?status } }
 }
 ORDER BY ?kind ?subject
 ```
@@ -3455,7 +3455,7 @@ Evaluate adaptive action report using the declared query contract.
 # Requirements: RF-16, RF-17, RF-20, RF-66
 # Policies: P-ADAPT-06, P-AUD-06
 # Current v4.0.0 result: 11 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3468,16 +3468,16 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?action ?actionType ?scenario ?evaluation ?origin ?target ?service ?model ?from ?to WHERE {
-  ?action a :AdaptationAction ; a ?actionType .
-  FILTER(?actionType != :AdaptationAction && ?actionType != owl:NamedIndividual)
-  OPTIONAL { ?action :partOfScenario ?scenario }
-  OPTIONAL { ?action :authorizedByEvaluation ?evaluation }
-  OPTIONAL { ?action :actionOriginNode ?origin }
-  OPTIONAL { ?action :actionTargetNode ?target }
-  OPTIONAL { ?action :affectsService ?service }
-  OPTIONAL { ?action :affectsModel ?model }
-  OPTIONAL { ?action :validFrom ?from }
-  OPTIONAL { ?action :validTo ?to }
+  ?action a comon:AdaptationAction ; a ?actionType .
+  FILTER(?actionType != comon:AdaptationAction && ?actionType != owl:NamedIndividual)
+  OPTIONAL { ?action comon:partOfScenario ?scenario }
+  OPTIONAL { ?action comon:authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?action comon:actionOriginNode ?origin }
+  OPTIONAL { ?action comon:actionTargetNode ?target }
+  OPTIONAL { ?action comon:affectsService ?service }
+  OPTIONAL { ?action comon:affectsModel ?model }
+  OPTIONAL { ?action comon:validFrom ?from }
+  OPTIONAL { ?action comon:validTo ?to }
 }
 ORDER BY ?scenario ?action
 ```
@@ -3496,7 +3496,7 @@ Evaluate migration report using the declared query contract.
 # Requirements: RF-16, RF-17
 # Policies: P-ADAPT-05
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3509,16 +3509,16 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?migration ?scenario ?origin ?target ?evaluation ?service ?cost ?time ?from ?to WHERE {
-  ?migration a :MigrationEvent .
-  OPTIONAL { ?migration :partOfScenario ?scenario }
-  OPTIONAL { ?migration :actionOriginNode ?origin }
-  OPTIONAL { ?migration :actionTargetNode ?target }
-  OPTIONAL { ?migration :authorizedByEvaluation ?evaluation }
-  OPTIONAL { ?migration :affectsService ?service }
-  OPTIONAL { ?evaluation :hasMigrationCost ?cost }
-  OPTIONAL { ?evaluation :hasMigrationTime ?time }
-  OPTIONAL { ?migration :validFrom ?from }
-  OPTIONAL { ?migration :validTo ?to }
+  ?migration a comon:MigrationEvent .
+  OPTIONAL { ?migration comon:partOfScenario ?scenario }
+  OPTIONAL { ?migration comon:actionOriginNode ?origin }
+  OPTIONAL { ?migration comon:actionTargetNode ?target }
+  OPTIONAL { ?migration comon:authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?migration comon:affectsService ?service }
+  OPTIONAL { ?evaluation comon:hasMigrationCost ?cost }
+  OPTIONAL { ?evaluation comon:hasMigrationTime ?time }
+  OPTIONAL { ?migration comon:validFrom ?from }
+  OPTIONAL { ?migration comon:validTo ?to }
 }
 ORDER BY ?migration
 ```
@@ -3537,7 +3537,7 @@ Evaluate violation: migration or delegation confused with federated learning usi
 # Requirements: RF-16, RF-22
 # Policies: P-ADAPT-05
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3550,8 +3550,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?resource WHERE {
-  VALUES ?adaptType { :MigrationEvent :DelegationEvent :OffloadingEvent }
-  ?resource a :FederatedLearningSession ; a ?adaptType .
+  VALUES ?adaptType { comon:MigrationEvent comon:DelegationEvent comon:OffloadingEvent }
+  ?resource a comon:FederatedLearningSession ; a ?adaptType .
 }
 ```
 
@@ -3569,7 +3569,7 @@ Evaluate degradation report using the declared query contract.
 # Requirements: RF-20
 # Policies: P-ADAPT-02, P-ADAPT-03, P-ADAPT-06
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3582,14 +3582,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?event ?scenario ?cause ?service ?model ?evaluation ?from ?to WHERE {
-  ?event a :DegradationEvent .
-  OPTIONAL { ?event :partOfScenario ?scenario }
-  OPTIONAL { ?event :hasDegradationCause ?cause }
-  OPTIONAL { ?event :affectsService ?service }
-  OPTIONAL { ?event :affectsModel ?model }
-  OPTIONAL { ?event :authorizedByEvaluation ?evaluation }
-  OPTIONAL { ?event :validFrom ?from }
-  OPTIONAL { ?event :validTo ?to }
+  ?event a comon:DegradationEvent .
+  OPTIONAL { ?event comon:partOfScenario ?scenario }
+  OPTIONAL { ?event comon:hasDegradationCause ?cause }
+  OPTIONAL { ?event comon:affectsService ?service }
+  OPTIONAL { ?event comon:affectsModel ?model }
+  OPTIONAL { ?event comon:authorizedByEvaluation ?evaluation }
+  OPTIONAL { ?event comon:validFrom ?from }
+  OPTIONAL { ?event comon:validTo ?to }
 }
 ORDER BY ?event
 ```
@@ -3608,7 +3608,7 @@ Evaluate temporary delegation report using the declared query contract.
 # Requirements: RF-62, RF-63, RF-64
 # Policies: P-AUD-01, P-AUD-02, P-AUD-03
 # Current v4.0.0 result: 1 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3621,15 +3621,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?delegation ?origin ?target ?triggerState ?recovery ?depth ?plannedExpiry ?from ?to WHERE {
-  ?delegation a :DelegationEvent .
-  OPTIONAL { ?delegation :actionOriginNode ?origin }
-  OPTIONAL { ?delegation :actionTargetNode ?target }
-  OPTIONAL { ?delegation :triggeredByState ?triggerState }
-  OPTIONAL { ?delegation :hasRecoveryCondition ?recovery }
-  OPTIONAL { ?delegation :delegationDepth ?depth }
-  OPTIONAL { ?delegation :plannedExpiry ?plannedExpiry }
-  OPTIONAL { ?delegation :validFrom ?from }
-  OPTIONAL { ?delegation :validTo ?to }
+  ?delegation a comon:DelegationEvent .
+  OPTIONAL { ?delegation comon:actionOriginNode ?origin }
+  OPTIONAL { ?delegation comon:actionTargetNode ?target }
+  OPTIONAL { ?delegation comon:triggeredByState ?triggerState }
+  OPTIONAL { ?delegation comon:hasRecoveryCondition ?recovery }
+  OPTIONAL { ?delegation comon:delegationDepth ?depth }
+  OPTIONAL { ?delegation comon:plannedExpiry ?plannedExpiry }
+  OPTIONAL { ?delegation comon:validFrom ?from }
+  OPTIONAL { ?delegation comon:validTo ?to }
 }
 ORDER BY ?delegation
 ```
@@ -3648,7 +3648,7 @@ Evaluate violation: incomplete delegation using the declared query contract.
 # Requirements: RF-63
 # Policies: P-AUD-02
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3661,14 +3661,14 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?delegation ?missing WHERE {
-  ?delegation a :DelegationEvent .
+  ?delegation a comon:DelegationEvent .
   VALUES (?prop ?missing) {
-    (:actionOriginNode "actionOriginNode")
-    (:actionTargetNode "actionTargetNode")
-    (:triggeredByState "triggeredByState")
-    (:validFrom "validFrom")
-    (:hasRecoveryCondition "hasRecoveryCondition")
-    (:delegationDepth "delegationDepth")
+    (comon:actionOriginNode "actionOriginNode")
+    (comon:actionTargetNode "actionTargetNode")
+    (comon:triggeredByState "triggeredByState")
+    (comon:validFrom "validFrom")
+    (comon:hasRecoveryCondition "hasRecoveryCondition")
+    (comon:delegationDepth "delegationDepth")
   }
   FILTER NOT EXISTS { ?delegation ?prop ?v }
 }
@@ -3689,7 +3689,7 @@ Evaluate violation: delegation depth exceeds the profile using the declared quer
 # Requirements: RNF-14
 # Policies: P-AUD-04, P-OPS-01
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3702,8 +3702,8 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?delegation ?depth ?maxDepth ?profile WHERE {
-  ?delegation a :DelegationEvent ; :delegationDepth ?depth .
-  ?profile a :AcceptanceProfile ; :D_delegation_max ?maxDepth .
+  ?delegation a comon:DelegationEvent ; comon:delegationDepth ?depth .
+  ?profile a comon:AcceptanceProfile ; comon:D_delegation_max ?maxDepth .
   FILTER(?depth > ?maxDepth)
 }
 ```
@@ -3720,9 +3720,9 @@ Evaluate federated learning session and payload report using the declared query 
 # Type: report
 # Purpose: Evaluate federated learning session and payload report using the declared query contract.
 # Requirements: RF-21, RF-22, RF-23, RF-25
-# Policies: P-FL-01, P-FL-06, P-FL-07
+# Policies: P-FL-01, P-FL-06, P-FL-07, P-CONS-06
 # Current v4.0.0 result: 2 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3735,15 +3735,15 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?session ?payload ?purpose ?requiredRange ?model ?data ?personal ?individualized ?persistent WHERE {
-  ?session a :FederatedLearningSession .
-  OPTIONAL { ?session :hasPayloadType ?payload }
-  OPTIONAL { ?session :hasProcessingPurpose ?purpose }
-  OPTIONAL { ?session :requiresConsentRange ?requiredRange }
-  OPTIONAL { ?session :updatesModel ?model }
-  OPTIONAL { ?session :transfersData ?data }
-  OPTIONAL { ?session :containsPersonalData ?personal }
-  OPTIONAL { ?session :containsIndividualizedGradients ?individualized }
-  OPTIONAL { ?session :containsPersistentIdentifier ?persistent }
+  ?session a comon:FederatedLearningSession .
+  OPTIONAL { ?session comon:hasPayloadType ?payload }
+  OPTIONAL { ?session comon:hasProcessingPurpose ?purpose }
+  OPTIONAL { ?session comon:requiresConsentRange ?requiredRange }
+  OPTIONAL { ?session comon:updatesModel ?model }
+  OPTIONAL { ?session comon:transfersData ?data }
+  OPTIONAL { ?session comon:containsPersonalData ?personal }
+  OPTIONAL { ?session comon:containsIndividualizedGradients ?individualized }
+  OPTIONAL { ?session comon:containsPersistentIdentifier ?persistent }
 }
 ORDER BY ?session
 ```
@@ -3762,7 +3762,7 @@ Evaluate violation: unauthorized upstream federated learning session using the d
 # Requirements: RF-21, RF-56
 # Policies: P-FL-02, P-FL-03
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3775,12 +3775,12 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?session ?range ?purpose ?personal ?persistent WHERE {
-  ?session a :FederatedLearningSession ; :hasPayloadType :ModelGradientsPayload .
-  OPTIONAL { ?session :hasConsentRange ?range }
-  OPTIONAL { ?session :hasProcessingPurpose ?purpose }
-  OPTIONAL { ?session :containsPersonalData ?personal }
-  OPTIONAL { ?session :containsPersistentIdentifier ?persistent }
-  FILTER(!BOUND(?range) || ?range != :RangeGlobalAgg || !BOUND(?purpose) || ?purpose != :PurposeGlobalFederatedLearning || (BOUND(?personal) && ?personal = true) || (BOUND(?persistent) && ?persistent = true))
+  ?session a comon:FederatedLearningSession ; comon:hasPayloadType comon:ModelGradientsPayload .
+  OPTIONAL { ?session comon:hasConsentRange ?range }
+  OPTIONAL { ?session comon:hasProcessingPurpose ?purpose }
+  OPTIONAL { ?session comon:containsPersonalData ?personal }
+  OPTIONAL { ?session comon:containsPersistentIdentifier ?persistent }
+  FILTER(!BOUND(?range) || ?range != comon:RangeGlobalAgg || !BOUND(?purpose) || ?purpose != comon:PurposeGlobalFederatedLearning || (BOUND(?personal) && ?personal = true) || (BOUND(?persistent) && ?persistent = true))
 }
 ```
 
@@ -3798,7 +3798,7 @@ Evaluate violation: gradient without anonymization, noise or privacy mechanism u
 # Requirements: RF-57, RF-58, RNF-16, RNF-19
 # Policies: P-FL-03, P-FL-05
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3811,10 +3811,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?gradient ?noiseApplied ?anonApplied WHERE {
-  ?gradient a :ModelGradientUpdate ; :originatesFromDevice ?device ; :sentToNode ?dest .
-  OPTIONAL { ?gradient :hasNoiseApplied ?noiseApplied }
-  OPTIONAL { ?gradient :hasAnonymizationApplied ?anonApplied }
-  FILTER(!BOUND(?noiseApplied) || ?noiseApplied != true || !BOUND(?anonApplied) || ?anonApplied != true || NOT EXISTS { ?gradient :hasPrivacyMechanism ?m })
+  ?gradient a comon:ModelGradientUpdate ; comon:originatesFromDevice ?device ; comon:sentToNode ?dest .
+  OPTIONAL { ?gradient comon:hasNoiseApplied ?noiseApplied }
+  OPTIONAL { ?gradient comon:hasAnonymizationApplied ?anonApplied }
+  FILTER(!BOUND(?noiseApplied) || ?noiseApplied != true || !BOUND(?anonApplied) || ?anonApplied != true || NOT EXISTS { ?gradient comon:hasPrivacyMechanism ?m })
 }
 ```
 
@@ -3832,7 +3832,7 @@ Evaluate differential privacy and epsilon accounting using the declared query co
 # Requirements: RF-56, RF-59, RNF-18
 # Policies: P-FL-04
 # Current v4.0.0 result: 2 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3845,16 +3845,16 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?session ?budget ?noise ?account ?contract ?purpose ?maximum ?consumed ?remaining ?status WHERE {
-  ?session a :FederatedLearningSession .
-  OPTIONAL { ?session :hasPrivacyBudget ?budget }
-  OPTIONAL { ?session :noiseLevel ?noise }
-  OPTIONAL { ?session :hasPrivacyBudgetAccount ?account .
-    OPTIONAL { ?account :budgetForContract ?contract }
-    OPTIONAL { ?account :budgetForPurpose ?purpose }
-    OPTIONAL { ?account :privacyBudgetMaximum ?maximum }
-    OPTIONAL { ?account :privacyBudgetConsumed ?consumed }
-    OPTIONAL { ?account :privacyBudgetRemaining ?remaining }
-    OPTIONAL { ?account :configurationStatus ?status }
+  ?session a comon:FederatedLearningSession .
+  OPTIONAL { ?session comon:hasPrivacyBudget ?budget }
+  OPTIONAL { ?session comon:noiseLevel ?noise }
+  OPTIONAL { ?session comon:hasPrivacyBudgetAccount ?account .
+    OPTIONAL { ?account comon:budgetForContract ?contract }
+    OPTIONAL { ?account comon:budgetForPurpose ?purpose }
+    OPTIONAL { ?account comon:privacyBudgetMaximum ?maximum }
+    OPTIONAL { ?account comon:privacyBudgetConsumed ?consumed }
+    OPTIONAL { ?account comon:privacyBudgetRemaining ?remaining }
+    OPTIONAL { ?account comon:configurationStatus ?status }
   }
 }
 ORDER BY ?session
@@ -3874,7 +3874,7 @@ Evaluate complete semantic audit chain using the declared query contract.
 # Requirements: RF-67, RNF-30
 # Policies: P-AUD-07
 # Current v4.0.0 result: 204 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3887,10 +3887,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?user ?contract ?effectiveRange ?purpose ?zone ?policy ?node ?alternative ?altTier ?altScore ?trust ?selectedTier ?action ?from WHERE {
-  ?evaluation a :EvaluationState ; :evaluationUser ?user ; :auditsContract ?contract ; :hasAuthorizationDecision/:hasEffectiveConsentRange ?effectiveRange ; :evaluationPurpose ?purpose ; :evaluationZone ?zone ; :selectedModelTier ?selectedTier ; :resultedInAction ?action ; :validFrom ?from .
-  OPTIONAL { ?evaluation :appliedPolicy ?policy }
-  OPTIONAL { ?evaluation :evaluatesNode ?node . OPTIONAL { ?node :hasNodeState/:hasTrustAssessment/:hasTrustScore ?trust } }
-  OPTIONAL { ?evaluation :hasDecisionAlternative ?alternative . ?alternative :alternativeModelTier ?altTier . OPTIONAL { ?alternative :hasAHPScore ?altScore } }
+  ?evaluation a comon:EvaluationState ; comon:evaluationUser ?user ; comon:auditsContract ?contract ; comon:hasAuthorizationDecision/comon:hasEffectiveConsentRange ?effectiveRange ; comon:evaluationPurpose ?purpose ; comon:evaluationZone ?zone ; comon:selectedModelTier ?selectedTier ; comon:resultedInAction ?action ; comon:validFrom ?from .
+  OPTIONAL { ?evaluation comon:appliedPolicy ?policy }
+  OPTIONAL { ?evaluation comon:evaluatesNode ?node . OPTIONAL { ?node comon:hasNodeState/comon:hasTrustAssessment/comon:hasTrustScore ?trust } }
+  OPTIONAL { ?evaluation comon:hasDecisionAlternative ?alternative . ?alternative comon:alternativeModelTier ?altTier . OPTIONAL { ?alternative comon:hasAHPScore ?altScore } }
 }
 ORDER BY ?evaluation ?policy ?altTier
 ```
@@ -3909,7 +3909,7 @@ Evaluate violation: incomplete audit ticket using the declared query contract.
 # Requirements: RF-54, RF-66, RNF-28, RNF-29
 # Policies: P-AUD-06
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3922,24 +3922,24 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?evaluation ?missing WHERE {
-  ?evaluation a :EvaluationState .
+  ?evaluation a comon:EvaluationState .
   {
     VALUES (?prop ?missing) {
-      (:hasDetectedSymptom "hasDetectedSymptom")
-      (:appliedPolicy "appliedPolicy")
-      (:auditsContract "auditsContract")
-      (:hasAuthorizationDecision "hasAuthorizationDecision")
-      (:hasDecisionAlternative "hasDecisionAlternative")
-      (:selectedModelTier "selectedModelTier")
-      (:hasSelectionJustification "hasSelectionJustification")
-      (:validFrom "validFrom")
-      (:resultedInAction "resultedInAction")
+      (comon:hasDetectedSymptom "hasDetectedSymptom")
+      (comon:appliedPolicy "appliedPolicy")
+      (comon:auditsContract "auditsContract")
+      (comon:hasAuthorizationDecision "hasAuthorizationDecision")
+      (comon:hasDecisionAlternative "hasDecisionAlternative")
+      (comon:selectedModelTier "selectedModelTier")
+      (comon:hasSelectionJustification "hasSelectionJustification")
+      (comon:validFrom "validFrom")
+      (comon:resultedInAction "resultedInAction")
     }
     FILTER NOT EXISTS { ?evaluation ?prop ?v }
   }
   UNION
   {
-    FILTER NOT EXISTS { ?evaluation :hasAuthorizationDecision/:hasEffectiveConsentRange ?r }
+    FILTER NOT EXISTS { ?evaluation comon:hasAuthorizationDecision/comon:hasEffectiveConsentRange ?r }
     BIND("effectiveConsentRange" AS ?missing)
   }
 }
@@ -3957,10 +3957,10 @@ Evaluate violation: action without evaluation or policy justification using the 
 ```sparql
 # Type: violation
 # Purpose: Evaluate violation: action without evaluation or policy justification using the declared query contract.
-# Requirements: RF-65, RF-66
-# Policies: P-AUD-05
+# Requirements: RF-65, RF-66, RF-41, RF-44
+# Policies: P-AUD-05, P-GOV-02
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -3974,14 +3974,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?subject ?reason WHERE {
   {
-    ?subject a :AdaptationAction .
-    FILTER NOT EXISTS { ?subject :authorizedByEvaluation ?evaluation }
+    ?subject a comon:AdaptationAction .
+    FILTER NOT EXISTS { ?subject comon:authorizedByEvaluation ?evaluation }
     BIND("action-without-evaluation" AS ?reason)
   }
   UNION
   {
-    ?subject a :EvaluationState ; :resultedInAction ?action .
-    FILTER NOT EXISTS { ?subject :appliedPolicy ?policy }
+    ?subject a comon:EvaluationState ; comon:resultedInAction ?action .
+    FILTER NOT EXISTS { ?subject comon:appliedPolicy ?policy }
     BIND("evaluation-without-policy" AS ?reason)
   }
 }
@@ -4002,7 +4002,7 @@ Evaluate temporal entity report using the declared query contract.
 # Requirements: RNF-35, RNF-36
 # Policies: P-GOV-05, P-AUD-02
 # Current v4.0.0 result: 79 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -4016,11 +4016,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?entity ?type ?from ?to ?plannedExpiry WHERE {
   ?entity a ?type .
-  ?type rdfs:subClassOf* :TemporalEntity .
-  FILTER(?type != :TemporalEntity)
-  OPTIONAL { ?entity :validFrom ?from }
-  OPTIONAL { ?entity :validTo ?to }
-  OPTIONAL { ?entity :plannedExpiry ?plannedExpiry }
+  ?type rdfs:subClassOf* comon:TemporalEntity .
+  FILTER(?type != comon:TemporalEntity)
+  OPTIONAL { ?entity comon:validFrom ?from }
+  OPTIONAL { ?entity comon:validTo ?to }
+  OPTIONAL { ?entity comon:plannedExpiry ?plannedExpiry }
 }
 ORDER BY ?entity ?type
 ```
@@ -4039,7 +4039,7 @@ Evaluate violation: missing validFrom or invalid temporal interval using the dec
 # Requirements: RNF-36
 # Policies: P-GOV-05
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -4052,9 +4052,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?entity ?from ?to ?reason WHERE {
-  ?entity a ?type . ?type rdfs:subClassOf* :TemporalEntity . FILTER(?type != :TemporalEntity && ?type != :TrustAssessment)
-  OPTIONAL { ?entity :validFrom ?from }
-  OPTIONAL { ?entity :validTo ?to }
+  ?entity a ?type . ?type rdfs:subClassOf* comon:TemporalEntity . FILTER(?type != comon:TemporalEntity && ?type != comon:TrustAssessment)
+  OPTIONAL { ?entity comon:validFrom ?from }
+  OPTIONAL { ?entity comon:validTo ?to }
   BIND(IF(!BOUND(?from), "missing-validFrom", IF(BOUND(?to) && ?to < ?from, "validTo-before-validFrom", "")) AS ?reason)
   FILTER(?reason != "")
 }
@@ -4075,7 +4075,7 @@ Evaluate sHACL shape inventory using the declared query contract.
 # Requirements: RF-71, RV-01
 # Policies: P-VAL-03
 # Current v4.0.0 result: 74 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -4109,7 +4109,7 @@ Evaluate review: incomplete acceptance profile using the declared query contract
 # Requirements: RNF-01, RNF-02, RNF-04, RNF-05, RNF-06, RNF-08, RNF-09, RNF-14, RNF-21, RNF-34
 # Policies: P-OPS-01, P-VAL-03
 # Current v4.0.0 result: 9 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -4122,18 +4122,18 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?profile ?missing WHERE {
-  ?profile a :AcceptanceProfile .
+  ?profile a comon:AcceptanceProfile .
   VALUES (?prop ?missing) {
-    (:T_inference_local "T_inference_local")
-    (:T_migration_max "T_migration_max")
-    (:T_sparql_monitor "T_sparql_monitor")
-    (:T_decision_max "T_decision_max")
-    (:E_device_max "E_device_max")
-    (:N_agents "N_agents")
-    (:T_node_join "T_node_join")
-    (:D_delegation_max "D_delegation_max")
-    (:T_reselection_max "T_reselection_max")
-    (:AHP_consistency_threshold "AHP_consistency_threshold")
+    (comon:T_inference_local "T_inference_local")
+    (comon:T_migration_max "T_migration_max")
+    (comon:T_sparql_monitor "T_sparql_monitor")
+    (comon:T_decision_max "T_decision_max")
+    (comon:E_device_max "E_device_max")
+    (comon:N_agents "N_agents")
+    (comon:T_node_join "T_node_join")
+    (comon:D_delegation_max "D_delegation_max")
+    (comon:T_reselection_max "T_reselection_max")
+    (comon:AHP_consistency_threshold "AHP_consistency_threshold")
   }
   FILTER NOT EXISTS { ?profile ?prop ?v }
 }
@@ -4154,7 +4154,7 @@ Evaluate review: reproducible campaign readiness using the declared query contra
 # Requirements: RF-71, RF-72, RNF-39, RV-02, RV-03
 # Policies: P-VAL-03, P-VAL-04, P-VAL-07
 # Current v4.0.0 result: 6 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -4170,12 +4170,12 @@ SELECT ?check ?value WHERE {
   {
     BIND("ontology-version" AS ?check) <http://example.org/monitoringcontinuum> owl:versionInfo ?value
   }
-  UNION { BIND("ontology-artifact" AS ?check) ?a a :OntologyArtifact ; :artifactIdentifier ?value }
-  UNION { BIND("requirements-artifact" AS ?check) ?a a :RequirementsArtifact ; :artifactIdentifier ?value }
-  UNION { BIND("policy-artifact" AS ?check) ?a a :PolicyArtifact ; :artifactIdentifier ?value }
-  UNION { BIND("scenario-artifact" AS ?check) ?a a :ScenarioArtifact ; :artifactIdentifier ?value }
-  UNION { BIND("query-catalog-status" AS ?check) ?a a :QueryCatalog ; :artifactStatus ?value }
-  UNION { BIND("validation-campaign" AS ?check) ?a a :ValidationCampaign . BIND(STR(?a) AS ?value) }
+  UNION { BIND("ontology-artifact" AS ?check) ?a a comon:OntologyArtifact ; comon:artifactIdentifier ?value }
+  UNION { BIND("requirements-artifact" AS ?check) ?a a comon:RequirementsArtifact ; comon:artifactIdentifier ?value }
+  UNION { BIND("policy-artifact" AS ?check) ?a a comon:PolicyArtifact ; comon:artifactIdentifier ?value }
+  UNION { BIND("scenario-artifact" AS ?check) ?a a comon:ScenarioArtifact ; comon:artifactIdentifier ?value }
+  UNION { BIND("query-catalog-status" AS ?check) ?a a comon:QueryCatalog ; comon:artifactStatus ?value }
+  UNION { BIND("validation-campaign" AS ?check) ?a a comon:ValidationCampaign . BIND(STR(?a) AS ?value) }
 }
 ORDER BY ?check
 ```
@@ -4194,7 +4194,7 @@ Evaluate policy conflict resolution report using the declared query contract.
 # Requirements: RNF-22
 # Policies: P-GOV-03
 # Current v4.0.0 result: 37 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -4207,9 +4207,9 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?relation ?source ?target ?type ?code ?strategy WHERE {
-  ?relation a :PolicyCategoryRelation ; :relationSourceCategory ?source ; :relationTargetCategory ?target ; :hasPolicyRelationType ?type .
-  OPTIONAL { ?type :relationCode ?code }
-  OPTIONAL { ?relation :usesResolutionStrategy ?strategy }
+  ?relation a comon:PolicyCategoryRelation ; comon:relationSourceCategory ?source ; comon:relationTargetCategory ?target ; comon:hasPolicyRelationType ?type .
+  OPTIONAL { ?type comon:relationCode ?code }
+  OPTIONAL { ?relation comon:usesResolutionStrategy ?strategy }
   FILTER(?code IN ("GEN","COR","CON","SHD","DEP"))
 }
 ORDER BY ?code ?source ?target
@@ -4229,7 +4229,7 @@ Evaluate violation: conflicting relationship without resolution strategy using t
 # Requirements: RNF-22
 # Policies: P-GOV-03
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -4242,10 +4242,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?relation ?source ?target ?code WHERE {
-  ?relation a :PolicyCategoryRelation ; :relationSourceCategory ?source ; :relationTargetCategory ?target ; :hasPolicyRelationType ?type .
-  ?type :relationCode ?code .
+  ?relation a comon:PolicyCategoryRelation ; comon:relationSourceCategory ?source ; comon:relationTargetCategory ?target ; comon:hasPolicyRelationType ?type .
+  ?type comon:relationCode ?code .
   FILTER(?code IN ("GEN","COR","CON","SHD"))
-  FILTER NOT EXISTS { ?relation :usesResolutionStrategy ?strategy }
+  FILTER NOT EXISTS { ?relation comon:usesResolutionStrategy ?strategy }
 }
 ORDER BY ?code ?source ?target
 ```
@@ -4264,7 +4264,7 @@ Evaluate global coverage and migration debt dashboard using the declared query c
 # Requirements: RF-68, RF-71, RV-01, RV-05
 # Policies: P-VAL-08
 # Current v4.0.0 result: 13 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -4277,19 +4277,19 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?metric ?value WHERE {
-  { BIND("functional_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :FunctionalRequirement } } }
-  UNION { BIND("nonfunctional_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :NonFunctionalRequirement } } }
-  UNION { BIND("validation_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :ValidationRequirement } } }
-  UNION { BIND("policies" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :Policy } } }
-  UNION { BIND("mechanisms" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :MechanismSpecification } } }
-  UNION { BIND("scenarios" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :Scenario } } }
-  UNION { BIND("policy_category_relations" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :PolicyCategoryRelation } } }
+  { BIND("functional_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:FunctionalRequirement } } }
+  UNION { BIND("nonfunctional_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:NonFunctionalRequirement } } }
+  UNION { BIND("validation_requirements" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:ValidationRequirement } } }
+  UNION { BIND("policies" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:Policy } } }
+  UNION { BIND("mechanisms" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:MechanismSpecification } } }
+  UNION { BIND("scenarios" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:Scenario } } }
+  UNION { BIND("policy_category_relations" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:PolicyCategoryRelation } } }
   UNION { BIND("shacl_shapes" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a sh:NodeShape } } }
-  UNION { BIND("evaluations" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :EvaluationState } } }
-  UNION { BIND("alternatives_pending_recalculation" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?e :hasDecisionAlternative ?x . FILTER NOT EXISTS { ?x :hasAHPScore ?score } } } }
-  UNION { BIND("trust_assessments_incomplete" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :TrustAssessment . FILTER(!EXISTS { ?x :trustWindowStart ?ws } || !EXISTS { ?x :trustWindowEnd ?we } || !EXISTS { ?x :hasTrustEvidence ?ev }) } } }
-  UNION { BIND("acceptance_parameters_missing" AS ?metric) { SELECT (COUNT(?prop) AS ?value) WHERE { VALUES ?prop { :T_inference_local :T_migration_max :T_sparql_monitor :T_decision_max :E_device_max :N_agents :T_node_join :D_delegation_max :T_reselection_max :AHP_consistency_threshold } FILTER NOT EXISTS { ?p a :AcceptanceProfile ; ?prop ?v } } } }
-  UNION { BIND("query_specs_in_ontology" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a :QuerySpecification } } }
+  UNION { BIND("evaluations" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:EvaluationState } } }
+  UNION { BIND("alternatives_pending_recalculation" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?e comon:hasDecisionAlternative ?x . FILTER NOT EXISTS { ?x comon:hasAHPScore ?score } } } }
+  UNION { BIND("trust_assessments_incomplete" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:TrustAssessment . FILTER(!EXISTS { ?x comon:trustWindowStart ?ws } || !EXISTS { ?x comon:trustWindowEnd ?we } || !EXISTS { ?x comon:hasTrustEvidence ?ev }) } } }
+  UNION { BIND("acceptance_parameters_missing" AS ?metric) { SELECT (COUNT(?prop) AS ?value) WHERE { VALUES ?prop { comon:T_inference_local comon:T_migration_max comon:T_sparql_monitor comon:T_decision_max comon:E_device_max comon:N_agents comon:T_node_join comon:D_delegation_max comon:T_reselection_max comon:AHP_consistency_threshold } FILTER NOT EXISTS { ?p a comon:AcceptanceProfile ; ?prop ?v } } } }
+  UNION { BIND("query_specs_in_ontology" AS ?metric) { SELECT (COUNT(DISTINCT ?x) AS ?value) WHERE { ?x a comon:QuerySpecification } } }
 }
 ORDER BY ?metric
 ```

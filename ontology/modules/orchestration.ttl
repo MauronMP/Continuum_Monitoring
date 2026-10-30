@@ -1,511 +1,511 @@
 @prefix geo: <http://www.opengis.net/ont/geosparql#> .
-@prefix mc: <http://example.org/monitoringcontinuum#> .
+@prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-mc:BufferRecord a owl:Class ;
+comon:BufferRecord a owl:Class ;
     rdfs:label "Buffer Record" ;
     rdfs:comment "Temporary retained data record governed by authorization and storage policies." ;
-    rdfs:subClassOf mc:TemporalEntity .
+    rdfs:subClassOf comon:TemporalEntity .
 
-mc:DegradationEvent a owl:Class ;
+comon:DegradationEvent a owl:Class ;
     rdfs:label "Degradation Event" ;
     rdfs:comment "Degradation Event is a orchestration concept in the monitoring model. It specializes Adaptation Action." ;
-    rdfs:subClassOf mc:AdaptationAction .
+    rdfs:subClassOf comon:AdaptationAction .
 
-mc:MigrationEvent a owl:Class ;
+comon:MigrationEvent a owl:Class ;
     rdfs:label "Migration Event" ;
     rdfs:comment "Migration Event is a orchestration concept in the monitoring model. It specializes Adaptation Action." ;
-    rdfs:subClassOf mc:AdaptationAction .
+    rdfs:subClassOf comon:AdaptationAction .
 
-mc:ModelSelectionAction a owl:Class ;
+comon:ModelSelectionAction a owl:Class ;
     rdfs:label "Model Selection Action" ;
     rdfs:comment "Model Selection Action is a orchestration concept in the monitoring model. It specializes Adaptation Action." ;
-    rdfs:subClassOf mc:AdaptationAction .
+    rdfs:subClassOf comon:AdaptationAction .
 
-mc:OffloadingEvent a owl:Class ;
+comon:OffloadingEvent a owl:Class ;
     rdfs:label "Offloading Event" ;
     rdfs:comment "Offloading Event is a orchestration concept in the monitoring model. It specializes Adaptation Action." ;
-    rdfs:subClassOf mc:AdaptationAction .
+    rdfs:subClassOf comon:AdaptationAction .
 
-mc:ParametrizedData a owl:Class ;
+comon:ParametrizedData a owl:Class ;
     rdfs:label "Parametrized Data" ;
     rdfs:comment "Pre-computed and aggregated data. Raw physiological data never leaves the device." .
 
-mc:RetentionEvent a owl:Class ;
+comon:RetentionEvent a owl:Class ;
     rdfs:label "Retention Event" ;
     rdfs:comment "Retention Event is a orchestration concept in the monitoring model. It specializes Adaptation Action." ;
-    rdfs:subClassOf mc:AdaptationAction .
+    rdfs:subClassOf comon:AdaptationAction .
 
-mc:ScalingEvent a owl:Class ;
+comon:ScalingEvent a owl:Class ;
     rdfs:label "Scaling Event" ;
     rdfs:comment "Scaling Event is a orchestration concept in the monitoring model. It specializes Adaptation Action." ;
-    rdfs:subClassOf mc:AdaptationAction .
+    rdfs:subClassOf comon:AdaptationAction .
 
-mc:SynchronizationEvent a owl:Class ;
+comon:SynchronizationEvent a owl:Class ;
     rdfs:label "Synchronization Event" ;
     rdfs:comment "Synchronization Event is a orchestration concept in the monitoring model. It specializes Adaptation Action." ;
-    rdfs:subClassOf mc:AdaptationAction .
+    rdfs:subClassOf comon:AdaptationAction .
 
-mc:actionOriginNode a owl:ObjectProperty ;
+comon:actionOriginNode a owl:ObjectProperty ;
     rdfs:label "action origin node" ;
     rdfs:comment "action origin node links resources. Declared domain: Adaptation Action. Declared range: Computational Node. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AdaptationAction ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:domain comon:AdaptationAction ;
+    rdfs:range comon:ComputationalNode .
 
-mc:actionTargetNode a owl:ObjectProperty ;
+comon:actionTargetNode a owl:ObjectProperty ;
     rdfs:label "action target node" ;
     rdfs:comment "action target node links resources. Declared domain: Adaptation Action. Declared range: Computational Node. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AdaptationAction ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:domain comon:AdaptationAction ;
+    rdfs:range comon:ComputationalNode .
 
-mc:affectsModel a owl:ObjectProperty ;
+comon:affectsModel a owl:ObjectProperty ;
     rdfs:label "affects model" ;
     rdfs:comment "affects model links resources. Declared domain: Adaptation Action. Declared range: AI Model. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AdaptationAction ;
-    rdfs:range mc:AIModel .
+    rdfs:domain comon:AdaptationAction ;
+    rdfs:range comon:AIModel .
 
-mc:affectsService a owl:ObjectProperty ;
+comon:affectsService a owl:ObjectProperty ;
     rdfs:label "affects service" ;
     rdfs:comment "affects service links resources. Declared domain: Adaptation Action. Declared range: Service. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AdaptationAction ;
-    rdfs:range mc:Service .
+    rdfs:domain comon:AdaptationAction ;
+    rdfs:range comon:Service .
 
-mc:alternativeModelTier a owl:ObjectProperty ;
+comon:alternativeModelTier a owl:ObjectProperty ;
     rdfs:label "alternative model tier" ;
     rdfs:comment "alternative model tier links resources. Declared domain: Decision Alternative. Declared range: Model Tier. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DecisionAlternative ;
-    rdfs:range mc:ModelTier .
+    rdfs:domain comon:DecisionAlternative ;
+    rdfs:range comon:ModelTier .
 
-mc:appliesPolicy a owl:ObjectProperty ;
+comon:appliesPolicy a owl:ObjectProperty ;
     rdfs:label "applies policy" ;
-    rdfs:comment "Deprecated in v4.0.0; use mc:appliedPolicy.",
+    rdfs:comment "Deprecated in v4.0.0; use comon:appliedPolicy.",
         "Use appliedPolicy" ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:Policy ;
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:Policy ;
     owl:deprecated true .
 
-mc:auditsContract a owl:ObjectProperty ;
+comon:auditsContract a owl:ObjectProperty ;
     rdfs:label "audits contract" ;
     rdfs:comment "audits contract links resources. Declared domain: Evaluation State. Declared range: Semantic Contract. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:SemanticContract .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:SemanticContract .
 
-mc:authorizedByEvaluation a owl:ObjectProperty ;
+comon:authorizedByEvaluation a owl:ObjectProperty ;
     rdfs:label "authorized by evaluation" ;
     rdfs:comment "authorized by evaluation links resources. Declared domain: Adaptation Action. Declared range: Evaluation State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AdaptationAction ;
-    rdfs:range mc:EvaluationState .
+    rdfs:domain comon:AdaptationAction ;
+    rdfs:range comon:EvaluationState .
 
-mc:carriesData a owl:ObjectProperty ;
+comon:carriesData a owl:ObjectProperty ;
     rdfs:label "carries data" ;
     rdfs:comment "Identifies the carries data. The intentionally unrestricted range permits nodes, services and payload resources; authorization and allowed kinds are validated separately." ;
-    rdfs:domain mc:TransferEvent .
+    rdfs:domain comon:TransferEvent .
 
-mc:criterionA a owl:ObjectProperty ;
+comon:criterionA a owl:ObjectProperty ;
     rdfs:label "criterion A" ;
     rdfs:comment "criterion A links resources. Declared domain: Pairwise Comparison. Value restrictions are defined by the application validation shapes. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:PairwiseComparison .
+    rdfs:domain comon:PairwiseComparison .
 
-mc:criterionB a owl:ObjectProperty ;
+comon:criterionB a owl:ObjectProperty ;
     rdfs:label "criterion B" ;
     rdfs:comment "criterion B links resources. Declared domain: Pairwise Comparison. Value restrictions are defined by the application validation shapes. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:PairwiseComparison .
+    rdfs:domain comon:PairwiseComparison .
 
-mc:delegatedBy a owl:ObjectProperty ;
+comon:delegatedBy a owl:ObjectProperty ;
     rdfs:label "delegated by" ;
     rdfs:comment "delegated by links resources. Declared domain: Delegation Event. Declared range: Computational Node. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DelegationEvent ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:domain comon:DelegationEvent ;
+    rdfs:range comon:ComputationalNode .
 
-mc:delegatesTo a owl:ObjectProperty ;
+comon:delegatesTo a owl:ObjectProperty ;
     rdfs:label "delegates requests to" ;
-    rdfs:comment "Used when a node is saturated or disconnected. For temporal delegation, use an mc:DelegationEvent with mc:validFrom/mc:validTo and mc:delegatedBy." ;
+    rdfs:comment "Used when a node is saturated or disconnected. For temporal delegation, use an comon:DelegationEvent with comon:validFrom/comon:validTo and comon:delegatedBy." ;
     rdfs:domain <urn:continuum:ontology:4.0.0:node:94> ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:range comon:ComputationalNode .
 
-mc:delegationDepth a owl:DatatypeProperty ;
+comon:delegationDepth a owl:DatatypeProperty ;
     rdfs:label "delegation depth" ;
     rdfs:comment "delegation depth records a literal value. Declared domain: Delegation Event. Declared range: integer. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DelegationEvent ;
+    rdfs:domain comon:DelegationEvent ;
     rdfs:range xsd:integer .
 
-mc:derivedFrom a owl:ObjectProperty ;
+comon:derivedFrom a owl:ObjectProperty ;
     rdfs:label "derived from" ;
     rdfs:comment "SOSA observation that originated this state and provides its timestamp." ;
-    rdfs:domain mc:State ;
+    rdfs:domain comon:State ;
     rdfs:range sosa:Observation .
 
-mc:eligibilityReason a owl:DatatypeProperty ;
+comon:eligibilityReason a owl:DatatypeProperty ;
     rdfs:label "eligibility reason" ;
     rdfs:comment "eligibility reason records a literal value. Declared domain: Decision Alternative. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DecisionAlternative ;
+    rdfs:domain comon:DecisionAlternative ;
     rdfs:range xsd:string .
 
-mc:estimatedPredictionError a owl:DatatypeProperty ;
+comon:estimatedPredictionError a owl:DatatypeProperty ;
     rdfs:label "estimated prediction error" ;
     rdfs:comment "estimated prediction error records a literal value. Declared domain: Evaluation State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:evaluatesNode a owl:ObjectProperty ;
+comon:evaluatesNode a owl:ObjectProperty ;
     rdfs:label "evaluates node" ;
     rdfs:comment "evaluates node links resources. Declared domain: Evaluation State. Declared range: Computational Node. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:ComputationalNode .
 
-mc:evaluatesService a owl:ObjectProperty ;
+comon:evaluatesService a owl:ObjectProperty ;
     rdfs:label "evaluates service" ;
     rdfs:comment "evaluates service links resources. Declared domain: Evaluation State. Declared range: Service. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:Service .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:Service .
 
-mc:evaluationOrder a owl:DatatypeProperty ;
+comon:evaluationOrder a owl:DatatypeProperty ;
     rdfs:label "evaluation order" ;
     rdfs:comment "evaluation order records a literal value. Declared domain: Policy Category. Declared range: integer. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:PolicyCategory ;
+    rdfs:domain comon:PolicyCategory ;
     rdfs:range xsd:integer .
 
-mc:evaluationPurpose a owl:ObjectProperty ;
+comon:evaluationPurpose a owl:ObjectProperty ;
     rdfs:label "evaluation purpose" ;
     rdfs:comment "evaluation purpose links resources. Declared domain: Evaluation State. Declared range: Processing Purpose. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:ProcessingPurpose .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:ProcessingPurpose .
 
-mc:evaluationUser a owl:ObjectProperty ;
+comon:evaluationUser a owl:ObjectProperty ;
     rdfs:label "evaluation user" ;
     rdfs:comment "evaluation user links resources. Declared domain: Evaluation State. Declared range: User. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:User .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:User .
 
-mc:evaluationZone a owl:ObjectProperty ;
+comon:evaluationZone a owl:ObjectProperty ;
     rdfs:label "evaluation zone" ;
     rdfs:comment "evaluation zone links resources. Declared domain: Evaluation State. Declared range: City Area. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:CityArea .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:CityArea .
 
-mc:expiresOnRecoveryOf a owl:ObjectProperty ;
+comon:expiresOnRecoveryOf a owl:ObjectProperty ;
     rdfs:label "expires on recovery of" ;
     rdfs:comment "Use semantic RecoveryCondition together with validTo/plannedExpiry." ;
-    rdfs:domain mc:DelegationEvent ;
-    rdfs:range mc:ComputationalNode ;
+    rdfs:domain comon:DelegationEvent ;
+    rdfs:range comon:ComputationalNode ;
     owl:deprecated true .
 
-mc:hasAHPScore a owl:DatatypeProperty ;
+comon:hasAHPScore a owl:DatatypeProperty ;
     rdfs:label "has AHP / multicriteria score" ;
     rdfs:comment "Score of a specific candidate alternative. For AHP it is the AHP result; for other methods the DecisionMethod identifies the scoring semantics." ;
-    rdfs:domain mc:DecisionAlternative ;
+    rdfs:domain comon:DecisionAlternative ;
     rdfs:range xsd:decimal .
 
-mc:hasAdaptability a owl:ObjectProperty ;
+comon:hasAdaptability a owl:ObjectProperty ;
     rdfs:label "has adaptability" ;
     rdfs:comment "has adaptability links resources. Declared domain: Service State. Declared range: Adaptability Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:ServiceState ;
-    rdfs:range mc:AdaptabilityLevel .
+    rdfs:domain comon:ServiceState ;
+    rdfs:range comon:AdaptabilityLevel .
 
-mc:hasConsistencyRatio a owl:DatatypeProperty ;
+comon:hasConsistencyRatio a owl:DatatypeProperty ;
     rdfs:label "has consistency ratio" ;
     rdfs:comment "has consistency ratio records a literal value. Declared domain: Evaluation State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:hasConsistencyThreshold a owl:DatatypeProperty ;
+comon:hasConsistencyThreshold a owl:DatatypeProperty ;
     rdfs:label "has consistency threshold" ;
     rdfs:comment "has consistency threshold records a literal value. Declared domain: Evaluation State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:hasDecisionAlternative a owl:ObjectProperty ;
+comon:hasDecisionAlternative a owl:ObjectProperty ;
     rdfs:label "has decision alternative" ;
     rdfs:comment "has decision alternative links resources. Declared domain: Evaluation State. Declared range: Decision Alternative. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:DecisionAlternative .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:DecisionAlternative .
 
-mc:hasDecisionMethod a owl:ObjectProperty ;
+comon:hasDecisionMethod a owl:ObjectProperty ;
     rdfs:label "has decision method" ;
     rdfs:comment "has decision method links resources. Declared domain: Evaluation State. Declared range: Decision Method. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:DecisionMethod .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:DecisionMethod .
 
-mc:hasDegradationCause a owl:ObjectProperty ;
+comon:hasDegradationCause a owl:ObjectProperty ;
     rdfs:label "has degradation cause" ;
     rdfs:comment "has degradation cause links resources. The domain is intentionally open for reuse across governed resources. Declared range: Model Degradation Cause. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:range mc:ModelDegradationCause .
+    rdfs:range comon:ModelDegradationCause .
 
-mc:hasDelegation a owl:ObjectProperty ;
+comon:hasDelegation a owl:ObjectProperty ;
     rdfs:label "has delegation" ;
     rdfs:comment "has delegation links resources. Declared domain: Computational Node. Declared range: Delegation Event. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:ComputationalNode ;
-    rdfs:range mc:DelegationEvent .
+    rdfs:domain comon:ComputationalNode ;
+    rdfs:range comon:DelegationEvent .
 
-mc:hasDetectedSymptom a owl:ObjectProperty ;
+comon:hasDetectedSymptom a owl:ObjectProperty ;
     rdfs:label "has detected symptom" ;
     rdfs:comment "has detected symptom links resources. Declared domain: Evaluation State. Declared range: MAPE-K Symptom. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:MAPESymptom .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:MAPESymptom .
 
-mc:hasEvaluationTicketID a owl:DatatypeProperty ;
+comon:hasEvaluationTicketID a owl:DatatypeProperty ;
     rdfs:label "has evaluation ticket ID" ;
     rdfs:comment "has evaluation ticket ID records a literal value. Declared domain: Evaluation State. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:string .
 
-mc:hasLatencyWeight a owl:DatatypeProperty ;
+comon:hasLatencyWeight a owl:DatatypeProperty ;
     rdfs:label "has latency weight" ;
     rdfs:comment "has latency weight records a literal value. Declared domain: Evaluation State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:hasMigrationCost a owl:ObjectProperty ;
+comon:hasMigrationCost a owl:ObjectProperty ;
     rdfs:label "has migration cost" ;
     rdfs:comment "has migration cost links resources. Declared domain: Evaluation State. Declared range: Migration Cost Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:MigrationCostLevel .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:MigrationCostLevel .
 
-mc:hasMigrationTime a owl:ObjectProperty ;
+comon:hasMigrationTime a owl:ObjectProperty ;
     rdfs:label "has migration time" ;
     rdfs:comment "has migration time links resources. Declared domain: Evaluation State. Declared range: Migration Time Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:MigrationTimeLevel .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:MigrationTimeLevel .
 
-mc:hasModelQualityWeight a owl:DatatypeProperty ;
+comon:hasModelQualityWeight a owl:DatatypeProperty ;
     rdfs:label "has model quality weight" ;
     rdfs:comment "has model quality weight records a literal value. Declared domain: Evaluation State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:hasModelTier a owl:ObjectProperty ;
+comon:hasModelTier a owl:ObjectProperty ;
     rdfs:label "has model tier" ;
     rdfs:comment "has model tier links resources. Declared domain: AI Model. Declared range: Model Tier. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AIModel ;
-    rdfs:range mc:ModelTier .
+    rdfs:domain comon:AIModel ;
+    rdfs:range comon:ModelTier .
 
-mc:hasPairwiseComparison a owl:ObjectProperty ;
+comon:hasPairwiseComparison a owl:ObjectProperty ;
     rdfs:label "has pairwise comparison" ;
     rdfs:comment "has pairwise comparison links resources. Declared domain: Evaluation State. Declared range: Pairwise Comparison. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:PairwiseComparison .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:PairwiseComparison .
 
-mc:hasPrivacyWeight a owl:DatatypeProperty ;
+comon:hasPrivacyWeight a owl:DatatypeProperty ;
     rdfs:label "has privacy weight" ;
     rdfs:comment "has privacy weight records a literal value. Declared domain: Evaluation State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:hasProcessingLevel a owl:ObjectProperty ;
+comon:hasProcessingLevel a owl:ObjectProperty ;
     rdfs:label "has processing level" ;
     rdfs:comment "has processing level links resources. Declared domain: Service State. Declared range: Processing Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:ServiceState ;
-    rdfs:range mc:ProcessingLevel .
+    rdfs:domain comon:ServiceState ;
+    rdfs:range comon:ProcessingLevel .
 
-mc:hasProfitability a owl:ObjectProperty ;
+comon:hasProfitability a owl:ObjectProperty ;
     rdfs:label "has profitability" ;
     rdfs:comment "has profitability links resources. Declared domain: Evaluation State. Declared range: Profitability Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:ProfitabilityLevel .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:ProfitabilityLevel .
 
-mc:hasRecoveryCondition a owl:ObjectProperty ;
+comon:hasRecoveryCondition a owl:ObjectProperty ;
     rdfs:label "has recovery condition" ;
     rdfs:comment "has recovery condition links resources. Declared domain: Delegation Event. Declared range: Recovery Condition. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DelegationEvent ;
-    rdfs:range mc:RecoveryCondition .
+    rdfs:domain comon:DelegationEvent ;
+    rdfs:range comon:RecoveryCondition .
 
-mc:hasReplicationEvent a owl:ObjectProperty ;
+comon:hasReplicationEvent a owl:ObjectProperty ;
     rdfs:label "has replication event" ;
     rdfs:comment "has replication event links resources. The domain is intentionally open for reuse across governed resources. Declared range: Replication Event. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:range mc:ReplicationEvent .
+    rdfs:range comon:ReplicationEvent .
 
-mc:hasSelectionJustification a owl:DatatypeProperty ;
+comon:hasSelectionJustification a owl:DatatypeProperty ;
     rdfs:label "has selection justification" ;
     rdfs:comment "has selection justification records a literal value. Declared domain: Evaluation State. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:string .
 
-mc:hasServiceState a owl:ObjectProperty ;
+comon:hasServiceState a owl:ObjectProperty ;
     rdfs:label "has service state" ;
     rdfs:comment "has service state links resources. Declared domain: Service. Declared range: Service State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:Service ;
-    rdfs:range mc:ServiceState .
+    rdfs:domain comon:Service ;
+    rdfs:range comon:ServiceState .
 
-mc:hasTrustWeight a owl:DatatypeProperty ;
+comon:hasTrustWeight a owl:DatatypeProperty ;
     rdfs:label "has external trust weight" ;
     rdfs:comment "External trust criterion used to filter/order already eligible alternatives. It is not part of AHP weight normalization." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:hostedOnNode a owl:ObjectProperty ;
+comon:hostedOnNode a owl:ObjectProperty ;
     rdfs:label "hosted on node" ;
     rdfs:comment "hosted on node links resources. Declared domain: AI Model. Declared range: Computational Node. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AIModel ;
-    rdfs:range mc:ComputationalNode .
+    rdfs:domain comon:AIModel ;
+    rdfs:range comon:ComputationalNode .
 
-mc:hostsModel a owl:ObjectProperty ;
+comon:hostsModel a owl:ObjectProperty ;
     rdfs:label "hosts model" ;
     rdfs:comment "hosts model links resources. Declared domain: Computational Node. Declared range: AI Model. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:ComputationalNode ;
-    rdfs:range mc:AIModel .
+    rdfs:domain comon:ComputationalNode ;
+    rdfs:range comon:AIModel .
 
-mc:hostsService a owl:ObjectProperty ;
+comon:hostsService a owl:ObjectProperty ;
     rdfs:label "hosts service" ;
     rdfs:comment "hosts service links resources. Declared domain: Computational Node. Declared range: Service. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:ComputationalNode ;
-    rdfs:range mc:Service .
+    rdfs:domain comon:ComputationalNode ;
+    rdfs:range comon:Service .
 
-mc:idempotencyKey a owl:DatatypeProperty ;
+comon:idempotencyKey a owl:DatatypeProperty ;
     rdfs:label "idempotency key" ;
     rdfs:comment "idempotency key records a literal value. The domain is intentionally open for reuse across governed resources. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
     rdfs:range xsd:string .
 
-mc:isEligible a owl:DatatypeProperty ;
+comon:isEligible a owl:DatatypeProperty ;
     rdfs:label "is eligible" ;
     rdfs:comment "is eligible records a literal value. Declared domain: Decision Alternative. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DecisionAlternative ;
+    rdfs:domain comon:DecisionAlternative ;
     rdfs:range xsd:boolean .
 
-mc:lastUpdated a owl:DatatypeProperty ;
+comon:lastUpdated a owl:DatatypeProperty ;
     rdfs:label "last updated" ;
     rdfs:comment "last updated records a literal value. Declared domain: AI Model. Declared range: dateTime. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AIModel ;
+    rdfs:domain comon:AIModel ;
     rdfs:range xsd:dateTime .
 
-mc:legacyDecisionScore a owl:DatatypeProperty ;
+comon:legacyDecisionScore a owl:DatatypeProperty ;
     rdfs:label "legacy decision score" ;
     rdfs:comment "Legacy single winning score retained for provenance. It is not equivalent to v3 per-alternative scores." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:migrationNote a owl:DatatypeProperty ;
+comon:migrationNote a owl:DatatypeProperty ;
     rdfs:label "migration note" ;
     rdfs:comment "migration note records a literal value. The domain is intentionally open for reuse across governed resources. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
     rdfs:range xsd:string .
 
-mc:migrationStatus a owl:DatatypeProperty ;
+comon:migrationStatus a owl:DatatypeProperty ;
     rdfs:label "migration status" ;
     rdfs:comment "migration status records a literal value. The domain is intentionally open for reuse across governed resources. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
     rdfs:range xsd:string .
 
-mc:modelLineageStatus a owl:DatatypeProperty ;
+comon:modelLineageStatus a owl:DatatypeProperty ;
     rdfs:label "model lineage status" ;
     rdfs:comment "model lineage status records a literal value. Declared domain: AI Model. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AIModel ;
+    rdfs:domain comon:AIModel ;
     rdfs:range xsd:string .
 
-mc:modelVersion a owl:DatatypeProperty ;
+comon:modelVersion a owl:DatatypeProperty ;
     rdfs:label "model version" ;
     rdfs:comment "model version records a literal value. Declared domain: AI Model. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AIModel ;
+    rdfs:domain comon:AIModel ;
     rdfs:range xsd:string .
 
-mc:observedModelQuality a owl:DatatypeProperty ;
+comon:observedModelQuality a owl:DatatypeProperty ;
     rdfs:label "observed model quality" ;
     rdfs:comment "observed model quality records a literal value. Declared domain: Evaluation State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:pairwiseValue a owl:DatatypeProperty ;
+comon:pairwiseValue a owl:DatatypeProperty ;
     rdfs:label "pairwise comparison value" ;
     rdfs:comment "pairwise comparison value records a literal value. Declared domain: Pairwise Comparison. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:PairwiseComparison ;
+    rdfs:domain comon:PairwiseComparison ;
     rdfs:range xsd:decimal .
 
-mc:parentDelegation a owl:ObjectProperty ;
+comon:parentDelegation a owl:ObjectProperty ;
     rdfs:label "parent delegation" ;
     rdfs:comment "parent delegation links resources. Declared domain: Delegation Event. Declared range: Delegation Event. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:DelegationEvent ;
-    rdfs:range mc:DelegationEvent .
+    rdfs:domain comon:DelegationEvent ;
+    rdfs:range comon:DelegationEvent .
 
-mc:partOfScenario a owl:ObjectProperty ;
+comon:partOfScenario a owl:ObjectProperty ;
     rdfs:label "part of scenario" ;
     rdfs:comment "part of scenario links resources. The domain is intentionally open for reuse across governed resources. Declared range: Scenario. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:range mc:Scenario .
+    rdfs:range comon:Scenario .
 
-mc:plannedExpiry a owl:DatatypeProperty ;
+comon:plannedExpiry a owl:DatatypeProperty ;
     rdfs:label "planned expiry" ;
     rdfs:comment "Planned deadline distinct from effective closure validTo." ;
-    rdfs:domain mc:TemporalEntity ;
+    rdfs:domain comon:TemporalEntity ;
     rdfs:range xsd:dateTime .
 
-mc:predictionConfidence a owl:DatatypeProperty ;
+comon:predictionConfidence a owl:DatatypeProperty ;
     rdfs:label "prediction confidence" ;
     rdfs:comment "prediction confidence records a literal value. Declared domain: Evaluation State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:decimal .
 
-mc:replicationSource a owl:ObjectProperty ;
+comon:replicationSource a owl:ObjectProperty ;
     rdfs:label "replication source" ;
     rdfs:comment "Identifies the replication source. The intentionally unrestricted range permits nodes, services and payload resources; authorization and allowed kinds are validated separately." ;
-    rdfs:domain mc:ReplicationEvent .
+    rdfs:domain comon:ReplicationEvent .
 
-mc:replicationTarget a owl:ObjectProperty ;
+comon:replicationTarget a owl:ObjectProperty ;
     rdfs:label "replication target" ;
     rdfs:comment "Identifies the replication target. The intentionally unrestricted range permits nodes, services and payload resources; authorization and allowed kinds are validated separately." ;
-    rdfs:domain mc:ReplicationEvent .
+    rdfs:domain comon:ReplicationEvent .
 
-mc:replicationVersion a owl:DatatypeProperty ;
+comon:replicationVersion a owl:DatatypeProperty ;
     rdfs:label "replication version" ;
     rdfs:comment "replication version records a literal value. The domain is intentionally open for reuse across governed resources. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
     rdfs:range xsd:string .
 
-mc:requiresRecalculation a owl:DatatypeProperty ;
+comon:requiresRecalculation a owl:DatatypeProperty ;
     rdfs:label "requires recalculation" ;
     rdfs:comment "requires recalculation records a literal value. Declared domain: Evaluation State. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
+    rdfs:domain comon:EvaluationState ;
     rdfs:range xsd:boolean .
 
-mc:resultedInAction a owl:ObjectProperty ;
+comon:resultedInAction a owl:ObjectProperty ;
     rdfs:label "resulted in action" ;
     rdfs:comment "resulted in action links resources. Declared domain: Evaluation State. Declared range: Adaptation Action. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:AdaptationAction .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:AdaptationAction .
 
-mc:rollbackTarget a owl:ObjectProperty ;
+comon:rollbackTarget a owl:ObjectProperty ;
     rdfs:label "rollback target" ;
     rdfs:comment "rollback target links resources. Declared domain: Rollback Event. Declared range: AI Model. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:RollbackEvent ;
-    rdfs:range mc:AIModel .
+    rdfs:domain comon:RollbackEvent ;
+    rdfs:range comon:AIModel .
 
-mc:selectedAlternative a owl:ObjectProperty ;
+comon:selectedAlternative a owl:ObjectProperty ;
     rdfs:label "selected alternative" ;
     rdfs:comment "selected alternative links resources. Declared domain: Evaluation State. Declared range: Decision Alternative. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:DecisionAlternative .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:DecisionAlternative .
 
-mc:selectedModelTier a owl:ObjectProperty ;
+comon:selectedModelTier a owl:ObjectProperty ;
     rdfs:label "selected model tier" ;
     rdfs:comment "Model tier selected by the AHP-style decision balance." ;
-    rdfs:domain mc:EvaluationState ;
-    rdfs:range mc:ModelTier .
+    rdfs:domain comon:EvaluationState ;
+    rdfs:range comon:ModelTier .
 
-mc:supersedesModel a owl:ObjectProperty ;
+comon:supersedesModel a owl:ObjectProperty ;
     rdfs:label "supersedes model" ;
     rdfs:comment "supersedes model links resources. Declared domain: AI Model. Declared range: AI Model. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain mc:AIModel ;
-    rdfs:range mc:AIModel .
+    rdfs:domain comon:AIModel ;
+    rdfs:range comon:AIModel .
 
-mc:transferDestination a owl:ObjectProperty ;
+comon:transferDestination a owl:ObjectProperty ;
     rdfs:label "transfer destination" ;
     rdfs:comment "Identifies the transfer destination. The intentionally unrestricted range permits nodes, services and payload resources; authorization and allowed kinds are validated separately." ;
-    rdfs:domain mc:TransferEvent .
+    rdfs:domain comon:TransferEvent .
 
-mc:transferSource a owl:ObjectProperty ;
+comon:transferSource a owl:ObjectProperty ;
     rdfs:label "transfer source" ;
     rdfs:comment "Identifies the transfer source. The intentionally unrestricted range permits nodes, services and payload resources; authorization and allowed kinds are validated separately." ;
-    rdfs:domain mc:TransferEvent .
+    rdfs:domain comon:TransferEvent .
 
-mc:triggeredByState a owl:ObjectProperty ;
+comon:triggeredByState a owl:ObjectProperty ;
     rdfs:label "triggered by state" ;
     rdfs:comment "triggered by state links resources. Declared domain: one of Delegation Event, EvaluationState. Declared range: State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
     rdfs:domain <urn:continuum:ontology:4.0.0:node:91> ;
-    rdfs:range mc:State .
+    rdfs:range comon:State .
 
-mc:usesModel a owl:ObjectProperty ;
+comon:usesModel a owl:ObjectProperty ;
     rdfs:label "uses model" ;
     rdfs:comment "Model used by a service. Distinct from hostsModel, whose subject is a ComputationalNode." ;
-    rdfs:domain mc:Service ;
-    rdfs:range mc:AIModel .
+    rdfs:domain comon:Service ;
+    rdfs:range comon:AIModel .
 
 <http://example.org/monitoringcontinuum/modules/orchestration> a owl:Ontology ;
     rdfs:label "Continuum decision and adaptation module"@en ;
@@ -518,73 +518,73 @@ mc:usesModel a owl:ObjectProperty ;
 
 geo:Feature a owl:Class .
 
-mc:AdaptabilityLevel a owl:Class ;
+comon:AdaptabilityLevel a owl:Class ;
     rdfs:label "Adaptability Level" ;
     rdfs:comment "Adaptability Level is a orchestration concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:DecisionMethod a owl:Class ;
+comon:DecisionMethod a owl:Class ;
     rdfs:label "Decision Method" ;
     rdfs:comment "Decision Method is a orchestration concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:MigrationCostLevel a owl:Class ;
+comon:MigrationCostLevel a owl:Class ;
     rdfs:label "Migration Cost Level" ;
     rdfs:comment "Migration Cost Level is a orchestration concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:MigrationTimeLevel a owl:Class ;
+comon:MigrationTimeLevel a owl:Class ;
     rdfs:label "Migration Time Level" ;
     rdfs:comment "Migration Time Level is a orchestration concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:ModelDegradationCause a owl:Class ;
+comon:ModelDegradationCause a owl:Class ;
     rdfs:label "Model Degradation Cause" ;
     rdfs:comment "Model Degradation Cause is a orchestration concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:ProfitabilityLevel a owl:Class ;
+comon:ProfitabilityLevel a owl:Class ;
     rdfs:label "Profitability Level" ;
     rdfs:comment "Profitability Level is a orchestration concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:RollbackEvent a owl:Class ;
+comon:RollbackEvent a owl:Class ;
     rdfs:label "Rollback Event" ;
     rdfs:comment "Rollback Event is a orchestration concept in the monitoring model. It specializes Adaptation Action." ;
-    rdfs:subClassOf mc:AdaptationAction .
+    rdfs:subClassOf comon:AdaptationAction .
 
 <urn:continuum:ontology:4.0.0:node:91> a owl:Class ;
     owl:unionOf <urn:continuum:ontology:4.0.0:node:92> .
 
-<urn:continuum:ontology:4.0.0:node:92> rdf:first mc:DelegationEvent ;
+<urn:continuum:ontology:4.0.0:node:92> rdf:first comon:DelegationEvent ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:93> .
 
-<urn:continuum:ontology:4.0.0:node:93> rdf:first mc:EvaluationState ;
+<urn:continuum:ontology:4.0.0:node:93> rdf:first comon:EvaluationState ;
     rdf:rest () .
 
 <urn:continuum:ontology:4.0.0:node:94> a owl:Class ;
     owl:unionOf <urn:continuum:ontology:4.0.0:node:95> .
 
-<urn:continuum:ontology:4.0.0:node:95> rdf:first mc:ComputationalNode ;
+<urn:continuum:ontology:4.0.0:node:95> rdf:first comon:ComputationalNode ;
     rdf:rest <urn:continuum:ontology:4.0.0:node:96> .
 
-<urn:continuum:ontology:4.0.0:node:96> rdf:first mc:DelegationEvent ;
+<urn:continuum:ontology:4.0.0:node:96> rdf:first comon:DelegationEvent ;
     rdf:rest () .
 
-mc:ReplicationEvent a owl:Class ;
+comon:ReplicationEvent a owl:Class ;
     rdfs:label "Replication Event" ;
     rdfs:comment "Controlled and idempotent replication or synchronization event." ;
-    rdfs:subClassOf mc:TemporalEntity .
+    rdfs:subClassOf comon:TemporalEntity .
 
-mc:PairwiseComparison a owl:Class ;
+comon:PairwiseComparison a owl:Class ;
     rdfs:label "Pairwise Comparison" ;
     rdfs:comment "Pairwise Comparison is a orchestration concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:DecisionAlternative a owl:Class ;
+comon:DecisionAlternative a owl:Class ;
     rdfs:label "Decision Alternative" ;
     rdfs:comment "Decision Alternative is a orchestration concept in the monitoring model. Its operational properties are defined by the modules that use it." .
 
-mc:DelegationEvent a owl:Class ;
+comon:DelegationEvent a owl:Class ;
     rdfs:label "Delegation Event" ;
     rdfs:comment "Reified temporal delegation that records delegator node, delegate node, cause, validity interval and recovery condition." ;
-    rdfs:subClassOf mc:AdaptationAction,
-        mc:TemporalEntity .
+    rdfs:subClassOf comon:AdaptationAction,
+        comon:TemporalEntity .
 
-mc:AdaptationAction a owl:Class ;
+comon:AdaptationAction a owl:Class ;
     rdfs:label "Adaptation Action" ;
     rdfs:comment "Auditable action produced by an EvaluationState." ;
-    rdfs:subClassOf mc:TemporalEntity .
+    rdfs:subClassOf comon:TemporalEntity .

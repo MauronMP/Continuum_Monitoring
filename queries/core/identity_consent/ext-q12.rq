@@ -1,9 +1,9 @@
 # Type: report
 # Purpose: Evaluate semantic contract report using the declared query contract.
-# Requirements: RF-33, RF-34
-# Policies: P-CONS-02, P-CONS-03
+# Requirements: RF-33, RF-34, RF-41
+# Policies: P-CONS-02, P-CONS-03, P-GOV-02
 # Current v4.0.0 result: 28 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,10 +16,10 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?contract ?user ?range ?purpose ?policy ?from ?to WHERE {
-  ?contract a :SemanticContract ; :contractSubject ?user ; :hasConsentRange ?range .
-  OPTIONAL { ?contract :hasProcessingPurpose ?purpose }
-  OPTIONAL { ?contract :governedBy ?policy }
-  OPTIONAL { ?contract :validFrom ?from }
-  OPTIONAL { ?contract :validTo ?to }
+  ?contract a comon:SemanticContract ; comon:contractSubject ?user ; comon:hasConsentRange ?range .
+  OPTIONAL { ?contract comon:hasProcessingPurpose ?purpose }
+  OPTIONAL { ?contract comon:governedBy ?policy }
+  OPTIONAL { ?contract comon:validFrom ?from }
+  OPTIONAL { ?contract comon:validTo ?to }
 }
 ORDER BY ?user ?contract ?purpose ?policy

@@ -1,16 +1,17 @@
 # Experiments and scientific contracts
 
-## Two batteries, one reusable core
+## Three batteries, one reusable core
 
-The project currently exposes two complete evaluation batteries. Their experimental
+The project currently exposes three evaluation batteries. Their experimental
 families are components, not additional standalone research modules. A proposed
-third battery comparing static, threshold/rule-based, context-aware and
+separate battery comparing static, threshold/rule-based, context-aware and
 ontology-plus-policy-aware monitoring is **not implemented**. No current result
 should be presented as that four-strategy comparison.
 
 | Battery | Entry point | Scientific object |
 | --- | --- | --- |
 | 1. Physical architecture evaluation | `continuum-bench suite` | Cost, capacity and query correctness of configured monitoring workloads across a physical continuum. |
+| 3. Container scalability | `continuum-bench container-scale run` | Cost and supported query equivalence as logical participants, users, data and requests grow on fixed physical hosts. |
 | 2. Monitoring-strategy comparison | `python -m continuum_bench.monitoring.comparison run` | Paired operational-plan quality and computational cost of three decision implementations. |
 
 See [Complete execution](COMPLETE_EXECUTION.md) for commands and [Outputs](OUTPUTS.md)
@@ -126,3 +127,25 @@ implementations on matched supported workloads and hardware. The current three
 adapters are controlled baselines only. The future four-strategy battery must
 introduce raw observations, threshold/context mechanisms and an independently
 reviewed oracle before claiming those additional comparisons.
+
+## Battery 3: containerized continuum scalability
+
+[Container scalability](CONTAINER_SCALABILITY.md) documents the complete technical
+and scientific contract. It reuses the maintained worker, partitioner, reasoner
+adapters and query engine under Docker Compose CPU/memory budgets. The coordinator
+remains centralized. Users/data/request growth, fixed-load repartitioning and
+proportional logical-load growth are distinct scenarios. One participant per host
+is the initial profile; more participants do not imply more physical hardware.
+
+Matched distributed and globally replicated placements preserve workload seeds
+and resource budgets. Query fan-out counts are retained as operational work;
+logical throughput uses completed full-catalog requests per second. Supported
+query projections are checked against the replicated reference. This battery
+does not evaluate clinical accuracy, decentralization, mobility or live recovery.
+The full catalog/policy workload is fixed; cumulative category tests remain in
+Battery 1. Fluidity and FogMon motivate the experimentation and overhead analysis,
+respectively; their deployment and self-organization algorithms are not reproduced.
+
+## Optional policy-directed recovery extension
+
+[Adaptive monitoring](ADAPTIVE_MONITORING.md) reuses the container battery to evaluate whether policy-constrained additional service/fragment replicas restore successful execution while the original nodes keep processing queries. It separates application failures from service evidence, preserves workload and deadlines, and records abstentions and unsuccessful recoveries. It is an opt-in extension, not part of the three baseline batteries or proof of uninterrupted service recovery.

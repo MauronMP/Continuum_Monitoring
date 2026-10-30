@@ -3,7 +3,7 @@
 # Requirements: RF-19, RNF-13
 # Policies: P-DATA-08
 # Current v4.0.0 result: 0 rows
-PREFIX : <http://example.org/monitoringcontinuum#>
+PREFIX comon: <http://example.org/monitoringcontinuum#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
@@ -16,13 +16,13 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?event ?type ?source ?target ?replica ?version ?idempotencyKey ?from WHERE {
-  VALUES ?type { :ReplicationEvent :SynchronizationEvent }
+  VALUES ?type { comon:ReplicationEvent comon:SynchronizationEvent }
   ?event a ?type .
-  OPTIONAL { ?event :replicationSource ?source }
-  OPTIONAL { ?event :replicationTarget ?target }
-  OPTIONAL { ?event :replicaOf ?replica }
-  OPTIONAL { ?event :replicationVersion ?version }
-  OPTIONAL { ?event :idempotencyKey ?idempotencyKey }
-  OPTIONAL { ?event :validFrom ?from }
+  OPTIONAL { ?event comon:replicationSource ?source }
+  OPTIONAL { ?event comon:replicationTarget ?target }
+  OPTIONAL { ?event comon:replicaOf ?replica }
+  OPTIONAL { ?event comon:replicationVersion ?version }
+  OPTIONAL { ?event comon:idempotencyKey ?idempotencyKey }
+  OPTIONAL { ?event comon:validFrom ?from }
 }
 ORDER BY ?event

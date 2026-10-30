@@ -5,7 +5,7 @@
 
 <http://example.org/monitoringcontinuum> a owl:Ontology ;
     rdfs:label "Monitoring Continuum Ontology v4.0.0" ;
-    dcterms:identifier "4.0.0-monitoringcontinuum-v1" ;
+    dcterms:identifier "4.0.0-monitoringcontinuum-v2" ;
     dcterms:language "en" ;
     dcterms:modified "2026-10-06"^^xsd:date ;
     dcterms:replaces <http://example.org/smartcity/3.0.0> ;

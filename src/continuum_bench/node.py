@@ -157,11 +157,13 @@ class NodeRuntime:
         *,
         tier: str | None = None,
         topology_name: str | None = None,
+        replica_of: str | None = None,
         topology_file: str | Path = "configs/topologies/physical/topology.toml",
     ) -> None:
         self.root = root
         self.role = role
         self.node_id = role
+        self.logical_role = replica_of or role
         self.topology_name = topology_name or ""
         self.topology: Topology | None = None
         if topology_name:
@@ -182,6 +184,12 @@ class NodeRuntime:
             self.tier = tier or infer_tier(role)
             self.authority = self.tier in {"edge", "iot"}
             self.categories = default_categories(self.tier)
+        if replica_of:
+            if not self.topology:
+                raise ValueError("Replica identity requires an explicit topology")
+            owner = self.topology.node(replica_of)
+            if (owner.tier, owner.authority, owner.categories) != (self.tier, self.authority, self.categories):
+                raise ValueError("Replica must retain its owner's semantic scope")
         self.config = load_config(root / "configs/benchmark.toml")
         self.semantic_digest = semantic_assets_digest(self.config)
         # The full logical graph is loaded lazily. Distributed workers otherwise
@@ -256,7 +264,7 @@ class NodeRuntime:
                         "Distributed fragments must include coordinator-generated data"
                     )
                 source, fragments = deserialize_fragment(
-                    fragment, self.role, users=users, seed=seed,
+                    fragment, getattr(self, "logical_role", self.role), users=users, seed=seed,
                 )
                 clone_ms = 0.0
                 generation_ms = (
@@ -270,7 +278,7 @@ class NodeRuntime:
             violations = (
                 privacy_violations(
                     source,
-                    self.role,
+                    getattr(self, "logical_role", self.role),
                     fragments.sensitive_resources,
                     authority=getattr(self, "authority", None),
                 )
@@ -378,9 +386,9 @@ class NodeRuntime:
                     {}
                     if fragments is None
                     else {
-                        "profile": fragments.placement_profiles[self.role],
+                        "profile": fragments.placement_profiles[getattr(self, "logical_role", self.role)],
                         "local_substrate_triples": (
-                            fragments.substrate_triples_by_role[self.role]
+                            fragments.substrate_triples_by_role[getattr(self, "logical_role", self.role)]
                         ),
                     }
                 ),
@@ -531,6 +539,7 @@ class Handler(BaseHTTPRequestHandler):
                 "backend_availability": "verify-native-runtimes-before-benchmark",
                 "node_id": runtime.node_id,
                 "role": runtime.role,
+                "logical_owner": getattr(runtime, "logical_role", runtime.role),
                 "tier": runtime.tier,
                 "authority": runtime.authority,
                 "categories": list(runtime.categories),
@@ -676,6 +685,7 @@ class NodeServer(HTTPServer):
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Elastic continuum worker node")
+    parser.add_argument("--replica-of", help="Read-only copy of this logical authority")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument(
@@ -715,6 +725,7 @@ def main(argv: list[str] | None = None) -> int:
         tier=args.tier,
         topology_name=args.topology_name,
         topology_file=args.topology_file,
+        replica_of=args.replica_of,
     )
     server = NodeServer((args.host, args.port), runtime)
     previous_sigterm = signal.getsignal(signal.SIGTERM)
