@@ -1,0 +1,15 @@
+{
+  "closure_digest": "c25485b0c50438536ad2075207644d3e5dd16ad39fdaa26f50c716a048a4165a",
+  "expected_query_count": 115,
+  "inferred_triples": 5265,
+  "input_bytes": 1497960,
+  "input_graph_digest": "4ab049a6855e5bf3573d988c32bff3f9375a2bd752c794c2edc6897dbe13511c",
+  "input_triples": 9088,
+  "query_results_digest": "a1636351f461261430d33173ea86e7da654bfcbccaf96c870957bc675e354aa7",
+  "reasoned_triples": 14353,
+  "strict_rdf_closure_digest": "57c544c45bc911d23417ad5877d4468dfe4ac5e394294f02e2bd39afa30e39c3",
+  "strict_rdf_inferred_triples": 2418,
+  "strict_rdf_reasoned_triples": 11506,
+  "synthetic_triples_added": 721,
+  "users": 10
+}

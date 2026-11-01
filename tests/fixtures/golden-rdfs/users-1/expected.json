@@ -1,0 +1,15 @@
+{
+  "closure_digest": "02acf2399ecd40ca6e5849dfd851ec008ed79f5f914b0c941ccd4c26ae9c7ba7",
+  "expected_query_count": 115,
+  "inferred_triples": 4889,
+  "input_bytes": 1398564,
+  "input_graph_digest": "71bb5b94e4ef02df71e67356dd4f42bdc50cde743d8b7e630765711d98761b17",
+  "input_triples": 8458,
+  "query_results_digest": "0977168884f278d9a92dde9632f65b098c1fa7998d10c8a8baaa8ce753b11283",
+  "reasoned_triples": 13347,
+  "strict_rdf_closure_digest": "847a9a5c2cd66a9bdd54a35277ab0c957b9a5f81081fb7d9f155503b98b4ed58",
+  "strict_rdf_inferred_triples": 2112,
+  "strict_rdf_reasoned_triples": 10570,
+  "synthetic_triples_added": 91,
+  "users": 1
+}

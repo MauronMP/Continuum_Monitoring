@@ -38,5 +38,19 @@ SELECT ?resource ?kind ?missing WHERE {
     }
     FILTER NOT EXISTS { ?resource ?prop ?v }
   }
+  UNION
+  {
+    ?resource a comon:Policy ; comon:recommendedMechanism ?mechanism .
+    FILTER NOT EXISTS { ?mechanism comon:supportsPolicy ?resource }
+    BIND("PolicyMechanismLink" AS ?kind)
+    BIND(CONCAT("missing reciprocal supportsPolicy: ", STR(?mechanism)) AS ?missing)
+  }
+  UNION
+  {
+    ?mechanism a comon:MechanismSpecification ; comon:supportsPolicy ?resource .
+    FILTER NOT EXISTS { ?resource comon:recommendedMechanism ?mechanism }
+    BIND("PolicyMechanismLink" AS ?kind)
+    BIND(CONCAT("missing reciprocal recommendedMechanism: ", STR(?mechanism)) AS ?missing)
+  }
 }
 ORDER BY ?kind ?resource ?missing

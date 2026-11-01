@@ -11,14 +11,15 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX s4ehaw: <https://saref.etsi.org/saref4ehaw/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?sensor ?sensorType ?device WHERE {
   ?sensor a ?sensorType .
-  ?sensorType rdfs:subClassOf* comon:PhysiologicalSensor .
-  FILTER(?sensorType != comon:PhysiologicalSensor)
+  ?sensorType rdfs:subClassOf* s4ehaw:HealthSensor .
+  FILTER(?sensorType != s4ehaw:HealthSensor)
   OPTIONAL { ?device saref:consistsOf ?sensor }
 }
 ORDER BY ?device ?sensor

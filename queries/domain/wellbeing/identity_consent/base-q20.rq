@@ -11,6 +11,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX s4ehaw: <https://saref.etsi.org/saref4ehaw/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -19,7 +20,7 @@ SELECT ?user ?name ?zone ?wearable ?mobile ?activeRange ?consentRecord ?contract
   ?user a comon:User .
   OPTIONAL { ?user foaf:name ?name }
   OPTIONAL { ?user comon:locatedInZone ?zone }
-  OPTIONAL { ?user comon:hasWearable ?wearable }
+  OPTIONAL { ?wearable s4ehaw:isAttachedTo ?user }
   OPTIONAL { ?user comon:hasMobileDevice ?mobile }
   OPTIONAL { ?user comon:hasActiveConsentRange ?activeRange }
   OPTIONAL { ?user comon:hasConsentRecord ?consentRecord }

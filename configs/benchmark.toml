@@ -1,74 +1,88 @@
-[paths]
-ontology_files = [
-  "ontology/core/schema.ttl",
-  "ontology/modules/foundation.ttl",
-  "ontology/modules/contracts.ttl",
-  "ontology/modules/topology.ttl",
-  "ontology/modules/observability.ttl",
-  "ontology/modules/governance.ttl",
-  "ontology/modules/orchestration.ttl",
-  "ontology/modules/federation.ttl",
-  "ontology/modules/deployment.ttl",
-  "ontology/core/vocabulary.ttl",
-  "ontology/domains/wellbeing/schema.ttl",
-  "ontology/domains/wellbeing/vocabulary.ttl",
-  "ontology/examples/reference-system.ttl",
-  "ontology/shapes/core-compliance.ttl",
-  "ontology/shapes/federated-learning.ttl",
-]
-shape_files = [
-  "ontology/shapes/core-compliance.ttl",
-  "ontology/shapes/federated-learning.ttl",
-]
-query_catalog = "queries/catalog.csv"
-topology_file = "configs/topologies/physical/topology.toml"
-output_dir = "outputs"
+[deployment]
+topology_file = "configs/topology.toml"
+remote_dir = "/home/pi/continuum-rdf-benchmark"
+ssh_user = "pi"
+image = "continuum-worker:rust-v1"
+containers_per_host = 1
+cpu_per_container = 1.0
+memory_mib_per_container = 1536
+max_prepare_mib = 256
+reserve_memory_mib = 1536
+minimum_free_disk_mib = 4096
+health_timeout_seconds = 120
+operation_timeout_seconds = 7200
 
-[distributed]
-# Five minutes bounds one worker request. A timeout remains a right-censored
-# observation and later points continue so one slow profile does not erase the
-# remainder of the matrix.
-request_timeout_seconds = 300
-request_retries = 0
-query_batch_size = 4
-worker_timeout_margin_seconds = 2
-
-[limits]
-# Bounded is recommended and enforces budgets. Unlimited is optional and can
-# block indefinitely when a native reasoner does not return.
-timeout_mode = "bounded"
-# Independent timeout-only skip triggers. Real errors remain errors.
-consecutive_timeout_threshold = 1
-skip_repetitions_after_timeout = false
-skip_larger_sizes_after_timeout = false
-skip_cumulative_stages_after_timeout = false
-# In bounded mode an exceeded phase/point budget is recorded as a timeout.
-# The explicit triggers above determine whether later observations are omitted.
-phase_timeout_seconds = 300
-point_timeout_seconds = 900
-calibration_query_limit = 16
-stop_scaling_after_timeout = false
-
-[benchmark]
-reasoners = ["rdfs", "hermit", "openllet", "jfact", "konclude"]
-category_order = [
-  "topology",
-  "semantic_schema",
-  "observability",
-  "identity_consent",
-  "data_lifecycle",
-  "security_identity",
-  "context_zones",
-  "trust",
-  "decision",
-  "policy_governance",
-  "adaptation",
-  "delegation",
-  "federation",
-  "audit_temporal",
-  "validation",
-  "wellbeing",
-]
-scale_users = [10, 100, 500, 1000, 2500, 5000]
-repetitions = 3
+[experiment]
 seed = 2026
+warmup = 1
+repetitions = 3
+query_rounds = 18
+request_timeout_seconds = 120
+prepare_operational_target_seconds = 120
+prepare_hard_timeout_seconds = 600
+layouts = ["distributed", "replicated"]
+resource_sample_interval_seconds = 1.0
+
+[[scenarios]]
+name = "users-1"
+users = 1
+
+[[scenarios]]
+name = "users-50"
+users = 50
+
+[[scenarios]]
+name = "users-100"
+users = 100
+
+[[scenarios]]
+name = "users-500"
+users = 500
+
+[[scenarios]]
+name = "users-1000"
+users = 1000
+
+[[scenarios]]
+name = "users-2000"
+users = 2000
+
+[[scenarios]]
+name = "users-4000"
+users = 4000
+
+[[scenarios]]
+name = "users-5000"
+users = 5000
+
+[[scenarios]]
+name = "users-6000"
+users = 6000
+
+[[scenarios]]
+name = "users-7000"
+users = 7000
+
+[[scenarios]]
+name = "users-10000"
+users = 10000
+
+[[scenarios]]
+name = "users-12000"
+users = 12000
+
+[[scenarios]]
+name = "users-14000"
+users = 14000
+
+[[scenarios]]
+name = "users-16000"
+users = 16000
+
+[[scenarios]]
+name = "users-18000"
+users = 18000
+
+[[scenarios]]
+name = "users-20000"
+users = 20000

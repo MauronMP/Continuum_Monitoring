@@ -11,6 +11,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX s4ehaw: <https://saref.etsi.org/saref4ehaw/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -25,7 +26,7 @@ SELECT DISTINCT ?subject ?violationType ?destinationOrTier WHERE {
   UNION
   {
     ?user a comon:User ; comon:locatedInZone ?zone . ?zone a comon:RestrictedZone .
-    ?user (comon:hasWearable|comon:hasMobileDevice) ?device .
+    ?user (^s4ehaw:isAttachedTo|comon:hasMobileDevice) ?device .
     ?transfer a comon:TransferEvent ; comon:transferSource ?device ; comon:transferDestination ?dest .
     ?dest a ?destType . FILTER(?destType IN (comon:EdgeNode,comon:FogNode,comon:CloudNode))
     BIND(?transfer AS ?subject) BIND("external-transfer" AS ?violationType) BIND(?dest AS ?destinationOrTier)

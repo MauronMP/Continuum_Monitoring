@@ -19,6 +19,7 @@ htmlcov/
 build/
 dist/
 target/
+rust/target/
 *.class
 # Benchmark outputs and scratch files
 outputs/*
@@ -34,8 +35,3 @@ tmp/
 *~
 .DS_Store
 Thumbs.db
-
-# Publish the complete latest evidence, including failure logs.
-!outputs/latest/
-!outputs/latest/**
-outputs/latest/.report-venv/

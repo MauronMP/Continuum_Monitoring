@@ -1,147 +1,124 @@
 @prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix saref: <https://saref.etsi.org/core/> .
+@prefix s4ehaw: <https://saref.etsi.org/saref4ehaw/> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 comon:AccelerometerSensor a owl:Class ;
     rdfs:label "Accelerometer Sensor" ;
-    rdfs:comment "Determines user mobility and physical activity." ;
-    rdfs:subClassOf comon:PhysiologicalSensor .
+    rdfs:comment "Health sensor that determines user mobility and physical activity." ;
+    rdfs:subClassOf s4ehaw:HealthSensor, sosa:Sensor .
 
 comon:EDASensor a owl:Class ;
     rdfs:label "EDA Sensor" ;
-    rdfs:comment "Electrodermal activity sensor." ;
-    rdfs:subClassOf comon:PhysiologicalSensor .
+    rdfs:comment "Health sensor that measures electrodermal activity." ;
+    rdfs:subClassOf s4ehaw:HealthSensor, sosa:Sensor .
 
 comon:HeartRateSensor a owl:Class ;
     rdfs:label "Heart Rate Sensor" ;
-    rdfs:comment "Heart Rate Sensor is a schema concept in the monitoring model. It specializes Physiological Sensor." ;
-    rdfs:subClassOf comon:PhysiologicalSensor .
+    rdfs:comment "Health sensor that observes heart rate." ;
+    rdfs:subClassOf s4ehaw:HealthSensor, sosa:Sensor .
 
 comon:PhysiologicalObservation a owl:Class ;
     rdfs:label "Physiological Observation" ;
-    rdfs:comment "Physiological Observation is a schema concept in the monitoring model. It specializes http://www.w3.org/ns/sosa/Observation." ;
+    rdfs:comment "Application profile for SOSA observations of physiological properties." ;
     rdfs:subClassOf sosa:Observation .
 
 comon:PhysiologicalParametrizedData a owl:Class ;
     rdfs:label "Physiological Parametrized Data" ;
-    rdfs:comment "EDA, HR, SpO2, etc. Sent during the day or at night when conditions allow." ;
+    rdfs:comment "EDA, heart-rate and oxygen-saturation data prepared for policy-controlled transfer." ;
     rdfs:subClassOf comon:ParametrizedData .
 
 comon:SleepObservation a owl:Class ;
     rdfs:label "Sleep Observation" ;
-    rdfs:comment "Sleep Observation is a schema concept in the monitoring model. It specializes http://www.w3.org/ns/sosa/Observation." ;
+    rdfs:comment "Application profile for SOSA observations of sleep properties." ;
     rdfs:subClassOf sosa:Observation .
 
 comon:SleepParametrizedData a owl:Class ;
     rdfs:label "Sleep Parametrized Data" ;
-    rdfs:comment "Sleep quality and phase durations. Generated when the user wakes up." ;
+    rdfs:comment "Sleep quality and phase durations prepared after the user wakes up." ;
     rdfs:subClassOf comon:ParametrizedData .
 
 comon:SleepSensor a owl:Class ;
     rdfs:label "Sleep Sensor" ;
-    rdfs:comment "Captures total duration, phases (REM, deep, light) and sleep quality." ;
-    rdfs:subClassOf comon:PhysiologicalSensor .
+    rdfs:comment "Health sensor that captures sleep duration, phases and quality." ;
+    rdfs:subClassOf s4ehaw:HealthSensor, sosa:Sensor .
 
 comon:SmartBand a owl:Class ;
     rdfs:label "Smart Band" ;
-    rdfs:comment "Smart Band is a schema concept in the monitoring model. It specializes Wearable." ;
-    rdfs:subClassOf comon:Wearable .
+    rdfs:comment "Health wearable implemented as a smart band." ;
+    rdfs:subClassOf s4ehaw:HealthWearable .
 
 comon:SmartRing a owl:Class ;
     rdfs:label "Smart Ring" ;
-    rdfs:comment "Smart Ring is a schema concept in the monitoring model. It specializes Wearable." ;
-    rdfs:subClassOf comon:Wearable .
+    rdfs:comment "Health wearable implemented as a smart ring." ;
+    rdfs:subClassOf s4ehaw:HealthWearable .
 
 comon:SmartWatch a owl:Class ;
     rdfs:label "Smart Watch" ;
-    rdfs:comment "Smart Watch is a schema concept in the monitoring model. It specializes Wearable." ;
-    rdfs:subClassOf comon:Wearable .
+    rdfs:comment "Health wearable implemented as a smart watch." ;
+    rdfs:subClassOf s4ehaw:HealthWearable .
 
 comon:SpO2Sensor a owl:Class ;
     rdfs:label "SpO2 Sensor" ;
-    rdfs:comment "Blood oxygen saturation sensor." ;
-    rdfs:subClassOf comon:PhysiologicalSensor .
+    rdfs:comment "Health sensor that measures blood oxygen saturation." ;
+    rdfs:subClassOf s4ehaw:HealthSensor, sosa:Sensor .
 
 comon:StressObservation a owl:Class ;
     rdfs:label "Stress Observation" ;
-    rdfs:comment "Output of the stress prediction model." ;
+    rdfs:comment "Application-level SOSA observation produced by the stress prediction model." ;
     rdfs:subClassOf sosa:Observation .
 
 comon:TemperatureSensor a owl:Class ;
     rdfs:label "Skin Temperature Sensor" ;
-    rdfs:comment "Skin temperature — used as stress indicator." ;
-    rdfs:subClassOf comon:PhysiologicalSensor .
+    rdfs:comment "Health sensor that measures skin temperature as a possible stress indicator." ;
+    rdfs:subClassOf s4ehaw:HealthSensor, sosa:Sensor .
 
 comon:generatedBy a owl:ObjectProperty ;
     rdfs:label "generated by" ;
-    rdfs:comment "generated by links resources. Declared domain: Parametrized Data. Declared range: Wearable. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "Links parametrized data to the health wearable that generated it." ;
     rdfs:domain comon:ParametrizedData ;
-    rdfs:range comon:Wearable .
+    rdfs:range s4ehaw:HealthWearable .
 
 comon:hasDeviceState a owl:ObjectProperty ;
     rdfs:label "has device state" ;
-    rdfs:comment "has device state links resources. Declared domain: Wearable. Declared range: Device State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain comon:Wearable ;
+    rdfs:comment "Links a health wearable to its dynamic device state." ;
+    rdfs:domain s4ehaw:HealthWearable ;
     rdfs:range comon:DeviceState .
-
-comon:hasMeasurementUnit a owl:ObjectProperty ;
-    rdfs:label "has Measurement Unit" ;
-    rdfs:comment "has Measurement Unit links resources. Declared domain: http://www.w3.org/ns/sosa/Observation. Declared range: Measurement unit. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain sosa:Observation ;
-    rdfs:range comon:MeasurementUnit .
 
 comon:hasPersonStatus a owl:ObjectProperty ;
     rdfs:label "has person status" ;
-    rdfs:comment "has person status links resources. Declared domain: User State. Declared range: Person Status. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "Links a user state to the application-specific person status used by monitoring policies." ;
     rdfs:domain comon:UserState ;
     rdfs:range comon:PersonStatus .
 
 comon:hasPredictedStressLevel a owl:ObjectProperty ;
     rdfs:label "has predicted stress level" ;
-    rdfs:comment "has predicted stress level links resources. Declared domain: User State. Declared range: Stress Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "Links a user state to the stress level produced by the configured prediction model." ;
     rdfs:domain comon:UserState ;
     rdfs:range comon:StressLevel .
 
-comon:hasWearable a owl:ObjectProperty ;
-    rdfs:label "has wearable" ;
-    rdfs:comment "has wearable links resources. Declared domain: User. Declared range: Wearable. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
-    rdfs:domain comon:User ;
-    rdfs:range comon:Wearable .
-
 comon:measurementUnitStatus a owl:DatatypeProperty ;
-    rdfs:label "measurement Unit Status" ;
-    rdfs:comment "measurement Unit Status records a literal value. Declared domain: http://www.w3.org/ns/sosa/Observation. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:label "measurement unit status" ;
+    rdfs:comment "Records why a source observation has no QUDT quantity value and unit." ;
     rdfs:domain sosa:Observation ;
     rdfs:range xsd:string .
 
 <http://example.org/monitoringcontinuum/modules/wellbeing> a owl:Ontology ;
     rdfs:label "Optional wellbeing monitoring profile"@en ;
-    owl:imports <http://example.org/monitoringcontinuum/modules/foundation>,
+    owl:imports <http://example.org/monitoringcontinuum/alignments/health-vocabularies>,
+        <http://example.org/monitoringcontinuum/modules/foundation>,
         <http://example.org/monitoringcontinuum/modules/observability>,
         <http://example.org/monitoringcontinuum/modules/orchestration> ;
     owl:versionInfo "4.0.0" .
 
-comon:MeasurementUnit a owl:Class ;
-    rdfs:label "Measurement unit" ;
-    rdfs:comment "Measurement unit is a schema concept in the monitoring model. Its operational properties are defined by the modules that use it." .
+comon:User rdfs:subClassOf s4ehaw:HealthActor .
 
 comon:PersonStatus a owl:Class ;
     rdfs:label "Person Status" ;
-    rdfs:comment "Person Status is a schema concept in the monitoring model. Its operational properties are defined by the modules that use it." .
+    rdfs:comment "Application status used to interpret a monitored person's current context." .
 
 comon:StressLevel a owl:Class ;
     rdfs:label "Stress Level" ;
-    rdfs:comment "Stress Level is a schema concept in the monitoring model. Its operational properties are defined by the modules that use it." .
-
-comon:PhysiologicalSensor a owl:Class ;
-    rdfs:label "Physiological Sensor" ;
-    rdfs:comment "Physiological Sensor is a schema concept in the monitoring model. It specializes http://www.w3.org/ns/sosa/Sensor." ;
-    rdfs:subClassOf sosa:Sensor .
-
-comon:Wearable a owl:Class ;
-    rdfs:label "Wearable" ;
-    rdfs:comment "Personal IoT device (smartwatch, smart ring, smart band)." ;
-    rdfs:subClassOf saref:Device .
+    rdfs:comment "Application-specific classification produced by a configured stress model." .

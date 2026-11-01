@@ -1,6 +1,7 @@
 @prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix s4wear: <https://saref.etsi.org/saref4wear/> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
 
 comon:Agitated a comon:PersonStatus,
@@ -15,11 +16,13 @@ comon:Calm a comon:PersonStatus,
         owl:NamedIndividual ;
     rdfs:label "Calm" .
 
-comon:EDAProperty a sosa:ObservableProperty .
+comon:EDAProperty a s4wear:BiometricProperty, sosa:ObservableProperty ;
+    rdfs:label "Electrodermal activity" ;
+    rdfs:comment "Biometric observable retained locally because SAREF4WEAR 2.1.1 has no exact EDA individual." .
 
-comon:HeartRateProperty a sosa:ObservableProperty .
-
-comon:SleepQualityProperty a sosa:ObservableProperty .
+comon:SleepQualityProperty a s4wear:BiometricProperty, sosa:ObservableProperty ;
+    rdfs:label "Sleep quality" ;
+    rdfs:comment "Biometric observable retained locally because SAREF4WEAR 2.1.1 has no exact sleep-quality individual." .
 
 comon:StressCritical a comon:StressLevel,
         owl:NamedIndividual ;

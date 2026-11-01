@@ -1,3 +1,0 @@
-layout,reasoner,reasoning_task,node_count,largest_successful_graph,smallest_censored_graph,capacity_observation
-distributed,rdfs,rdfs_closure,6,0,,within-tested-range
-replicated,rdfs,rdfs_closure,6,0,,within-tested-range

@@ -1,0 +1,131 @@
+import csv
+import json
+
+from continuum_bench.config import load_config
+from continuum_bench.deployment import render, restart_workers
+from continuum_bench.experiment import _failure_status
+from continuum_bench.reporting import report
+from continuum_bench.resources import _bytes, _io_pair
+from continuum_bench.topology import load_topology
+
+
+def test_failure_categories_are_explicit():
+    assert _failure_status(RuntimeError("semantic_mismatch: digest")) == "semantic_mismatch"
+    assert _failure_status(RuntimeError("payload_limit_exceeded: 3 > 2")) == "payload_limit_exceeded"
+    assert _failure_status(TimeoutError("operation timed out")) == "hard_timeout"
+    assert _failure_status(RuntimeError("did not become ready: ready=False assets=False")) == "incompatible_worker"
+    assert _failure_status(RuntimeError("connection reset")) == "failed"
+
+
+def test_resource_units_are_parsed():
+    assert _bytes("1.5 MiB") == 1_572_864
+    assert _io_pair("2kB / 3kB") == (2000, 3000)
+
+
+def test_render_emits_one_compatible_environment_per_host(root, tmp_path):
+    config = load_config(root / "configs/benchmark.toml")
+    topology = load_topology(root / "configs/topology.toml")
+    output = render(config, topology, tmp_path / "deployment")
+    manifest = json.loads((output / "deployment.json").read_text())
+    assert len(manifest["hosts"]) == 6
+    for host in topology.hosts:
+        text = (output / f"{host.id}.env").read_text()
+        assert "CONTINUUM_QUERY_COUNT=113" in text
+        assert "CONTINUUM_MAX_PREPARE_BYTES=268435456" in text
+        assert f"CONTINUUM_NODE_ID={host.id}" in text
+
+
+def test_oom_recovery_skips_hosts_that_do_not_require_restart(root):
+    config = load_config(root / "configs/benchmark.toml")
+    topology = load_topology(root / "configs/topology.toml")
+    assert restart_workers(config, topology, set()) == [{"host": host.id, "required": False} for host in topology.hosts]
+
+
+def test_report_excludes_warmup_and_emits_auditable_outputs(tmp_path):
+    run_dir = tmp_path / "run"
+    measured = run_dir / "scenarios/users-1/distributed/rep-01"
+    warmup = run_dir / "scenarios/users-1/distributed/warmup-01"
+    measured.mkdir(parents=True)
+    warmup.mkdir(parents=True)
+    result = {
+        "scenario": "users-1",
+        "users": 1,
+        "layout": "distributed",
+        "warmup": False,
+        "repetition": 1,
+        "status": "completed_within_target",
+        "partition_seconds": 0.1,
+        "serialize_seconds": 0.2,
+        "preparation_seconds": 0.7,
+        "dataset": {
+            "actual_input_triples": 100,
+            "dataset_bytes": 1000,
+            "dataset_digest": "dataset",
+            "dataset_generation_seconds": 0.01,
+        },
+        "preparation": [
+            {
+                "host": "edge1",
+                "transfer_seconds": 0.1,
+                "remote_load_seconds": 0.3,
+                "transfer_and_remote_seconds": 0.5,
+                "payload_bytes": 1000,
+                "dataset_digest": "fragment",
+                "closure_digest": "closure",
+                "reasoning": {
+                    "reasoning_seconds": 0.1,
+                    "triples_before_reasoning": 100,
+                    "triples_after_reasoning": 120,
+                },
+            }
+        ],
+    }
+    (measured / "result.json").write_text(json.dumps(result))
+    (warmup / "result.json").write_text(json.dumps(result | {"warmup": True, "preparation_seconds": 999}))
+    (measured / "logical_queries.json").write_text(
+        json.dumps(
+            [
+                {
+                    "query_id": "Q1",
+                    "round": 1,
+                    "layout": "distributed",
+                    "users": 1,
+                    "repetition": 1,
+                    "duration_ms": 5.0,
+                    "status": "completed",
+                }
+            ]
+        )
+    )
+    (measured / "catalog_rounds.json").write_text(
+        json.dumps([{"round": 1, "duration_seconds": 2.0, "logical_queries": 10, "physical_executions": 20}])
+    )
+    samples = [
+        {
+            "host": "edge1",
+            "cpu_percent": 10.0,
+            "cpu_usage_seconds": 2.0,
+            "memory_bytes": 100,
+            "network_rx_bytes": 1000,
+            "network_tx_bytes": 2000,
+        },
+        {
+            "host": "edge1",
+            "cpu_percent": 20.0,
+            "cpu_usage_seconds": 3.5,
+            "memory_bytes": 200,
+            "network_rx_bytes": 1500,
+            "network_tx_bytes": 2600,
+        },
+    ]
+    (measured / "resources.jsonl").write_text("\n".join(json.dumps(row) for row in samples) + "\n")
+
+    summary = report(run_dir)
+    with (summary / "scalability.csv").open() as handle:
+        row = next(csv.DictReader(handle))
+    assert float(row["preparation_seconds_median"]) == 0.7
+    assert float(row["cpu_seconds_median"]) == 1.5
+    assert float(row["network_rx_bytes_median"]) == 500
+    assert float(row["catalog_throughput_per_second"]) == 5
+    assert (summary / "preparation.csv").is_file()
+    assert len(list((run_dir / "figures").glob("*.png"))) == 14

@@ -1,0 +1,45 @@
+name = "physical-tailscale-continuum"
+
+[[hosts]]
+id = "cloud"
+tier = "cloud"
+authority = "global"
+address = "100.86.63.53"
+port = 8391
+local = true
+
+[[hosts]]
+id = "fog"
+tier = "fog"
+authority = "regional"
+address = "100.93.73.27"
+port = 8391
+
+[[hosts]]
+id = "mist"
+tier = "mist"
+authority = "near-edge"
+address = "100.72.111.107"
+port = 8391
+
+[[hosts]]
+id = "edge1"
+tier = "edge"
+authority = "partition-a"
+address = "100.101.178.35"
+port = 8391
+
+[[hosts]]
+id = "edge2"
+tier = "edge"
+authority = "partition-b"
+address = "100.70.9.117"
+port = 8391
+
+[[hosts]]
+id = "edge3"
+tier = "edge"
+authority = "partition-c"
+address = "100.121.135.60"
+port = 8391
+

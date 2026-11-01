@@ -2,6 +2,8 @@
 @prefix comon: <http://example.org/monitoringcontinuum#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix s4ehaw: <https://saref.etsi.org/saref4ehaw/> .
+@prefix s4wear: <https://saref.etsi.org/saref4wear/> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -594,7 +596,7 @@ comon:Obs_HR_A1 a comon:PhysiologicalObservation,
     sosa:hasFeatureOfInterest comon:UserA ;
     sosa:hasSimpleResult 78 ;
     sosa:madeBySensor comon:HRSensorA ;
-    sosa:observedProperty comon:HeartRateProperty ;
+    sosa:observedProperty s4wear:HeartRate ;
     sosa:resultTime "2026-05-04T10:01:00"^^xsd:dateTime .
 
 comon:Obs_Sleep_A1 a comon:SleepObservation,
@@ -1119,7 +1121,8 @@ comon:Authorization_Eval_S8 a comon:AuthorizationDecision,
 comon:BandC a comon:SmartBand,
         owl:NamedIndividual ;
     rdfs:label "Smart Band C1" ;
-    comon:hasDeviceState comon:DeviceState_S7_BandC .
+    comon:hasDeviceState comon:DeviceState_S7_BandC ;
+    s4ehaw:isAttachedTo comon:UserC .
 
 comon:CareFacilityCommunity a comon:Community,
         owl:NamedIndividual ;
@@ -1463,7 +1466,7 @@ comon:HRSensorA a comon:HeartRateSensor,
         owl:NamedIndividual ;
     rdfs:label "HR Sensor - Watch A" ;
     sosa:isHostedBy comon:WatchA ;
-    sosa:observes comon:HeartRateProperty .
+    sosa:observes s4wear:HeartRate .
 
 comon:LocalAnonymizationMechanism a comon:PrivacyMechanism,
         owl:NamedIndividual ;
@@ -2242,7 +2245,8 @@ comon:UserState_S8_D a comon:UserState,
 comon:WatchD a comon:SmartWatch,
         owl:NamedIndividual ;
     rdfs:label "Smart Watch D1" ;
-    comon:connectsTo comon:InternalEdgeFacility .
+    comon:connectsTo comon:InternalEdgeFacility ;
+    s4ehaw:isAttachedTo comon:UserD .
 
 comon:Alternative_Eval_S1_EdgeModelTier a comon:DecisionAlternative,
         owl:NamedIndividual ;
@@ -2430,10 +2434,6 @@ comon:GradientUpdate_S6_A a comon:ModelGradientUpdate,
     comon:partOfScenario comon:S6 ;
     comon:sendTimestamp "2026-05-04T02:59:30"^^xsd:dateTime ;
     comon:sentToNode comon:CloudNode1 .
-
-comon:HeartRateProperty a owl:NamedIndividual ;
-    rdfs:label "Heart Rate" ;
-    rdfs:comment "Observable property: heart rate in bpm." .
 
 comon:NodeState_S2_Fog1 a comon:NodeState,
         owl:NamedIndividual ;
@@ -3620,7 +3620,8 @@ comon:RingB a comon:MistNode,
         comon:P-NODE-02,
         comon:P-NODE-03 ;
     comon:hasDeviceState comon:DeviceState_S5_RingB ;
-    rdfs:comment "Acts as a personal Mist node for local-only processing under UserB effective authorization." .
+    rdfs:comment "Acts as a personal Mist node for local-only processing under UserB effective authorization." ;
+    s4ehaw:isAttachedTo comon:UserB .
 
 comon:UserB a comon:User,
         owl:NamedIndividual ;
@@ -3633,7 +3634,6 @@ comon:UserB a comon:User,
     comon:hasRole comon:EndUserRole ;
     comon:hasSemanticContract comon:Contract_UserB_LocalOnly ;
     comon:hasUserState comon:UserState_S5_B ;
-    comon:hasWearable comon:RingB ;
     foaf:name "Participant B" .
 
 comon:UserC a comon:User,
@@ -3648,7 +3648,6 @@ comon:UserC a comon:User,
     comon:hasRole comon:EndUserRole ;
     comon:hasSemanticContract comon:Contract_UserC_Community ;
     comon:hasUserState comon:UserState_S7_C ;
-    comon:hasWearable comon:BandC ;
     comon:locatedInZone comon:NorthRuralZone ;
     foaf:name "Participant C" .
 
@@ -3664,7 +3663,6 @@ comon:UserD a comon:User,
     comon:hasRole comon:EndUserRole ;
     comon:hasSemanticContract comon:Contract_UserD_RestrictedFacility ;
     comon:hasUserState comon:UserState_S8_D ;
-    comon:hasWearable comon:WatchD ;
     comon:locatedInZone comon:CareFacility1 ;
     foaf:name "Participant D" .
 
@@ -5375,7 +5373,8 @@ comon:WatchA a comon:SmartWatch,
     rdfs:label "Smart Watch A1" ;
     comon:connectsTo comon:EdgeNode1 ;
     comon:hasDeviceState comon:DeviceState_S1_WatchA,
-        comon:DeviceState_S4_WatchA .
+        comon:DeviceState_S4_WatchA ;
+    s4ehaw:isAttachedTo comon:UserA .
 
 comon:M-CONS-01 a comon:MechanismSpecification,
         owl:NamedIndividual ;
@@ -5453,7 +5452,6 @@ comon:UserA a comon:User,
     comon:hasUserState comon:UserState_S1_A,
         comon:UserState_S2,
         comon:UserState_S4 ;
-    comon:hasWearable comon:WatchA ;
     comon:locatedInZone comon:CityCentreZone ;
     foaf:name "Participant A" .
 
@@ -5843,6 +5841,66 @@ comon:M-AUD-01 a comon:MechanismSpecification,
         comon:P-GOV-02,
         comon:P-MODEL-05,
         comon:P-MODEL-08 .
+
+# Reciprocal support links complete the policy-to-mechanism recommendations.
+# They make recommendedMechanism and supportsPolicy consistent without implying
+# that every declared mechanism is fully enforced by the current runtime.
+comon:M-ADAPT-02 comon:supportsPolicy comon:P-NODE-06,
+        comon:P-OPS-04 .
+
+comon:M-AUD-01 comon:supportsPolicy comon:P-FL-07,
+        comon:P-NODE-04,
+        comon:P-NODE-06 .
+
+comon:M-BUFFER-01 comon:supportsPolicy comon:P-ADAPT-02,
+        comon:P-DATA-06,
+        comon:P-DATA-09,
+        comon:P-OPS-06 .
+
+comon:M-CONS-02 comon:supportsPolicy comon:P-DATA-07,
+        comon:P-FL-02,
+        comon:P-FL-06,
+        comon:P-GOV-03,
+        comon:P-MODEL-06,
+        comon:P-NODE-02,
+        comon:P-ZONE-01 .
+
+comon:M-FL-01 comon:supportsPolicy comon:P-ADAPT-05 .
+
+comon:M-FL-02 comon:supportsPolicy comon:P-FL-07 .
+
+comon:M-GOV-02 comon:supportsPolicy comon:P-CONS-03 .
+
+comon:M-NODE-02 comon:supportsPolicy comon:P-ADAPT-01,
+        comon:P-ADAPT-04,
+        comon:P-DATA-07,
+        comon:P-FL-01,
+        comon:P-MODEL-01,
+        comon:P-NODE-05,
+        comon:P-ZONE-03 .
+
+comon:M-TIME-01 comon:supportsPolicy comon:P-GOV-05,
+        comon:P-OPS-05 .
+
+comon:M-TX-02 comon:supportsPolicy comon:P-ADAPT-08,
+        comon:P-ZONE-02 .
+
+comon:M-VAL-01 comon:supportsPolicy comon:P-INT-01 .
+
+comon:M-VAL-04 comon:supportsPolicy comon:P-DATA-03,
+        comon:P-FL-08,
+        comon:P-NODE-03,
+        comon:P-OPS-01,
+        comon:P-VAL-08 .
+
+comon:M-VAL-05 comon:supportsPolicy comon:P-INT-02 .
+
+comon:M-ZONE-01 comon:supportsPolicy comon:P-DATA-05,
+        comon:P-FL-02,
+        comon:P-FL-06,
+        comon:P-GOV-03,
+        comon:P-MODEL-06,
+        comon:P-NODE-02 .
 
 comon:RequirementsArtifact_Revised a comon:RequirementsArtifact,
         owl:NamedIndividual ;

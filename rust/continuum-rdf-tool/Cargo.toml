@@ -1,0 +1,15 @@
+[package]
+name = "continuum-rdf-tool"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+continuum-rdf = { path = "../continuum-rdf" }
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

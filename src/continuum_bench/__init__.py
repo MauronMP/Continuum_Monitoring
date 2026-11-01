@@ -1,3 +1,3 @@
-"""Policy-driven monitoring evaluation for the physical computing continuum."""
+"""Control plane for the Docker RDF Scalability Benchmark."""
 
-__version__ = "0.5.0"
+__version__ = "0.1.0"

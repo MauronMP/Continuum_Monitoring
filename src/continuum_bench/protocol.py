@@ -1,141 +1,50 @@
-"""HTTP contract shared by continuum benchmark coordinators and workers."""
-
 from __future__ import annotations
 
-from hashlib import sha256
-from pathlib import Path
-from typing import Any, Mapping
-
-from . import __version__
-from .specification import ONTOLOGY_REVISION, ONTOLOGY_VERSION
-from .reasoners import REASONING_CONTRACT
-from .topology import NODE_ID_PATTERN, TIERS
+import json
+from time import monotonic, sleep
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 
-WORKER_SERVICE = "continuum-benchmark-node"
-WORKER_PROTOCOL_VERSION = "10"
-EXPECTED_QUERY_COUNT = 115
-
-
-def _software_build_id() -> str:
-    """Identify the exact installed Python source used by this process."""
-
-    package_root = Path(__file__).resolve().parent
-    digest = sha256()
-    for path in sorted(package_root.rglob("*.py")):
-        relative = path.relative_to(package_root).as_posix().encode("utf-8")
-        digest.update(relative)
-        digest.update(b"\0")
-        digest.update(path.read_bytes())
-        digest.update(b"\0")
-    return (
-        f"continuum-benchmark-{__version__}-protocol-"
-        f"{WORKER_PROTOCOL_VERSION}-source-{digest.hexdigest()[:16]}"
-    )
-
-
-SOFTWARE_BUILD_ID = _software_build_id()
-
-
-def worker_health_error(
-    health: Mapping[str, Any],
+def request_json(
+    url: str,
     *,
-    expected_role: str | None = None,
-    expected_node_id: str | None = None,
-    expected_tier: str | None = None,
-    expected_authority: bool | None = None,
-    expected_categories: tuple[str, ...] | None = None,
-    expected_topology_fingerprint: str | None = None,
-    expected_semantic_digest: str | None = None,
-) -> str | None:
-    """Return an actionable error for an incompatible worker response."""
-    if health.get("status") != "ok":
-        return f"status must be 'ok', got {health.get('status')!r}"
-    if health.get("service") != WORKER_SERVICE:
-        return (
-            f"service must be {WORKER_SERVICE!r}, "
-            f"got {health.get('service')!r}"
-        )
-    if str(health.get("protocol_version", "")) != WORKER_PROTOCOL_VERSION:
-        return (
-            f"protocol_version must be {WORKER_PROTOCOL_VERSION!r}, "
-            f"got {health.get('protocol_version')!r}"
-        )
-    if str(health.get("benchmark_version", "")) != __version__:
-        return (
-            f"benchmark_version must be {__version__!r}, "
-            f"got {health.get('benchmark_version')!r}; redeploy the worker "
-            "from the same source revision as the coordinator"
-        )
-    if str(health.get("build_id", "")) != SOFTWARE_BUILD_ID:
-        return (
-            f"build_id must be {SOFTWARE_BUILD_ID!r}, "
-            f"got {health.get('build_id')!r}; redeploy the worker from the "
-            "same source tree as the coordinator"
-        )
-    if str(health.get("ontology_version", "")) != ONTOLOGY_VERSION:
-        return (
-            f"ontology_version must be {ONTOLOGY_VERSION!r}, "
-            f"got {health.get('ontology_version')!r}"
-        )
+    method: str = "GET",
+    payload: bytes | None = None,
+    headers: dict[str, str] | None = None,
+    timeout: float | None = 120,
+) -> dict:
+    request = Request(url, data=payload, method=method, headers=headers or {})
     try:
-        query_count = int(health.get("query_count", -1))
-    except (TypeError, ValueError):
-        query_count = -1
-    if query_count != EXPECTED_QUERY_COUNT:
-        return (
-            f"query_count must be {EXPECTED_QUERY_COUNT}, "
-            f"got {health.get('query_count')!r}"
-        )
-    if health.get("reasoning_contract") != REASONING_CONTRACT:
-        return (
-            f"reasoning_contract must be {REASONING_CONTRACT!r}, "
-            f"got {health.get('reasoning_contract')!r}; rebuild/redeploy "
-            "the worker to apply the RDFS datatype correction"
-        )
-    if health.get("ontology_revision") != ONTOLOGY_REVISION:
-        return (
-            f"ontology_revision must be {ONTOLOGY_REVISION!r}, "
-            f"got {health.get('ontology_revision')!r}; rebuild/redeploy "
-            "the worker with the current ontology release"
-        )
-    node_id = str(health.get("node_id", health.get("role", ""))).strip()
-    if not NODE_ID_PATTERN.fullmatch(node_id):
-        return f"node_id is invalid, got {node_id!r}"
-    tier = str(health.get("tier", "")).strip().lower()
-    if tier not in TIERS:
-        return f"tier must be one of {list(TIERS)}, got {tier!r}"
-    expected_id = expected_node_id or expected_role
-    if expected_id is not None and node_id != expected_id:
-        return f"node_id must be {expected_id!r}, got {node_id!r}"
-    if expected_tier is not None and tier != expected_tier:
-        return f"tier must be {expected_tier!r}, got {tier!r}"
-    if (
-        expected_authority is not None
-        and bool(health.get("authority")) != expected_authority
-    ):
-        return (
-            f"authority must be {expected_authority!r}, "
-            f"got {health.get('authority')!r}"
-        )
-    if expected_categories is not None:
-        actual_categories = health.get("categories")
-        if not isinstance(actual_categories, list) or set(
-            map(str, actual_categories)
-        ) != set(expected_categories):
-            return (
-                f"categories must be {sorted(expected_categories)!r}, "
-                f"got {actual_categories!r}"
+        with urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read())
+    except HTTPError as error:
+        body = error.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"{url}: HTTP {error.code}: {body}") from error
+    except (URLError, TimeoutError) as error:
+        raise RuntimeError(f"{url}: {error}") from error
+
+
+def wait_ready(
+    endpoint: str, *, deadline_seconds: float, require_idle: bool = False, expected: dict[str, object] | None = None
+) -> dict:
+    deadline = monotonic() + deadline_seconds
+    last_error = "no response"
+    while monotonic() < deadline:
+        try:
+            health = request_json(f"{endpoint}/health", timeout=min(5, deadline_seconds))
+            compatible = (
+                health.get("service") == "continuum-worker"
+                and health.get("protocol_version") == "continuum-rdf-worker-v1"
             )
-    if (
-        expected_topology_fingerprint is not None
-        and health.get("topology_fingerprint")
-        != expected_topology_fingerprint
-    ):
-        return (
-            "topology_fingerprint does not match the coordinator manifest; "
-            "redeploy or recreate this worker"
-        )
-    if expected_semantic_digest is not None and health.get("semantic_assets_digest") != expected_semantic_digest:
-        return "semantic_assets_digest differs from the coordinator; synchronize ontology, queries and placement files, then restart the worker"
-    return None
+            matches = all(health.get(key) == value for key, value in (expected or {}).items())
+            idle = not require_idle or (
+                health.get("idle") is True and health.get("active_requests") == 0 and health.get("queue_depth") == 0
+            )
+            if health.get("status") == "ready" and compatible and matches and idle:
+                return health
+            last_error = f"ready={compatible} assets={matches} idle={idle}"
+        except RuntimeError as error:
+            last_error = str(error)
+        sleep(0.5)
+    raise TimeoutError(f"{endpoint} did not become ready: {last_error}")

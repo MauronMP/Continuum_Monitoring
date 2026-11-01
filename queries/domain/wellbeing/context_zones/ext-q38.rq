@@ -11,13 +11,14 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX s4ehaw: <https://saref.etsi.org/saref4ehaw/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?zone ?device ?state ?connection ?retention ?sync WHERE {
   ?user a comon:User ; comon:locatedInZone ?zone . ?zone a comon:RuralZone .
-  OPTIONAL { ?user (comon:hasWearable|comon:hasMobileDevice) ?device . ?device comon:hasDeviceState ?state . OPTIONAL { ?state comon:hasConnectionStatus ?connection } }
+  OPTIONAL { ?user (^s4ehaw:isAttachedTo|comon:hasMobileDevice) ?device . ?device comon:hasDeviceState ?state . OPTIONAL { ?state comon:hasConnectionStatus ?connection } }
   OPTIONAL { ?retention a comon:RetentionEvent ; comon:partOfScenario ?scenario . FILTER(?scenario = comon:S7) }
   OPTIONAL { ?sync a comon:SynchronizationEvent ; comon:partOfScenario ?scenario2 . FILTER(?scenario2 = comon:S7) }
 }

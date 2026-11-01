@@ -11,14 +11,16 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX s4ehaw: <https://saref.etsi.org/saref4ehaw/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?wearable ?wearableType WHERE {
-  ?user a comon:User ; comon:hasWearable ?wearable .
+  ?user a comon:User .
+  ?wearable s4ehaw:isAttachedTo ?user .
   ?wearable a ?wearableType .
-  ?wearableType rdfs:subClassOf* comon:Wearable .
-  FILTER(?wearableType != comon:Wearable)
+  ?wearableType rdfs:subClassOf* s4ehaw:HealthWearable .
+  FILTER(?wearableType != s4ehaw:HealthWearable)
 }
 ORDER BY ?user ?wearable

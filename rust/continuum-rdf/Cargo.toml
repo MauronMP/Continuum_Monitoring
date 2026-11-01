@@ -1,0 +1,19 @@
+[package]
+name = "continuum-rdf"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+hex.workspace = true
+oxigraph.workspace = true
+oxrdf.workspace = true
+oxrdfio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+
+[lints]
+workspace = true
+

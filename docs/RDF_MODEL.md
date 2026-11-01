@@ -1,0 +1,7 @@
+# RDF Model and Semantic Contract
+
+The Turtle modules under `ontology/` describe topology, observability, policies/governance, orchestration, deployment, federation, and wellbeing. SOSA, SAREF, FOAF, GeoSPARQL, and QUDT remain external vocabulary reuse. `ontology/benchmark/base.nt` is the deterministic strict-RDF benchmark form and contains the fixed schema/vocabulary plus the fixed reference instances used by the query catalog. `ontology/benchmark/manifest.json` pins every human-readable source, the source-bundle digest, canonical bytes, triple count, and base digest so source/base drift fails a local test. Only the synthetic ABox grows.
+
+The generator adds users, wearables, device/user/node states, observations, consent, contracts, authorization, data contexts, parametrized data, and node-user relations: 70 triples per user plus 21 node triples per group of at most 100 users. It never pads to a target.
+
+Rust implements the former non-axiomatic RDFS contract. Golden fixtures for 1, 10, and 50 users show exact strict-RDF closure and matching query cardinalities. All digests match except `BASE-Q33`: its `AVG(decimal)` precision is engine-dependent between RDFLib and Oxigraph, so cardinality is the cross-engine assertion. OWL terms may remain RDF data, but no OWL DL or SHACL runtime is present.

@@ -1,0 +1,19 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: {components: rustfmt, clippy}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e '.[test]'
+      - run: cargo fmt --check --manifest-path rust/Cargo.toml --all
+      - run: cargo clippy --manifest-path rust/Cargo.toml --all-targets -- -D warnings
+      - run: cargo test --manifest-path rust/Cargo.toml
+      - run: ruff format --check src tests
+      - run: ruff check src tests
+      - run: pytest
+      - run: docker build -f containers/worker/Dockerfile -t continuum-worker:ci .

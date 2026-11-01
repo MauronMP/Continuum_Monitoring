@@ -1,0 +1,75 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix saref: <https://saref.etsi.org/core/> .
+@prefix s4ehaw: <https://saref.etsi.org/saref4ehaw/> .
+@prefix s4wear: <https://saref.etsi.org/saref4wear/> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+
+<http://example.org/monitoringcontinuum/alignments/health-vocabularies> a owl:Ontology ;
+    rdfs:label "Pinned health vocabulary profile"@en ;
+    rdfs:comment "Deterministic local profile of the external terms used by Monitoring Continuum. It avoids network retrieval during experiments and does not claim equivalence beyond the published vocabulary semantics."@en ;
+    dcterms:source <https://saref.etsi.org/saref4ehaw/v2.1.1/>,
+        <https://saref.etsi.org/saref4wear/v2.1.1/>,
+        <https://www.qudt.org/doc/2025/06/DOC_SCHEMA-QUDT.html>,
+        <https://www.w3.org/TR/vocab-ssn-2023/> ;
+    owl:imports <http://example.org/monitoringcontinuum/modules/foundation> ;
+    owl:versionInfo "SAREF4EHAW 2.1.1; SAREF4WEAR 2.1.1; QUDT 3.1 profile; SOSA 2023" .
+
+# Only the external terms referenced by the project are pinned here. The
+# complete upstream ontologies remain authoritative.
+dcterms:source a owl:AnnotationProperty .
+
+saref:Property a owl:Class .
+
+saref:Sensor a owl:Class ;
+    rdfs:subClassOf saref:Device .
+
+s4wear:WearableDevice a owl:Class ;
+    rdfs:subClassOf saref:Device .
+
+s4wear:BiometricProperty a owl:Class ;
+    rdfs:subClassOf saref:Property .
+
+s4wear:HeartRate a s4wear:BiometricProperty,
+        sosa:ObservableProperty,
+        owl:NamedIndividual .
+
+s4wear:WearerTemperature a s4wear:BiometricProperty,
+        sosa:ObservableProperty,
+        owl:NamedIndividual .
+
+s4ehaw:HealthActor a owl:Class .
+
+s4ehaw:HealthDevice a owl:Class ;
+    rdfs:subClassOf saref:Device .
+
+s4ehaw:HealthSensor a owl:Class ;
+    rdfs:subClassOf saref:Sensor,
+        s4ehaw:HealthDevice .
+
+s4ehaw:HealthWearable a owl:Class ;
+    rdfs:subClassOf s4ehaw:HealthDevice,
+        s4wear:WearableDevice .
+
+s4ehaw:isAttachedTo a owl:ObjectProperty ;
+    rdfs:domain s4ehaw:HealthDevice ;
+    rdfs:range s4ehaw:HealthActor .
+
+sosa:Result a owl:Class .
+
+sosa:hasResult a owl:ObjectProperty ;
+    rdfs:domain sosa:Observation ;
+    rdfs:range sosa:Result .
+
+qudt:QuantityValue a owl:Class ;
+    rdfs:subClassOf sosa:Result .
+
+qudt:Unit a owl:Class .
+
+qudt:numericValue a owl:DatatypeProperty .
+
+qudt:unit a owl:ObjectProperty ;
+    rdfs:domain qudt:QuantityValue ;
+    rdfs:range qudt:Unit .

@@ -1,0 +1,31 @@
+[workspace]
+members = ["continuum-rdf", "continuum-rdf-tool", "continuum-worker"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[workspace.dependencies]
+anyhow = "1.0"
+axum = "0.8.9"
+clap = { version = "4.5", features = ["derive"] }
+csv = "1.4"
+hex = "0.4"
+oxigraph = { version = "0.5.13", default-features = false }
+oxrdf = "0.3.5"
+oxrdfio = "0.2.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+tokio = { version = "1.48", features = ["full"] }
+tower-http = { version = "0.6", features = ["trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"

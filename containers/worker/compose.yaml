@@ -1,0 +1,21 @@
+services:
+  worker:
+    image: ${CONTINUUM_IMAGE:-continuum-worker:rust-v1}
+    build:
+      context: ../..
+      dockerfile: containers/worker/Dockerfile
+    restart: "no"
+    cpus: ${CONTINUUM_CPUS:-1.0}
+    mem_limit: ${CONTINUUM_MEMORY:-1536m}
+    pids_limit: 512
+    ports:
+      - "${CONTINUUM_PORT:-8391}:8391"
+    environment:
+      CONTINUUM_NODE_ID: ${CONTINUUM_NODE_ID:-local}
+      CONTINUUM_TIER: ${CONTINUUM_TIER:-local}
+      CONTINUUM_AUTHORITY: ${CONTINUUM_AUTHORITY:-local}
+      CONTINUUM_TOPOLOGY_FINGERPRINT: ${CONTINUUM_TOPOLOGY_FINGERPRINT:-local}
+      CONTINUUM_ONTOLOGY_DIGEST: ${CONTINUUM_ONTOLOGY_DIGEST:-unconfigured}
+      CONTINUUM_QUERY_CATALOG_DIGEST: ${CONTINUUM_QUERY_CATALOG_DIGEST:-unconfigured}
+      CONTINUUM_QUERY_COUNT: ${CONTINUUM_QUERY_COUNT:-0}
+      CONTINUUM_MAX_PREPARE_BYTES: ${CONTINUUM_MAX_PREPARE_BYTES:-268435456}
