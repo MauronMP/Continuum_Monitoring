@@ -1,0 +1,910 @@
+@prefix comon: <http://example.org/monitoringcontinuum#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.org/monitoringcontinuum/catalog/queries> a owl:Ontology ;
+    rdfs:label "Executable query specifications"@en .
+
+comon:QuerySpecification_BASE_Q01 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Users, active consent and external identifiers" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q01" ;
+    comon:queryPurpose "Evaluate users, active consent and external identifiers using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=inventory; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q02 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Compute nodes, types and elasticity" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q02" ;
+    comon:queryPurpose "Evaluate compute nodes, types and elasticity using the declared query contract." ;
+    comon:queryInterpretation "category=topology; kind=inventory; scope=authority_key:http://example.org/monitoringcontinuum#UserB; merge=single; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q03 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Wearables associated with users" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q03" ;
+    comon:queryPurpose "Evaluate wearables associated with users using the declared query contract." ;
+    comon:queryInterpretation "category=wellbeing; kind=inventory; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_BASE_Q04 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Models, tiers, versions, hosts and lineage" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q04" ;
+    comon:queryPurpose "Evaluate models, tiers, versions, hosts and lineage using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=inventory; scope=authority_key:http://example.org/monitoringcontinuum#UserB; merge=single; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q05 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Physiological sensors and host devices" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q05" ;
+    comon:queryPurpose "Evaluate physiological sensors and host devices using the declared query contract." ;
+    comon:queryInterpretation "category=wellbeing; kind=inventory; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_BASE_Q06 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "RBAC roles and permissions" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q06" ;
+    comon:queryPurpose "Evaluate rBAC roles and permissions using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=inventory; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_BASE_Q07 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Node states and operational metrics" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q07" ;
+    comon:queryPurpose "Evaluate node states and operational metrics using the declared query contract." ;
+    comon:queryInterpretation "category=observability; kind=report; scope=authorities; merge=set_union; privacy=internal" .
+
+comon:QuerySpecification_BASE_Q08 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Saturated, unavailable or disconnected nodes" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q08" ;
+    comon:queryPurpose "Evaluate saturated, unavailable or disconnected nodes using the declared query contract." ;
+    comon:queryInterpretation "category=observability; kind=report; scope=fog; merge=single; privacy=internal" .
+
+comon:QuerySpecification_BASE_Q09 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "User states, mobility and stress" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q09" ;
+    comon:queryPurpose "Evaluate user states, mobility and stress using the declared query contract." ;
+    comon:queryInterpretation "category=wellbeing; kind=report; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_BASE_Q10 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Device states and transmission eligibility" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q10" ;
+    comon:queryPurpose "Evaluate device states and transmission eligibility using the declared query contract." ;
+    comon:queryInterpretation "category=observability; kind=report; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_BASE_Q11 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Scenario S1: normal operation" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q11" ;
+    comon:queryPurpose "Evaluate scenario S1: normal operation using the declared query contract." ;
+    comon:queryInterpretation "category=wellbeing; kind=report; scope=authority_key:http://example.org/monitoringcontinuum#UserA; merge=single; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q12 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Scenario S2: saturation and fog candidates" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q12" ;
+    comon:queryPurpose "Evaluate scenario S2: saturation and fog candidates using the declared query contract." ;
+    comon:queryInterpretation "category=adaptation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q13 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Scenario S3: edge-to-fog migration" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q13" ;
+    comon:queryPurpose "Evaluate scenario S3: edge-to-fog migration using the declared query contract." ;
+    comon:queryInterpretation "category=adaptation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q14 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Scenario S4: failure, delegation and degradation" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q14" ;
+    comon:queryPurpose "Evaluate scenario S4: failure, delegation and degradation using the declared query contract." ;
+    comon:queryInterpretation "category=delegation; kind=report; scope=authority_key:http://example.org/monitoringcontinuum#UserA; merge=single; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q15 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Scenario S5: local consent" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q15" ;
+    comon:queryPurpose "Evaluate scenario S5: local consent using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q16 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Scenario S6: protected federated learning" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q16" ;
+    comon:queryPurpose "Evaluate scenario S6: protected federated learning using the declared query contract." ;
+    comon:queryInterpretation "category=federation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q17 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Scenario S7: rural areas and retention" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q17" ;
+    comon:queryPurpose "Evaluate scenario S7: rural areas and retention using the declared query contract." ;
+    comon:queryInterpretation "category=context_zones; kind=report; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_BASE_Q18 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Scenario S8: restricted areas and local confinement" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q18" ;
+    comon:queryPurpose "Evaluate scenario S8: restricted areas and local confinement using the declared query contract." ;
+    comon:queryInterpretation "category=context_zones; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q19 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Operationally eligible candidates" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q19" ;
+    comon:queryPurpose "Evaluate operationally eligible candidates using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=report; scope=authorities; merge=set_union; privacy=internal" .
+
+comon:QuerySpecification_BASE_Q20 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Complete user semantic profile" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q20" ;
+    comon:queryPurpose "Evaluate complete user semantic profile using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=report; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_BASE_Q21 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Evaluation states and executed actions" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q21" ;
+    comon:queryPurpose "Evaluate evaluation states and executed actions using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q22 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Models and degradation events" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q22" ;
+    comon:queryPurpose "Evaluate models and degradation events using the declared query contract." ;
+    comon:queryInterpretation "category=adaptation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q23 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "User-node relationships and distance" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q23" ;
+    comon:queryPurpose "Evaluate user-node relationships and distance using the declared query contract." ;
+    comon:queryInterpretation "category=topology; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q24 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Federated learning chain" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q24" ;
+    comon:queryPurpose "Evaluate federated learning chain using the declared query contract." ;
+    comon:queryInterpretation "category=federation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q25 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Users authorized for global federated learning" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q25" ;
+    comon:queryPurpose "Evaluate users authorized for global federated learning using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q26 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "ASK: a saturated node exists" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q26" ;
+    comon:queryPurpose "Evaluate aSK: a saturated node exists using the declared query contract." ;
+    comon:queryInterpretation "category=observability; kind=ask; scope=fog; merge=single; privacy=internal" .
+
+comon:QuerySpecification_BASE_Q27 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "ASK: a degradation event exists" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q27" ;
+    comon:queryPurpose "Evaluate aSK: a degradation event exists using the declared query contract." ;
+    comon:queryInterpretation "category=adaptation; kind=ask; scope=authorities; merge=boolean_or; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q28 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "ASK: an external transfer violates confinement or identity" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q28" ;
+    comon:queryPurpose "Evaluate aSK: an external transfer violates confinement or identity using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=ask; scope=authorities; merge=boolean_or; privacy=restricted" .
+
+comon:QuerySpecification_BASE_Q29 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "ASK: fog or cloud elastic capacity exists" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q29" ;
+    comon:queryPurpose "Evaluate aSK: fog or cloud elastic capacity exists using the declared query contract." ;
+    comon:queryInterpretation "category=topology; kind=ask; scope=fog; merge=single; privacy=internal" .
+
+comon:QuerySpecification_BASE_Q30 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "ASK: a federated learning session includes cloud" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q30" ;
+    comon:queryPurpose "Evaluate aSK: a federated learning session includes cloud using the declared query contract." ;
+    comon:queryInterpretation "category=federation; kind=ask; scope=authorities; merge=boolean_or; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q31 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "User counts by active consent range" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q31" ;
+    comon:queryPurpose "Evaluate user counts by active consent range using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=dashboard; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_BASE_Q32 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Model counts by tier" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q32" ;
+    comon:queryPurpose "Evaluate model counts by tier using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=dashboard; scope=fog; merge=single; privacy=internal" .
+
+comon:QuerySpecification_BASE_Q33 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Mean resource usage by node type" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q33" ;
+    comon:queryPurpose "Evaluate mean resource usage by node type using the declared query contract." ;
+    comon:queryInterpretation "category=observability; kind=dashboard; scope=authority_key:http://example.org/monitoringcontinuum#UserB; merge=single; privacy=confidential" .
+
+comon:QuerySpecification_BASE_Q34 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Nodes covering restricted areas" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q34" ;
+    comon:queryPurpose "Evaluate nodes covering restricted areas using the declared query contract." ;
+    comon:queryInterpretation "category=topology; kind=report; scope=fog; merge=single; privacy=internal" .
+
+comon:QuerySpecification_BASE_Q35 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Failure, evaluation and action chain" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "BASE-Q35" ;
+    comon:queryPurpose "Evaluate failure, evaluation and action chain using the declared query contract." ;
+    comon:queryInterpretation "category=delegation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q01 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Version and release artifact inventory" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q01" ;
+    comon:queryPurpose "Evaluate version and release artifact inventory using the declared query contract." ;
+    comon:queryInterpretation "category=semantic_schema; kind=inventory; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q02 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Functional, non-functional and validation requirement coverage" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q02" ;
+    comon:queryPurpose "Evaluate functional, non-functional and validation requirement coverage using the declared query contract." ;
+    comon:queryInterpretation "category=semantic_schema; kind=dashboard; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q03 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Complete policy inventory" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q03" ;
+    comon:queryPurpose "Evaluate complete policy inventory using the declared query contract." ;
+    comon:queryInterpretation "category=policy_governance; kind=inventory; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q04 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Complete mechanism inventory" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q04" ;
+    comon:queryPurpose "Evaluate complete mechanism inventory using the declared query contract." ;
+    comon:queryInterpretation "category=policy_governance; kind=inventory; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q05 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Scenario S1-S17 inventory" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q05" ;
+    comon:queryPurpose "Evaluate scenario S1-S17 inventory using the declared query contract." ;
+    comon:queryInterpretation "category=semantic_schema; kind=inventory; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q06 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Policy categories" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q06" ;
+    comon:queryPurpose "Evaluate policy categories using the declared query contract." ;
+    comon:queryInterpretation "category=semantic_schema; kind=inventory; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q07 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Relationships between policy categories" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q07" ;
+    comon:queryPurpose "Evaluate relationships between policy categories using the declared query contract." ;
+    comon:queryInterpretation "category=policy_governance; kind=report; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q08 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Requirement, policy and mechanism traceability" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q08" ;
+    comon:queryPurpose "Evaluate requirement, policy and mechanism traceability using the declared query contract." ;
+    comon:queryInterpretation "category=policy_governance; kind=report; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q09 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Review: requirements without explicit policies or mechanisms" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q09" ;
+    comon:queryPurpose "Evaluate review: requirements without explicit policies or mechanisms using the declared query contract." ;
+    comon:queryInterpretation "category=policy_governance; kind=review; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q10 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: incomplete policies or mechanisms" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q10" ;
+    comon:queryPurpose "Evaluate violation: incomplete policies or mechanisms using the declared query contract." ;
+    comon:queryInterpretation "category=policy_governance; kind=violation; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q11 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Consent record report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q11" ;
+    comon:queryPurpose "Evaluate consent record report using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q12 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Semantic contract report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q12" ;
+    comon:queryPurpose "Evaluate semantic contract report using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q13 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: incomplete consent records" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q13" ;
+    comon:queryPurpose "Evaluate violation: incomplete consent records using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q14 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: incomplete semantic contracts" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q14" ;
+    comon:queryPurpose "Evaluate violation: incomplete semantic contracts using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q15 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: overlapping contracts for a user and purpose" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q15" ;
+    comon:queryPurpose "Evaluate violation: overlapping contracts for a user and purpose using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q16 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: active consent range without a supporting record" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q16" ;
+    comon:queryPurpose "Evaluate violation: active consent range without a supporting record using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q17 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Effective authorization report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q17" ;
+    comon:queryPurpose "Evaluate effective authorization report using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q18 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: incomplete effective authorization" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q18" ;
+    comon:queryPurpose "Evaluate violation: incomplete effective authorization using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q19 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: authorization exceeds consent or contract" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q19" ;
+    comon:queryPurpose "Evaluate violation: authorization exceeds consent or contract using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q20 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: evaluation without granted authorization" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q20" ;
+    comon:queryPurpose "Evaluate violation: evaluation without granted authorization using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q21 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Required minimum consent range inventory" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q21" ;
+    comon:queryPurpose "Evaluate required minimum consent range inventory using the declared query contract." ;
+    comon:queryInterpretation "category=identity_consent; kind=inventory; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q22 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: raw physiological observations outside local scope" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q22" ;
+    comon:queryPurpose "Evaluate violation: raw physiological observations outside local scope using the declared query contract." ;
+    comon:queryInterpretation "category=security_identity; kind=violation; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_EXT_Q23 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "External data transfer report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q23" ;
+    comon:queryPurpose "Evaluate external data transfer report using the declared query contract." ;
+    comon:queryInterpretation "category=data_lifecycle; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q24 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Data context report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q24" ;
+    comon:queryPurpose "Evaluate data context report using the declared query contract." ;
+    comon:queryInterpretation "category=data_lifecycle; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q25 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: incomplete data context" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q25" ;
+    comon:queryPurpose "Evaluate violation: incomplete data context using the declared query contract." ;
+    comon:queryInterpretation "category=data_lifecycle; kind=violation; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_EXT_Q26 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Identifier inventory" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q26" ;
+    comon:queryPurpose "Evaluate identifier inventory using the declared query contract." ;
+    comon:queryInterpretation "category=security_identity; kind=inventory; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q27 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: external transfer without a safe identifier" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q27" ;
+    comon:queryPurpose "Evaluate violation: external transfer without a safe identifier using the declared query contract." ;
+    comon:queryInterpretation "category=security_identity; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q28 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: direct identifiers in external flows" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q28" ;
+    comon:queryPurpose "Evaluate violation: direct identifiers in external flows using the declared query contract." ;
+    comon:queryInterpretation "category=security_identity; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q29 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Encryption baseline report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q29" ;
+    comon:queryPurpose "Evaluate encryption baseline report using the declared query contract." ;
+    comon:queryInterpretation "category=security_identity; kind=report; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q30 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: sensitive transfer without encryption in transit" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q30" ;
+    comon:queryPurpose "Evaluate violation: sensitive transfer without encryption in transit using the declared query contract." ;
+    comon:queryInterpretation "category=security_identity; kind=violation; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q31 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Buffer and retention report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q31" ;
+    comon:queryPurpose "Evaluate buffer and retention report using the declared query contract." ;
+    comon:queryInterpretation "category=data_lifecycle; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q32 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: sensitive buffer without protection at rest" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q32" ;
+    comon:queryPurpose "Evaluate violation: sensitive buffer without protection at rest using the declared query contract." ;
+    comon:queryInterpretation "category=data_lifecycle; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q33 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Replication and synchronization report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q33" ;
+    comon:queryPurpose "Evaluate replication and synchronization report using the declared query contract." ;
+    comon:queryInterpretation "category=data_lifecycle; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q34 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: replication without versioning or idempotency" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q34" ;
+    comon:queryPurpose "Evaluate violation: replication without versioning or idempotency using the declared query contract." ;
+    comon:queryInterpretation "category=data_lifecycle; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q35 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Data criticality and priority report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q35" ;
+    comon:queryPurpose "Evaluate data criticality and priority report using the declared query contract." ;
+    comon:queryInterpretation "category=data_lifecycle; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q36 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Restricted area report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q36" ;
+    comon:queryPurpose "Evaluate restricted area report using the declared query contract." ;
+    comon:queryInterpretation "category=context_zones; kind=report; scope=authority_key:http://example.org/monitoringcontinuum#UserD; merge=single; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q37 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: external processing or transfer in restricted areas" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q37" ;
+    comon:queryPurpose "Evaluate violation: external processing or transfer in restricted areas using the declared query contract." ;
+    comon:queryInterpretation "category=context_zones; kind=violation; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_EXT_Q38 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Rural area and transmission window report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q38" ;
+    comon:queryPurpose "Evaluate rural area and transmission window report using the declared query contract." ;
+    comon:queryInterpretation "category=context_zones; kind=review; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_EXT_Q39 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Conditional urban processing report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q39" ;
+    comon:queryPurpose "Evaluate conditional urban processing report using the declared query contract." ;
+    comon:queryInterpretation "category=context_zones; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q40 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Node state and reproducible trust report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q40" ;
+    comon:queryPurpose "Evaluate node state and reproducible trust report using the declared query contract." ;
+    comon:queryInterpretation "category=trust; kind=report; scope=authorities; merge=set_union; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q41 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: node state without eligibility fields" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q41" ;
+    comon:queryPurpose "Evaluate violation: node state without eligibility fields using the declared query contract." ;
+    comon:queryInterpretation "category=trust; kind=violation; scope=fog; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q42 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Eligible candidates ranked by trust" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q42" ;
+    comon:queryPurpose "Evaluate eligible candidates ranked by trust using the declared query contract." ;
+    comon:queryInterpretation "category=trust; kind=report; scope=authorities; merge=set_union; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q43 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Review: trust assessment is not fully reproducible" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q43" ;
+    comon:queryPurpose "Evaluate review: trust assessment is not fully reproducible using the declared query contract." ;
+    comon:queryInterpretation "category=trust; kind=review; scope=authorities; merge=set_union; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q44 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "External trust used in evaluation" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q44" ;
+    comon:queryPurpose "Evaluate external trust used in evaluation using the declared query contract." ;
+    comon:queryInterpretation "category=trust; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q45 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: explicitly ineligible adaptive destination" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q45" ;
+    comon:queryPurpose "Evaluate violation: explicitly ineligible adaptive destination using the declared query contract." ;
+    comon:queryInterpretation "category=trust; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q46 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Complete model decision report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q46" ;
+    comon:queryPurpose "Evaluate complete model decision report using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q47 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: evaluation without minimum decision fields" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q47" ;
+    comon:queryPurpose "Evaluate violation: evaluation without minimum decision fields using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q48 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: unnormalized multicriteria weights" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q48" ;
+    comon:queryPurpose "Evaluate violation: unnormalized multicriteria weights using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q49 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Decision method and consistency report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q49" ;
+    comon:queryPurpose "Evaluate decision method and consistency report using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q50 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: AHP evaluation without valid consistency" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q50" ;
+    comon:queryPurpose "Evaluate violation: AHP evaluation without valid consistency using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q51 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Alternatives by evaluation" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q51" ;
+    comon:queryPurpose "Evaluate alternatives by evaluation using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q52 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Review: alternatives pending recalculation" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q52" ;
+    comon:queryPurpose "Evaluate review: alternatives pending recalculation using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=review; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q53 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: invalid selected alternative" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q53" ;
+    comon:queryPurpose "Evaluate violation: invalid selected alternative using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q54 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Observed model quality report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q54" ;
+    comon:queryPurpose "Evaluate observed model quality report using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=report; scope=authorities; merge=set_union; privacy=restricted" .
+
+comon:QuerySpecification_EXT_Q55 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Review: insufficient quality evidence" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q55" ;
+    comon:queryPurpose "Evaluate review: insufficient quality evidence using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=review; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q56 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: cloud selected without sufficient conditions" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q56" ;
+    comon:queryPurpose "Evaluate violation: cloud selected without sufficient conditions using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q57 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Model versioning and lineage report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q57" ;
+    comon:queryPurpose "Evaluate model versioning and lineage report using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q58 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Review: rollback readiness" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q58" ;
+    comon:queryPurpose "Evaluate review: rollback readiness using the declared query contract." ;
+    comon:queryInterpretation "category=decision; kind=review; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q59 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Adaptive action report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q59" ;
+    comon:queryPurpose "Evaluate adaptive action report using the declared query contract." ;
+    comon:queryInterpretation "category=adaptation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q60 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Migration report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q60" ;
+    comon:queryPurpose "Evaluate migration report using the declared query contract." ;
+    comon:queryInterpretation "category=adaptation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q61 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: migration or delegation confused with federated learning" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q61" ;
+    comon:queryPurpose "Evaluate violation: migration or delegation confused with federated learning using the declared query contract." ;
+    comon:queryInterpretation "category=adaptation; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q62 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Degradation report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q62" ;
+    comon:queryPurpose "Evaluate degradation report using the declared query contract." ;
+    comon:queryInterpretation "category=adaptation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q63 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Temporary delegation report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q63" ;
+    comon:queryPurpose "Evaluate temporary delegation report using the declared query contract." ;
+    comon:queryInterpretation "category=delegation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q64 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: incomplete delegation" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q64" ;
+    comon:queryPurpose "Evaluate violation: incomplete delegation using the declared query contract." ;
+    comon:queryInterpretation "category=delegation; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q65 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: delegation depth exceeds the profile" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q65" ;
+    comon:queryPurpose "Evaluate violation: delegation depth exceeds the profile using the declared query contract." ;
+    comon:queryInterpretation "category=delegation; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q66 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Federated learning session and payload report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q66" ;
+    comon:queryPurpose "Evaluate federated learning session and payload report using the declared query contract." ;
+    comon:queryInterpretation "category=federation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q67 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: unauthorized upstream federated learning session" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q67" ;
+    comon:queryPurpose "Evaluate violation: unauthorized upstream federated learning session using the declared query contract." ;
+    comon:queryInterpretation "category=federation; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q68 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: gradient without anonymization, noise or privacy mechanism" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q68" ;
+    comon:queryPurpose "Evaluate violation: gradient without anonymization, noise or privacy mechanism using the declared query contract." ;
+    comon:queryInterpretation "category=federation; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q69 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Differential privacy and epsilon accounting" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q69" ;
+    comon:queryPurpose "Evaluate differential privacy and epsilon accounting using the declared query contract." ;
+    comon:queryInterpretation "category=federation; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q70 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Complete semantic audit chain" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q70" ;
+    comon:queryPurpose "Evaluate complete semantic audit chain using the declared query contract." ;
+    comon:queryInterpretation "category=audit_temporal; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q71 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: incomplete audit ticket" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q71" ;
+    comon:queryPurpose "Evaluate violation: incomplete audit ticket using the declared query contract." ;
+    comon:queryInterpretation "category=audit_temporal; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q72 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: action without evaluation or policy justification" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q72" ;
+    comon:queryPurpose "Evaluate violation: action without evaluation or policy justification using the declared query contract." ;
+    comon:queryInterpretation "category=audit_temporal; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q73 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Temporal entity report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q73" ;
+    comon:queryPurpose "Evaluate temporal entity report using the declared query contract." ;
+    comon:queryInterpretation "category=audit_temporal; kind=report; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q74 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: missing validFrom or invalid temporal interval" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q74" ;
+    comon:queryPurpose "Evaluate violation: missing validFrom or invalid temporal interval using the declared query contract." ;
+    comon:queryInterpretation "category=audit_temporal; kind=violation; scope=authorities; merge=set_union; privacy=confidential" .
+
+comon:QuerySpecification_EXT_Q76 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Review: incomplete acceptance profile" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q76" ;
+    comon:queryPurpose "Evaluate review: incomplete acceptance profile using the declared query contract." ;
+    comon:queryInterpretation "category=validation; kind=review; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q77 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Review: reproducible campaign readiness" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q77" ;
+    comon:queryPurpose "Evaluate review: reproducible campaign readiness using the declared query contract." ;
+    comon:queryInterpretation "category=validation; kind=review; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q78 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Policy conflict resolution report" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q78" ;
+    comon:queryPurpose "Evaluate policy conflict resolution report using the declared query contract." ;
+    comon:queryInterpretation "category=policy_governance; kind=report; scope=cloud; merge=single; privacy=internal" .
+
+comon:QuerySpecification_EXT_Q79 a comon:QuerySpecification,
+        owl:NamedIndividual ;
+    rdfs:label "Violation: conflicting relationship without resolution strategy" ;
+    comon:belongsToQueryCatalog comon:QueryCatalog_v4 ;
+    comon:queryIdentifier "EXT-Q79" ;
+    comon:queryPurpose "Evaluate violation: conflicting relationship without resolution strategy using the declared query contract." ;
+    comon:queryInterpretation "category=policy_governance; kind=violation; scope=cloud; merge=single; privacy=internal" .

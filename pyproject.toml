@@ -7,10 +7,12 @@ name = "continuum-rdf-benchmark"
 version = "0.1.0"
 description = "Control plane for a physical Docker RDF scalability benchmark"
 requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT"
 dependencies = ["matplotlib>=3.9,<4", "numpy>=2,<3"]
 
 [project.optional-dependencies]
-test = ["pytest>=8,<10", "ruff>=0.12,<1"]
+test = ["pytest>=8,<10", "rdflib>=7.1,<8", "ruff>=0.12,<1"]
 
 [project.scripts]
 continuum-bench = "continuum_bench.cli:main"

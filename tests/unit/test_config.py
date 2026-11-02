@@ -45,3 +45,18 @@ def test_operational_target_must_be_below_hard_timeout(root, tmp_path):
     path.write_text(text)
     with pytest.raises(ValueError, match="operational target"):
         load_config(path)
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        ("health_timeout_seconds = 120", "health_timeout_seconds = -1", "health_timeout_seconds"),
+        ("minimum_free_disk_mib = 4096", "minimum_free_disk_mib = 0", "minimum_free_disk_mib"),
+        ('name = "users-50"', 'name = "users-1"', "scenario names"),
+    ],
+)
+def test_invalid_operational_configuration_is_rejected(root, tmp_path, old, new, message):
+    path = tmp_path / "invalid.toml"
+    path.write_text((root / "configs/benchmark.toml").read_text().replace(old, new, 1))
+    with pytest.raises(ValueError, match=message):
+        load_config(path)

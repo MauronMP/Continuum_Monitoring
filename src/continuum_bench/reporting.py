@@ -8,10 +8,12 @@ from statistics import median
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.patches import Patch
 
 LAYOUTS = ("distributed", "replicated")
 COLORS = {"distributed": "#2878B5", "replicated": "#E07A1F"}
 MARKERS = {"distributed": "o", "replicated": "s"}
+CATEGORY_COLOR_MAP = "tab20"
 FAILURE_STATUSES = {
     "failed",
     "hard_timeout",
@@ -157,6 +159,271 @@ def _resource_heatmap(node_rows, figures, filename, field, title, colorbar_label
     fig.suptitle(title, fontsize=10, fontweight="normal")
     fig.colorbar(image, ax=axes, shrink=0.82, label=colorbar_label)
     fig.savefig(figures / filename, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _query_metadata(run_dir: Path) -> tuple[dict[str, dict], dict]:
+    snapshot = run_dir / "semantic-contract/queries/manifest.json"
+    project = Path(__file__).resolve().parents[2] / "queries/manifest.json"
+    source = snapshot if snapshot.is_file() else project
+    if not source.is_file():
+        return {}, {"source": None, "query_catalog_digest": None}
+    manifest = json.loads(source.read_text())
+    metadata = {str(item["id"]): item for item in manifest.get("queries", [])}
+    return metadata, {
+        "source": str(source),
+        "query_catalog_digest": manifest.get("query_catalog_digest"),
+    }
+
+
+def _plot_query_categories(query_rows: list[dict], metadata: dict[str, dict], figures: Path) -> None:
+    completed = [row for row in query_rows if row.get("status") == "completed" and _finite(row.get("duration_ms"))]
+    grouped: dict[tuple[str, str], list[float]] = {}
+    for row in completed:
+        category = str(metadata.get(str(row.get("query_id")), {}).get("category", "uncategorized"))
+        grouped.setdefault((category, str(row["layout"])), []).append(float(row["duration_ms"]))
+    categories = sorted(
+        {category for category, _layout in grouped},
+        key=lambda category: max(
+            (_percentile(grouped.get((category, layout), []), 95) or 0 for layout in LAYOUTS),
+            default=0,
+        ),
+    )
+    fig, ax = plt.subplots(figsize=(6.4, max(3.8, 0.35 * len(categories) + 1.3)))
+    y = np.arange(len(categories))
+    offsets = {"distributed": -0.16, "replicated": 0.16}
+    for layout in LAYOUTS:
+        p95 = [_percentile(grouped.get((category, layout), []), 95) or np.nan for category in categories]
+        p50 = [_percentile(grouped.get((category, layout), []), 50) or np.nan for category in categories]
+        ax.barh(
+            y + offsets[layout], p95, height=0.28, color=COLORS[layout], alpha=0.78, label=f"{layout.capitalize()} p95"
+        )
+        ax.scatter(p50, y + offsets[layout], marker="|", s=80, linewidths=1.5, color="white", zorder=4)
+    ax.set_yticks(y, [category.replace("_", " ") for category in categories])
+    _finish(
+        fig,
+        ax,
+        figures / "15_query_category_cost.png",
+        "Logical query cost by category (bar: p95; white tick: p50)",
+        "Latency (ms)",
+        "Query category",
+    )
+
+
+def _plot_expensive_queries(query_rows: list[dict], metadata: dict[str, dict], figures: Path) -> None:
+    grouped: dict[tuple[str, str], list[float]] = {}
+    combined: dict[str, list[float]] = {}
+    for row in query_rows:
+        if row.get("status") != "completed" or not _finite(row.get("duration_ms")):
+            continue
+        query_id, layout = str(row.get("query_id")), str(row.get("layout"))
+        value = float(row["duration_ms"])
+        grouped.setdefault((query_id, layout), []).append(value)
+        combined.setdefault(query_id, []).append(value)
+    query_ids = sorted(combined, key=lambda query_id: _percentile(combined[query_id], 95) or 0, reverse=True)[:15]
+    query_ids.reverse()
+    fig, ax = plt.subplots(figsize=(6.5, 5.0))
+    y = np.arange(len(query_ids))
+    offsets = {"distributed": -0.12, "replicated": 0.12}
+    for layout in LAYOUTS:
+        values = [_percentile(grouped.get((query_id, layout), []), 95) or np.nan for query_id in query_ids]
+        ax.scatter(
+            values, y + offsets[layout], s=28, marker=MARKERS[layout], color=COLORS[layout], label=layout.capitalize()
+        )
+    ax.set_xscale("log")
+    labels = [
+        f"{query_id} · {str(metadata.get(query_id, {}).get('category', 'uncategorized')).replace('_', ' ')}"
+        for query_id in query_ids
+    ]
+    ax.set_yticks(y, labels)
+    _finish(
+        fig,
+        ax,
+        figures / "16_most_expensive_queries.png",
+        "Most expensive logical queries across the campaign",
+        "p95 latency (ms)",
+        "Logical query and category",
+    )
+
+
+def _plot_transfer_throughput(rows: list[dict], figures: Path) -> None:
+    fig, ax = plt.subplots(figsize=(5.7, 3.8))
+    for layout in LAYOUTS:
+        points = sorted(
+            [
+                row
+                for row in rows
+                if row["layout"] == layout
+                and _finite(row.get("transfer_bytes_median"))
+                and _finite(row.get("catalog_throughput_per_second"))
+            ],
+            key=lambda row: int(row["users"]),
+        )
+        if not points:
+            continue
+        x = [float(row["transfer_bytes_median"]) / 1024**2 for row in points]
+        y = [float(row["catalog_throughput_per_second"]) for row in points]
+        ax.plot(x, y, marker=MARKERS[layout], color=COLORS[layout], linewidth=1.4, label=layout.capitalize())
+        labelled_users = {1, 500, 2000, 7000, max(int(row["users"]) for row in points)}
+        if layout == "replicated":
+            labelled_users.add(4000)
+        for px, py, row in zip(x, y, points, strict=True):
+            if int(row["users"]) not in labelled_users:
+                continue
+            user = int(row["users"])
+            vertical_offset = 5 if user in {1, 500, 7000} else -10
+            ax.annotate(
+                str(row["users"]),
+                (px, py),
+                xytext=(4, vertical_offset),
+                textcoords="offset points",
+                fontsize=6.4,
+                color=COLORS[layout],
+            )
+    ax.text(0.02, 0.03, "Point labels: users", transform=ax.transAxes, fontsize=7, color="#555")
+    _finish(
+        fig,
+        ax,
+        figures / "17_transfer_throughput_tradeoff.png",
+        "Transferred knowledge versus logical throughput",
+        "RDF payload per repetition (MiB)",
+        "Logical queries/s",
+    )
+
+
+def _plot_layout_ratios(rows: list[dict], figures: Path) -> None:
+    users = _users(rows)
+    positions = np.arange(len(users))
+    by_key = {(str(row["layout"]), int(row["users"])): row for row in rows}
+    metrics = (
+        ("preparation_seconds_median", "Preparation time"),
+        ("query_latency_p95_ms", "Query p95 latency"),
+        ("transfer_bytes_median", "Transferred payload"),
+        ("cpu_seconds_median", "CPU time"),
+    )
+    fig, axes = plt.subplots(2, 2, figsize=(7.2, 5.3), sharex=True, sharey=True, constrained_layout=True)
+    for ax, (field, title) in zip(axes.flat, metrics, strict=True):
+        values = []
+        for user in users:
+            distributed = by_key.get(("distributed", user), {}).get(field)
+            replicated = by_key.get(("replicated", user), {}).get(field)
+            values.append(
+                100.0 * (1.0 - float(distributed) / float(replicated))
+                if _finite(distributed) and _finite(replicated) and float(replicated)
+                else np.nan
+            )
+        values_array = np.asarray(values, dtype=float)
+        ax.fill_between(
+            positions,
+            0,
+            values_array,
+            where=values_array >= 0,
+            color="#3A923A",
+            alpha=0.18,
+            interpolate=True,
+        )
+        ax.fill_between(
+            positions,
+            0,
+            values_array,
+            where=values_array < 0,
+            color="#C74343",
+            alpha=0.18,
+            interpolate=True,
+        )
+        point_colors = ["#277A36" if value >= 0 else "#B12D2D" for value in values_array]
+        ax.plot(positions, values_array, color="#4B4B4B", linewidth=1.2, zorder=2)
+        ax.scatter(positions, values_array, c=point_colors, s=24, zorder=3)
+        ax.axhline(0.0, color="#555", linewidth=0.9, linestyle="--")
+        ax.set_title(title, fontsize=9, fontweight="normal")
+        ax.set_ylim(-110, 110)
+        ax.grid(alpha=0.22)
+        ax.set_xticks(positions, [str(user) for user in users], rotation=45, ha="right")
+    for ax in axes[-1]:
+        ax.set_xlabel("Users / monitored entities")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Distributed cost reduction (%)")
+    fig.suptitle(
+        "Distributed cost relative to replication (positive values are reductions)",
+        fontsize=10,
+        fontweight="normal",
+    )
+    fig.savefig(figures / "18_distributed_cost_reduction.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _plot_node_cpu_time(node_rows: list[dict], figures: Path, users: list[int], hosts: list[str]) -> None:
+    fig, axes = plt.subplots(2, 1, figsize=(7.2, 5.7), sharex=True)
+    palette = plt.get_cmap(CATEGORY_COLOR_MAP)(np.linspace(0.05, 0.95, max(len(hosts), 1)))
+    positions = np.arange(len(users))
+    width = 0.36
+    node_values: dict[tuple[str, str], np.ndarray] = {}
+    for layout in LAYOUTS:
+        by_key = {(str(row["host"]), int(row["users"])): row for row in node_rows if row["layout"] == layout}
+        for host in hosts:
+            node_values[(layout, host)] = np.asarray(
+                [
+                    float(by_key[(host, user)]["cpu_seconds_median"])
+                    if (host, user) in by_key and _finite(by_key[(host, user)].get("cpu_seconds_median"))
+                    else 0.0
+                    for user in users
+                ]
+            )
+    for layout, offset, hatch in (("distributed", -width / 2, ""), ("replicated", width / 2, "///")):
+        absolute_bottom = np.zeros(len(users))
+        totals = sum((node_values[(layout, host)] for host in hosts), start=np.zeros(len(users)))
+        share_bottom = np.zeros(len(users))
+        for host, color in zip(hosts, palette, strict=True):
+            values = node_values[(layout, host)]
+            shares = np.divide(values * 100, totals, out=np.zeros_like(values), where=totals > 0)
+            axes[0].bar(
+                positions + offset,
+                values,
+                width,
+                bottom=absolute_bottom,
+                color=color,
+                edgecolor="white",
+                linewidth=0.35,
+                hatch=hatch,
+            )
+            axes[1].bar(
+                positions + offset,
+                shares,
+                width,
+                bottom=share_bottom,
+                color=color,
+                edgecolor="white",
+                linewidth=0.35,
+                hatch=hatch,
+            )
+            absolute_bottom += values
+            share_bottom += shares
+    axes[0].set_title("Absolute compute effort", fontsize=9, fontweight="normal")
+    axes[0].set_ylabel("CPU time (s)")
+    axes[1].set_title("Node share of measured compute", fontsize=9, fontweight="normal")
+    axes[1].set_ylabel("CPU time share (%)")
+    axes[1].set_ylim(0, 100)
+    for ax in axes:
+        ax.grid(axis="y", alpha=0.22)
+    host_handles = [Patch(facecolor=color, label=host) for host, color in zip(hosts, palette, strict=True)]
+    layout_handles = [
+        Patch(facecolor="white", edgecolor="#555", label="Distributed"),
+        Patch(facecolor="white", edgecolor="#555", hatch="///", label="Replicated"),
+    ]
+    fig.legend(handles=host_handles, loc="upper center", bbox_to_anchor=(0.5, 0.94), ncol=6, frameon=False, fontsize=7)
+    fig.legend(
+        handles=layout_handles,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.895),
+        ncol=2,
+        frameon=False,
+        fontsize=7,
+    )
+    axes[-1].set_xticks(positions, [str(user) for user in users])
+    axes[-1].set_xlabel("Users / monitored entities")
+    fig.suptitle("Measured compute contribution by continuum node", fontsize=10, fontweight="normal")
+    fig.tight_layout(rect=(0, 0, 1, 0.89))
+    fig.savefig(figures / "19_node_cpu_time_contribution.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -365,6 +632,15 @@ def report(run_dir: Path) -> Path:
             samples = [row for row in resources if row["host"] == host]
             host_cpu = [float(row["cpu_percent"]) for row in samples]
             host_memory = [float(row["memory_bytes"]) for row in samples if row.get("memory_bytes") is not None]
+            host_cpu_seconds = []
+            for repetition in complete_ids:
+                values = [
+                    float(row["cpu_usage_seconds"])
+                    for row in samples
+                    if int(row["repetition"]) == repetition and row.get("cpu_usage_seconds") is not None
+                ]
+                if values:
+                    host_cpu_seconds.append(max(values) - min(values))
             node_rows.append(
                 {
                     "users": users,
@@ -376,6 +652,7 @@ def report(run_dir: Path) -> Path:
                     "memory_mean_bytes": float(np.mean(host_memory)) if host_memory else None,
                     "memory_p95_bytes": _percentile(host_memory, 95),
                     "memory_peak_bytes": max(host_memory) if host_memory else None,
+                    "cpu_seconds_median": median(host_cpu_seconds) if host_cpu_seconds else None,
                 }
             )
 
@@ -648,6 +925,32 @@ def report(run_dir: Path) -> Path:
         1024**2,
         users,
         all_hosts,
+    )
+    query_metadata, metadata_provenance = _query_metadata(run_dir)
+    _plot_query_categories(query_rows, query_metadata, figures)
+    _plot_expensive_queries(query_rows, query_metadata, figures)
+    _plot_transfer_throughput(rows, figures)
+    _plot_layout_ratios(rows, figures)
+    _plot_node_cpu_time(node_rows, figures, users, all_hosts)
+
+    campaign_manifest_path = run_dir / "manifest.json"
+    campaign_manifest = json.loads(campaign_manifest_path.read_text()) if campaign_manifest_path.is_file() else {}
+    campaign_digest = campaign_manifest.get("query_catalog_digest")
+    figure_files = sorted(path.name for path in figures.glob("*.png"))
+    (figures / "manifest.json").write_text(
+        json.dumps(
+            {
+                "figure_count": len(figure_files),
+                "figures": figure_files,
+                "query_metadata_source": metadata_provenance["source"],
+                "query_metadata_digest": metadata_provenance["query_catalog_digest"],
+                "campaign_query_catalog_digest": campaign_digest,
+                "query_metadata_matches_campaign": bool(campaign_digest)
+                and campaign_digest == metadata_provenance["query_catalog_digest"],
+            },
+            indent=2,
+        )
+        + "\n"
     )
     (summary / "summary.json").write_text(json.dumps(rows, indent=2) + "\n")
     return summary

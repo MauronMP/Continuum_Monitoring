@@ -22,4 +22,6 @@ continuum-bench run
 
 Edit `configs/topology.toml` only when addresses or authorities change. `doctor` must report all requested hosts ready. `deploy` synchronizes the Rust/Docker sources, releases the dedicated benchmark port from a previous worker, builds natively and concurrently on the six hosts, starts one constrained container per host, and then verifies the Rust protocol and semantic fingerprints. `status` must show `continuum-rdf-worker-v1`, 113 queries, `idle=true`, and the same topology, ontology, and catalog digests everywhere.
 
+Run `deploy` again whenever the ontology base, query manifest, topology, worker protocol, or container image changes. A campaign refuses workers whose fingerprints differ from the local repository. The timeout, memory, disk, topology, and scenario validators reject non-positive limits, duplicate scenario names, duplicate hosts, invalid ports, unsupported tiers, and unknown exclusions before deployment or measurement.
+
 The multi-stage worker image contains no Python, Java, Maven, OWL DL reasoner, or SHACL engine. It records its Rust compiler, build target, and `max_prepare_bytes` in `/health`. A normal status response must report `max_prepare_bytes=268435456`. `restart: "no"` keeps crashes observable. Do not start a campaign after excluding a host unless that reduced topology is the intended and documented experiment.

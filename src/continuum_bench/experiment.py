@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import platform
+import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -23,6 +24,25 @@ def _run_id() -> str:
         + "-"
         + sha256(str(datetime.now().timestamp()).encode()).hexdigest()[:8]
     )
+
+
+def _snapshot_semantic_contract(root: Path, run_dir: Path, query_manifest: dict) -> None:
+    destination = run_dir / "semantic-contract"
+    (destination / "ontology/benchmark").mkdir(parents=True)
+    (destination / "queries").mkdir(parents=True)
+    ontology_manifest = json.loads((root / "ontology/benchmark/manifest.json").read_text())
+    shutil.copy2(root / "ontology/benchmark/manifest.json", destination / "ontology/benchmark/manifest.json")
+    base_path = ontology_manifest["canonical_base"]["path"]
+    shutil.copy2(root / base_path, destination / base_path)
+    for entry in ontology_manifest["sources"]:
+        target = destination / entry["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(root / entry["path"], target)
+    shutil.copy2(root / "queries/manifest.json", destination / "queries/manifest.json")
+    for entry in query_manifest["queries"]:
+        target = destination / entry["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(root / entry["path"], target)
 
 
 def _tool(root: Path) -> Path:
@@ -91,7 +111,11 @@ def partition_dataset(
     fragments = {host.id: (output / f"{host.id}.nt").read_bytes() for host in owners}
     for host in hosts:
         if host.id not in fragments:
-            fragments[host.id] = base.read_bytes()
+            fragments[host.id] = (
+                _consent_projection(base.read_bytes(), dataset.read_bytes())
+                if layout == "distributed" and host.tier == "cloud"
+                else base.read_bytes()
+            )
             (output / f"{host.id}.nt").write_bytes(fragments[host.id])
             metadata["fragments"].append(
                 {
@@ -102,6 +126,19 @@ def partition_dataset(
                 }
             )
     return fragments, metadata
+
+
+def _consent_projection(base: bytes, dataset: bytes) -> bytes:
+    """Return the fixed base plus the minimal global consent-count projection."""
+    base_lines = {line for line in base.splitlines() if line}
+    rdf_type = b"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"
+    user = b"<http://example.org/monitoringcontinuum#User>"
+    active_range = b"<http://example.org/monitoringcontinuum#hasActiveConsentRange>"
+    projected = set(base_lines)
+    for line in dataset.splitlines():
+        if active_range in line or (rdf_type in line and line.endswith(user + b" .")):
+            projected.add(line)
+    return b"\n".join(sorted(projected)) + b"\n"
 
 
 def _prepare(host: Host, payload: bytes, timeout: float | None, expected_closure_digest: str) -> dict:
@@ -219,7 +256,14 @@ def _catalog_round(
                 physical.append(
                     {"query_id": query["id"], "round": round_, "host": host.id, "status": status, "error": str(error)}
                 )
-        digest_payload = f"ASK:{str(ask).lower()}" if query["kind"] == "ask" else "\n".join(sorted(keys))
+        strategy = query["merge_strategy"]
+        if strategy == "single" and len(selected) != 1:
+            raise RuntimeError(f"Query {query['id']} requires one participant, received {len(selected)}")
+        if strategy == "boolean_or" and query["kind"] != "ask":
+            raise RuntimeError(f"Query {query['id']} uses boolean_or but is not ASK")
+        if strategy not in {"single", "set_union", "boolean_or"}:
+            raise RuntimeError(f"Unsupported merge strategy for {query['id']}: {strategy}")
+        digest_payload = f"ASK:{str(ask).lower()}" if strategy == "boolean_or" else "\n".join(sorted(keys))
         logical.append(
             {
                 "query_id": query["id"],
@@ -228,7 +272,7 @@ def _catalog_round(
                 "participants": [h.id for h in selected],
                 "start_timestamp": started_at,
                 "duration_ms": (monotonic() - started) * 1000,
-                "result_count": len(keys) if query["kind"] != "ask" else int(ask),
+                "result_count": int(ask) if strategy == "boolean_or" else len(keys),
                 "result_digest": sha256(digest_payload.encode()).hexdigest(),
                 "status": status,
             }
@@ -257,6 +301,7 @@ def run(
         "topology_fingerprint": topology.fingerprint,
     }
     (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    _snapshot_semantic_contract(config.root, run_dir, query_manifest)
     (run_dir / "configuration.toml").write_bytes(config.path.read_bytes())
     (run_dir / "topology.json").write_text(
         json.dumps({"name": topology.name, "hosts": [h.__dict__ for h in topology.hosts]}, indent=2) + "\n"

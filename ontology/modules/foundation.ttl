@@ -4,7 +4,6 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix saref: <https://saref.etsi.org/core/> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix sosa: <http://www.w3.org/ns/sosa/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -44,27 +43,16 @@ dcterms:replaces a owl:AnnotationProperty .
 
 xsd:duration a rdfs:Datatype .
 
-sh:NodeShape a owl:Class .
 
-sh:class a owl:AnnotationProperty .
 
-sh:datatype a owl:AnnotationProperty .
 
-sh:maxCount a owl:AnnotationProperty .
 
-sh:message a owl:AnnotationProperty .
 
-sh:minCount a owl:AnnotationProperty .
 
-sh:or a owl:AnnotationProperty .
 
-sh:path a owl:AnnotationProperty .
 
-sh:property a owl:AnnotationProperty .
 
-sh:severity a owl:AnnotationProperty .
 
-sh:targetClass a owl:AnnotationProperty .
 
 sosa:Observation a owl:Class .
 

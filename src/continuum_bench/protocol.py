@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import http.client
 import json
 from time import monotonic, sleep
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.parse import urlsplit
 
 
 def request_json(
@@ -14,15 +14,43 @@ def request_json(
     headers: dict[str, str] | None = None,
     timeout: float | None = 120,
 ) -> dict:
-    request = Request(url, data=payload, method=method, headers=headers or {})
+    parsed = urlsplit(url)
+    if parsed.scheme != "http" or not parsed.hostname:
+        raise ValueError(f"Unsupported benchmark endpoint: {url}")
+    deadline = None if timeout is None else monotonic() + timeout
+
+    def remaining() -> float | None:
+        if deadline is None:
+            return None
+        value = deadline - monotonic()
+        if value <= 0:
+            raise TimeoutError(f"{url}: global request deadline exceeded")
+        return value
+
+    connection = http.client.HTTPConnection(parsed.hostname, parsed.port or 80, timeout=remaining())
     try:
-        with urlopen(request, timeout=timeout) as response:
-            return json.loads(response.read())
-    except HTTPError as error:
-        body = error.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"{url}: HTTP {error.code}: {body}") from error
-    except (URLError, TimeoutError) as error:
+        connection.request(method, parsed.path or "/", body=payload, headers=headers or {})
+        if connection.sock is not None:
+            connection.sock.settimeout(remaining())
+        response = connection.getresponse()
+        chunks = []
+        while True:
+            if connection.sock is not None:
+                connection.sock.settimeout(remaining())
+            chunk = response.read1(64 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining()
+        body = b"".join(chunks)
+        if not 200 <= response.status < 300:
+            detail = body.decode("utf-8", errors="replace")
+            raise RuntimeError(f"{url}: HTTP {response.status}: {detail}")
+        return json.loads(body)
+    except (OSError, TimeoutError, http.client.HTTPException) as error:
         raise RuntimeError(f"{url}: {error}") from error
+    finally:
+        connection.close()
 
 
 def wait_ready(

@@ -2,18 +2,7 @@
 # Purpose: Evaluate scenario S6: protected federated learning using the declared query contract.
 # Requirements: RF-21, RF-22, RF-25, RF-56, RF-58
 # Policies: P-FL-01, P-FL-03, P-FL-05, P-FL-07
-# Current v4.0.0 result: 3 rows
 PREFIX comon: <http://example.org/monitoringcontinuum#>
-PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX saref: <https://saref.etsi.org/core/>
-PREFIX sh: <http://www.w3.org/ns/shacl#>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?session ?payload ?model ?budget ?noise ?privacy ?personal ?individualized WHERE {
   ?session a comon:FederatedLearningSession ; comon:partOfScenario comon:S6 .

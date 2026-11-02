@@ -2,18 +2,7 @@
 # Purpose: Evaluate complete mechanism inventory using the declared query contract.
 # Requirements: RV-04
 # Policies: P-VAL-06
-# Current v4.0.0 result: 55 rows
 PREFIX comon: <http://example.org/monitoringcontinuum#>
-PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX saref: <https://saref.etsi.org/core/>
-PREFIX sh: <http://www.w3.org/ns/shacl#>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?mechanism ?id ?description (GROUP_CONCAT(DISTINCT STR(?policy); separator=", ") AS ?policies) WHERE {
   ?mechanism a comon:MechanismSpecification ; comon:mechanismIdentifier ?id .

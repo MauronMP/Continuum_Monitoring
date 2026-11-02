@@ -9,7 +9,5 @@
         <http://example.org/monitoringcontinuum/modules/core-vocabulary>,
         <http://example.org/monitoringcontinuum/modules/federation>,
         <http://example.org/monitoringcontinuum/modules/wellbeing>,
-        <http://example.org/monitoringcontinuum/modules/wellbeing-vocabulary>,
-        <http://example.org/monitoringcontinuum/shapes/core-compliance>,
-        <http://example.org/monitoringcontinuum/shapes/federated-learning> ;
+        <http://example.org/monitoringcontinuum/modules/wellbeing-vocabulary> ;
     owl:versionInfo "4.0.0" .

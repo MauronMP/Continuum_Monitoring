@@ -2,7 +2,7 @@
   "cases": [
     {
       "closure_digest": "02acf2399ecd40ca6e5849dfd851ec008ed79f5f914b0c941ccd4c26ae9c7ba7",
-      "expected_query_count": 115,
+      "expected_query_count": 113,
       "inferred_triples": 4889,
       "input_bytes": 1398564,
       "input_graph_digest": "71bb5b94e4ef02df71e67356dd4f42bdc50cde743d8b7e630765711d98761b17",
@@ -17,7 +17,7 @@
     },
     {
       "closure_digest": "c25485b0c50438536ad2075207644d3e5dd16ad39fdaa26f50c716a048a4165a",
-      "expected_query_count": 115,
+      "expected_query_count": 113,
       "inferred_triples": 5265,
       "input_bytes": 1497960,
       "input_graph_digest": "4ab049a6855e5bf3573d988c32bff3f9375a2bd752c794c2edc6897dbe13511c",
@@ -32,7 +32,7 @@
     },
     {
       "closure_digest": "3052387328ed014f9126b5bd78464711ff24e091eca71aae7c2039f46b9b7b6c",
-      "expected_query_count": 115,
+      "expected_query_count": 113,
       "inferred_triples": 6945,
       "input_bytes": 1939728,
       "input_graph_digest": "2020119f9014feb158cda9212b2511d538556e6721d3aab07d3286f6eb54fd69",
@@ -47,8 +47,8 @@
     }
   ],
   "format_version": 1,
-  "query_catalog_digest": "8baf0e4fb2c3895743ddc30a4a395d5deecc3cbd4fdb9855320af7a1fe843254",
-  "query_count": 115,
+  "query_catalog_digest": "e33627b950063a98b1ab243557d226c67bc022e05b2af350c53e7988fbeaea15",
+  "query_count": 113,
   "reasoning_contract": "rdfs-literal-value-space-v1",
   "rust_equivalence_note": "Oxigraph stores strict RDF triples. Legacy RDFLib generalized triples with literal subjects are retained in legacy fields; strict_rdf_* fields are the exact portable closure. SPARQL digests match except BASE-Q33, where AVG(decimal) precision is engine-dependent and cardinality is compared.",
   "seed": 2026

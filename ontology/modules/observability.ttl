@@ -9,126 +9,126 @@ comon:TrafficWindow a owl:Class ;
 
 comon:contextDeviceState a owl:ObjectProperty ;
     rdfs:label "context device state" ;
-    rdfs:comment "context device state links resources. Declared domain: Data Context. Declared range: Device State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "context device state links resources. Declared domain: Data Context. Declared range: Device State. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:DataContext ;
     rdfs:range comon:DeviceState .
 
 comon:contextNodeState a owl:ObjectProperty ;
     rdfs:label "context node state" ;
-    rdfs:comment "context node state links resources. Declared domain: Data Context. Declared range: Node State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "context node state links resources. Declared domain: Data Context. Declared range: Node State. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:DataContext ;
     rdfs:range comon:NodeState .
 
 comon:contextProcessingLevel a owl:ObjectProperty ;
     rdfs:label "context processing level" ;
-    rdfs:comment "context processing level links resources. Declared domain: Data Context. Declared range: Processing Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "context processing level links resources. Declared domain: Data Context. Declared range: Processing Level. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:DataContext ;
     rdfs:range comon:ProcessingLevel .
 
 comon:contextPurpose a owl:ObjectProperty ;
     rdfs:label "context purpose" ;
-    rdfs:comment "context purpose links resources. Declared domain: Data Context. Declared range: Processing Purpose. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "context purpose links resources. Declared domain: Data Context. Declared range: Processing Purpose. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:DataContext ;
     rdfs:range comon:ProcessingPurpose .
 
 comon:contextZone a owl:ObjectProperty ;
     rdfs:label "context zone" ;
-    rdfs:comment "context zone links resources. Declared domain: Data Context. Declared range: City Area. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "context zone links resources. Declared domain: Data Context. Declared range: City Area. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:DataContext ;
     rdfs:range comon:CityArea .
 
 comon:evidenceContribution a owl:DatatypeProperty ;
     rdfs:label "evidence contribution" ;
-    rdfs:comment "evidence contribution records a literal value. Declared domain: Trust Evidence. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "evidence contribution records a literal value. Declared domain: Trust Evidence. Declared range: decimal. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:TrustEvidence ;
     rdfs:range xsd:decimal .
 
 comon:evidenceFactor a owl:DatatypeProperty ;
     rdfs:label "evidence factor" ;
-    rdfs:comment "evidence factor records a literal value. Declared domain: Trust Evidence. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "evidence factor records a literal value. Declared domain: Trust Evidence. Declared range: string. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:TrustEvidence ;
     rdfs:range xsd:string .
 
 comon:hasAvailability a owl:ObjectProperty ;
     rdfs:label "has availability" ;
-    rdfs:comment "has availability links resources. Declared domain: Node State. Declared range: Availability Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has availability links resources. Declared domain: Node State. Declared range: Availability Level. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range comon:AvailabilityLevel .
 
 comon:hasBatteryLevel a owl:ObjectProperty ;
     rdfs:label "has battery level" ;
-    rdfs:comment "has battery level links resources. Declared domain: Device State. Declared range: Battery Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has battery level links resources. Declared domain: Device State. Declared range: Battery Level. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:DeviceState ;
     rdfs:range comon:BatteryLevel .
 
 comon:hasCommunication a owl:ObjectProperty ;
     rdfs:label "has communication level" ;
-    rdfs:comment "has communication level links resources. Declared domain: Node State. Declared range: Communication Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has communication level links resources. Declared domain: Node State. Declared range: Communication Level. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range comon:CommunicationLevel .
 
 comon:hasComplianceMetric a owl:ObjectProperty ;
     rdfs:label "has compliance metric" ;
-    rdfs:comment "has compliance metric links resources. Declared domain: Validation Campaign. Declared range: Compliance Metric. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has compliance metric links resources. Declared domain: Validation Campaign. Declared range: Compliance Metric. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:ValidationCampaign ;
     rdfs:range comon:ComplianceMetric .
 
 comon:hasConnectionStatus a owl:ObjectProperty ;
     rdfs:label "has connection status" ;
-    rdfs:comment "has connection status links resources. Declared domain: Device State. Declared range: Device Connection Status. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has connection status links resources. Declared domain: Device State. Declared range: Device Connection Status. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:DeviceState ;
     rdfs:range comon:DeviceConnectionStatus .
 
 comon:hasDataContext a owl:ObjectProperty ;
     rdfs:label "has data context" ;
-    rdfs:comment "has data context links resources. The domain is intentionally open for reuse across governed resources. Declared range: Data Context. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has data context links resources. The domain is intentionally open for reuse across governed resources. Declared range: Data Context. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:range comon:DataContext .
 
 comon:hasEnergyLevel a owl:ObjectProperty ;
     rdfs:label "has energy level" ;
-    rdfs:comment "has energy level links resources. Declared domain: Node State. Declared range: Energy Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has energy level links resources. Declared domain: Node State. Declared range: Energy Level. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range comon:EnergyLevel .
 
 comon:hasMobility a owl:ObjectProperty ;
     rdfs:label "has mobility" ;
-    rdfs:comment "has mobility links resources. Declared domain: User State. Declared range: Mobility Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has mobility links resources. Declared domain: User State. Declared range: Mobility Level. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:UserState ;
     rdfs:range comon:MobilityLevel .
 
 comon:hasNodeState a owl:ObjectProperty ;
     rdfs:label "has node state" ;
-    rdfs:comment "has node state links resources. Declared domain: Computational Node. Declared range: Node State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has node state links resources. Declared domain: Computational Node. Declared range: Node State. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:ComputationalNode ;
     rdfs:range comon:NodeState .
 
 comon:hasOperationalStatus a owl:ObjectProperty ;
     rdfs:label "has operational status" ;
-    rdfs:comment "has operational status links resources. Declared domain: Node State. Declared range: Operational Status. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has operational status links resources. Declared domain: Node State. Declared range: Operational Status. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range comon:OperationalStatus .
 
 comon:hasPerformance a owl:ObjectProperty ;
     rdfs:label "has performance" ;
-    rdfs:comment "has performance links resources. Declared domain: Node State. Declared range: Performance Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has performance links resources. Declared domain: Node State. Declared range: Performance Level. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range comon:PerformanceLevel .
 
 comon:hasResidualCapacity a owl:ObjectProperty ;
     rdfs:label "has residual capacity" ;
-    rdfs:comment "has residual capacity links resources. Declared domain: Node State. Declared range: Residual Capacity. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has residual capacity links resources. Declared domain: Node State. Declared range: Residual Capacity. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range comon:ResidualCapacity .
 
 comon:hasTrustAssessment a owl:ObjectProperty ;
     rdfs:label "has trust assessment" ;
-    rdfs:comment "has trust assessment links resources. Declared domain: Node State. Declared range: Trust Assessment. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has trust assessment links resources. Declared domain: Node State. Declared range: Trust Assessment. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range comon:TrustAssessment .
 
 comon:hasTrustEvidence a owl:ObjectProperty ;
     rdfs:label "has trust evidence" ;
-    rdfs:comment "has trust evidence links resources. Declared domain: Trust Assessment. Declared range: Trust Evidence. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has trust evidence links resources. Declared domain: Trust Assessment. Declared range: Trust Evidence. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:TrustAssessment ;
     rdfs:range comon:TrustEvidence .
 
@@ -139,31 +139,31 @@ comon:hasTrustScore a owl:DatatypeProperty ;
 
 comon:hasUserState a owl:ObjectProperty ;
     rdfs:label "has user state" ;
-    rdfs:comment "has user state links resources. Declared domain: User. Declared range: User State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has user state links resources. Declared domain: User. Declared range: User State. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:User ;
     rdfs:range comon:UserState .
 
 comon:hasWorkload a owl:ObjectProperty ;
     rdfs:label "has workload" ;
-    rdfs:comment "has workload links resources. Declared domain: Node State. Declared range: Workload Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has workload links resources. Declared domain: Node State. Declared range: Workload Level. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range comon:WorkloadLevel .
 
 comon:parametrizedDataReady a owl:DatatypeProperty ;
     rdfs:label "parametrized data ready" ;
-    rdfs:comment "parametrized data ready records a literal value. Declared domain: Device State. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "parametrized data ready records a literal value. Declared domain: Device State. Declared range: boolean. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:DeviceState ;
     rdfs:range xsd:boolean .
 
 comon:queuedRequests a owl:DatatypeProperty ;
     rdfs:label "queued requests" ;
-    rdfs:comment "queued requests records a literal value. Declared domain: Node State. Declared range: integer. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "queued requests records a literal value. Declared domain: Node State. Declared range: integer. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range xsd:integer .
 
 comon:resourceUsagePercent a owl:DatatypeProperty ;
     rdfs:label "resource usage (%)" ;
-    rdfs:comment "resource usage (%) records a literal value. Declared domain: Node State. Declared range: decimal. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "resource usage (%) records a literal value. Declared domain: Node State. Declared range: decimal. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeState ;
     rdfs:range xsd:decimal .
 
@@ -175,25 +175,25 @@ comon:stateDuration a owl:DatatypeProperty ;
 
 comon:trustAssessmentForState a owl:ObjectProperty ;
     rdfs:label "trust assessment for state" ;
-    rdfs:comment "trust assessment for state links resources. Declared domain: Trust Assessment. Declared range: Node State. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "trust assessment for state links resources. Declared domain: Trust Assessment. Declared range: Node State. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:TrustAssessment ;
     rdfs:range comon:NodeState .
 
 comon:trustRuleVersion a owl:DatatypeProperty ;
     rdfs:label "trust rule version" ;
-    rdfs:comment "trust rule version records a literal value. Declared domain: Trust Assessment. Declared range: string. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "trust rule version records a literal value. Declared domain: Trust Assessment. Declared range: string. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:TrustAssessment ;
     rdfs:range xsd:string .
 
 comon:trustWindowEnd a owl:DatatypeProperty ;
     rdfs:label "trust window end" ;
-    rdfs:comment "trust window end records a literal value. Declared domain: Trust Assessment. Declared range: dateTime. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "trust window end records a literal value. Declared domain: Trust Assessment. Declared range: dateTime. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:TrustAssessment ;
     rdfs:range xsd:dateTime .
 
 comon:trustWindowStart a owl:DatatypeProperty ;
     rdfs:label "trust window start" ;
-    rdfs:comment "trust window start records a literal value. Declared domain: Trust Assessment. Declared range: dateTime. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "trust window start records a literal value. Declared domain: Trust Assessment. Declared range: dateTime. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:TrustAssessment ;
     rdfs:range xsd:dateTime .
 

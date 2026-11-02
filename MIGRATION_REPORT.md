@@ -2,7 +2,7 @@
 
 ## Final scope
 
-The repository now contains one experiment: **Docker RDF Scalability Benchmark**. It studies how a containerized RDF monitoring service changes as monitored population and actual ABox grow through 1, 50, 100, 500, 1000, and 2000 users. The only reasoning contract is RDFS; concurrency is one. Distributed and replicated are layouts of the same experiment.
+The repository now contains one experiment: **Docker RDF Scalability Benchmark**. It studies how a containerized RDF monitoring service changes as monitored population and actual ABox grow through 1, 50, 100, 500, 1000, 2000, 4000, 5000, 6000, 7000, 10000, 12000, 14000, 16000, 18000, and 20000 users. The only reasoning contract is RDFS; concurrency is one. Distributed and replicated are layouts of the same experiment.
 
 ## Removed
 
@@ -45,7 +45,7 @@ Preparation is decomposed into partition, serialization, transfer, and remote lo
 ```text
 configs/                 benchmark and six-host topology
 containers/worker/       Rust multi-stage image and Compose limits
-docs/                    five final technical documents
+docs/                    architecture, method, deployment, semantic and catalogue documentation
 ontology/                human Turtle modules and canonical benchmark base
 queries/                 113 SPARQL files and executable manifest
 rust/                    RDF library, tool, and worker workspace
@@ -62,7 +62,7 @@ The public CLI is limited to `doctor`, `render`, `deploy`, `status`, `run`, and 
 - `cargo clippy --manifest-path rust/Cargo.toml --all-targets -- -D warnings`
 - `cargo test --manifest-path rust/Cargo.toml`, including golden differential tests
 - `ruff check src tests`
-- `pytest`: twelve local control-plane, source-manifest, and Python-to-Rust integration tests
+- `pytest`: local control-plane, semantic-source, documentation, deadline, distributed-equivalence, and Python-to-Rust integration tests
 - release Rust build and native Docker worker build
 - local minimum campaign with raw results, summaries, resource samples, manifest, and fourteen PNG figures
 - six-host doctor covering Docker/Compose, host and Docker architecture, memory, disk, and CPU/memory/PID cgroups
@@ -77,7 +77,7 @@ CI runs formatting, lint, Rust tests, Python tests, and Docker build without the
 - The old aggregated preparation metric mixed phases. The new evidence separates coordinator and worker costs and does not treat payload bytes as VPN wire traffic.
 - Reusing one partition across repetitions would have hidden partition/serialization variance. Each repetition now creates and verifies fresh fragments.
 - The physical hosts are heterogeneous. Cloud builds `x86_64`; the Raspberry kernels report `aarch64` while their Docker server/userspace produces `armv7` worker images. Both host and worker target are recorded; results describe deployment behavior and do not claim a controlled Python-versus-Rust comparison.
-- The fixed semantic base is replicated in distributed mode so every worker has the required schema. The growing synthetic ABox has deterministic, disjoint Edge ownership; shared synthetic node/state/trust facts are replicated where required.
+- The fixed semantic base is replicated in distributed mode so every worker has the required schema. The growing synthetic ABox has deterministic, disjoint Edge ownership; shared synthetic node/state/trust facts are replicated across the authorities that answer those queries. Cloud receives only the user/consent projection needed by the global consent aggregate.
 
 ## Future work
 

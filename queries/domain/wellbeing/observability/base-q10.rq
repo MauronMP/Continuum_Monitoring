@@ -2,19 +2,8 @@
 # Purpose: Evaluate device states and transmission eligibility using the declared query contract.
 # Requirements: RF-04, RF-26, RF-27, RF-07
 # Policies: P-DATA-04, P-DATA-06, P-DATA-07
-# Current v4.0.0 result: 4 rows
 PREFIX comon: <http://example.org/monitoringcontinuum#>
-PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX saref: <https://saref.etsi.org/core/>
 PREFIX s4ehaw: <https://saref.etsi.org/saref4ehaw/>
-PREFIX sh: <http://www.w3.org/ns/shacl#>
-PREFIX sosa: <http://www.w3.org/ns/sosa/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?user ?device ?state ?battery ?connection ?dataReady ?from ?to WHERE {
   ?user a comon:User .

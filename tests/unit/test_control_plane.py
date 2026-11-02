@@ -3,7 +3,7 @@ import json
 
 from continuum_bench.config import load_config
 from continuum_bench.deployment import render, restart_workers
-from continuum_bench.experiment import _failure_status
+from continuum_bench.experiment import _failure_status, _snapshot_semantic_contract
 from continuum_bench.reporting import report
 from continuum_bench.resources import _bytes, _io_pair
 from continuum_bench.topology import load_topology
@@ -128,4 +128,15 @@ def test_report_excludes_warmup_and_emits_auditable_outputs(tmp_path):
     assert float(row["network_rx_bytes_median"]) == 500
     assert float(row["catalog_throughput_per_second"]) == 5
     assert (summary / "preparation.csv").is_file()
-    assert len(list((run_dir / "figures").glob("*.png"))) == 14
+    assert len(list((run_dir / "figures").glob("*.png"))) == 19
+    figure_manifest = json.loads((run_dir / "figures/manifest.json").read_text())
+    assert figure_manifest["figure_count"] == 19
+
+
+def test_semantic_contract_snapshot_is_self_contained(root, tmp_path):
+    manifest = json.loads((root / "queries/manifest.json").read_text())
+    _snapshot_semantic_contract(root, tmp_path, manifest)
+    assert (tmp_path / "semantic-contract/ontology/benchmark/base.nt").is_file()
+    assert (tmp_path / "semantic-contract/ontology/benchmark/manifest.json").is_file()
+    assert (tmp_path / "semantic-contract/queries/manifest.json").is_file()
+    assert len(list((tmp_path / "semantic-contract/queries").rglob("*.rq"))) == 113

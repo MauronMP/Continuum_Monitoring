@@ -31,6 +31,8 @@ def load_config(path: Path) -> BenchmarkConfig:
     deployment = data["deployment"]
     experiment = data["experiment"]
     scenarios = tuple(Scenario(str(item["name"]), int(item["users"])) for item in data["scenarios"])
+    if len({item.name for item in scenarios}) != len(scenarios):
+        raise ValueError("scenario names must be unique")
     users = [item.users for item in scenarios]
     expected_users = [
         1,
@@ -65,7 +67,18 @@ def load_config(path: Path) -> BenchmarkConfig:
             raise ValueError(f"{key} must be positive")
     if float(experiment["prepare_operational_target_seconds"]) >= float(experiment["prepare_hard_timeout_seconds"]):
         raise ValueError("the preparation operational target must be below the hard timeout")
-    for key in ("request_timeout_seconds", "resource_sample_interval_seconds"):
+    for key in (
+        "request_timeout_seconds",
+        "prepare_operational_target_seconds",
+        "prepare_hard_timeout_seconds",
+        "resource_sample_interval_seconds",
+    ):
         if float(experiment[key]) <= 0:
+            raise ValueError(f"{key} must be positive")
+    for key in ("health_timeout_seconds", "operation_timeout_seconds"):
+        if float(deployment[key]) <= 0:
+            raise ValueError(f"{key} must be positive")
+    for key in ("reserve_memory_mib", "minimum_free_disk_mib"):
+        if int(deployment[key]) <= 0:
             raise ValueError(f"{key} must be positive")
     return BenchmarkConfig(path, deployment, experiment, scenarios)

@@ -1,32 +1,96 @@
 {
   "format": "continuum-rdf-base-manifest-v1",
   "sources": [
-    {"path": "ontology/alignments/health-vocabularies.ttl", "sha256": "4b66a0673f437408865a68808fcc3d8ee2d69e50b2986df9ffa1a5e6abb46b45"},
-    {"path": "ontology/core/schema.ttl", "sha256": "2c94677668f07853cbe5172c6764fe78ef7ef11d4cb198ff834d3feb02bd7a1e"},
-    {"path": "ontology/core/vocabulary.ttl", "sha256": "59e4806643b35aa1bb32e6b4fbb2ea15c8eeb1c1bfa7eca301030a3625934924"},
-    {"path": "ontology/domains/wellbeing/schema.ttl", "sha256": "e2a88b69bd896f17046e951fec46df6601b2b811224940b5c7171e6984a56f8a"},
-    {"path": "ontology/domains/wellbeing/vocabulary.ttl", "sha256": "2210e155732f025f5f3cb31390bf4849a07d347c05e84e60b40344d9e5d5369b"},
-    {"path": "ontology/examples/reference-system.ttl", "sha256": "8c8e7f344372ab98eb507b4051d7ae5969c6db3c74499111e4e1bf1e3141effb"},
-    {"path": "ontology/modules/contracts.ttl", "sha256": "50a17bc4fe771d7bb97bd4b1f9b4480ce7aa6b8bef3ea7181607b88c45dcb90b"},
-    {"path": "ontology/modules/deployment.ttl", "sha256": "3538f7d18ae00e2a45a18b207b9f16458706b25cf1bbcc2e74c8b41930c6500e"},
-    {"path": "ontology/modules/federation.ttl", "sha256": "ed6f520fe3ed4568cbd9e1c75e838160c77583473c4d4b4018af47e9f7dd17f1"},
-    {"path": "ontology/modules/foundation.ttl", "sha256": "77d52e7544b9c914e1d63ace9627b4f9512011100bd1087251d9ff44dd21fc28"},
-    {"path": "ontology/modules/governance.ttl", "sha256": "775a6fb6487e710e5883dfe1724d53b8972353996a789b9a6854d00cf22b9567"},
-    {"path": "ontology/modules/observability.ttl", "sha256": "1d7d63e70cc7280e0b2344cd6b20c98e581554881ee3b8cb5a6db7e48ee3eadb"},
-    {"path": "ontology/modules/orchestration.ttl", "sha256": "d7b0326047fc47c045f4f3be360f3496c2391df34234ef7cedc4ade7e97ca233"},
-    {"path": "ontology/modules/topology.ttl", "sha256": "2ecca0258182b94cda498375e80b7995962522f015088f179be601547bc0610d"},
-    {"path": "ontology/profiles/cloud.ttl", "sha256": "553a0847cc5844e319cef03cd2b6e14caa5d311bc829a11d11ed0bdb342de0b0"},
-    {"path": "ontology/profiles/edge.ttl", "sha256": "8d5badee27073d43e8bb75d9376c9978c2ca52c7004858abd2b2badc3394857e"},
-    {"path": "ontology/profiles/fog.ttl", "sha256": "6fbf8a36fffae7580b463cc2e4ca073c0c77e891f76f220787fbe723c9ad9d60"},
-    {"path": "ontology/profiles/full.ttl", "sha256": "46276574a8c38fb300de4f62a1d89182686a0f4a05644d7a9b1c9ecb74033202"},
-    {"path": "ontology/profiles/iot.ttl", "sha256": "a2ec98627c13b701f2e9d432fe448718ce8d9b7a28bf002bc917759d24129ecb"},
-    {"path": "ontology/profiles/mist.ttl", "sha256": "a70d3e645fcbae49603a8c582d1ed40032f7c19b1bfee1cccfc3e1b58a997ada"}
+    {
+      "path": "ontology/alignments/health-vocabularies.ttl",
+      "sha256": "4b66a0673f437408865a68808fcc3d8ee2d69e50b2986df9ffa1a5e6abb46b45"
+    },
+    {
+      "path": "ontology/catalog/queries.ttl",
+      "sha256": "8e16466c3c5227cb110f2f3ad90a3913a8af4a07acbd281ffcdb365f7c296700"
+    },
+    {
+      "path": "ontology/core/schema.ttl",
+      "sha256": "2c94677668f07853cbe5172c6764fe78ef7ef11d4cb198ff834d3feb02bd7a1e"
+    },
+    {
+      "path": "ontology/core/vocabulary.ttl",
+      "sha256": "59e4806643b35aa1bb32e6b4fbb2ea15c8eeb1c1bfa7eca301030a3625934924"
+    },
+    {
+      "path": "ontology/domains/wellbeing/schema.ttl",
+      "sha256": "e2a88b69bd896f17046e951fec46df6601b2b811224940b5c7171e6984a56f8a"
+    },
+    {
+      "path": "ontology/domains/wellbeing/vocabulary.ttl",
+      "sha256": "2210e155732f025f5f3cb31390bf4849a07d347c05e84e60b40344d9e5d5369b"
+    },
+    {
+      "path": "ontology/examples/reference-system.ttl",
+      "sha256": "ab4db30cc42f03f07d572ed181f1c63115526cae892aade3025c3164b1af0245"
+    },
+    {
+      "path": "ontology/modules/contracts.ttl",
+      "sha256": "50a17bc4fe771d7bb97bd4b1f9b4480ce7aa6b8bef3ea7181607b88c45dcb90b"
+    },
+    {
+      "path": "ontology/modules/deployment.ttl",
+      "sha256": "3538f7d18ae00e2a45a18b207b9f16458706b25cf1bbcc2e74c8b41930c6500e"
+    },
+    {
+      "path": "ontology/modules/federation.ttl",
+      "sha256": "9d494035360f059d193914ff3a2f92b9f7fc857eff9e9a99d16cf607e389066e"
+    },
+    {
+      "path": "ontology/modules/foundation.ttl",
+      "sha256": "7d980edeb701646888182931bb61e6a4bd13ce483df388c03fcdb1c344f3593d"
+    },
+    {
+      "path": "ontology/modules/governance.ttl",
+      "sha256": "34b4ec2b506a5e09a7c439c267cb93c2af4e7d3c67f6fe4dddeecba0e2ab055f"
+    },
+    {
+      "path": "ontology/modules/observability.ttl",
+      "sha256": "5cb25df548a829b38d7378496bcf9690e355721240382400bc4ea78773eed2b0"
+    },
+    {
+      "path": "ontology/modules/orchestration.ttl",
+      "sha256": "f651aad9fb49edae0e380fd7d6359fdced18a9df3e96cf3597dd221bdec575e9"
+    },
+    {
+      "path": "ontology/modules/topology.ttl",
+      "sha256": "887468b0480bbf5a9ece77b68e94f93fc8700dc2ec7398db9a1159ac478522c4"
+    },
+    {
+      "path": "ontology/profiles/cloud.ttl",
+      "sha256": "c087a89491fbfaaa4ab41035320877e4079fa393f452e10b7a739203740948cf"
+    },
+    {
+      "path": "ontology/profiles/edge.ttl",
+      "sha256": "8d5badee27073d43e8bb75d9376c9978c2ca52c7004858abd2b2badc3394857e"
+    },
+    {
+      "path": "ontology/profiles/fog.ttl",
+      "sha256": "6fbf8a36fffae7580b463cc2e4ca073c0c77e891f76f220787fbe723c9ad9d60"
+    },
+    {
+      "path": "ontology/profiles/full.ttl",
+      "sha256": "2405441a9d91ba64d90fd126cf702e154d7e8ec60f57345ce18cbc8d66e123c5"
+    },
+    {
+      "path": "ontology/profiles/iot.ttl",
+      "sha256": "a2ec98627c13b701f2e9d432fe448718ce8d9b7a28bf002bc917759d24129ecb"
+    },
+    {
+      "path": "ontology/profiles/mist.ttl",
+      "sha256": "a70d3e645fcbae49603a8c582d1ed40032f7c19b1bfee1cccfc3e1b58a997ada"
+    }
   ],
-  "source_bundle_digest": "51304cd2373b8f72f2b75fec045b0b5d92a1ff78ea615ee233242360653bdc0e",
+  "source_bundle_digest": "17a79cdea04d472707b2448a8e0102e38169c293a977e3cdcb405b076bba5209",
   "canonical_base": {
     "path": "ontology/benchmark/base.nt",
-    "bytes": 1323029,
-    "triples": 7910,
-    "sha256": "35ced863f448e80399ba3e0d1c54758be67fe5d011210733873ff7a2ab09a3cb"
+    "bytes": 1471394,
+    "triples": 8704,
+    "sha256": "29c0fd767c27543f73c4b03ce1eeca61d68b2dfd0eca1e440ef3fa40e6b5787a"
   }
 }

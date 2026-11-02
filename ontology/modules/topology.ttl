@@ -43,13 +43,13 @@ comon:UrbanZone a comon:ZoneType,
 
 comon:belongsToCommunity a owl:ObjectProperty ;
     rdfs:label "belongs to community" ;
-    rdfs:comment "belongs to community links resources. Declared domain: User. Declared range: Community. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "belongs to community links resources. Declared domain: User. Declared range: Community. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:User ;
     rdfs:range comon:Community .
 
 comon:connectsTo a owl:ObjectProperty ;
     rdfs:label "connects to" ;
-    rdfs:comment "connects to links resources. Declared domain: https://saref.etsi.org/core/Device. Declared range: Computational Node. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "connects to links resources. Declared domain: https://saref.etsi.org/core/Device. Declared range: Computational Node. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain saref:Device ;
     rdfs:range comon:ComputationalNode .
 
@@ -61,32 +61,32 @@ comon:continuumLevel a owl:DatatypeProperty ;
 
 comon:coversArea a owl:ObjectProperty ;
     rdfs:label "covers area" ;
-    rdfs:comment "covers area links resources. Declared domain: Computational Node. Declared range: City Area. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "covers area links resources. Declared domain: Computational Node. Declared range: City Area. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:ComputationalNode ;
     rdfs:range comon:CityArea .
 
 comon:hasDistance a owl:ObjectProperty ;
     rdfs:label "has distance" ;
-    rdfs:comment "has distance links resources. Declared domain: Node-User Relation. Declared range: Distance Level. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has distance links resources. Declared domain: Node-User Relation. Declared range: Distance Level. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeUserRelation ;
     rdfs:range comon:DistanceLevel .
 
 comon:hasElasticity a owl:DatatypeProperty ;
     rdfs:label "has elasticity" ;
-    rdfs:comment "has elasticity records a literal value. Declared domain: Computational Node. Declared range: boolean. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has elasticity records a literal value. Declared domain: Computational Node. Declared range: boolean. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:ComputationalNode ;
     rdfs:range xsd:boolean .
 
 comon:hasGeometry a owl:ObjectProperty ;
     rdfs:label "has geometry" ;
-    rdfs:comment "has geometry links resources. Declared domain: City Area. Declared range: Geometry. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has geometry links resources. Declared domain: City Area. Declared range: Geometry. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:CityArea ;
     rdfs:range geo:Geometry ;
     rdfs:subPropertyOf geo:hasGeometry .
 
 comon:hasMobileDevice a owl:ObjectProperty ;
     rdfs:label "has mobile device" ;
-    rdfs:comment "has mobile device links resources. Declared domain: User. Declared range: Mobile Device. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has mobile device links resources. Declared domain: User. Declared range: Mobile Device. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:User ;
     rdfs:range comon:MobileDevice .
 
@@ -98,7 +98,7 @@ comon:hasNeighborNode a owl:ObjectProperty ;
 
 comon:hasPopulationDensity a owl:ObjectProperty ;
     rdfs:label "has population density" ;
-    rdfs:comment "has population density links resources. Declared domain: City Area. Declared range: Population Density. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "has population density links resources. Declared domain: City Area. Declared range: Population Density. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:CityArea ;
     rdfs:range comon:PopulationDensity .
 
@@ -110,23 +110,23 @@ comon:isPreferredNode a owl:DatatypeProperty ;
 
 comon:locatedIn a owl:ObjectProperty ;
     rdfs:label "located in" ;
-    rdfs:comment "located in links resources. The domain is intentionally open for reuse across governed resources. Value restrictions are defined by the application validation shapes. Domain and range axioms support inference; SHACL supplies record-completeness checks." .
+    rdfs:comment "located in links resources. The domain is intentionally open for reuse across governed resources. Value restrictions are defined by the application validation shapes. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." .
 
 comon:locatedInZone a owl:ObjectProperty ;
     rdfs:label "located in zone" ;
-    rdfs:comment "located in zone links resources. Declared domain: User. Declared range: City Area. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "located in zone links resources. Declared domain: User. Declared range: City Area. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:User ;
     rdfs:range comon:CityArea .
 
 comon:relatesNode a owl:ObjectProperty ;
     rdfs:label "relates node" ;
-    rdfs:comment "relates node links resources. Declared domain: Node-User Relation. Declared range: Computational Node. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "relates node links resources. Declared domain: Node-User Relation. Declared range: Computational Node. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeUserRelation ;
     rdfs:range comon:ComputationalNode .
 
 comon:relatesUser a owl:ObjectProperty ;
     rdfs:label "relates user" ;
-    rdfs:comment "relates user links resources. Declared domain: Node-User Relation. Declared range: User. Domain and range axioms support inference; SHACL supplies record-completeness checks." ;
+    rdfs:comment "relates user links resources. Declared domain: Node-User Relation. Declared range: User. Domain and range axioms support inference; record-completeness validation is outside the RDFS benchmark." ;
     rdfs:domain comon:NodeUserRelation ;
     rdfs:range comon:User .
 

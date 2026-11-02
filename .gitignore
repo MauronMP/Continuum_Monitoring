@@ -23,6 +23,7 @@ rust/target/
 *.class
 # Benchmark outputs and scratch files
 outputs/*
+!outputs/README.md
 work/
 tmp/
 *.log

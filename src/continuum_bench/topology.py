@@ -35,7 +35,20 @@ class Topology:
 def load_topology(path: Path, excluded: set[str] | None = None) -> Topology:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     excluded = excluded or set()
-    hosts = tuple(Host(**item) for item in data["hosts"] if item["id"] not in excluded)
+    configured = tuple(Host(**item) for item in data["hosts"])
+    ids = [host.id for host in configured]
+    if len(set(ids)) != len(ids):
+        raise ValueError("topology host identifiers must be unique")
+    if any(host.tier not in {"cloud", "fog", "mist", "edge"} for host in configured):
+        raise ValueError("topology tiers must be cloud, fog, mist, or edge")
+    if any(not 1 <= host.port <= 65535 for host in configured):
+        raise ValueError("topology ports must be between 1 and 65535")
+    if sum(host.local for host in configured) > 1:
+        raise ValueError("the topology may define at most one local host")
+    unknown = excluded - set(ids)
+    if unknown:
+        raise ValueError(f"unknown excluded hosts: {sorted(unknown)}")
+    hosts = tuple(host for host in configured if host.id not in excluded)
     if not hosts:
         raise ValueError("The topology has no active hosts")
     return Topology(str(data["name"]), hosts)
