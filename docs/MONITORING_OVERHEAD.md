@@ -14,7 +14,7 @@ Every repetition has one fixed demand level. This is policy-driven periodic moni
 
 ## Policies, tasks and scheduling
 
-The ontology provides policy identifiers and traceability, but no uniform executable periodic schedule. [monitoring.toml](../configs/monitoring.toml) therefore references existing `policy_id` values and defines intervals and deadlines without restructuring RDF.
+The ontology provides policy identifiers and traceability, but no uniform executable periodic schedule. [monitoring.toml](../configs/monitoring.toml) therefore references existing `policy_id` values and defines intervals and deadlines without restructuring RDF. The configured workload covers recurring operational, connectivity, topology, wellbeing, data, consent, governance, trust and federation observations. [MONITORING_POLICY_COVERAGE.md](MONITORING_POLICY_COVERAGE.md) records the complete query classification, active policy-query traceability and exact schedule.
 
 A `MonitoringTask` contains a stable task ID, a policy ID declared by an explicit `comon:policyIdentifier` literal, one or more required queries, priority, fixed demand level, interval and optional deadline. A cycle is compliant only when every query completes correctly and on time. Its effective deadline is the minimum of the policy deadline, or interval when absent, and the global logical timeout.
 
@@ -48,7 +48,7 @@ Regenerate its independent report:
 continuum-bench monitor-report outputs/monitoring-<run-id>
 ```
 
-The example configuration selects `users-1000`, `distributed`, four demand levels, three repetitions, 30 seconds of stabilization and 300 seconds of measurement. Scenarios, layouts, levels, durations, recovery timeouts and tasks are configurable. `minimum_recommended_cycles_per_task` emits a warning when `measurement_seconds / task_interval` is too small for a configured task; it does not reject short development runs or impose a fixed campaign duration.
+The example configuration selects `users-1000`, `distributed`, four demand levels, three repetitions, 30 seconds of stabilization and 300 seconds of measurement. Scenarios, layouts, levels, durations, recovery timeouts and tasks are configurable. Task intervals and deadlines are experimental schedule parameters associated with existing policies; they are not temporal requirements asserted by the ontology. `minimum_recommended_cycles_per_task` emits a warning when `measurement_seconds / task_interval` is too small for a configured task; it does not reject short development runs or impose a fixed campaign duration.
 
 ## Evidence and metrics
 

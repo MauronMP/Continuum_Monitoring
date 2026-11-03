@@ -49,6 +49,7 @@ Installation requires a complete repository clone because configuration, ontolog
 - [Deployment](docs/DEPLOYMENT.md)
 - [Result contract](docs/RESULTS.md)
 - [Continuous monitoring overhead](docs/MONITORING_OVERHEAD.md)
+- [Monitoring policy and query coverage](docs/MONITORING_POLICY_COVERAGE.md)
 - [RDF model](docs/RDF_MODEL.md)
 - [Requirements catalogue](docs/REQUIREMENTS.md)
 - [SPARQL query catalogue](docs/QUERY_CATALOG.md)

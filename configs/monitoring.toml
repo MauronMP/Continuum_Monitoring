@@ -15,25 +15,89 @@ minimum_recommended_cycles_per_task = 3
 include_idle = true
 
 [[monitoring_task]]
-task_id = "resource-pressure"
-policy_id = "P-OPS-02"
-query_ids = ["BASE-Q07", "BASE-Q08"]
-priority = 30
+task_id = "operational-node-state"
+policy_id = "P-NODE-01"
+query_ids = ["BASE-Q07", "BASE-Q08", "BASE-Q26"]
+priority = 100
 intervals_seconds = { low = 60, normal = 30, high = 10, critical = 5 }
-deadlines_seconds = { low = 60, normal = 30, high = 10, critical = 5 }
+deadlines_seconds = { low = 45, normal = 20, high = 8, critical = 5 }
 
 [[monitoring_task]]
-task_id = "wellbeing-state"
-policy_id = "P-DATA-09"
-query_ids = ["BASE-Q09", "BASE-Q10"]
-priority = 20
-intervals_seconds = { low = 60, normal = 30, high = 15, critical = 10 }
-deadlines_seconds = { low = 60, normal = 30, high = 15, critical = 10 }
+task_id = "device-transmission-state"
+policy_id = "P-DATA-06"
+query_ids = ["BASE-Q10"]
+priority = 90
+intervals_seconds = { low = 120, normal = 60, high = 30, critical = 15 }
+deadlines_seconds = { low = 60, normal = 30, high = 20, critical = 10 }
 
 [[monitoring_task]]
-task_id = "policy-audit"
+task_id = "wellbeing-temporal-state"
+policy_id = "P-GOV-05"
+query_ids = ["BASE-Q09", "EXT-Q74"]
+priority = 80
+intervals_seconds = { low = 180, normal = 90, high = 45, critical = 20 }
+deadlines_seconds = { low = 90, normal = 45, high = 30, critical = 15 }
+
+[[monitoring_task]]
+task_id = "topology-proximity-signal"
+policy_id = "P-NODE-02"
+query_ids = ["BASE-Q23"]
+priority = 70
+intervals_seconds = { low = 240, normal = 120, high = 60, critical = 30 }
+deadlines_seconds = { low = 120, normal = 60, high = 30, critical = 20 }
+
+[[monitoring_task]]
+task_id = "buffer-retention-state"
+policy_id = "P-DATA-05"
+query_ids = ["EXT-Q31", "EXT-Q32"]
+priority = 70
+intervals_seconds = { low = 180, normal = 120, high = 60, critical = 30 }
+deadlines_seconds = { low = 90, normal = 60, high = 30, critical = 20 }
+
+[[monitoring_task]]
+task_id = "consent-integrity"
+policy_id = "P-CONS-01"
+query_ids = ["EXT-Q13", "EXT-Q16"]
+priority = 65
+intervals_seconds = { low = 240, normal = 180, high = 90, critical = 45 }
+deadlines_seconds = { low = 120, normal = 90, high = 45, critical = 30 }
+
+[[monitoring_task]]
+task_id = "restricted-zone-confinement"
+policy_id = "P-ZONE-01"
+query_ids = ["EXT-Q37"]
+priority = 65
+intervals_seconds = { low = 180, normal = 120, high = 60, critical = 30 }
+deadlines_seconds = { low = 90, normal = 60, high = 30, critical = 20 }
+
+[[monitoring_task]]
+task_id = "audit-accountability"
 policy_id = "P-GOV-02"
 query_ids = ["EXT-Q72"]
-priority = 10
-intervals_seconds = { low = 120, normal = 60, high = 30, critical = 15 }
-deadlines_seconds = { low = 120, normal = 60, high = 30, critical = 15 }
+priority = 50
+intervals_seconds = { low = 240, normal = 180, high = 90, critical = 45 }
+deadlines_seconds = { low = 120, normal = 90, high = 45, critical = 30 }
+
+[[monitoring_task]]
+task_id = "trust-evidence"
+policy_id = "P-NODE-03"
+query_ids = ["EXT-Q40", "EXT-Q43"]
+priority = 45
+intervals_seconds = { low = 240, normal = 120, high = 60, critical = 30 }
+deadlines_seconds = { low = 120, normal = 60, high = 30, critical = 20 }
+
+[[monitoring_task]]
+task_id = "federation-safeguards"
+policy_id = "P-FL-03"
+query_ids = ["EXT-Q67", "EXT-Q68"]
+priority = 40
+intervals_seconds = { low = 240, normal = 180, high = 90, critical = 45 }
+deadlines_seconds = { low = 120, normal = 90, high = 45, critical = 30 }
+
+[[monitoring_task]]
+task_id = "policy-conflict-integrity"
+policy_id = "P-GOV-03"
+query_ids = ["EXT-Q79"]
+priority = 30
+intervals_seconds = { low = 240, normal = 180, high = 90, critical = 45 }
+deadlines_seconds = { low = 120, normal = 90, high = 45, critical = 30 }

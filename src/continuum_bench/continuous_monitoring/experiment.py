@@ -22,7 +22,7 @@ from ..protocol import request_json, wait_ready
 from ..query_execution import execute_logical_query
 from ..resources import ResourceSampler
 from ..topology import Topology
-from .config import MonitoringConfig, MonitoringTask
+from .config import MonitoringConfig, MonitoringTask, monitoring_coverage_metadata
 from .scheduler import run_scheduler
 
 
@@ -305,6 +305,7 @@ def run(config: MonitoringConfig, topology: Topology, demand_levels: set[str] | 
         ).hexdigest(),
         "demand_levels": levels,
         "configuration_warnings": list(config.validation_warnings),
+        **monitoring_coverage_metadata(config, query_manifest),
     }
     _write_json(run_dir / "manifest.json", manifest)
     (run_dir / "configuration.toml").write_bytes(config.path.read_bytes())

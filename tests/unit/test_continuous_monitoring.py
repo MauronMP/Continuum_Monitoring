@@ -1,3 +1,4 @@
+import copy
 import csv
 import json
 from dataclasses import replace
@@ -5,7 +6,14 @@ from dataclasses import replace
 import pytest
 
 from continuum_bench.continuous_monitoring import experiment as monitoring_experiment
-from continuum_bench.continuous_monitoring.config import MonitoringTask, known_policy_ids, load_monitoring_config
+from continuum_bench.continuous_monitoring.config import (
+    MonitoringTask,
+    known_policy_ids,
+    load_monitoring_config,
+    monitoring_coverage_metadata,
+    query_policy_ids,
+    validate_monitoring_tasks,
+)
 from continuum_bench.continuous_monitoring.reporting import _resource_metrics, report
 from continuum_bench.continuous_monitoring.scheduler import run_scheduler
 from continuum_bench.topology import Host, Topology
@@ -27,7 +35,7 @@ def _task(task_id="task-a", priority=0, interval=10, deadline=None):
 
 
 def test_monitoring_configuration_resolves_policy_demand_schedules(root):
-    with pytest.warns(UserWarning, match="policy-audit"):
+    with pytest.warns(UserWarning, match="policy-conflict-integrity"):
         config = load_monitoring_config(root / "configs/monitoring.toml")
     assert config.benchmark.experiment["query_rounds"] == 18
     for level in ("low", "normal", "high", "critical"):
@@ -37,12 +45,68 @@ def test_monitoring_configuration_resolves_policy_demand_schedules(root):
     assert config.resolve_tasks("low")[0].interval_seconds > config.resolve_tasks("high")[0].interval_seconds
     assert config.minimum_recommended_cycles_per_task == 3
     assert config.validation_warnings
+    query_ids = [query_id for task in config.tasks for query_id in task["query_ids"]]
+    assert len(query_ids) == len(set(query_ids))
+    for task in config.tasks:
+        intervals = task["intervals_seconds"]
+        deadlines = task["deadlines_seconds"]
+        assert set(intervals) == set(deadlines) == set(config.demand_levels)
+        assert intervals["low"] >= intervals["normal"] >= intervals["high"] >= intervals["critical"]
+        assert all(0 < deadlines[level] <= intervals[level] for level in config.demand_levels)
 
 
 def test_policy_validation_uses_declared_identifiers_not_substrings(root):
     identifiers = known_policy_ids(root / "ontology")
     assert "P-OPS-02" in identifiers
     assert "OPS-02" not in identifiers
+
+
+def test_duplicate_monitoring_query_assignments_are_rejected(root):
+    with pytest.warns(UserWarning):
+        config = load_monitoring_config(root / "configs/monitoring.toml")
+    tasks = copy.deepcopy(config.tasks)
+    duplicate = copy.deepcopy(tasks[0])
+    duplicate["task_id"] = "duplicate-operational-node-state"
+    tasks += (duplicate,)
+    manifest = json.loads((root / "queries/manifest.json").read_text())
+    with pytest.raises(ValueError, match="multiple tasks"):
+        validate_monitoring_tasks(
+            tasks,
+            config.demand_levels,
+            query_policy_ids(root, manifest),
+            config.known_policy_ids,
+        )
+
+
+def test_monitoring_task_policy_must_be_declared_by_each_query(root):
+    with pytest.warns(UserWarning):
+        config = load_monitoring_config(root / "configs/monitoring.toml")
+    tasks = copy.deepcopy(config.tasks)
+    tasks[0]["policy_id"] = "P-GOV-03"
+    manifest = json.loads((root / "queries/manifest.json").read_text())
+    with pytest.raises(ValueError, match="is not declared by query contract"):
+        validate_monitoring_tasks(
+            tasks,
+            config.demand_levels,
+            query_policy_ids(root, manifest),
+            config.known_policy_ids,
+        )
+
+
+def test_monitoring_coverage_metadata_matches_active_workload(root):
+    with pytest.warns(UserWarning):
+        config = load_monitoring_config(root / "configs/monitoring.toml")
+    manifest = json.loads((root / "queries/manifest.json").read_text())
+    metadata = monitoring_coverage_metadata(config, manifest)
+    policies = {task["policy_id"] for task in config.tasks}
+    queries = {query_id for task in config.tasks for query_id in task["query_ids"]}
+    by_id = {query["id"]: query for query in manifest["queries"]}
+    assert metadata["monitoring_policy_count"] == len(policies)
+    assert metadata["periodically_monitored_policy_count"] == len(policies)
+    assert metadata["monitoring_task_count"] == len(config.tasks)
+    assert metadata["periodic_query_count"] == len(queries)
+    assert metadata["covered_domains"] == sorted({by_id[query_id]["category"] for query_id in queries})
+    assert metadata["total_known_policy_count"] == len(config.known_policy_ids)
 
 
 def test_infrastructure_memory_sums_workers_at_each_sample():

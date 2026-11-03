@@ -4,6 +4,7 @@ import json
 import re
 import tomllib
 import warnings
+from collections import defaultdict
 from dataclasses import asdict, dataclass
 from hashlib import sha256
 from pathlib import Path
@@ -19,6 +20,63 @@ def known_policy_ids(ontology_root: Path) -> frozenset[str]:
         for ontology_path in ontology_root.rglob("*.ttl")
         for policy_id in pattern.findall(ontology_path.read_text(encoding="utf-8"))
     )
+
+
+def query_policy_ids(root: Path, query_manifest: dict) -> dict[str, frozenset[str]]:
+    """Return the policy identifiers declared by each query contract."""
+    pattern = re.compile(r"^# Policies:\s*(.+)$", re.MULTILINE)
+    mappings: dict[str, frozenset[str]] = {}
+    for query in query_manifest["queries"]:
+        query_id = str(query["id"])
+        source = (root / str(query["path"])).read_text(encoding="utf-8")
+        match = pattern.search(source)
+        if match is None:
+            raise ValueError(f"{query_id} has no Policies declaration")
+        mappings[query_id] = frozenset(value.strip() for value in match.group(1).split(",") if value.strip())
+    return mappings
+
+
+def validate_monitoring_tasks(
+    tasks: tuple[dict, ...],
+    demand_levels: tuple[str, ...],
+    query_policies: dict[str, frozenset[str]],
+    policy_ids: frozenset[str],
+) -> None:
+    task_ids = [str(item.get("task_id", "")) for item in tasks]
+    if any(not task_id for task_id in task_ids) or len(set(task_ids)) != len(task_ids):
+        raise ValueError("monitoring task identifiers must be non-empty and unique")
+    query_assignments: dict[str, list[str]] = defaultdict(list)
+    expected_levels = set(demand_levels)
+    ordered_levels = ("low", "normal", "high", "critical")
+    for task in tasks:
+        task_id = str(task["task_id"])
+        if not task.get("policy_id") or not task.get("query_ids"):
+            raise ValueError(f"{task_id} requires policy_id and a non-empty query_ids list")
+        if str(task["policy_id"]) not in policy_ids:
+            raise ValueError(f"{task_id} references an unknown ontology policy: {task['policy_id']}")
+        unknown = set(task["query_ids"]) - set(query_policies)
+        if unknown:
+            raise ValueError(f"{task_id} references unknown queries: {sorted(unknown)}")
+        for query_id in task["query_ids"]:
+            if str(task["policy_id"]) not in query_policies[str(query_id)]:
+                raise ValueError(f"{task_id} policy {task['policy_id']} is not declared by query contract {query_id}")
+            query_assignments[str(query_id)].append(task_id)
+        intervals = task.get("intervals_seconds", {})
+        deadlines = task.get("deadlines_seconds", {})
+        if set(intervals) != expected_levels or set(deadlines) != expected_levels:
+            raise ValueError(f"{task_id} must define interval and deadline for every configured demand level")
+        for level in demand_levels:
+            interval = float(intervals[level])
+            deadline = float(deadlines[level])
+            if interval <= 0 or deadline <= 0 or deadline > interval:
+                raise ValueError(f"{task_id} requires 0 < deadline <= interval for {level}")
+        if set(ordered_levels) <= expected_levels:
+            ordered_intervals = [float(intervals[level]) for level in ordered_levels]
+            if ordered_intervals != sorted(ordered_intervals, reverse=True):
+                raise ValueError(f"{task_id} intervals must satisfy low >= normal >= high >= critical")
+    duplicates = {query_id: owners for query_id, owners in query_assignments.items() if len(owners) > 1}
+    if duplicates:
+        raise ValueError(f"monitoring queries must not be assigned to multiple tasks: {duplicates}")
 
 
 @dataclass(frozen=True)
@@ -51,6 +109,7 @@ class MonitoringConfig:
     include_idle: bool
     tasks: tuple[dict, ...]
     validation_warnings: tuple[str, ...]
+    known_policy_ids: frozenset[str]
 
     @property
     def digest(self) -> str:
@@ -103,26 +162,9 @@ def load_monitoring_config(path: Path) -> MonitoringConfig:
     if not tasks:
         raise ValueError("at least one monitoring_task is required")
     query_manifest = json.loads((benchmark.root / "queries/manifest.json").read_text())
-    query_ids = {item["id"] for item in query_manifest["queries"]}
+    query_policies = query_policy_ids(benchmark.root, query_manifest)
     policy_ids = known_policy_ids(benchmark.root / "ontology")
-    task_ids = [str(item["task_id"]) for item in tasks]
-    if len(set(task_ids)) != len(task_ids):
-        raise ValueError("monitoring task identifiers must be unique")
-    for task in tasks:
-        if not task.get("policy_id") or not task.get("query_ids"):
-            raise ValueError(f"{task.get('task_id')} requires policy_id and query_ids")
-        if str(task["policy_id"]) not in policy_ids:
-            raise ValueError(f"{task['task_id']} references an unknown ontology policy: {task['policy_id']}")
-        unknown = set(task["query_ids"]) - query_ids
-        if unknown:
-            raise ValueError(f"{task['task_id']} references unknown queries: {sorted(unknown)}")
-        if set(task["intervals_seconds"]) != set(demand_levels):
-            raise ValueError(f"{task['task_id']} must define every configured demand level")
-        if any(float(value) <= 0 for value in task["intervals_seconds"].values()):
-            raise ValueError(f"{task['task_id']} intervals must be positive")
-        deadlines = task.get("deadlines_seconds", {})
-        if not set(deadlines) <= set(demand_levels) or any(float(value) <= 0 for value in deadlines.values()):
-            raise ValueError(f"{task['task_id']} deadlines must be positive configured demand levels")
+    validate_monitoring_tasks(tasks, demand_levels, query_policies, policy_ids)
     numeric = {
         "stabilization_seconds": float(experiment["stabilization_seconds"]),
         "measurement_seconds": float(experiment["measurement_seconds"]),
@@ -166,7 +208,22 @@ def load_monitoring_config(path: Path) -> MonitoringConfig:
         include_idle=bool(experiment.get("include_idle", True)),
         tasks=tasks,
         validation_warnings=tuple(cycle_warnings),
+        known_policy_ids=policy_ids,
     )
     for level in demand_levels:
         config.resolve_tasks(level)
     return config
+
+
+def monitoring_coverage_metadata(config: MonitoringConfig, query_manifest: dict) -> dict:
+    selected_queries = {str(query_id) for task in config.tasks for query_id in task["query_ids"]}
+    query_by_id = {str(query["id"]): query for query in query_manifest["queries"]}
+    selected_policies = {str(task["policy_id"]) for task in config.tasks}
+    return {
+        "monitoring_policy_count": len(selected_policies),
+        "monitoring_task_count": len(config.tasks),
+        "periodic_query_count": len(selected_queries),
+        "covered_domains": sorted({str(query_by_id[query_id]["category"]) for query_id in selected_queries}),
+        "total_known_policy_count": len(config.known_policy_ids),
+        "periodically_monitored_policy_count": len(selected_policies),
+    }
