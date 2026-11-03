@@ -131,6 +131,50 @@ def _recover_after_timeout(
     }
 
 
+def _query_observation_outcome(query: dict, logical: dict) -> str:
+    if logical.get("status") != "completed":
+        return "not_observed"
+    result_count = int(logical.get("result_count") or 0)
+    kind = str(query.get("kind", "")).lower()
+    if kind == "violation":
+        return "condition_detected" if result_count > 0 else "condition_not_detected"
+    if kind == "ask" or query.get("merge_strategy") == "boolean_or":
+        actual = result_count > 0
+        expectation = str(query.get("expectation", "any")).lower()
+        if expectation in {"true", "false"}:
+            expected = expectation == "true"
+            return "expected_boolean_observed" if actual == expected else "unexpected_boolean_observed"
+        return "boolean_true" if actual else "boolean_false"
+    return "observation_available"
+
+
+def _task_observation_outcome(outcomes: list[str]) -> str:
+    for candidate in (
+        "condition_detected",
+        "unexpected_boolean_observed",
+        "condition_not_detected",
+        "expected_boolean_observed",
+        "boolean_true",
+        "boolean_false",
+        "observation_available",
+    ):
+        if candidate in outcomes:
+            return candidate
+    return "not_observed"
+
+
+def _finalize_measurement_result(result: dict, scheduler: dict, logical_count: int, physical_count: int) -> bool:
+    result.update(scheduler)
+    result["logical_queries"] = logical_count
+    result["physical_requests"] = physical_count
+    if scheduler.get("scheduler_halted"):
+        result["status"] = "recovery_failed"
+        result["failure_reason"] = scheduler.get("failure_reason") or "timeout_recovery_failed"
+        return False
+    result["status"] = "completed"
+    return True
+
+
 def _task_executor(
     config: MonitoringConfig,
     topology: Topology,
@@ -145,6 +189,7 @@ def _task_executor(
         started = monotonic()
         query_count = 0
         physical_count = 0
+        observation_outcomes = []
         for query_id in task.query_ids:
             remaining = task_deadline - (monotonic() - started)
             if remaining <= 0:
@@ -180,11 +225,8 @@ def _task_executor(
                 "scheduled_at_monotonic": scheduled,
             }
             logical.update(context)
-            logical["observation_outcome"] = (
-                ("condition_detected" if logical.get("result_count", 0) > 0 else "condition_not_detected")
-                if logical["status"] == "completed"
-                else "not_observed"
-            )
+            logical["observation_outcome"] = _query_observation_outcome(query, logical)
+            observation_outcomes.append(logical["observation_outcome"])
             for row in physical:
                 row.update(context, layout=layout)
             logical_rows.append(logical)
@@ -207,6 +249,12 @@ def _task_executor(
                     "observation_outcome": "not_observed",
                     "logical_queries": query_count,
                     "physical_requests": physical_count,
+                    "failed_task": task.task_id,
+                    "failed_query": query_id,
+                    "failed_hosts": logical.get("failed_hosts")
+                    or logical.get("pending_hosts")
+                    or logical.get("participants", []),
+                    "failure_reason": "timeout_recovery_failed" if not recovery["recovery_succeeded"] else None,
                     **recovery,
                 }
             if logical["status"] != "completed":
@@ -216,10 +264,9 @@ def _task_executor(
                     "logical_queries": query_count,
                     "physical_requests": physical_count,
                 }
-        detected = any(row.get("observation_outcome") == "condition_detected" for row in logical_rows[-query_count:])
         return {
             "execution_status": "completed",
-            "observation_outcome": "condition_detected" if detected else "condition_not_detected",
+            "observation_outcome": _task_observation_outcome(observation_outcomes),
             "logical_queries": query_count,
             "physical_requests": physical_count,
         }
@@ -312,9 +359,11 @@ def run(config: MonitoringConfig, topology: Topology, demand_levels: set[str] | 
                         "repetition": repetition,
                         "dataset_digest": dataset["dataset_digest"],
                         "measurement_seconds": config.measurement_seconds,
+                        "measurement_requested_seconds": config.measurement_seconds,
                         "stabilization_seconds": config.stabilization_seconds,
                         "resolved_tasks_digest": config.resolved_digest(level) if level else None,
                     }
+                    measurement_started = None
                     try:
                         for host in topology.hosts:
                             request_json(f"{host.endpoint}/reset", method="POST", timeout=30)
@@ -371,8 +420,10 @@ def run(config: MonitoringConfig, topology: Topology, demand_levels: set[str] | 
                             config.sample_interval_seconds,
                         ) as sampler:
                             sampler.set_phase("monitoring_idle" if level is None else "monitoring_active")
+                            measurement_started = monotonic()
                             if level is None:
                                 sleep(config.measurement_seconds)
+                                measurement_actual = monotonic() - measurement_started
                                 scheduler = {
                                     "events": [],
                                     "scheduled_cycles": 0,
@@ -392,6 +443,12 @@ def run(config: MonitoringConfig, topology: Topology, demand_levels: set[str] | 
                                     "scheduler_utilization": 0.0,
                                     "max_pending_monitoring_tasks": 0,
                                     "scheduler_halted": False,
+                                    "measurement_requested_seconds": config.measurement_seconds,
+                                    "measurement_actual_seconds": measurement_actual,
+                                    "failure_reason": None,
+                                    "failed_task": None,
+                                    "failed_query": None,
+                                    "failed_hosts": None,
                                 }
                             else:
                                 scheduler = run_scheduler(
@@ -403,19 +460,32 @@ def run(config: MonitoringConfig, topology: Topology, demand_levels: set[str] | 
                         _write_jsonl(rep_dir / "task_executions.jsonl", [e for e in events if not e["missed_cycle"]])
                         _write_jsonl(rep_dir / "logical_queries.jsonl", logical)
                         _write_jsonl(rep_dir / "physical_queries.jsonl", physical)
-                        result.update(scheduler)
-                        result["logical_queries"] = len(logical)
-                        result["physical_requests"] = len(physical)
-                        result["status"] = "completed"
-                        _write_json(
-                            rep_dir / "worker_health_after.json",
-                            [
-                                wait_ready(host.endpoint, deadline_seconds=30, require_idle=True, expected=expected)
-                                for host in topology.hosts
-                            ],
-                        )
+                        completed = _finalize_measurement_result(result, scheduler, len(logical), len(physical))
+                        if completed:
+                            _write_json(
+                                rep_dir / "worker_health_after.json",
+                                [
+                                    wait_ready(host.endpoint, deadline_seconds=30, require_idle=True, expected=expected)
+                                    for host in topology.hosts
+                                ],
+                            )
+                        else:
+                            failures += 1
+                            health_after = []
+                            for host in topology.hosts:
+                                try:
+                                    health_after.append(
+                                        wait_ready(
+                                            host.endpoint, deadline_seconds=5, require_idle=True, expected=expected
+                                        )
+                                    )
+                                except Exception as error:
+                                    health_after.append({"host": host.id, "ready": False, "error": str(error)})
+                            _write_json(rep_dir / "worker_health_after.json", health_after)
                     except Exception as error:
                         failures += 1
+                        if measurement_started is not None and "measurement_actual_seconds" not in result:
+                            result["measurement_actual_seconds"] = monotonic() - measurement_started
                         result.update(status="failed", error=str(error))
                     for filename in (
                         "scheduler_events.jsonl",

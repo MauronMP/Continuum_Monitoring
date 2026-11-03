@@ -94,6 +94,8 @@ def test_python_to_rust_worker(root, tmp_path):
             "demand_level": "test",
             "repetition": 1,
             "measurement_seconds": 0.13,
+            "measurement_requested_seconds": 0.13,
+            "measurement_actual_seconds": scheduler["measurement_actual_seconds"],
             "logical_queries": len(logical_rows),
             "physical_requests": len(physical_rows),
             "status": "completed",
@@ -137,8 +139,11 @@ def test_python_to_rust_worker(root, tmp_path):
         assert (summary / "summary.csv").is_file()
         assert events[0]["execution_status"] == "completed"
         assert events[0]["schedule_status"] == "completed_on_time"
-        assert events[0]["observation_outcome"] == "condition_detected"
+        assert events[0]["observation_outcome"] == "observation_available"
         assert events[0]["monitoring_compliant"] is True
+        assert events[0]["scheduled_at_utc"]
+        assert events[0]["actual_start_utc"]
+        assert events[0]["actual_end_utc"]
         assert (repetition / "task_executions.jsonl").is_file()
         assert (repetition / "physical_queries.jsonl").is_file()
         assert (repetition / "phase_events.jsonl").is_file()

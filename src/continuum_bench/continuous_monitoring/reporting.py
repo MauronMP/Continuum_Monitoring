@@ -29,7 +29,7 @@ def _write_csv(path: Path, rows: list[dict]) -> None:
 
 
 def _resource_metrics(samples: list[dict], duration: float) -> tuple[dict, list[dict]]:
-    hours = duration / 3600
+    hours = duration / 3600 if duration > 0 else None
     host_rows = []
     for host in sorted({str(row["host"]) for row in samples if "host" in row}):
         rows = [row for row in samples if row.get("host") == host and "cpu_percent" in row]
@@ -46,12 +46,12 @@ def _resource_metrics(samples: list[dict], duration: float) -> tuple[dict, list[
                 "cpu_p95": _percentile(cpu, 95),
                 "cpu_peak": max(cpu) if cpu else None,
                 "cpu_seconds": counters["cpu_usage_seconds"],
-                "cpu_seconds_per_hour": counters["cpu_usage_seconds"] / hours,
+                "cpu_seconds_per_hour": counters["cpu_usage_seconds"] / hours if hours else None,
                 "memory_mean": float(np.mean(memory)) if memory else None,
                 "memory_p95": _percentile(memory, 95),
                 "memory_peak": max(memory) if memory else None,
-                "network_rx_mib_per_hour": counters["network_rx_bytes"] / 1024**2 / hours,
-                "network_tx_mib_per_hour": counters["network_tx_bytes"] / 1024**2 / hours,
+                "network_rx_mib_per_hour": counters["network_rx_bytes"] / 1024**2 / hours if hours else None,
+                "network_tx_mib_per_hour": counters["network_tx_bytes"] / 1024**2 / hours if hours else None,
                 "pids_peak": max((int(row.get("pids", 0)) for row in rows), default=0),
             }
         )
@@ -72,15 +72,15 @@ def _resource_metrics(samples: list[dict], duration: float) -> tuple[dict, list[
             "cpu_mean": float(np.mean(cpu)) if cpu else None,
             "cpu_p95": _percentile(cpu, 95),
             "cpu_peak": max(cpu) if cpu else None,
-            "cpu_seconds_per_hour": sum(row["cpu_seconds_per_hour"] for row in host_rows),
+            "cpu_seconds_per_hour": (sum(row["cpu_seconds_per_hour"] for row in host_rows) if hours else None),
             "worker_memory_mean": float(np.mean(worker_memory)) if worker_memory else None,
             "worker_memory_p95": _percentile(worker_memory, 95),
             "worker_memory_peak": max(worker_memory) if worker_memory else None,
             "infrastructure_memory_mean": (float(np.mean(infrastructure_memory)) if infrastructure_memory else None),
             "infrastructure_memory_p95": _percentile(infrastructure_memory, 95),
             "infrastructure_memory_peak": max(infrastructure_memory) if infrastructure_memory else None,
-            "network_rx_mib_per_hour": sum(row["network_rx_mib_per_hour"] for row in host_rows),
-            "network_tx_mib_per_hour": sum(row["network_tx_mib_per_hour"] for row in host_rows),
+            "network_rx_mib_per_hour": (sum(row["network_rx_mib_per_hour"] for row in host_rows) if hours else None),
+            "network_tx_mib_per_hour": (sum(row["network_tx_mib_per_hour"] for row in host_rows) if hours else None),
         },
         host_rows,
     )
@@ -148,14 +148,42 @@ def report(run_dir: Path) -> Path:
     figures.mkdir(exist_ok=True)
     for path in figures.glob("*.png"):
         path.unlink()
-    repetitions, host_rows, task_rows = [], [], []
+    repetitions, completed_repetitions, partial_repetitions = [], [], []
+    host_rows, task_rows, failure_rows = [], [], []
     for result_path in run_dir.glob("users-*/*/*/rep-*/result.json"):
         result = json.loads(result_path.read_text())
-        if result.get("status") != "completed":
+        is_complete = result.get("status") == "completed" and not result.get("scheduler_halted", False)
+        actual_value = result.get("measurement_actual_seconds")
+        if actual_value is None:
+            actual_value = result.get("measurement_seconds", 0.0) if result.get("status") == "completed" else 0.0
+        actual_duration = float(actual_value)
+        requested_duration = float(result.get("measurement_requested_seconds", result.get("measurement_seconds", 0.0)))
+        completeness = "complete" if is_complete else "partial"
+        if not is_complete:
+            failure_rows.append(
+                {
+                    "scenario": result.get("scenario"),
+                    "layout": result.get("layout"),
+                    "demand_level": result.get("demand_level"),
+                    "repetition": result.get("repetition"),
+                    "status": result.get("status"),
+                    "failure_reason": result.get("failure_reason") or result.get("error"),
+                    "failed_task": result.get("failed_task"),
+                    "failed_query": result.get("failed_query"),
+                    "failed_hosts": json.dumps(result.get("failed_hosts")),
+                    "measurement_requested_seconds": requested_duration,
+                    "measurement_actual_seconds": actual_duration,
+                    "recovery_count": result.get("recovery_count"),
+                    "recovery_seconds": result.get("recovery_seconds"),
+                    "worker_restart_count": result.get("worker_restart_count"),
+                    "result_path": str(result_path.relative_to(run_dir)),
+                }
+            )
+        if actual_duration <= 0 or "scheduled_cycles" not in result:
             continue
         samples_path = result_path.with_name("resource_samples.jsonl")
         samples = [json.loads(line) for line in samples_path.read_text().splitlines()] if samples_path.is_file() else []
-        resources, hosts = _resource_metrics(samples, float(result["measurement_seconds"]))
+        resources, hosts = _resource_metrics(samples, actual_duration)
         events_path = result_path.with_name("scheduler_events.jsonl")
         events = [json.loads(line) for line in events_path.read_text().splitlines()] if events_path.is_file() else []
         executed = [event for event in events if not event.get("missed_cycle")]
@@ -163,7 +191,7 @@ def report(run_dir: Path) -> Path:
         logical_path = result_path.with_name("logical_queries.jsonl")
         logical = [json.loads(line) for line in logical_path.read_text().splitlines()] if logical_path.is_file() else []
         latencies = [float(row["logical_duration_ms"]) for row in logical if row.get("status") == "completed"]
-        hours = float(result["measurement_seconds"]) / 3600
+        hours = actual_duration / 3600
         row = (
             result
             | resources
@@ -173,19 +201,24 @@ def report(run_dir: Path) -> Path:
                     if result.get("monitoring_compliance") is not None
                     else None
                 ),
+                "measurement_completeness": completeness,
+                "normalization_duration_seconds": actual_duration,
                 "schedule_lag_p50": _percentile(lags, 50),
                 "schedule_lag_p95": _percentile(lags, 95),
                 "schedule_lag_max": max(lags) if lags else None,
                 "logical_latency_p50": _percentile(latencies, 50),
                 "logical_latency_p95": _percentile(latencies, 95),
                 "logical_latency_p99": _percentile(latencies, 99),
-                "logical_cycles_per_hour": int(result["scheduled_cycles"]) / hours,
+                "logical_cycles_per_hour": len(executed) / hours,
                 "logical_queries_per_hour": int(result["logical_queries"]) / hours,
                 "physical_requests_per_hour": int(result["physical_requests"]) / hours,
             }
         )
         repetitions.append(row)
-        context = {key: result[key] for key in ("scenario", "layout", "demand_level", "repetition")}
+        (completed_repetitions if is_complete else partial_repetitions).append(row)
+        context = {key: result[key] for key in ("scenario", "layout", "demand_level", "repetition")} | {
+            "measurement_completeness": completeness
+        }
         host_rows.extend(context | host for host in hosts)
         by_task: dict[tuple[str, str], list[dict]] = defaultdict(list)
         for event in events:
@@ -206,13 +239,25 @@ def report(run_dir: Path) -> Path:
                     "conditions_not_detected": sum(
                         event.get("observation_outcome") == "condition_not_detected" for event in task_events
                     ),
+                    "observations_available": sum(
+                        event.get("observation_outcome") == "observation_available" for event in task_events
+                    ),
+                    "expected_boolean_observations": sum(
+                        event.get("observation_outcome") == "expected_boolean_observed" for event in task_events
+                    ),
+                    "unexpected_boolean_observations": sum(
+                        event.get("observation_outcome") == "unexpected_boolean_observed" for event in task_events
+                    ),
                 }
             )
     grouped: dict[tuple[str, str, str], list[dict]] = defaultdict(list)
-    for row in repetitions:
+    for row in completed_repetitions:
         grouped[(row["scenario"], row["layout"], row["demand_level"])].append(row)
     summary = []
     numeric = (
+        "measurement_requested_seconds",
+        "measurement_actual_seconds",
+        "normalization_duration_seconds",
         "monitoring_compliance_percent",
         "scheduled_cycles",
         "completed_on_time",
@@ -288,6 +333,9 @@ def report(run_dir: Path) -> Path:
             }
         )
     _write_csv(summary_dir / "repetitions.csv", repetitions)
+    _write_csv(summary_dir / "completed_repetitions.csv", completed_repetitions)
+    _write_csv(summary_dir / "partial_repetitions.csv", partial_repetitions)
+    _write_csv(summary_dir / "failures.csv", failure_rows)
     _write_csv(summary_dir / "summary.csv", summary)
     _write_csv(summary_dir / "host_summary.csv", host_rows)
     _write_csv(summary_dir / "task_policy_summary.csv", task_rows)

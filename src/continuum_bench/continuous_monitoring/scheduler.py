@@ -101,7 +101,7 @@ def run_scheduler(
                 continue
             outcome = execute(task, scheduled, remaining_deadline)
             actual_end = clock()
-            busy_seconds += max(0.0, min(actual_end, end) - actual_start)
+            busy_seconds += max(0.0, actual_end - actual_start)
             execution_status = str(outcome.get("execution_status", "physical_failure"))
             schedule_status = "completed_on_time" if actual_end <= scheduled + effective_deadline else "completed_late"
             compliant = execution_status == "completed" and schedule_status == "completed_on_time"
@@ -143,8 +143,10 @@ def run_scheduler(
             reason = "timeout_recovery_failed" if scheduler_halted else "measurement_window_closed_while_scheduler_busy"
             events.append(_missed_event(task, scheduled, start, start_utc, global_timeout, reason))
             scheduled += task.interval_seconds
+    measurement_actual_seconds = max(0.0, clock() - start)
     scheduled_count = len(events)
     compliant_count = sum(bool(event["monitoring_compliant"]) for event in events)
+    recovery_failure = next((event for event in events if event.get("recovery_succeeded") is False), None)
     return {
         "events": events,
         "scheduled_cycles": scheduled_count,
@@ -160,9 +162,15 @@ def run_scheduler(
         "monitoring_compliant_cycles": compliant_count,
         "monitoring_compliance": compliant_count / scheduled_count if scheduled_count else 1.0,
         "scheduler_busy_seconds": busy_seconds,
-        "scheduler_idle_seconds": max(0.0, measurement_seconds - busy_seconds),
-        "scheduler_utilization": busy_seconds / measurement_seconds,
+        "scheduler_idle_seconds": max(0.0, measurement_actual_seconds - busy_seconds),
+        "scheduler_utilization": busy_seconds / measurement_actual_seconds if measurement_actual_seconds else 0.0,
         "max_pending_monitoring_tasks": max_pending,
         "scheduler_halted": scheduler_halted,
+        "measurement_requested_seconds": measurement_seconds,
+        "measurement_actual_seconds": measurement_actual_seconds,
+        "failure_reason": recovery_failure.get("failure_reason") if recovery_failure else None,
+        "failed_task": recovery_failure.get("failed_task") if recovery_failure else None,
+        "failed_query": recovery_failure.get("failed_query") if recovery_failure else None,
+        "failed_hosts": recovery_failure.get("failed_hosts") if recovery_failure else None,
         "measurement_started_at_utc": start_utc.isoformat(),
     }

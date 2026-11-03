@@ -1,10 +1,12 @@
+import csv
+import json
 from dataclasses import replace
 
 import pytest
 
 from continuum_bench.continuous_monitoring import experiment as monitoring_experiment
 from continuum_bench.continuous_monitoring.config import MonitoringTask, known_policy_ids, load_monitoring_config
-from continuum_bench.continuous_monitoring.reporting import _resource_metrics
+from continuum_bench.continuous_monitoring.reporting import _resource_metrics, report
 from continuum_bench.continuous_monitoring.scheduler import run_scheduler
 from continuum_bench.topology import Host, Topology
 
@@ -101,7 +103,7 @@ def test_long_execution_records_missed_cycles_without_catch_up_burst():
     assert executed == [5, 20]
     assert [event["scheduled_at_monotonic"] for event in result["events"] if event["missed_cycle"]] == [10, 15, 25, 30]
     assert result["missed_cycles"] == 4
-    assert result["scheduler_utilization"] == pytest.approx(23 / 31)
+    assert result["scheduler_utilization"] == pytest.approx(24 / 32)
 
 
 @pytest.mark.parametrize(
@@ -142,6 +144,23 @@ def test_detected_condition_is_a_compliant_observation_not_a_semantic_failure():
     assert result["semantic_failures"] == 0
     assert event["scheduled_offset_seconds"] == 5
     assert event["scheduled_at_utc"].endswith("+00:00")
+
+
+@pytest.mark.parametrize(
+    ("kind", "expectation", "result_count", "expected"),
+    [
+        ("violation", "zero_rows", 0, "condition_not_detected"),
+        ("violation", "zero_rows", 2, "condition_detected"),
+        ("report", "non_empty", 2, "observation_available"),
+        ("inventory", "non_empty", 2, "observation_available"),
+        ("ask", "true", 1, "expected_boolean_observed"),
+        ("ask", "false", 1, "unexpected_boolean_observed"),
+    ],
+)
+def test_observation_outcome_follows_query_contract(kind, expectation, result_count, expected):
+    query = {"kind": kind, "expectation": expectation, "merge_strategy": "boolean_or" if kind == "ask" else "single"}
+    logical = {"status": "completed", "result_count": result_count}
+    assert monitoring_experiment._query_observation_outcome(query, logical) == expected
 
 
 def test_scheduler_metrics_use_controlled_clock():
@@ -232,3 +251,156 @@ def test_timeout_recovery_restarts_reprepares_and_verifies_non_idle_worker(root,
     assert evidence["worker_restart_count"] == 1
     assert evidence["recovery_succeeded"] is True
     assert evidence["recovery_preparation_evidence"][0]["status"] == "prepared"
+
+
+def test_timeout_recovery_reports_failure_when_reprepare_fails(root, monkeypatch):
+    with pytest.warns(UserWarning):
+        config = load_monitoring_config(root / "configs/monitoring.toml")
+    topology = Topology("test", (Host("edge", "edge", "a", "127.0.0.1", 8391),))
+    monkeypatch.setattr(
+        monitoring_experiment,
+        "wait_ready",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(TimeoutError("worker remained busy")),
+    )
+    monkeypatch.setattr(
+        monitoring_experiment,
+        "restart_workers",
+        lambda *_args: [{"host": "edge", "required": True, "recovered": True, "restarted": True}],
+    )
+    monkeypatch.setattr(
+        monitoring_experiment,
+        "_prepare_workers",
+        lambda *_args: (_ for _ in ()).throw(RuntimeError("reprepare failed")),
+    )
+    evidence = monitoring_experiment._recover_after_timeout(
+        config,
+        topology,
+        {"edge"},
+        {"edge": b"<urn:s> <urn:p> <urn:o> .\n"},
+        {"edge": {"dataset_digest": "dataset", "closure_digest": "closure"}},
+        {},
+    )
+    assert evidence["recovery_succeeded"] is False
+    assert evidence["recovery_count"] == evidence["worker_restart_count"] == 1
+    assert evidence["recovery_error"] == "reprepare failed"
+
+
+def test_recovery_failure_halts_scheduler_and_marks_partial_result(tmp_path):
+    clock = FakeClock()
+
+    def execute(task, _slot, _deadline):
+        clock.sleep(1)
+        return {
+            "execution_status": "logical_timeout",
+            "observation_outcome": "not_observed",
+            "recovery_count": 1,
+            "recovery_seconds": 1.0,
+            "worker_restart_count": 1,
+            "recovery_succeeded": False,
+            "failure_reason": "timeout_recovery_failed",
+            "failed_task": task.task_id,
+            "failed_query": "Q1",
+            "failed_hosts": ["edge"],
+        }
+
+    scheduler = run_scheduler((_task(interval=5),), 30, 10, execute, clock=clock, sleeper=clock.sleep)
+    events = scheduler.pop("events")
+    result = {"measurement_requested_seconds": 30}
+    completed = monitoring_experiment._finalize_measurement_result(result, scheduler, 1, 1)
+    evidence = tmp_path / "scheduler_events.jsonl"
+    evidence.write_text("".join(json.dumps(event) + "\n" for event in events))
+    assert completed is False
+    assert result["status"] == "recovery_failed"
+    assert result["measurement_actual_seconds"] < result["measurement_requested_seconds"]
+    assert result["failed_task"] == "task-a"
+    assert result["failed_query"] == "Q1"
+    assert result["failed_hosts"] == ["edge"]
+    assert result["recovery_count"] == result["worker_restart_count"] == 1
+    assert evidence.read_text()
+
+
+def test_partial_reporting_uses_actual_duration_and_excludes_partial_from_summary(tmp_path):
+    run_dir = tmp_path / "monitoring"
+
+    def repetition(rep, status, requested, actual):
+        path = run_dir / f"users-1/distributed/normal/rep-{rep:02}"
+        path.mkdir(parents=True)
+        result = {
+            "scenario": "users-1",
+            "layout": "distributed",
+            "demand_level": "normal",
+            "repetition": rep,
+            "status": status,
+            "scheduler_halted": status != "completed",
+            "measurement_requested_seconds": requested,
+            "measurement_actual_seconds": actual,
+            "scheduled_cycles": 10,
+            "monitoring_compliant_cycles": 8,
+            "monitoring_compliance": 0.8,
+            "completed_on_time": 8,
+            "completed_late": 0,
+            "missed_cycles": 2,
+            "logical_timeouts": int(status != "completed"),
+            "semantic_failures": 0,
+            "physical_failures": 0,
+            "recovery_count": int(status != "completed"),
+            "recovery_seconds": 1,
+            "worker_restart_count": int(status != "completed"),
+            "scheduler_busy_seconds": 10,
+            "scheduler_idle_seconds": actual - 10,
+            "scheduler_utilization": 10 / actual,
+            "max_pending_monitoring_tasks": 1,
+            "logical_queries": 8,
+            "physical_requests": 16,
+            "failure_reason": "timeout_recovery_failed" if status != "completed" else None,
+        }
+        (path / "result.json").write_text(json.dumps(result))
+        event = {
+            "task_id": "task",
+            "policy_id": "P-TEST",
+            "missed_cycle": False,
+            "schedule_lag_seconds": 0,
+            "monitoring_compliant": True,
+            "observation_outcome": "observation_available",
+        }
+        (path / "scheduler_events.jsonl").write_text(json.dumps(event) + "\n")
+        (path / "logical_queries.jsonl").write_text(
+            json.dumps({"status": "completed", "logical_duration_ms": 2}) + "\n"
+        )
+        samples = (
+            {
+                "host": "edge",
+                "timestamp": "1",
+                "cpu_percent": 1,
+                "cpu_usage_seconds": 0,
+                "memory_bytes": 100,
+                "network_rx_bytes": 0,
+                "network_tx_bytes": 0,
+                "pids": 1,
+            },
+            {
+                "host": "edge",
+                "timestamp": "2",
+                "cpu_percent": 2,
+                "cpu_usage_seconds": 10,
+                "memory_bytes": 110,
+                "network_rx_bytes": 1024**2,
+                "network_tx_bytes": 2 * 1024**2,
+                "pids": 1,
+            },
+        )
+        (path / "resource_samples.jsonl").write_text("".join(json.dumps(row) + "\n" for row in samples))
+
+    repetition(1, "completed", 300, 300)
+    repetition(2, "recovery_failed", 300, 80)
+    summary_dir = report(run_dir)
+    with (summary_dir / "partial_repetitions.csv").open() as handle:
+        partial = next(csv.DictReader(handle))
+    with (summary_dir / "summary.csv").open() as handle:
+        summary = next(csv.DictReader(handle))
+    assert float(partial["normalization_duration_seconds"]) == 80
+    assert float(partial["cpu_seconds_per_hour"]) == 450
+    assert float(partial["network_rx_mib_per_hour"]) == 45
+    assert float(partial["logical_queries_per_hour"]) == 360
+    assert float(summary["cpu_seconds_per_hour"]) == 120
+    assert int(float(summary["repetitions"])) == 1
