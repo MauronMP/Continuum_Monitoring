@@ -30,6 +30,11 @@ def parser() -> argparse.ArgumentParser:
         action="store_true",
         help="remove the preparation deadline and mark the run non-comparable",
     )
+    monitor_parser = commands.add_parser("monitor")
+    monitor_parser.add_argument("--config", dest="monitor_config", type=Path, default=Path("configs/monitoring.toml"))
+    monitor_parser.add_argument("--demand-level", action="append")
+    monitor_report_parser = commands.add_parser("monitor-report")
+    monitor_report_parser.add_argument("run_dir", type=Path)
     report_parser = commands.add_parser("report")
     report_parser.add_argument("run_dir", type=Path)
     return root
@@ -37,6 +42,23 @@ def parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = parser().parse_args()
+    if args.command == "monitor":
+        from .continuous_monitoring.config import load_monitoring_config
+        from .continuous_monitoring.experiment import run as run_monitoring
+
+        monitoring = load_monitoring_config(args.monitor_config)
+        topology = load_topology(
+            monitoring.benchmark.root / monitoring.benchmark.deployment["topology_file"], set(args.exclude_host)
+        )
+        result = {"results": str(run_monitoring(monitoring, topology, set(args.demand_level or [])))}
+        print(json.dumps(result, indent=2))
+        return 0
+    if args.command == "monitor-report":
+        from .continuous_monitoring.reporting import report as report_monitoring
+
+        result = {"summary": str(report_monitoring(args.run_dir.resolve()))}
+        print(json.dumps(result, indent=2))
+        return 0
     config = load_config(args.config)
     topology = load_topology(config.root / config.deployment["topology_file"], set(args.exclude_host))
     if args.command == "doctor":

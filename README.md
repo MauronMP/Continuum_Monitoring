@@ -1,6 +1,6 @@
 # Continuum RDF Scalability Benchmark
 
-This repository measures how a containerized semantic monitoring service scales as the monitored population and its RDF ABox grow on a physical Cloud–Fog–Mist–Edge continuum. The TBox, query catalog, container limits, physical hosts, and query concurrency remain fixed.
+This repository contains two independent physical-continuum experiments. The scalability benchmark measures growth of the monitored population and RDF ABox. The continuous-monitoring experiment measures the recurring cost and temporal sustainability of predefined policy-driven schedules on an already prepared semantic state.
 
 Python is the experiment control plane. Rust is the semantic data plane: it generates deterministic ABoxes, parses and serializes RDF, materializes RDFS, executes SPARQL with Oxigraph, and serves the worker HTTP protocol.
 
@@ -27,6 +27,13 @@ continuum-bench run
 continuum-bench report outputs/<run-id>
 ```
 
+The independent monitoring-overhead experiment uses its own configuration and output tree:
+
+```bash
+continuum-bench monitor --config configs/monitoring.toml
+continuum-bench monitor-report outputs/monitoring-<run-id>
+```
+
 Use `--exclude-host <id>` only when a host is explicitly unavailable. `--diagnostic-unlimited` removes the complete remote `/prepare` request deadline and marks the run non-comparable; physical SPARQL requests and logical queries retain separate deadlines.
 
 Only one logical monitoring query is active at a time. A distributed query issues concurrent physical requests to every participant required by its routing contract, waits for the complete fan-out, and then merges the results. A partial fan-out is a failed logical result. The first logical query timeout aborts its repetition; workers must recover to an idle state or be restarted before another repetition can begin.
@@ -41,6 +48,7 @@ Installation requires a complete repository clone because configuration, ontolog
 - [Benchmark method](docs/BENCHMARK.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [Result contract](docs/RESULTS.md)
+- [Continuous monitoring overhead](docs/MONITORING_OVERHEAD.md)
 - [RDF model](docs/RDF_MODEL.md)
 - [Requirements catalogue](docs/REQUIREMENTS.md)
 - [SPARQL query catalogue](docs/QUERY_CATALOG.md)

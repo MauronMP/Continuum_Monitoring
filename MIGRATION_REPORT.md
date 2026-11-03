@@ -2,7 +2,7 @@
 
 ## Final scope
 
-The repository now contains one experiment: **Docker RDF Scalability Benchmark**. It studies how a containerized RDF monitoring service changes as monitored population and actual ABox grow through 1, 50, 100, 500, 1000, 2000, 4000, 5000, 6000, 7000, 10000, 12000, 14000, 16000, 18000, and 20000 users. The only reasoning contract is RDFS; concurrency is one. Distributed and replicated are layouts of the same experiment.
+The repository contains the **Docker RDF Scalability Benchmark** and an independent **Continuous Policy-Driven Monitoring Overhead** experiment. The first studies ABox growth through the fixed population matrix. The second uses selected operating points and fixed-duration windows to compare deployed-idle workers with predefined demand-dependent policy schedules. Both retain RDFS and logical concurrency one, but their methods and outputs are separate.
 
 ## Removed
 
@@ -58,7 +58,7 @@ tests/                   focused unit/integration and golden fixtures
 outputs/                 ignored generated campaigns plus format guide
 ```
 
-The public CLI is limited to `doctor`, `render`, `deploy`, `status`, `run`, and `report`. The default campaign uses one warm-up, three measured repetitions, 18 catalog rounds, a 120-second `T_ready` operational target, a 600-second complete `/prepare` request deadline, a 120-second physical request timeout, and a separate 120-second logical-query deadline. Diagnostic unlimited mode is explicit and marks the run non-comparable.
+The scalability CLI remains `doctor`, `render`, `deploy`, `status`, `run`, and `report`. Its default campaign still uses one warm-up, three measured repetitions, 18 catalog rounds, a 120-second `T_ready` target, a 600-second `/prepare` deadline and separate 120-second physical and logical query limits. `monitor` and `monitor-report` belong only to the independent monitoring-overhead module.
 
 ## Validation performed
 

@@ -1,0 +1,36 @@
+[monitoring_experiment]
+benchmark_config = "benchmark.toml"
+scenarios = ["users-1000"]
+layouts = ["distributed"]
+demand_levels = ["low", "normal", "high", "critical"]
+stabilization_seconds = 30
+measurement_seconds = 300
+repetitions = 3
+resource_sample_interval_seconds = 1.0
+physical_query_request_timeout_seconds = 120
+logical_query_timeout_seconds = 120
+include_idle = true
+
+[[monitoring_task]]
+task_id = "resource-pressure"
+policy_id = "P-OPS-02"
+query_ids = ["BASE-Q07", "BASE-Q08"]
+priority = 30
+intervals_seconds = { low = 60, normal = 30, high = 10, critical = 5 }
+deadlines_seconds = { low = 60, normal = 30, high = 10, critical = 5 }
+
+[[monitoring_task]]
+task_id = "wellbeing-state"
+policy_id = "P-DATA-09"
+query_ids = ["BASE-Q09", "BASE-Q10"]
+priority = 20
+intervals_seconds = { low = 60, normal = 30, high = 15, critical = 10 }
+deadlines_seconds = { low = 60, normal = 30, high = 15, critical = 10 }
+
+[[monitoring_task]]
+task_id = "policy-audit"
+policy_id = "P-GOV-02"
+query_ids = ["EXT-Q72"]
+priority = 10
+intervals_seconds = { low = 120, normal = 60, high = 30, critical = 15 }
+deadlines_seconds = { low = 120, normal = 60, high = 30, critical = 15 }

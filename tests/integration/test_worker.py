@@ -4,7 +4,12 @@ import socket
 import subprocess
 from pathlib import Path
 
+from continuum_bench.continuous_monitoring.config import MonitoringTask, load_monitoring_config
+from continuum_bench.continuous_monitoring.experiment import _task_executor
+from continuum_bench.continuous_monitoring.reporting import report as monitoring_report
+from continuum_bench.continuous_monitoring.scheduler import run_scheduler
 from continuum_bench.protocol import request_json, wait_ready
+from continuum_bench.topology import Host, Topology
 
 
 def _port():
@@ -13,7 +18,7 @@ def _port():
         return sock.getsockname()[1]
 
 
-def test_python_to_rust_worker(root):
+def test_python_to_rust_worker(root, tmp_path):
     binary = root / "rust/target/debug/continuum-worker"
     cargo = Path.home() / ".cargo/bin/cargo"
     subprocess.run(
@@ -54,6 +59,74 @@ def test_python_to_rust_worker(root):
             ).encode(),
         )
         assert query["outcome"]["result_count"] == 1
+        monitoring_config = load_monitoring_config(root / "configs/monitoring.toml")
+        topology = Topology("integration", (Host("local", "edge", "local", "127.0.0.1", port, True),))
+        query_contract = {
+            "SMOKE": {
+                "id": "SMOKE",
+                "order": 1,
+                "query": "SELECT ?s WHERE { ?s <urn:p> <urn:o> }",
+                "execution_scope": "all",
+                "merge_strategy": "set_union",
+                "kind": "inventory",
+                "expectation": "non_empty",
+            }
+        }
+        execute, logical_rows, physical_rows = _task_executor(monitoring_config, topology, query_contract, "replicated")
+        task = MonitoringTask("smoke-task", "P-TEST", ("SMOKE",), 1, "test", 0.05, 0.05)
+        scheduler = run_scheduler((task,), 0.13, 1, execute)
+        assert scheduler["scheduled_cycles"] == 2
+        assert scheduler["completed_on_time"] == 2
+        assert len(logical_rows) == len(physical_rows) == 2
+
+        repetition = tmp_path / "monitoring-smoke/users-1/replicated/test/rep-01"
+        repetition.mkdir(parents=True)
+        events = scheduler.pop("events")
+        result = {
+            "scenario": "users-1",
+            "users": 1,
+            "layout": "replicated",
+            "mode": "active",
+            "demand_level": "test",
+            "repetition": 1,
+            "measurement_seconds": 0.13,
+            "logical_queries": len(logical_rows),
+            "physical_requests": len(physical_rows),
+            "status": "completed",
+            **scheduler,
+        }
+        (repetition / "result.json").write_text(json.dumps(result))
+        (repetition / "scheduler_events.jsonl").write_text("".join(json.dumps(row) + "\n" for row in events))
+        (repetition / "logical_queries.jsonl").write_text("".join(json.dumps(row) + "\n" for row in logical_rows))
+        (repetition / "resource_samples.jsonl").write_text(
+            "\n".join(
+                json.dumps(row)
+                for row in (
+                    {
+                        "host": "local",
+                        "cpu_percent": 1.0,
+                        "cpu_usage_seconds": 1.0,
+                        "memory_bytes": 100,
+                        "network_rx_bytes": 10,
+                        "network_tx_bytes": 20,
+                        "pids": 1,
+                    },
+                    {
+                        "host": "local",
+                        "cpu_percent": 2.0,
+                        "cpu_usage_seconds": 1.1,
+                        "memory_bytes": 110,
+                        "network_rx_bytes": 20,
+                        "network_tx_bytes": 40,
+                        "pids": 1,
+                    },
+                )
+            )
+            + "\n"
+        )
+        summary = monitoring_report(tmp_path / "monitoring-smoke")
+        assert (summary / "summary.csv").is_file()
+        assert len(list((tmp_path / "monitoring-smoke/figures").glob("*.png"))) == 7
         request_json(f"http://127.0.0.1:{port}/reset", method="POST", timeout=10)
         assert request_json(f"http://127.0.0.1:{port}/health")["graph_loaded"] is False
     finally:
