@@ -14,6 +14,7 @@ from time import monotonic
 from .config import BenchmarkConfig, Scenario
 from .deployment import container_states, restart_workers, semantic_environment
 from .protocol import request_json, wait_ready
+from .query_execution import execute_logical_query
 from .resources import ResourceSampler
 from .topology import Host, Topology
 
@@ -167,6 +168,27 @@ def _prepare(host: Host, payload: bytes, timeout: float | None, expected_closure
     return response
 
 
+def _prepare_workers(
+    hosts: tuple[Host, ...],
+    fragments: dict[str, bytes],
+    timeout: float | None,
+    expected_fragments: dict[str, dict],
+) -> list[dict]:
+    """Prepare all baseline workers concurrently and wait for every required response."""
+    with ThreadPoolExecutor(max_workers=len(hosts)) as pool:
+        futures = [
+            pool.submit(
+                _prepare,
+                host,
+                fragments[host.id],
+                timeout,
+                expected_fragments[host.id]["closure_digest"],
+            )
+            for host in hosts
+        ]
+        return [future.result() for future in as_completed(futures)]
+
+
 def _expected_fragment_semantics(
     tool: Path, fragments: dict[str, bytes], fragment_dir: Path, output: Path
 ) -> dict[str, dict]:
@@ -198,86 +220,107 @@ def _failure_status(error: Exception) -> str:
 
 
 def _catalog_round(
-    hosts: tuple[Host, ...], queries: list[dict], round_: int, layout: str, timeout: float
-) -> tuple[list[dict], list[dict]]:
+    hosts: tuple[Host, ...],
+    queries: list[dict],
+    round_: int,
+    layout: str,
+    physical_timeout: float,
+    logical_timeout: float,
+) -> tuple[list[dict], list[dict], dict | None]:
     logical, physical = [], []
     for index, query in enumerate(queries):
-        if layout == "replicated":
-            selected = (hosts[(round_ + index) % len(hosts)],)
-        else:
-            scope = query["execution_scope"]
-            if scope == "authorities":
-                selected = tuple(host for host in hosts if host.tier == "edge") or hosts
-            elif scope == "cloud_authorities":
-                selected = tuple(host for host in hosts if host.tier in {"cloud", "edge"}) or hosts
-            elif scope == "all":
-                selected = hosts
-            elif scope.startswith("authority_key:"):
-                authorities = tuple(host for host in hosts if host.tier == "edge") or hosts
-                selected = (authorities[int.from_bytes(sha256(scope.encode()).digest()[:8], "big") % len(authorities)],)
-            else:
-                candidates = tuple(host for host in hosts if host.tier == scope)
-                selected = (
-                    (candidates[(round_ + index) % len(candidates)],)
-                    if candidates
-                    else (hosts[(round_ + index) % len(hosts)],)
-                )
-        started_at = datetime.now(UTC).isoformat()
-        started = monotonic()
-        keys: set[str] = set()
-        ask = False
-        status = "completed"
-        for host in selected:
-            try:
-                response = request_json(
-                    f"{host.endpoint}/query",
-                    method="POST",
-                    timeout=timeout,
-                    headers={"content-type": "application/json"},
-                    payload=json.dumps({"query_id": query["id"], "query": query["query"], "round": round_}).encode(),
-                )
-                outcome = response["outcome"]
-                keys.update(outcome["result_keys"])
-                ask = ask or bool(outcome["ask_result"])
-                physical.append(
-                    {
-                        "query_id": query["id"],
-                        "round": round_,
-                        "host": host.id,
-                        "start_timestamp": started_at,
-                        "duration_ms": outcome["duration_ms"],
-                        "status": "completed",
-                        "result_count": outcome["result_count"],
-                        "result_digest": outcome["result_digest"],
-                    }
-                )
-            except Exception as error:
-                status = "query_timeout" if "timed out" in str(error).lower() else "failed"
-                physical.append(
-                    {"query_id": query["id"], "round": round_, "host": host.id, "status": status, "error": str(error)}
-                )
-        strategy = query["merge_strategy"]
-        if strategy == "single" and len(selected) != 1:
-            raise RuntimeError(f"Query {query['id']} requires one participant, received {len(selected)}")
-        if strategy == "boolean_or" and query["kind"] != "ask":
-            raise RuntimeError(f"Query {query['id']} uses boolean_or but is not ASK")
-        if strategy not in {"single", "set_union", "boolean_or"}:
-            raise RuntimeError(f"Unsupported merge strategy for {query['id']}: {strategy}")
-        digest_payload = f"ASK:{str(ask).lower()}" if strategy == "boolean_or" else "\n".join(sorted(keys))
-        logical.append(
+        logical_row, physical_rows = execute_logical_query(
+            hosts,
+            query,
+            round_,
+            index,
+            layout,
+            physical_timeout=physical_timeout,
+            logical_timeout=logical_timeout,
+        )
+        logical.append(logical_row)
+        physical.extend(physical_rows)
+        if logical_row["status"] == "query_timeout":
+            return (
+                logical,
+                physical,
+                {
+                    "failed_round": round_,
+                    "failed_query_id": query["id"],
+                    "failed_hosts": logical_row["failed_hosts"],
+                },
+            )
+    return logical, physical, None
+
+
+def _catalog_rounds(
+    hosts: tuple[Host, ...],
+    queries: list[dict],
+    rounds: int,
+    layout: str,
+    physical_timeout: float,
+    logical_timeout: float,
+    users: int,
+    repetition: int,
+) -> tuple[list[dict], list[dict], list[dict], dict | None]:
+    logical: list[dict] = []
+    physical: list[dict] = []
+    catalog_rounds: list[dict] = []
+    aborted = None
+    for round_ in range(1, rounds + 1):
+        round_started = monotonic()
+        logical_rows, physical_rows, aborted = _catalog_round(
+            hosts,
+            queries,
+            round_,
+            layout,
+            physical_timeout,
+            logical_timeout,
+        )
+        for row in (*logical_rows, *physical_rows):
+            row.update(users=users, layout=layout, repetition=repetition)
+        logical.extend(logical_rows)
+        physical.extend(physical_rows)
+        catalog_rounds.append(
             {
-                "query_id": query["id"],
                 "round": round_,
-                "layout": layout,
-                "participants": [h.id for h in selected],
-                "start_timestamp": started_at,
-                "duration_ms": (monotonic() - started) * 1000,
-                "result_count": int(ask) if strategy == "boolean_or" else len(keys),
-                "result_digest": sha256(digest_payload.encode()).hexdigest(),
-                "status": status,
+                "duration_seconds": monotonic() - round_started,
+                "logical_queries": len(logical_rows),
+                "physical_executions": len(physical_rows),
             }
         )
-    return logical, physical
+        if aborted:
+            break
+    return logical, physical, catalog_rounds, aborted
+
+
+def _recover_after_query_timeout(config: BenchmarkConfig, topology: Topology, expected: dict) -> dict:
+    started = monotonic()
+    timeout = float(config.experiment["recovery_timeout_seconds"])
+
+    def idle(host: Host) -> dict:
+        try:
+            health = wait_ready(host.endpoint, deadline_seconds=timeout, require_idle=True, expected=expected)
+            return {"host": host.id, "idle": True, "health": health}
+        except Exception as error:
+            return {"host": host.id, "idle": False, "error": str(error)}
+
+    with ThreadPoolExecutor(max_workers=len(topology.hosts)) as pool:
+        idle_evidence = list(pool.map(idle, topology.hosts))
+    restart_required = any(not item["idle"] for item in idle_evidence)
+    restart_evidence = []
+    recovered = True
+    if restart_required:
+        restart_evidence = restart_workers(config, topology, {host.id for host in topology.hosts})
+        recovered = all(item.get("recovered", False) for item in restart_evidence)
+    return {
+        "recovery_required": True,
+        "restart_required": restart_required,
+        "recovered": recovered,
+        "recovery_seconds": monotonic() - started,
+        "idle_evidence": idle_evidence,
+        "restart_evidence": restart_evidence,
+    }
 
 
 def run(
@@ -309,11 +352,20 @@ def run(
     (run_dir / "campaign.json").write_text(
         json.dumps(
             {
+                "methodology_revision": "concurrent-logical-deadline-v1",
                 "scenarios": [s.__dict__ for s in config.scenarios],
                 "layouts": config.experiment["layouts"],
                 "warmup": config.experiment["warmup"],
                 "repetitions": config.experiment["repetitions"],
                 "query_rounds": config.experiment["query_rounds"],
+                "logical_query_concurrency": 1,
+                "physical_fanout": "concurrent_within_one_logical_query",
+                "physical_query_request_timeout_seconds": config.experiment["physical_query_request_timeout_seconds"],
+                "logical_query_timeout_seconds": config.experiment["logical_query_timeout_seconds"],
+                "recovery_timeout_seconds": config.experiment["recovery_timeout_seconds"],
+                "timeout_abort_policy": "abort_repetition_on_first_logical_query_timeout",
+                "resource_phases": ["reset", "readiness", "preparation", "queries", "post_check"],
+                "readiness_metric": "ready_seconds",
                 "worker_baseline": "restart_all_before_each_scenario_layout",
                 "post_oom_recovery": "restart_all_workers",
             },
@@ -430,6 +482,7 @@ def run(
                 (layout_dir / "failure.json").write_text(json.dumps(failure, indent=2) + "\n")
                 continue
             total = int(config.experiment["warmup"]) + int(config.experiment["repetitions"])
+            layout_recovery_failed = False
             for iteration in range(total):
                 warmup = iteration < int(config.experiment["warmup"])
                 rep = iteration + 1 if warmup else iteration - int(config.experiment["warmup"]) + 1
@@ -445,76 +498,60 @@ def run(
                     "started_at": datetime.now(UTC).isoformat(),
                     "dataset": metadata,
                 }
+                iteration_started = monotonic()
                 try:
-                    fragments, partition_metadata = partition_dataset(
-                        rust_tool,
-                        dataset_path,
-                        config.root / "ontology/benchmark/base.nt",
-                        topology.hosts,
-                        layout,
-                        rep_dir / "fragments",
-                    )
-                    (rep_dir / "partition.json").write_text(json.dumps(partition_metadata, indent=2) + "\n")
-                    partition_seconds = partition_metadata["partition_seconds"]
-                    serialize_seconds = partition_metadata["serialize_seconds"]
-                    record["partition_seconds"] = partition_seconds
-                    record["serialize_seconds"] = serialize_seconds
-                    max_prepare_bytes = int(config.deployment["max_prepare_mib"]) * 1024 * 1024
-                    largest_payload = max(len(payload) for payload in fragments.values())
-                    record["largest_prepare_payload_bytes"] = largest_payload
-                    record["max_prepare_bytes"] = max_prepare_bytes
-                    if largest_payload > max_prepare_bytes:
-                        raise RuntimeError(
-                            f"payload_limit_exceeded: {largest_payload} bytes exceeds {max_prepare_bytes} bytes"
-                        )
-                    for host in topology.hosts:
-                        if sha256(fragments[host.id]).hexdigest() != expected_fragments[host.id]["dataset_digest"]:
-                            raise RuntimeError(f"semantic_mismatch: nondeterministic fragment for {host.id}")
                     with ResourceSampler(
                         topology.hosts,
                         str(config.deployment["ssh_user"]),
                         str(config.deployment["image"]),
                         rep_dir / "resources.jsonl",
                         float(config.experiment["resource_sample_interval_seconds"]),
-                    ):
+                    ) as sampler:
+                        sampler.set_phase("reset")
                         for host in topology.hosts:
                             request_json(f"{host.endpoint}/reset", method="POST", timeout=30)
+                        sampler.set_phase("readiness")
                         record["worker_health_before"] = [
                             wait_ready(host.endpoint, deadline_seconds=60, require_idle=True, expected=expected)
                             for host in topology.hosts
                         ]
+                        ready_started = monotonic()
+                        sampler.set_phase("preparation")
+                        fragments, partition_metadata = partition_dataset(
+                            rust_tool,
+                            dataset_path,
+                            config.root / "ontology/benchmark/base.nt",
+                            topology.hosts,
+                            layout,
+                            rep_dir / "fragments",
+                        )
+                        (rep_dir / "partition.json").write_text(json.dumps(partition_metadata, indent=2) + "\n")
+                        partition_seconds = partition_metadata["partition_seconds"]
+                        serialize_seconds = partition_metadata["serialize_seconds"]
+                        record["partition_seconds"] = partition_seconds
+                        record["serialize_seconds"] = serialize_seconds
+                        max_prepare_bytes = int(config.deployment["max_prepare_mib"]) * 1024 * 1024
+                        largest_payload = max(len(payload) for payload in fragments.values())
+                        record["largest_prepare_payload_bytes"] = largest_payload
+                        record["max_prepare_bytes"] = max_prepare_bytes
+                        if largest_payload > max_prepare_bytes:
+                            raise RuntimeError(
+                                f"payload_limit_exceeded: {largest_payload} bytes exceeds {max_prepare_bytes} bytes"
+                            )
+                        for host in topology.hosts:
+                            if sha256(fragments[host.id]).hexdigest() != expected_fragments[host.id]["dataset_digest"]:
+                                raise RuntimeError(f"semantic_mismatch: nondeterministic fragment for {host.id}")
                         timeout = (
                             None if diagnostic_unlimited else float(config.experiment["prepare_hard_timeout_seconds"])
                         )
-                        with ThreadPoolExecutor(max_workers=len(topology.hosts)) as pool:
-                            prepared = [
-                                future.result()
-                                for future in as_completed(
-                                    [
-                                        pool.submit(
-                                            _prepare,
-                                            h,
-                                            fragments[h.id],
-                                            timeout,
-                                            expected_fragments[h.id]["closure_digest"],
-                                        )
-                                        for h in topology.hosts
-                                    ]
-                                )
-                            ]
+                        prepared = _prepare_workers(topology.hosts, fragments, timeout, expected_fragments)
                         record["preparation"] = prepared
                         record["preparation_seconds"] = (
                             partition_seconds
                             + serialize_seconds
                             + max(p["transfer_seconds"] + p["remote_load_seconds"] for p in prepared)
                         )
-                        target = float(config.experiment["prepare_operational_target_seconds"])
-                        record["status"] = (
-                            "completed_within_target"
-                            if record["preparation_seconds"] <= target
-                            else "completed_over_target"
-                        )
-                        record["preparation_status"] = record["status"]
+                        sampler.set_phase("readiness")
                         for host in topology.hosts:
                             prepared_health = {
                                 "dataset_digest": expected_fragments[host.id]["dataset_digest"],
@@ -526,56 +563,70 @@ def run(
                                 require_idle=True,
                                 expected=expected | prepared_health,
                             )
-                        logical = []
-                        physical = []
-                        catalog_rounds = []
-                        for round_ in range(1, int(config.experiment["query_rounds"]) + 1):
-                            round_started = monotonic()
-                            l, p = _catalog_round(
-                                topology.hosts,
-                                query_manifest["queries"],
-                                round_,
-                                layout,
-                                float(config.experiment["request_timeout_seconds"]),
-                            )
-                            for row in (*l, *p):
-                                row.update(users=scenario.users, repetition=rep)
-                            logical += l
-                            physical += p
-                            catalog_rounds.append(
-                                {
-                                    "round": round_,
-                                    "duration_seconds": monotonic() - round_started,
-                                    "logical_queries": len(l),
-                                    "physical_executions": len(p),
-                                }
-                            )
+                        record["ready_seconds"] = monotonic() - ready_started
+                        target = float(config.experiment["prepare_operational_target_seconds"])
+                        record["status"] = (
+                            "completed_within_target" if record["ready_seconds"] <= target else "completed_over_target"
+                        )
+                        record["preparation_status"] = record["status"]
+                        sampler.set_phase("queries")
+                        logical, physical, catalog_rounds, aborted = _catalog_rounds(
+                            topology.hosts,
+                            query_manifest["queries"],
+                            int(config.experiment["query_rounds"]),
+                            layout,
+                            float(config.experiment["physical_query_request_timeout_seconds"]),
+                            float(config.experiment["logical_query_timeout_seconds"]),
+                            scenario.users,
+                            rep,
+                        )
                         (rep_dir / "logical_queries.json").write_text(json.dumps(logical, indent=2) + "\n")
                         (rep_dir / "physical_queries.json").write_text(json.dumps(physical, indent=2) + "\n")
                         (rep_dir / "catalog_rounds.json").write_text(json.dumps(catalog_rounds, indent=2) + "\n")
                         record["query_failures"] = sum(row["status"] != "completed" for row in logical)
-                        if record["query_failures"]:
+                        record["completed_rounds"] = sum(
+                            row["logical_queries"] == len(query_manifest["queries"])
+                            and not any(
+                                item["round"] == row["round"] and item["status"] != "completed" for item in logical
+                            )
+                            for row in catalog_rounds
+                        )
+                        record["completed_logical_queries"] = sum(row["status"] == "completed" for row in logical)
+                        record["completed_physical_executions"] = sum(row["status"] == "completed" for row in physical)
+                        if aborted:
+                            record.update(aborted)
+                            record["status"] = "query_timeout"
+                            record["elapsed_before_failure"] = monotonic() - iteration_started
+                            sampler.set_phase("post_check")
+                            recovery = _recover_after_query_timeout(config, topology, expected)
+                            record.update(recovery)
+                            layout_recovery_failed = not recovery["recovered"]
+                        elif record["query_failures"]:
                             record["status"] = (
                                 "query_timeout"
                                 if any(row["status"] == "query_timeout" for row in logical)
                                 else "failed"
                             )
-                        record["worker_health_after"] = [
-                            wait_ready(
-                                host.endpoint,
-                                deadline_seconds=60,
-                                require_idle=True,
-                                expected=expected
-                                | {
-                                    "dataset_digest": expected_fragments[host.id]["dataset_digest"],
-                                    "closure_digest": expected_fragments[host.id]["closure_digest"],
-                                },
-                            )
-                            for host in topology.hosts
-                        ]
+                        if not aborted:
+                            sampler.set_phase("post_check")
+                            record["worker_health_after"] = [
+                                wait_ready(
+                                    host.endpoint,
+                                    deadline_seconds=60,
+                                    require_idle=True,
+                                    expected=expected
+                                    | {
+                                        "dataset_digest": expected_fragments[host.id]["dataset_digest"],
+                                        "closure_digest": expected_fragments[host.id]["closure_digest"],
+                                    },
+                                )
+                                for host in topology.hosts
+                            ]
                 except Exception as error:
                     record["status"] = _failure_status(error)
                     record["error"] = str(error)
+                    if record["status"] == "hard_timeout" and "/prepare" in str(error):
+                        record["prepare_stage_at_failure"] = "unknown"
                 record["container_states"] = container_states(config, topology)
                 oom_hosts = {
                     item["host"] for item in record["container_states"] if item.get("state", {}).get("OOMKilled")
@@ -596,6 +647,18 @@ def run(
                     failures.append(record.copy())
                 record["finished_at"] = datetime.now(UTC).isoformat()
                 (rep_dir / "result.json").write_text(json.dumps(record, indent=2) + "\n")
+                if layout_recovery_failed:
+                    layout_failure = {
+                        "scenario": scenario.name,
+                        "users": scenario.users,
+                        "layout": layout,
+                        "status": "failed",
+                        "failure_scope": "query_timeout_recovery",
+                        "error": "workers did not recover after restart; remaining repetitions were not started",
+                    }
+                    failures.append(layout_failure)
+                    (layout_dir / "failure.json").write_text(json.dumps(layout_failure, indent=2) + "\n")
+                    break
     manifest["status"] = "completed_with_failures" if failures else "completed"
     manifest["finished_at"] = datetime.now(UTC).isoformat()
     manifest["failures"] = len(failures)

@@ -27,17 +27,11 @@ continuum-bench run
 continuum-bench report outputs/<run-id>
 ```
 
-Use `--exclude-host <id>` only when a host is explicitly unavailable. `--diagnostic-unlimited` removes the preparation-request deadline and marks the run non-comparable; SPARQL requests retain their configured safety deadline.
+Use `--exclude-host <id>` only when a host is explicitly unavailable. `--diagnostic-unlimited` removes the complete remote `/prepare` request deadline and marks the run non-comparable; physical SPARQL requests and logical queries retain separate deadlines.
 
-## Documentation
+Only one logical monitoring query is active at a time. A distributed query issues concurrent physical requests to every participant required by its routing contract, waits for the complete fan-out, and then merges the results. A partial fan-out is a failed logical result. The first logical query timeout aborts its repetition; workers must recover to an idle state or be restarted before another repetition can begin.
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Benchmark method](docs/BENCHMARK.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [RDF model](docs/RDF_MODEL.md)
-- [Requirements catalogue](docs/REQUIREMENTS.md)
-- [SPARQL query catalogue](docs/QUERY_CATALOG.md)
-- [Results and figures](docs/RESULTS.md)
+Every scenario-layout combination restarts all workers before its warm-up. Resource evidence labels `reset`, `readiness`, `preparation`, `queries`, and `post_check`. `ready_seconds` measures the end-to-end interval from the beginning of partitioning until every worker exposes the expected prepared graph and RDFS closure.
 
 Installation requires a complete repository clone because configuration, ontology, queries, Rust sources, and container definitions are repository assets rather than Python wheel data.
 
@@ -48,4 +42,6 @@ Installation requires a complete repository clone because configuration, ontolog
 - [Deployment](docs/DEPLOYMENT.md)
 - [Result contract](docs/RESULTS.md)
 - [RDF model](docs/RDF_MODEL.md)
+- [Requirements catalogue](docs/REQUIREMENTS.md)
+- [SPARQL query catalogue](docs/QUERY_CATALOG.md)
 - [Migration report](MIGRATION_REPORT.md)

@@ -40,6 +40,10 @@ A canonical deterministic dataset is generated once per scenario. A reference pa
 
 Preparation is decomposed into partition, serialization, transfer, and remote load. RDFS time remains separate. One-second-target Docker/cgroup sampling records CPU percentage/counter, container memory, PIDs, and available network counters. Result states preserve completion within/over the operational target, hard/query timeout, OOM, incompatibility, semantic mismatch, and generic failure as categories.
 
+The current methodology revision keeps logical concurrency at one but executes the physical fan-out of one distributed query concurrently. Physical requests share a monotonic logical deadline; partial fan-out never becomes a valid logical result. The first logical query timeout aborts its repetition, persists the completed prefix, waits for idle workers, and restarts all workers when idle recovery fails. Resource samples and transition events distinguish reset, readiness, preparation, queries, and post-check. `T_ready` measures the end-to-end critical path from partitioning to verified semantic readiness, while worker parse/digest, RDFS, store construction, and the backward-compatible preparation component remain separate.
+
+Campaigns produced before this revision used sequential distributed fan-out, had no independent logical deadline, did not abort on the first logical timeout, lacked phase-labelled resources, and did not expose `T_ready`. Their performance measurements must not be pooled or compared as if they used the same experimental protocol. Historical evidence remains unchanged.
+
 ## Repository structure
 
 ```text
@@ -54,7 +58,7 @@ tests/                   focused unit/integration and golden fixtures
 outputs/                 ignored generated campaigns plus format guide
 ```
 
-The public CLI is limited to `doctor`, `render`, `deploy`, `status`, `run`, and `report`. The default campaign uses one warm-up, three measured repetitions, 18 catalog rounds, a 120-second operational preparation target, 600-second preparation deadline, and 120-second query deadline. Diagnostic unlimited mode is explicit and marks the run non-comparable.
+The public CLI is limited to `doctor`, `render`, `deploy`, `status`, `run`, and `report`. The default campaign uses one warm-up, three measured repetitions, 18 catalog rounds, a 120-second `T_ready` operational target, a 600-second complete `/prepare` request deadline, a 120-second physical request timeout, and a separate 120-second logical-query deadline. Diagnostic unlimited mode is explicit and marks the run non-comparable.
 
 ## Validation performed
 
@@ -64,7 +68,7 @@ The public CLI is limited to `doctor`, `render`, `deploy`, `status`, `run`, and 
 - `ruff check src tests`
 - `pytest`: local control-plane, semantic-source, documentation, deadline, distributed-equivalence, and Python-to-Rust integration tests
 - release Rust build and native Docker worker build
-- local minimum campaign with raw results, summaries, resource samples, manifest, and fourteen PNG figures
+- local Python-to-Rust smoke covering preparation, RDFS timing, semantic readiness, logical query execution, reset, the 18-round configuration invariant, and phase-labelled resource evidence
 - six-host doctor covering Docker/Compose, host and Docker architecture, memory, disk, and CPU/memory/PID cgroups
 - verified deployment of the current Rust protocol and semantic fingerprints on Cloud, Fog, Mist, Edge1, Edge2, and Edge3
 

@@ -464,6 +464,39 @@ def _plot_node_cpu_time(node_rows: list[dict], figures: Path, users: list[int], 
     plt.close(fig)
 
 
+def _plot_phase_metric(
+    phase_rows: list[dict], figures: Path, filename: str, field: str, title: str, ylabel: str, scale: float = 1.0
+) -> None:
+    if not phase_rows:
+        return
+    users = sorted({int(row["users"]) for row in phase_rows})
+    positions = np.arange(len(users))
+    fig, axes = plt.subplots(2, 1, figsize=(7.8, 5.6), sharex=True, constrained_layout=True)
+    styles = {"preparation": "-", "queries": "--"}
+    for ax, layout in zip(axes, LAYOUTS, strict=True):
+        by_key = {(int(row["users"]), str(row["phase"])): row for row in phase_rows if row["layout"] == layout}
+        for phase in ("preparation", "queries"):
+            values = [
+                float(by_key[(user, phase)][field]) / scale
+                if (user, phase) in by_key and _finite(by_key[(user, phase)].get(field))
+                else np.nan
+                for user in users
+            ]
+            if np.isfinite(values).any():
+                ax.plot(positions, values, styles[phase], marker="o", linewidth=1.4, label=phase.capitalize())
+        ax.set_title(layout.capitalize(), fontsize=9, fontweight="normal")
+        ax.set_ylabel(ylabel)
+        ax.grid(alpha=0.22)
+        handles, _ = ax.get_legend_handles_labels()
+        if handles:
+            ax.legend(frameon=False, fontsize=7)
+    _configure_population_axis(axes[-1], users, categorical=True)
+    axes[-1].set_xlabel("Users / monitored entities")
+    fig.suptitle(title, fontsize=10, fontweight="normal")
+    fig.savefig(figures / filename, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
 def report(run_dir: Path) -> Path:
     summary, figures = run_dir / "summary", run_dir / "figures"
     summary.mkdir(exist_ok=True)
@@ -472,7 +505,7 @@ def report(run_dir: Path) -> Path:
         old.unlink()
 
     grouped: dict[tuple[int, str], list[dict]] = {}
-    query_rows, catalog_rows, resource_rows, preparation_rows, failures = [], [], [], [], []
+    query_rows, physical_query_rows, catalog_rows, resource_rows, preparation_rows, failures = [], [], [], [], [], []
     for result_path in run_dir.glob("scenarios/*/*/rep-*/result.json"):
         result = json.loads(result_path.read_text())
         grouped.setdefault((result["users"], result["layout"]), []).append(result)
@@ -492,6 +525,8 @@ def report(run_dir: Path) -> Path:
                     "serialize_seconds": result.get("serialize_seconds"),
                     "transfer_seconds": prepared.get("transfer_seconds"),
                     "remote_load_seconds": prepared.get("remote_load_seconds"),
+                    "parse_and_digest_seconds": prepared.get("parse_and_digest_seconds"),
+                    "store_load_seconds": prepared.get("store_load_seconds"),
                     "reasoning_seconds": reasoning.get("reasoning_seconds"),
                     "transfer_and_remote_seconds": prepared.get("transfer_and_remote_seconds"),
                     "payload_bytes": prepared.get("payload_bytes"),
@@ -510,6 +545,9 @@ def report(run_dir: Path) -> Path:
                 for row in repetition_queries
                 if row.get("status") != "completed"
             )
+        ppath = result_path.with_name("physical_queries.json")
+        if ppath.is_file():
+            physical_query_rows.extend(json.loads(ppath.read_text()))
         cpath = result_path.with_name("catalog_rounds.json")
         if cpath.is_file():
             rounds = json.loads(cpath.read_text())
@@ -529,11 +567,12 @@ def report(run_dir: Path) -> Path:
                 resource_rows.append(row)
     failures.extend(json.loads(path.read_text()) for path in run_dir.glob("**/failure.json"))
 
-    rows, node_rows = [], []
+    rows, node_rows, phase_rows = [], [], []
     for (users, layout), reps in sorted(grouped.items()):
         complete = [result for result in reps if result["status"].startswith("completed")]
         complete_ids = {int(result["repetition"]) for result in complete}
         prepares = [float(result["preparation_seconds"]) for result in complete]
+        ready = [float(result["ready_seconds"]) for result in complete if result.get("ready_seconds") is not None]
         partitions = [float(result.get("partition_seconds", 0)) for result in complete]
         serializes = [float(result.get("serialize_seconds", 0)) for result in complete]
         transfers = [
@@ -578,6 +617,26 @@ def report(run_dir: Path) -> Path:
             and int(row.get("repetition", 0)) in complete_ids
             and row["status"] == "completed"
         ]
+        physical_queries = [
+            float(row.get("request_duration_ms", row["duration_ms"]))
+            for row in physical_query_rows
+            if row.get("layout") == layout
+            and row.get("users") == users
+            and int(row.get("repetition", 0)) in complete_ids
+            and row["status"] == "completed"
+        ]
+        fanouts = [
+            int(row.get("fanout_size", len(row.get("participants", []))))
+            for row in query_rows
+            if row["layout"] == layout
+            and row.get("users") == users
+            and int(row.get("repetition", 0)) in complete_ids
+            and row["status"] == "completed"
+        ]
+        logical_timeouts = sum(
+            row["layout"] == layout and row.get("users") == users and row.get("status") == "query_timeout"
+            for row in query_rows
+        )
         catalogs = [
             row
             for row in catalog_rows
@@ -637,6 +696,9 @@ def report(run_dir: Path) -> Path:
                 "preparation_seconds_median": median(prepares) if prepares else None,
                 "preparation_seconds_min": min(prepares) if prepares else None,
                 "preparation_seconds_max": max(prepares) if prepares else None,
+                "ready_seconds_median": median(ready) if ready else None,
+                "ready_seconds_min": min(ready) if ready else None,
+                "ready_seconds_max": max(ready) if ready else None,
                 "partition_seconds_median": median(partitions) if partitions else None,
                 "serialize_seconds_median": median(serializes) if serializes else None,
                 "transfer_seconds_median": median(transfers) if transfers else None,
@@ -646,6 +708,10 @@ def report(run_dir: Path) -> Path:
                 "query_latency_p50_ms": _percentile(queries, 50),
                 "query_latency_p95_ms": _percentile(queries, 95),
                 "query_latency_p99_ms": _percentile(queries, 99),
+                "physical_query_latency_p50_ms": _percentile(physical_queries, 50),
+                "physical_query_latency_p95_ms": _percentile(physical_queries, 95),
+                "fanout_size_median": median(fanouts) if fanouts else None,
+                "logical_query_timeouts": logical_timeouts,
                 "catalog_round_seconds_median": median(catalog_durations) if catalog_durations else None,
                 "catalog_throughput_per_second": median(catalog_throughputs) if catalog_throughputs else None,
                 "cpu_mean_percent": float(np.mean(cpu)) if cpu else None,
@@ -694,6 +760,43 @@ def report(run_dir: Path) -> Path:
                     "cpu_seconds_median": median(host_cpu_seconds) if host_cpu_seconds else None,
                 }
             )
+        for phase in ("preparation", "queries"):
+            samples = [row for row in resources if row.get("phase") == phase]
+            phase_cpu = [float(row["cpu_percent"]) for row in samples]
+            phase_memory = [float(row["memory_bytes"]) for row in samples if row.get("memory_bytes") is not None]
+            cpu_seconds_by_rep: list[float] = []
+            for repetition in complete_ids:
+                total = 0.0
+                found = False
+                for host in {str(row["host"]) for row in samples}:
+                    values = [
+                        float(row["cpu_usage_seconds"])
+                        for row in samples
+                        if int(row["repetition"]) == repetition
+                        and row["host"] == host
+                        and row.get("cpu_usage_seconds") is not None
+                    ]
+                    if values:
+                        total += max(values) - min(values)
+                        found = True
+                if found:
+                    cpu_seconds_by_rep.append(total)
+            if phase_cpu or phase_memory:
+                phase_rows.append(
+                    {
+                        "users": users,
+                        "layout": layout,
+                        "phase": phase,
+                        "samples": len(samples),
+                        "cpu_mean_percent": float(np.mean(phase_cpu)) if phase_cpu else None,
+                        "cpu_p95_percent": _percentile(phase_cpu, 95),
+                        "cpu_peak_percent": max(phase_cpu) if phase_cpu else None,
+                        "cpu_seconds_median": median(cpu_seconds_by_rep) if cpu_seconds_by_rep else None,
+                        "memory_mean_bytes": float(np.mean(phase_memory)) if phase_memory else None,
+                        "memory_p95_bytes": _percentile(phase_memory, 95),
+                        "memory_peak_bytes": max(phase_memory) if phase_memory else None,
+                    }
+                )
 
     fields = list(rows[0]) if rows else ["users", "layout"]
     with (summary / "scalability.csv").open("w", newline="") as handle:
@@ -703,8 +806,10 @@ def report(run_dir: Path) -> Path:
     for name, data in (
         ("preparation.csv", preparation_rows),
         ("queries.csv", query_rows),
+        ("physical_queries.csv", physical_query_rows),
         ("resources.csv", resource_rows),
         ("node_resources.csv", node_rows),
+        ("phase_resources.csv", phase_rows),
         ("failures.csv", failures),
     ):
         _write_csv(summary / name, data)
@@ -736,8 +841,8 @@ def report(run_dir: Path) -> Path:
         rows,
         figures,
         "03_preparation_total.png",
-        "preparation_seconds_median",
-        "End-to-end preparation",
+        "ready_seconds_median",
+        "End-to-end time until all workers are semantically ready",
         "Median seconds",
     )
 
@@ -979,6 +1084,23 @@ def report(run_dir: Path) -> Path:
     _plot_transfer_throughput(rows, figures)
     _plot_layout_ratios(rows, figures)
     _plot_node_cpu_time(node_rows, figures, users, all_hosts)
+    _plot_phase_metric(
+        phase_rows,
+        figures,
+        "20_cpu_by_phase.png",
+        "cpu_p95_percent",
+        "Container CPU p95 by measured phase",
+        "CPU p95 (%)",
+    )
+    _plot_phase_metric(
+        phase_rows,
+        figures,
+        "21_memory_by_phase.png",
+        "memory_peak_bytes",
+        "Peak container memory by measured phase",
+        "Peak memory (MiB)",
+        1024**2,
+    )
 
     campaign_manifest_path = run_dir / "manifest.json"
     campaign_manifest = json.loads(campaign_manifest_path.read_text()) if campaign_manifest_path.is_file() else {}

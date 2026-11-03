@@ -34,6 +34,12 @@ def test_python_to_rust_worker(root):
         payload = b"<urn:s> <urn:p> <urn:o> .\n"
         prepared = request_json(f"http://127.0.0.1:{port}/prepare", method="POST", payload=payload, timeout=10)
         assert prepared["status"] == "prepared"
+        assert prepared["parse_and_digest_seconds"] >= 0
+        assert prepared["reasoning"]["reasoning_seconds"] >= 0
+        assert prepared["store_load_seconds"] >= 0
+        assert prepared["remote_load_seconds"] == (
+            prepared["parse_and_digest_seconds"] + prepared["store_load_seconds"]
+        )
         loaded = request_json(f"http://127.0.0.1:{port}/health")
         assert loaded["dataset_digest"] == prepared["dataset_digest"]
         assert loaded["closure_digest"] == prepared["closure_digest"]

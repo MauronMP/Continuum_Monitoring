@@ -29,7 +29,16 @@ def load_config(path: Path) -> BenchmarkConfig:
     path = path.resolve()
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     deployment = data["deployment"]
-    experiment = data["experiment"]
+    experiment = dict(data["experiment"])
+    legacy_query_timeout = experiment.get("request_timeout_seconds")
+    if "physical_query_request_timeout_seconds" not in experiment:
+        if legacy_query_timeout is None:
+            raise ValueError("physical_query_request_timeout_seconds is required")
+        experiment["physical_query_request_timeout_seconds"] = legacy_query_timeout
+    if "logical_query_timeout_seconds" not in experiment:
+        experiment["logical_query_timeout_seconds"] = experiment["physical_query_request_timeout_seconds"]
+    if "recovery_timeout_seconds" not in experiment:
+        experiment["recovery_timeout_seconds"] = deployment["health_timeout_seconds"]
     scenarios = tuple(Scenario(str(item["name"]), int(item["users"])) for item in data["scenarios"])
     if len({item.name for item in scenarios}) != len(scenarios):
         raise ValueError("scenario names must be unique")
@@ -68,7 +77,9 @@ def load_config(path: Path) -> BenchmarkConfig:
     if float(experiment["prepare_operational_target_seconds"]) >= float(experiment["prepare_hard_timeout_seconds"]):
         raise ValueError("the preparation operational target must be below the hard timeout")
     for key in (
-        "request_timeout_seconds",
+        "physical_query_request_timeout_seconds",
+        "logical_query_timeout_seconds",
+        "recovery_timeout_seconds",
         "prepare_operational_target_seconds",
         "prepare_hard_timeout_seconds",
         "resource_sample_interval_seconds",

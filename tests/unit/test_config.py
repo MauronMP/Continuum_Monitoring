@@ -26,6 +26,9 @@ def test_scientific_matrix_is_fixed(root):
     ]
     assert config.experiment["layouts"] == ["distributed", "replicated"]
     assert config.experiment["query_rounds"] == 18
+    assert config.experiment["physical_query_request_timeout_seconds"] == 120
+    assert config.experiment["logical_query_timeout_seconds"] == 120
+    assert config.experiment["recovery_timeout_seconds"] == 120
 
 
 def test_topology_has_all_continuum_tiers(root):
@@ -45,6 +48,17 @@ def test_operational_target_must_be_below_hard_timeout(root, tmp_path):
     path.write_text(text)
     with pytest.raises(ValueError, match="operational target"):
         load_config(path)
+
+
+def test_legacy_query_timeout_is_a_backward_compatible_alias(root, tmp_path):
+    text = (root / "configs/benchmark.toml").read_text()
+    text = text.replace("physical_query_request_timeout_seconds = 120\n", "request_timeout_seconds = 37\n")
+    text = text.replace("logical_query_timeout_seconds = 120\n", "")
+    path = tmp_path / "legacy.toml"
+    path.write_text(text)
+    config = load_config(path)
+    assert config.experiment["physical_query_request_timeout_seconds"] == 37
+    assert config.experiment["logical_query_timeout_seconds"] == 37
 
 
 @pytest.mark.parametrize(

@@ -80,6 +80,7 @@ def test_report_excludes_warmup_and_emits_auditable_outputs(tmp_path):
         "partition_seconds": 0.1,
         "serialize_seconds": 0.2,
         "preparation_seconds": 0.7,
+        "ready_seconds": 1.1,
         "dataset": {
             "actual_input_triples": 100,
             "dataset_bytes": 1000,
@@ -100,6 +101,8 @@ def test_report_excludes_warmup_and_emits_auditable_outputs(tmp_path):
                     "triples_before_reasoning": 100,
                     "triples_after_reasoning": 120,
                 },
+                "parse_and_digest_seconds": 0.02,
+                "store_load_seconds": 0.03,
             }
         ],
     }
@@ -120,12 +123,29 @@ def test_report_excludes_warmup_and_emits_auditable_outputs(tmp_path):
             ]
         )
     )
+    (measured / "physical_queries.json").write_text(
+        json.dumps(
+            [
+                {
+                    "query_id": "Q1",
+                    "round": 1,
+                    "host": "edge1",
+                    "layout": "distributed",
+                    "users": 1,
+                    "repetition": 1,
+                    "duration_ms": 4.0,
+                    "status": "completed",
+                }
+            ]
+        )
+    )
     (measured / "catalog_rounds.json").write_text(
         json.dumps([{"round": 1, "duration_seconds": 2.0, "logical_queries": 10, "physical_executions": 20}])
     )
     samples = [
         {
             "host": "edge1",
+            "phase": "preparation",
             "cpu_percent": 10.0,
             "cpu_usage_seconds": 2.0,
             "memory_bytes": 100,
@@ -134,11 +154,30 @@ def test_report_excludes_warmup_and_emits_auditable_outputs(tmp_path):
         },
         {
             "host": "edge1",
+            "phase": "preparation",
             "cpu_percent": 20.0,
             "cpu_usage_seconds": 3.5,
             "memory_bytes": 200,
             "network_rx_bytes": 1500,
             "network_tx_bytes": 2600,
+        },
+        {
+            "host": "edge1",
+            "phase": "queries",
+            "cpu_percent": 30.0,
+            "cpu_usage_seconds": 4.0,
+            "memory_bytes": 300,
+            "network_rx_bytes": 1700,
+            "network_tx_bytes": 2800,
+        },
+        {
+            "host": "edge1",
+            "phase": "queries",
+            "cpu_percent": 40.0,
+            "cpu_usage_seconds": 6.0,
+            "memory_bytes": 400,
+            "network_rx_bytes": 2100,
+            "network_tx_bytes": 3200,
         },
     ]
     (measured / "resources.jsonl").write_text("\n".join(json.dumps(row) for row in samples) + "\n")
@@ -147,13 +186,23 @@ def test_report_excludes_warmup_and_emits_auditable_outputs(tmp_path):
     with (summary / "scalability.csv").open() as handle:
         row = next(csv.DictReader(handle))
     assert float(row["preparation_seconds_median"]) == 0.7
-    assert float(row["cpu_seconds_median"]) == 1.5
-    assert float(row["network_rx_bytes_median"]) == 500
+    assert float(row["ready_seconds_median"]) == 1.1
+    assert float(row["cpu_seconds_median"]) == 4.0
+    assert float(row["network_rx_bytes_median"]) == 1100
     assert float(row["catalog_throughput_per_second"]) == 5
     assert (summary / "preparation.csv").is_file()
-    assert len(list((run_dir / "figures").glob("*.png"))) == 19
+    with (summary / "phase_resources.csv").open() as handle:
+        phases = {item["phase"]: item for item in csv.DictReader(handle)}
+    assert float(phases["preparation"]["cpu_mean_percent"]) == 15
+    assert float(phases["queries"]["cpu_mean_percent"]) == 35
+    assert float(phases["preparation"]["cpu_seconds_median"]) == 1.5
+    assert float(phases["queries"]["cpu_seconds_median"]) == 2.0
+    with (summary / "physical_queries.csv").open() as handle:
+        physical = next(csv.DictReader(handle))
+    assert physical["host"] == "edge1"
+    assert len(list((run_dir / "figures").glob("*.png"))) == 21
     figure_manifest = json.loads((run_dir / "figures/manifest.json").read_text())
-    assert figure_manifest["figure_count"] == 19
+    assert figure_manifest["figure_count"] == 21
 
 
 def test_semantic_contract_snapshot_is_self_contained(root, tmp_path):

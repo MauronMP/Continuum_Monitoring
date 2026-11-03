@@ -6,7 +6,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime
 from pathlib import Path
-from threading import Event, Thread
+from threading import Event, Lock, Thread
 from time import monotonic
 
 from .topology import Host
@@ -29,8 +29,13 @@ class ResourceSampler:
         self.hosts, self.ssh_user, self.image, self.output, self.interval = hosts, ssh_user, image, output, interval
         self.stop_event = Event()
         self.thread: Thread | None = None
+        self._phase = "unassigned"
+        self._lock = Lock()
+        self._handle = None
 
     def __enter__(self):
+        self.output.parent.mkdir(parents=True, exist_ok=True)
+        self._handle = self.output.open("a", encoding="utf-8")
         self.thread = Thread(target=self._run, daemon=True)
         self.thread.start()
         return self
@@ -39,6 +44,36 @@ class ResourceSampler:
         self.stop_event.set()
         if self.thread:
             self.thread.join(timeout=self.interval + 5)
+        with self._lock:
+            if self._phase != "unassigned":
+                self._emit_locked(
+                    {"event": "phase_end", "phase": self._phase, "timestamp": datetime.now(UTC).isoformat()}
+                )
+            if self._handle:
+                self._handle.close()
+                self._handle = None
+
+    def _emit_locked(self, row: dict) -> None:
+        if self._handle is None:
+            raise RuntimeError("resource sampler is not active")
+        self._handle.write(json.dumps(row) + "\n")
+        self._handle.flush()
+
+    def set_phase(self, phase: str) -> None:
+        if not phase:
+            raise ValueError("resource phase must not be empty")
+        timestamp = datetime.now(UTC).isoformat()
+        with self._lock:
+            if phase == self._phase:
+                return
+            if self._phase != "unassigned":
+                self._emit_locked({"event": "phase_end", "phase": self._phase, "timestamp": timestamp})
+            self._phase = phase
+            self._emit_locked({"event": "phase_start", "phase": phase, "timestamp": timestamp})
+
+    def _record_sample(self, row: dict) -> None:
+        with self._lock:
+            self._emit_locked({**row, "phase": self._phase})
 
     def _sample(self, host: Host) -> dict:
         command = f"id=$(docker ps --filter ancestor={self.image} -q | head -1); test -n \"$id\" || id=$(docker ps --filter label=com.docker.compose.service=worker -q | head -1); test -n \"$id\" && docker stats --no-stream --format '{{{{json .}}}}' $id && docker exec $id sh -c 'cat /sys/fs/cgroup/cpu.stat; cat /sys/fs/cgroup/memory.current | sed s/^/memory_current=/; cat /sys/fs/cgroup/pids.current | sed s/^/pids_current=/'"
@@ -71,18 +106,18 @@ class ResourceSampler:
         }
 
     def _run(self):
-        self.output.parent.mkdir(parents=True, exist_ok=True)
-        with self.output.open("a", encoding="utf-8") as handle:
-            while not self.stop_event.is_set():
-                sample_started = monotonic()
-                with ThreadPoolExecutor(max_workers=len(self.hosts)) as pool:
-                    futures = {pool.submit(self._sample, host): host for host in self.hosts}
-                    for future in as_completed(futures):
-                        host = futures[future]
-                        try:
-                            row = future.result()
-                        except Exception as error:
-                            row = {"timestamp": datetime.now(UTC).isoformat(), "host": host.id, "error": str(error)}
-                        handle.write(json.dumps(row) + "\n")
-                        handle.flush()
-                self.stop_event.wait(max(0.0, self.interval - (monotonic() - sample_started)))
+        while not self.stop_event.is_set():
+            sample_started = monotonic()
+            if not self.hosts:
+                self.stop_event.wait(self.interval)
+                continue
+            with ThreadPoolExecutor(max_workers=len(self.hosts)) as pool:
+                futures = {pool.submit(self._sample, host): host for host in self.hosts}
+                for future in as_completed(futures):
+                    host = futures[future]
+                    try:
+                        row = future.result()
+                    except Exception as error:
+                        row = {"timestamp": datetime.now(UTC).isoformat(), "host": host.id, "error": str(error)}
+                    self._record_sample(row)
+            self.stop_event.wait(max(0.0, self.interval - (monotonic() - sample_started)))
