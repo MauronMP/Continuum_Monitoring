@@ -56,16 +56,29 @@ def _resource_metrics(samples: list[dict], duration: float) -> tuple[dict, list[
             }
         )
     cpu = [float(row["cpu_percent"]) for row in samples if "cpu_percent" in row]
-    memory = [float(row["memory_bytes"]) for row in samples if row.get("memory_bytes") is not None]
+    worker_memory = [float(row["memory_bytes"]) for row in samples if row.get("memory_bytes") is not None]
+    hosts = sorted({str(row["host"]) for row in samples if "host" in row})
+    series = {
+        host: sorted((row for row in samples if row.get("host") == host), key=lambda row: row.get("timestamp", ""))
+        for host in hosts
+    }
+    infrastructure_memory = []
+    for index in range(min((len(rows) for rows in series.values()), default=0)):
+        values = [series[host][index].get("memory_bytes") for host in hosts]
+        if all(value is not None for value in values):
+            infrastructure_memory.append(sum(float(value) for value in values))
     return (
         {
             "cpu_mean": float(np.mean(cpu)) if cpu else None,
             "cpu_p95": _percentile(cpu, 95),
             "cpu_peak": max(cpu) if cpu else None,
             "cpu_seconds_per_hour": sum(row["cpu_seconds_per_hour"] for row in host_rows),
-            "memory_mean": float(np.mean(memory)) if memory else None,
-            "memory_p95": _percentile(memory, 95),
-            "memory_peak": max(memory) if memory else None,
+            "worker_memory_mean": float(np.mean(worker_memory)) if worker_memory else None,
+            "worker_memory_p95": _percentile(worker_memory, 95),
+            "worker_memory_peak": max(worker_memory) if worker_memory else None,
+            "infrastructure_memory_mean": (float(np.mean(infrastructure_memory)) if infrastructure_memory else None),
+            "infrastructure_memory_p95": _percentile(infrastructure_memory, 95),
+            "infrastructure_memory_peak": max(infrastructure_memory) if infrastructure_memory else None,
             "network_rx_mib_per_hour": sum(row["network_rx_mib_per_hour"] for row in host_rows),
             "network_tx_mib_per_hour": sum(row["network_tx_mib_per_hour"] for row in host_rows),
         },
@@ -178,15 +191,21 @@ def report(run_dir: Path) -> Path:
         for event in events:
             by_task[(event["task_id"], event["policy_id"])].append(event)
         for (task_id, policy_id), task_events in by_task.items():
-            on_time = sum(event["status"] == "completed_on_time" for event in task_events)
+            on_time = sum(bool(event.get("monitoring_compliant")) for event in task_events)
             task_rows.append(
                 context
                 | {
                     "task_id": task_id,
                     "policy_id": policy_id,
                     "scheduled_cycles": len(task_events),
-                    "completed_on_time": on_time,
+                    "monitoring_compliant_cycles": on_time,
                     "monitoring_compliance_percent": 100 * on_time / len(task_events),
+                    "conditions_detected": sum(
+                        event.get("observation_outcome") == "condition_detected" for event in task_events
+                    ),
+                    "conditions_not_detected": sum(
+                        event.get("observation_outcome") == "condition_not_detected" for event in task_events
+                    ),
                 }
             )
     grouped: dict[tuple[str, str, str], list[dict]] = defaultdict(list)
@@ -199,9 +218,13 @@ def report(run_dir: Path) -> Path:
         "completed_on_time",
         "completed_late",
         "missed_cycles",
+        "monitoring_compliant_cycles",
         "logical_timeouts",
         "semantic_failures",
         "physical_failures",
+        "recovery_count",
+        "recovery_seconds",
+        "worker_restart_count",
         "scheduler_busy_seconds",
         "scheduler_idle_seconds",
         "scheduler_utilization",
@@ -216,9 +239,12 @@ def report(run_dir: Path) -> Path:
         "cpu_p95",
         "cpu_peak",
         "cpu_seconds_per_hour",
-        "memory_mean",
-        "memory_p95",
-        "memory_peak",
+        "worker_memory_mean",
+        "worker_memory_p95",
+        "worker_memory_peak",
+        "infrastructure_memory_mean",
+        "infrastructure_memory_p95",
+        "infrastructure_memory_peak",
         "network_rx_mib_per_hour",
         "network_tx_mib_per_hour",
         "logical_cycles_per_hour",
@@ -232,7 +258,9 @@ def report(run_dir: Path) -> Path:
             item[field] = median(values) if values else None
         scheduled_total = sum(int(row["scheduled_cycles"]) for row in rows)
         item["monitoring_compliance_percent"] = (
-            100 * sum(int(row["completed_on_time"]) for row in rows) / scheduled_total if scheduled_total else None
+            100 * sum(int(row["monitoring_compliant_cycles"]) for row in rows) / scheduled_total
+            if scheduled_total
+            else None
         )
         summary.append(item)
     idle_active = []
@@ -252,7 +280,9 @@ def report(run_dir: Path) -> Path:
             row
             | {
                 "incremental_cpu_seconds_per_hour": _difference(row, idle, "cpu_seconds_per_hour"),
-                "descriptive_memory_mean_difference": _difference(row, idle, "memory_mean"),
+                "descriptive_infrastructure_memory_mean_difference": _difference(
+                    row, idle, "infrastructure_memory_mean"
+                ),
                 "incremental_network_rx_mib_per_hour": _difference(row, idle, "network_rx_mib_per_hour"),
                 "incremental_network_tx_mib_per_hour": _difference(row, idle, "network_tx_mib_per_hour"),
             }
@@ -272,9 +302,9 @@ def report(run_dir: Path) -> Path:
     _plot_multi(
         summary,
         figures,
-        (("memory_mean", "mean"), ("memory_p95", "p95")),
+        (("infrastructure_memory_mean", "mean"), ("infrastructure_memory_p95", "p95")),
         "02_memory_by_demand.png",
-        "Container memory by demand level",
+        "Total infrastructure memory by demand level",
         "Bytes",
     )
     _plot_multi(

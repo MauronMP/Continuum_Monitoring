@@ -9,6 +9,9 @@ repetitions = 3
 resource_sample_interval_seconds = 1.0
 physical_query_request_timeout_seconds = 120
 logical_query_timeout_seconds = 120
+recovery_idle_timeout_seconds = 30
+restart_ready_timeout_seconds = 120
+minimum_recommended_cycles_per_task = 3
 include_idle = true
 
 [[monitoring_task]]

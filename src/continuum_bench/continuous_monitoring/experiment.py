@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import json
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from datetime import UTC, datetime
+from functools import partial
 from hashlib import sha256
 from pathlib import Path
 from time import monotonic, sleep
 
-from ..deployment import container_states, semantic_environment
+from ..deployment import container_states, restart_workers, semantic_environment
 from ..experiment import (
     _expected_fragment_semantics,
     _prepare_workers,
@@ -54,7 +56,88 @@ def _source_identity(root: Path) -> dict:
     }
 
 
-def _task_executor(config: MonitoringConfig, topology: Topology, queries: dict[str, dict], layout: str):
+def _recover_after_timeout(
+    config: MonitoringConfig,
+    topology: Topology,
+    host_ids: set[str],
+    fragments: dict[str, bytes],
+    expected_fragments: dict[str, dict],
+    expected: dict,
+) -> dict:
+    started = monotonic()
+    selected = tuple(host for host in topology.hosts if host.id in host_ids)
+
+    def idle(host):
+        try:
+            health = wait_ready(
+                host.endpoint,
+                deadline_seconds=config.recovery_idle_timeout_seconds,
+                require_idle=True,
+                expected=expected
+                | {
+                    "dataset_digest": expected_fragments[host.id]["dataset_digest"],
+                    "closure_digest": expected_fragments[host.id]["closure_digest"],
+                },
+            )
+            return {"host": host.id, "idle": True, "health": health}
+        except Exception as error:
+            return {"host": host.id, "idle": False, "error": str(error)}
+
+    with ThreadPoolExecutor(max_workers=max(1, len(selected))) as pool:
+        idle_evidence = list(pool.map(idle, selected))
+    restart_ids = {item["host"] for item in idle_evidence if not item["idle"]}
+    restart_evidence = []
+    preparation_evidence = []
+    recovery_error = None
+    if restart_ids:
+        restart_evidence = restart_workers(config.benchmark, topology, restart_ids)
+        restarted = tuple(host for host in selected if host.id in restart_ids)
+        try:
+            recovered_ids = {
+                item["host"]
+                for item in restart_evidence
+                if item.get("required") and item.get("recovered") and item.get("restarted")
+            }
+            if recovered_ids != restart_ids:
+                raise RuntimeError("one or more monitoring workers failed to restart")
+            preparation_evidence = _prepare_workers(
+                restarted,
+                fragments,
+                config.restart_ready_timeout_seconds,
+                expected_fragments,
+            )
+            for host in restarted:
+                wait_ready(
+                    host.endpoint,
+                    deadline_seconds=config.restart_ready_timeout_seconds,
+                    require_idle=True,
+                    expected=expected
+                    | {
+                        "dataset_digest": expected_fragments[host.id]["dataset_digest"],
+                        "closure_digest": expected_fragments[host.id]["closure_digest"],
+                    },
+                )
+        except Exception as error:
+            recovery_error = str(error)
+    return {
+        "recovery_count": 1,
+        "recovery_seconds": monotonic() - started,
+        "worker_restart_count": len(restart_ids),
+        "recovery_succeeded": recovery_error is None,
+        "recovery_idle_evidence": idle_evidence,
+        "recovery_restart_evidence": restart_evidence,
+        "recovery_preparation_evidence": preparation_evidence,
+        "recovery_error": recovery_error,
+    }
+
+
+def _task_executor(
+    config: MonitoringConfig,
+    topology: Topology,
+    queries: dict[str, dict],
+    layout: str,
+    recover=None,
+):
     logical_rows: list[dict] = []
     physical_rows: list[dict] = []
 
@@ -66,20 +149,30 @@ def _task_executor(config: MonitoringConfig, topology: Topology, queries: dict[s
             remaining = task_deadline - (monotonic() - started)
             if remaining <= 0:
                 return {
-                    "status": "logical_timeout",
+                    "execution_status": "logical_timeout",
+                    "observation_outcome": "not_observed",
                     "logical_queries": query_count,
                     "physical_requests": physical_count,
                 }
             query = queries[query_id]
-            logical, physical = execute_logical_query(
-                topology.hosts,
-                query,
-                round_=1,
-                query_index=int(query["order"]) - 1,
-                layout=layout,
-                physical_timeout=config.physical_timeout_seconds,
-                logical_timeout=min(config.logical_timeout_seconds, remaining),
-            )
+            try:
+                logical, physical = execute_logical_query(
+                    topology.hosts,
+                    query,
+                    round_=1,
+                    query_index=int(query["order"]) - 1,
+                    layout=layout,
+                    physical_timeout=config.physical_timeout_seconds,
+                    logical_timeout=min(config.logical_timeout_seconds, remaining),
+                )
+            except Exception as error:
+                return {
+                    "execution_status": "semantic_failure",
+                    "observation_outcome": "not_observed",
+                    "logical_queries": query_count,
+                    "physical_requests": physical_count,
+                    "error": str(error),
+                }
             context = {
                 "task_id": task.task_id,
                 "policy_id": task.policy_id,
@@ -87,6 +180,11 @@ def _task_executor(config: MonitoringConfig, topology: Topology, queries: dict[s
                 "scheduled_at_monotonic": scheduled,
             }
             logical.update(context)
+            logical["observation_outcome"] = (
+                ("condition_detected" if logical.get("result_count", 0) > 0 else "condition_not_detected")
+                if logical["status"] == "completed"
+                else "not_observed"
+            )
             for row in physical:
                 row.update(context, layout=layout)
             logical_rows.append(logical)
@@ -94,24 +192,37 @@ def _task_executor(config: MonitoringConfig, topology: Topology, queries: dict[s
             query_count += 1
             physical_count += len(physical)
             if logical["status"] == "query_timeout":
+                recovery = (
+                    recover(set(logical["participants"]))
+                    if recover
+                    else {
+                        "recovery_count": 0,
+                        "recovery_seconds": 0.0,
+                        "worker_restart_count": 0,
+                        "recovery_succeeded": True,
+                    }
+                )
                 return {
-                    "status": "logical_timeout",
+                    "execution_status": "logical_timeout",
+                    "observation_outcome": "not_observed",
                     "logical_queries": query_count,
                     "physical_requests": physical_count,
+                    **recovery,
                 }
             if logical["status"] != "completed":
                 return {
-                    "status": "physical_failure",
+                    "execution_status": "physical_failure",
+                    "observation_outcome": "not_observed",
                     "logical_queries": query_count,
                     "physical_requests": physical_count,
                 }
-            if query.get("expectation") == "non_empty" and int(logical["result_count"]) == 0:
-                return {
-                    "status": "semantic_failure",
-                    "logical_queries": query_count,
-                    "physical_requests": physical_count,
-                }
-        return {"status": "completed", "logical_queries": query_count, "physical_requests": physical_count}
+        detected = any(row.get("observation_outcome") == "condition_detected" for row in logical_rows[-query_count:])
+        return {
+            "execution_status": "completed",
+            "observation_outcome": "condition_detected" if detected else "condition_not_detected",
+            "logical_queries": query_count,
+            "physical_requests": physical_count,
+        }
 
     return execute, logical_rows, physical_rows
 
@@ -146,6 +257,7 @@ def run(config: MonitoringConfig, topology: Topology, demand_levels: set[str] | 
             json.dumps(config.tasks, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest(),
         "demand_levels": levels,
+        "configuration_warnings": list(config.validation_warnings),
     }
     _write_json(run_dir / "manifest.json", manifest)
     (run_dir / "configuration.toml").write_bytes(config.path.read_bytes())
@@ -241,7 +353,15 @@ def run(config: MonitoringConfig, topology: Topology, demand_levels: set[str] | 
                             for host in topology.hosts
                         ]
                         _write_json(rep_dir / "worker_health_before.json", health_before)
-                        execute, logical, physical = _task_executor(config, topology, queries, layout)
+                        recover = partial(
+                            _recover_after_timeout,
+                            config,
+                            topology,
+                            fragments=fragments,
+                            expected_fragments=expected_fragments,
+                            expected=expected,
+                        )
+                        execute, logical, physical = _task_executor(config, topology, queries, layout, recover)
                         resource_path = rep_dir / "resource_samples.jsonl"
                         with ResourceSampler(
                             topology.hosts,
@@ -262,11 +382,16 @@ def run(config: MonitoringConfig, topology: Topology, demand_levels: set[str] | 
                                     "logical_timeouts": 0,
                                     "semantic_failures": 0,
                                     "physical_failures": 0,
+                                    "recovery_count": 0,
+                                    "recovery_seconds": 0.0,
+                                    "worker_restart_count": 0,
+                                    "monitoring_compliant_cycles": 0,
                                     "monitoring_compliance": None,
                                     "scheduler_busy_seconds": 0.0,
                                     "scheduler_idle_seconds": config.measurement_seconds,
                                     "scheduler_utilization": 0.0,
                                     "max_pending_monitoring_tasks": 0,
+                                    "scheduler_halted": False,
                                 }
                             else:
                                 scheduler = run_scheduler(

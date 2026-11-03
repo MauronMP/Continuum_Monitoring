@@ -3,7 +3,8 @@ from dataclasses import replace
 import pytest
 
 from continuum_bench.continuous_monitoring import experiment as monitoring_experiment
-from continuum_bench.continuous_monitoring.config import MonitoringTask, load_monitoring_config
+from continuum_bench.continuous_monitoring.config import MonitoringTask, known_policy_ids, load_monitoring_config
+from continuum_bench.continuous_monitoring.reporting import _resource_metrics
 from continuum_bench.continuous_monitoring.scheduler import run_scheduler
 from continuum_bench.topology import Host, Topology
 
@@ -24,13 +25,36 @@ def _task(task_id="task-a", priority=0, interval=10, deadline=None):
 
 
 def test_monitoring_configuration_resolves_policy_demand_schedules(root):
-    config = load_monitoring_config(root / "configs/monitoring.toml")
+    with pytest.warns(UserWarning, match="policy-audit"):
+        config = load_monitoring_config(root / "configs/monitoring.toml")
     assert config.benchmark.experiment["query_rounds"] == 18
     for level in ("low", "normal", "high", "critical"):
         tasks = config.resolve_tasks(level)
         assert tasks
         assert all(task.demand_level == level and task.interval_seconds > 0 for task in tasks)
     assert config.resolve_tasks("low")[0].interval_seconds > config.resolve_tasks("high")[0].interval_seconds
+    assert config.minimum_recommended_cycles_per_task == 3
+    assert config.validation_warnings
+
+
+def test_policy_validation_uses_declared_identifiers_not_substrings(root):
+    identifiers = known_policy_ids(root / "ontology")
+    assert "P-OPS-02" in identifiers
+    assert "OPS-02" not in identifiers
+
+
+def test_infrastructure_memory_sums_workers_at_each_sample():
+    samples = [
+        {"host": "a", "timestamp": "1", "cpu_percent": 1, "memory_bytes": 100},
+        {"host": "b", "timestamp": "1", "cpu_percent": 1, "memory_bytes": 300},
+        {"host": "a", "timestamp": "2", "cpu_percent": 1, "memory_bytes": 200},
+        {"host": "b", "timestamp": "2", "cpu_percent": 1, "memory_bytes": 400},
+    ]
+    metrics, hosts = _resource_metrics(samples, 60)
+    assert metrics["worker_memory_mean"] == 250
+    assert metrics["infrastructure_memory_mean"] == 500
+    assert metrics["infrastructure_memory_peak"] == 600
+    assert len(hosts) == 2
 
 
 def test_fixed_rate_slots_do_not_drift_with_execution_duration():
@@ -40,7 +64,7 @@ def test_fixed_rate_slots_do_not_drift_with_execution_duration():
     def execute(_task, slot, _deadline):
         scheduled.append(slot)
         clock.sleep(3)
-        return {"status": "completed"}
+        return {"execution_status": "completed", "observation_outcome": "condition_detected"}
 
     result = run_scheduler((_task(),), 41, 120, execute, clock=clock, sleeper=clock.sleep)
     assert scheduled == [10, 20, 30, 40]
@@ -58,7 +82,7 @@ def test_priority_deadline_and_task_id_provide_deterministic_tie_breaking():
 
     def execute(task, _slot, _deadline):
         order.append(task.task_id)
-        return {"status": "completed"}
+        return {"execution_status": "completed", "observation_outcome": "condition_not_detected"}
 
     run_scheduler(tasks, 11, 120, execute, clock=clock, sleeper=clock.sleep)
     assert order == ["a", "b", "z"]
@@ -71,7 +95,7 @@ def test_long_execution_records_missed_cycles_without_catch_up_burst():
     def execute(_task, slot, _deadline):
         executed.append(slot)
         clock.sleep(12)
-        return {"status": "completed"}
+        return {"execution_status": "completed", "observation_outcome": "condition_detected"}
 
     result = run_scheduler((_task(interval=5),), 31, 30, execute, clock=clock, sleeper=clock.sleep)
     assert executed == [5, 20]
@@ -85,8 +109,8 @@ def test_long_execution_records_missed_cycles_without_catch_up_burst():
     [
         ("completed", 1, "completed_on_time", 1.0),
         ("completed", 7, "completed_late", 0.0),
-        ("logical_timeout", 1, "logical_timeout", 0.0),
-        ("semantic_failure", 1, "semantic_failure", 0.0),
+        ("logical_timeout", 1, "completed_on_time", 0.0),
+        ("semantic_failure", 1, "completed_on_time", 0.0),
     ],
 )
 def test_cycle_status_controls_policy_compliance(outcome, duration, expected, compliant):
@@ -94,12 +118,30 @@ def test_cycle_status_controls_policy_compliance(outcome, duration, expected, co
 
     def execute(_task, _slot, _deadline):
         clock.sleep(duration)
-        return {"status": outcome}
+        return {"execution_status": outcome, "observation_outcome": "condition_detected"}
 
     task = replace(_task(interval=5), deadline_seconds=5)
     result = run_scheduler((task,), 11, 120, execute, clock=clock, sleeper=clock.sleep)
-    assert result["events"][0]["status"] == expected
+    assert result["events"][0]["execution_status"] == outcome
+    assert result["events"][0]["schedule_status"] == expected
     assert result["monitoring_compliance"] == compliant
+
+
+def test_detected_condition_is_a_compliant_observation_not_a_semantic_failure():
+    clock = FakeClock()
+
+    def execute(_task, _slot, _deadline):
+        return {"execution_status": "completed", "observation_outcome": "condition_detected"}
+
+    result = run_scheduler((_task(interval=5),), 6, 10, execute, clock=clock, sleeper=clock.sleep)
+    event = result["events"][0]
+    assert event["execution_status"] == "completed"
+    assert event["schedule_status"] == "completed_on_time"
+    assert event["observation_outcome"] == "condition_detected"
+    assert event["monitoring_compliant"] is True
+    assert result["semantic_failures"] == 0
+    assert event["scheduled_offset_seconds"] == 5
+    assert event["scheduled_at_utc"].endswith("+00:00")
 
 
 def test_scheduler_metrics_use_controlled_clock():
@@ -107,7 +149,7 @@ def test_scheduler_metrics_use_controlled_clock():
 
     def execute(_task, _slot, _deadline):
         clock.sleep(2)
-        return {"status": "completed"}
+        return {"execution_status": "completed", "observation_outcome": "condition_not_detected"}
 
     result = run_scheduler(
         (_task(interval=5), _task("task-b", interval=5)), 14.9, 120, execute, clock=clock, sleeper=clock.sleep
@@ -120,7 +162,8 @@ def test_scheduler_metrics_use_controlled_clock():
 
 
 def test_multi_query_task_stops_and_is_non_compliant_when_required_query_times_out(root, monkeypatch):
-    config = load_monitoring_config(root / "configs/monitoring.toml")
+    with pytest.warns(UserWarning):
+        config = load_monitoring_config(root / "configs/monitoring.toml")
     topology = Topology("test", (Host("edge", "edge", "a", "127.0.0.1", 8391),))
     queries = {
         query_id: {
@@ -148,5 +191,44 @@ def test_multi_query_task_stops_and_is_non_compliant_when_required_query_times_o
     execute, _logical, _physical = monitoring_experiment._task_executor(config, topology, queries, "distributed")
     task = MonitoringTask("multi", "P1", ("Q1", "Q2", "Q3"), 1, "normal", 10, 10)
     outcome = execute(task, 10, 10)
-    assert outcome["status"] == "logical_timeout"
+    assert outcome["execution_status"] == "logical_timeout"
+    assert outcome["observation_outcome"] == "not_observed"
+    assert outcome["recovery_count"] == 0
     assert calls == ["Q1", "Q2"]
+
+
+def test_timeout_recovery_restarts_reprepares_and_verifies_non_idle_worker(root, monkeypatch):
+    with pytest.warns(UserWarning):
+        config = load_monitoring_config(root / "configs/monitoring.toml")
+    topology = Topology("test", (Host("edge", "edge", "a", "127.0.0.1", 8391),))
+    ready_calls = []
+
+    def ready(*_args, **_kwargs):
+        ready_calls.append(1)
+        if len(ready_calls) == 1:
+            raise TimeoutError("still busy")
+        return {"status": "ready", "idle": True}
+
+    monkeypatch.setattr(monitoring_experiment, "wait_ready", ready)
+    monkeypatch.setattr(
+        monitoring_experiment,
+        "restart_workers",
+        lambda *_args: [{"host": "edge", "required": True, "recovered": True, "restarted": True}],
+    )
+    monkeypatch.setattr(
+        monitoring_experiment,
+        "_prepare_workers",
+        lambda *_args: [{"host": "edge", "status": "prepared"}],
+    )
+    evidence = monitoring_experiment._recover_after_timeout(
+        config,
+        topology,
+        {"edge"},
+        {"edge": b"<urn:s> <urn:p> <urn:o> .\n"},
+        {"edge": {"dataset_digest": "dataset", "closure_digest": "closure"}},
+        {},
+    )
+    assert evidence["recovery_count"] == 1
+    assert evidence["worker_restart_count"] == 1
+    assert evidence["recovery_succeeded"] is True
+    assert evidence["recovery_preparation_evidence"][0]["status"] == "prepared"

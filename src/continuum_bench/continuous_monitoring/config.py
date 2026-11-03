@@ -1,12 +1,24 @@
 from __future__ import annotations
 
 import json
+import re
 import tomllib
+import warnings
 from dataclasses import asdict, dataclass
 from hashlib import sha256
 from pathlib import Path
 
 from ..config import BenchmarkConfig, load_config
+
+
+def known_policy_ids(ontology_root: Path) -> frozenset[str]:
+    """Return policy identifiers declared through comon:policyIdentifier literals."""
+    pattern = re.compile(r"(?:[A-Za-z][\w-]*:)?policyIdentifier\s+\"([^\"]+)\"")
+    return frozenset(
+        policy_id
+        for ontology_path in ontology_root.rglob("*.ttl")
+        for policy_id in pattern.findall(ontology_path.read_text(encoding="utf-8"))
+    )
 
 
 @dataclass(frozen=True)
@@ -33,8 +45,12 @@ class MonitoringConfig:
     sample_interval_seconds: float
     physical_timeout_seconds: float
     logical_timeout_seconds: float
+    recovery_idle_timeout_seconds: float
+    restart_ready_timeout_seconds: float
+    minimum_recommended_cycles_per_task: int
     include_idle: bool
     tasks: tuple[dict, ...]
+    validation_warnings: tuple[str, ...]
 
     @property
     def digest(self) -> str:
@@ -88,14 +104,14 @@ def load_monitoring_config(path: Path) -> MonitoringConfig:
         raise ValueError("at least one monitoring_task is required")
     query_manifest = json.loads((benchmark.root / "queries/manifest.json").read_text())
     query_ids = {item["id"] for item in query_manifest["queries"]}
-    ontology_text = "\n".join(path.read_text() for path in (benchmark.root / "ontology").rglob("*.ttl"))
+    policy_ids = known_policy_ids(benchmark.root / "ontology")
     task_ids = [str(item["task_id"]) for item in tasks]
     if len(set(task_ids)) != len(task_ids):
         raise ValueError("monitoring task identifiers must be unique")
     for task in tasks:
         if not task.get("policy_id") or not task.get("query_ids"):
             raise ValueError(f"{task.get('task_id')} requires policy_id and query_ids")
-        if str(task["policy_id"]) not in ontology_text:
+        if str(task["policy_id"]) not in policy_ids:
             raise ValueError(f"{task['task_id']} references an unknown ontology policy: {task['policy_id']}")
         unknown = set(task["query_ids"]) - query_ids
         if unknown:
@@ -113,9 +129,25 @@ def load_monitoring_config(path: Path) -> MonitoringConfig:
         "resource_sample_interval_seconds": float(experiment["resource_sample_interval_seconds"]),
         "physical_query_request_timeout_seconds": float(experiment["physical_query_request_timeout_seconds"]),
         "logical_query_timeout_seconds": float(experiment["logical_query_timeout_seconds"]),
+        "recovery_idle_timeout_seconds": float(experiment["recovery_idle_timeout_seconds"]),
+        "restart_ready_timeout_seconds": float(experiment["restart_ready_timeout_seconds"]),
     }
     if any(value <= 0 for value in numeric.values()) or int(experiment["repetitions"]) < 1:
         raise ValueError("monitoring durations, timeouts and repetitions must be positive")
+    minimum_cycles = int(experiment.get("minimum_recommended_cycles_per_task", 3))
+    if minimum_cycles < 1:
+        raise ValueError("minimum_recommended_cycles_per_task must be positive")
+    cycle_warnings = []
+    for task in tasks:
+        for level in demand_levels:
+            expected_cycles = numeric["measurement_seconds"] / float(task["intervals_seconds"][level])
+            if expected_cycles < minimum_cycles:
+                cycle_warnings.append(
+                    f"{task['task_id']} at demand level {level} schedules approximately "
+                    f"{expected_cycles:.2f} cycles; the configured recommendation is {minimum_cycles}"
+                )
+    for message in cycle_warnings:
+        warnings.warn(message, UserWarning, stacklevel=2)
     config = MonitoringConfig(
         path=path,
         benchmark=benchmark,
@@ -128,8 +160,12 @@ def load_monitoring_config(path: Path) -> MonitoringConfig:
         sample_interval_seconds=numeric["resource_sample_interval_seconds"],
         physical_timeout_seconds=numeric["physical_query_request_timeout_seconds"],
         logical_timeout_seconds=numeric["logical_query_timeout_seconds"],
+        recovery_idle_timeout_seconds=numeric["recovery_idle_timeout_seconds"],
+        restart_ready_timeout_seconds=numeric["restart_ready_timeout_seconds"],
+        minimum_recommended_cycles_per_task=minimum_cycles,
         include_idle=bool(experiment.get("include_idle", True)),
         tasks=tasks,
+        validation_warnings=tuple(cycle_warnings),
     )
     for level in demand_levels:
         config.resolve_tasks(level)
