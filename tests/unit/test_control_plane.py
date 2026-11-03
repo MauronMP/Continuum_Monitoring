@@ -1,10 +1,12 @@
 import csv
 import json
+import subprocess
 
+from continuum_bench import deployment
 from continuum_bench.config import load_config
 from continuum_bench.deployment import render, restart_workers
 from continuum_bench.experiment import _failure_status, _snapshot_semantic_contract
-from continuum_bench.reporting import report
+from continuum_bench.reporting import _failure_cause, report
 from continuum_bench.resources import _bytes, _io_pair
 from continuum_bench.topology import load_topology
 
@@ -15,6 +17,8 @@ def test_failure_categories_are_explicit():
     assert _failure_status(TimeoutError("operation timed out")) == "hard_timeout"
     assert _failure_status(RuntimeError("did not become ready: ready=False assets=False")) == "incompatible_worker"
     assert _failure_status(RuntimeError("connection reset")) == "failed"
+    assert _failure_cause("Remote end closed connection", "oom_killed") == "out_of_memory"
+    assert _failure_cause("request failed", "query_timeout") == "timeout"
 
 
 def test_resource_units_are_parsed():
@@ -39,6 +43,25 @@ def test_oom_recovery_skips_hosts_that_do_not_require_restart(root):
     config = load_config(root / "configs/benchmark.toml")
     topology = load_topology(root / "configs/topology.toml")
     assert restart_workers(config, topology, set()) == [{"host": host.id, "required": False} for host in topology.hosts]
+
+
+def test_worker_baseline_restarts_selected_container(root, monkeypatch):
+    config = load_config(root / "configs/benchmark.toml")
+    topology = load_topology(root / "configs/topology.toml")
+    commands = []
+
+    def fake_remote(_host, _user, command, _timeout):
+        commands.append(command)
+        return subprocess.CompletedProcess([], 0, b"", b"")
+
+    monkeypatch.setattr(deployment, "_remote", fake_remote)
+    monkeypatch.setattr(deployment, "wait_ready", lambda *_args, **_kwargs: {"status": "ready"})
+    evidence = restart_workers(config, topology, {"cloud"})
+
+    assert len(commands) == 1
+    assert "docker restart" in commands[0]
+    assert evidence[0]["restarted"] is True
+    assert all(item["required"] is False for item in evidence[1:])
 
 
 def test_report_excludes_warmup_and_emits_auditable_outputs(tmp_path):

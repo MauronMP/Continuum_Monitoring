@@ -9,6 +9,7 @@ from statistics import median
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Patch
+from matplotlib.ticker import NullFormatter
 
 LAYOUTS = ("distributed", "replicated")
 COLORS = {"distributed": "#2878B5", "replicated": "#E07A1F"}
@@ -33,7 +34,13 @@ def _finite(value: object) -> bool:
     return isinstance(value, (int, float)) and np.isfinite(float(value))
 
 
-def _failure_cause(error: str) -> str:
+def _failure_cause(error: str, status: str | None = None) -> str:
+    if status == "oom_killed":
+        return "out_of_memory"
+    if status in {"hard_timeout", "query_timeout"}:
+        return "timeout"
+    if status in {"payload_limit_exceeded", "semantic_mismatch", "incompatible_worker"}:
+        return status
     message = error.lower()
     if "payload_limit_exceeded" in message:
         return "payload_limit_exceeded"
@@ -60,6 +67,36 @@ def _write_csv(path: Path, data: list[dict]) -> None:
 
 def _users(rows: list[dict]) -> list[int]:
     return sorted({int(row["users"]) for row in rows})
+
+
+def _population_ticks(users: list[int]) -> list[int]:
+    return users
+
+
+def _population_label(value: int) -> str:
+    if value >= 1_000 and value % 1_000 == 0:
+        return f"{value // 1_000}k"
+    return str(value)
+
+
+def _configure_population_axis(ax, users: list[int], *, categorical: bool) -> None:
+    ticks = _population_ticks(users)
+    if categorical:
+        positions = np.arange(len(users))
+        ax.set_xticks(positions, [_population_label(user) for user in users])
+    else:
+        ax.set_xscale("log")
+        ax.set_xticks(ticks, [_population_label(user) for user in ticks])
+        ax.xaxis.set_minor_formatter(NullFormatter())
+        if users:
+            ax.set_xlim(max(0.8, users[0] * 0.75), users[-1] * 1.18)
+    ax.tick_params(
+        axis="x",
+        labelsize=6.8 if categorical else 6.0,
+        labelrotation=45 if categorical else 60,
+    )
+    for label in ax.get_xticklabels():
+        label.set_horizontalalignment("right")
 
 
 def _mark_incomplete(ax, positions, rows: list[dict], users: list[int], *, add_label: bool) -> None:
@@ -98,7 +135,7 @@ def _finish(fig, ax, path: Path, title: str, xlabel: str, ylabel: str) -> None:
 def _plot_series(rows, figures, filename, field, title, ylabel, *, scale=1.0) -> None:
     users = _users(rows)
     positions = np.arange(len(users))
-    fig, ax = plt.subplots(figsize=(5.2, 3.45))
+    fig, ax = plt.subplots(figsize=(7.4, 4.15))
     any_value = False
     for layout in LAYOUTS:
         layout_rows = [row for row in rows if row["layout"] == layout]
@@ -120,7 +157,7 @@ def _plot_series(rows, figures, filename, field, title, ylabel, *, scale=1.0) ->
         _mark_incomplete(ax, positions, layout_rows, users, add_label=layout == LAYOUTS[0])
     if not any_value:
         ax.text(0.5, 0.52, "No completed measurements", transform=ax.transAxes, ha="center", color="#666")
-    ax.set_xticks(positions, [str(user) for user in users])
+    _configure_population_axis(ax, users, categorical=True)
     _finish(fig, ax, figures / filename, title, "Users / monitored entities", ylabel)
 
 
@@ -134,7 +171,7 @@ def _resource_heatmap(node_rows, figures, filename, field, title, colorbar_label
         return
     finite_values = [float(row[field]) / scale for row in node_rows if _finite(row.get(field))]
     vmax = max(finite_values) if finite_values else 1
-    fig, axes = plt.subplots(2, 1, figsize=(6.3, 4.9), sharex=True, constrained_layout=True)
+    fig, axes = plt.subplots(2, 1, figsize=(7.8, 5.4), sharex=True, constrained_layout=True)
     image = None
     for ax, layout in zip(axes, LAYOUTS, strict=True):
         by_key = {(str(row["host"]), int(row["users"])): row for row in node_rows if row["layout"] == layout}
@@ -154,7 +191,7 @@ def _resource_heatmap(node_rows, figures, filename, field, title, colorbar_label
                 text = "—" if not np.isfinite(value) else f"{value:.1f}"
                 color = "white" if np.isfinite(value) and value / vmax > 0.52 else "black"
                 ax.text(column, row_index, text, ha="center", va="center", fontsize=6.7, color=color)
-    axes[-1].set_xticks(range(len(users)), [str(user) for user in users])
+    _configure_population_axis(axes[-1], users, categorical=True)
     axes[-1].set_xlabel("Users / monitored entities")
     fig.suptitle(title, fontsize=10, fontweight="normal")
     fig.colorbar(image, ax=axes, shrink=0.82, label=colorbar_label)
@@ -301,7 +338,7 @@ def _plot_layout_ratios(rows: list[dict], figures: Path) -> None:
         ("transfer_bytes_median", "Transferred payload"),
         ("cpu_seconds_median", "CPU time"),
     )
-    fig, axes = plt.subplots(2, 2, figsize=(7.2, 5.3), sharex=True, sharey=True, constrained_layout=True)
+    fig, axes = plt.subplots(2, 2, figsize=(8.4, 5.8), sharex=True, sharey=True, constrained_layout=True)
     for ax, (field, title) in zip(axes.flat, metrics, strict=True):
         values = []
         for user in users:
@@ -338,7 +375,7 @@ def _plot_layout_ratios(rows: list[dict], figures: Path) -> None:
         ax.set_title(title, fontsize=9, fontweight="normal")
         ax.set_ylim(-110, 110)
         ax.grid(alpha=0.22)
-        ax.set_xticks(positions, [str(user) for user in users], rotation=45, ha="right")
+        _configure_population_axis(ax, users, categorical=True)
     for ax in axes[-1]:
         ax.set_xlabel("Users / monitored entities")
     for ax in axes[:, 0]:
@@ -353,7 +390,7 @@ def _plot_layout_ratios(rows: list[dict], figures: Path) -> None:
 
 
 def _plot_node_cpu_time(node_rows: list[dict], figures: Path, users: list[int], hosts: list[str]) -> None:
-    fig, axes = plt.subplots(2, 1, figsize=(7.2, 5.7), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(8.4, 6.0), sharex=True)
     palette = plt.get_cmap(CATEGORY_COLOR_MAP)(np.linspace(0.05, 0.95, max(len(hosts), 1)))
     positions = np.arange(len(users))
     width = 0.36
@@ -419,7 +456,7 @@ def _plot_node_cpu_time(node_rows: list[dict], figures: Path, users: list[int], 
         frameon=False,
         fontsize=7,
     )
-    axes[-1].set_xticks(positions, [str(user) for user in users])
+    _configure_population_axis(axes[-1], users, categorical=True)
     axes[-1].set_xlabel("Users / monitored entities")
     fig.suptitle("Measured compute contribution by continuum node", fontsize=10, fontweight="normal")
     fig.tight_layout(rect=(0, 0, 1, 0.89))
@@ -580,7 +617,9 @@ def report(run_dir: Path) -> Path:
             for key, value in totals.items():
                 counter_totals[key].append(value)
         causes = Counter(
-            _failure_cause(str(result.get("error", ""))) for result in reps if result["status"] in FAILURE_STATUSES
+            _failure_cause(str(result.get("error", "")), str(result.get("status", "")))
+            for result in reps
+            if result["status"] in FAILURE_STATUSES
         )
         rows.append(
             {
@@ -671,7 +710,9 @@ def report(run_dir: Path) -> Path:
         _write_csv(summary / name, data)
     cause_rows = [
         {"cause": cause, "count": count}
-        for cause, count in sorted(Counter(_failure_cause(str(row.get("error", ""))) for row in failures).items())
+        for cause, count in sorted(
+            Counter(_failure_cause(str(row.get("error", "")), str(row.get("status", ""))) for row in failures).items()
+        )
     ]
     _write_csv(summary / "failure_causes.csv", cause_rows)
 
@@ -701,7 +742,7 @@ def report(run_dir: Path) -> Path:
     )
 
     users = _users(rows)
-    positions = np.arange(len(users))
+    category_positions = np.arange(len(users))
     width = 0.36
     phases = (
         ("partition_seconds_median", "Partition", "#4C78A8"),
@@ -709,7 +750,7 @@ def report(run_dir: Path) -> Path:
         ("transfer_seconds_median", "Transfer", "#54A24B"),
         ("remote_load_seconds_median", "Remote load", "#E45756"),
     )
-    fig, ax = plt.subplots(figsize=(6.0, 3.8))
+    fig, ax = plt.subplots(figsize=(8.0, 4.4))
     for layout, offset, hatch in (("distributed", -width / 2, ""), ("replicated", width / 2, "//")):
         layout_rows = [row for row in rows if row["layout"] == layout]
         by_user = {int(row["users"]): row for row in layout_rows}
@@ -722,7 +763,7 @@ def report(run_dir: Path) -> Path:
                 ]
             )
             ax.bar(
-                positions + offset,
+                category_positions + offset,
                 values,
                 width,
                 bottom=bottom,
@@ -732,8 +773,8 @@ def report(run_dir: Path) -> Path:
                 label=label if layout == "distributed" else None,
             )
             bottom += np.nan_to_num(values)
-        _mark_incomplete(ax, positions + offset, layout_rows, users, add_label=layout == "distributed")
-    ax.set_xticks(positions, [str(user) for user in users])
+        _mark_incomplete(ax, category_positions + offset, layout_rows, users, add_label=layout == "distributed")
+    _configure_population_axis(ax, users, categorical=True)
     _finish(
         fig,
         ax,
@@ -751,7 +792,7 @@ def report(run_dir: Path) -> Path:
         "RDFS materialization cost",
         "Median seconds",
     )
-    fig, ax = plt.subplots(figsize=(6.0, 3.7))
+    fig, ax = plt.subplots(figsize=(8.0, 4.4))
     for layout in LAYOUTS:
         layout_rows = [row for row in rows if row["layout"] == layout]
         by_user = {int(row["users"]): row for row in layout_rows}
@@ -766,7 +807,7 @@ def report(run_dir: Path) -> Path:
             ]
             if np.isfinite(values).any():
                 ax.plot(
-                    positions,
+                    category_positions,
                     values,
                     linestyle=style,
                     marker=MARKERS[layout],
@@ -774,8 +815,8 @@ def report(run_dir: Path) -> Path:
                     linewidth=1.5,
                     label=f"{layout.capitalize()} {label}",
                 )
-        _mark_incomplete(ax, positions, layout_rows, users, add_label=layout == "distributed")
-    ax.set_xticks(positions, [str(user) for user in users])
+        _mark_incomplete(ax, category_positions, layout_rows, users, add_label=layout == "distributed")
+    _configure_population_axis(ax, users, categorical=True)
     _finish(
         fig,
         ax,
@@ -811,7 +852,7 @@ def report(run_dir: Path) -> Path:
             1024**2,
         ),
     ):
-        fig, axes = plt.subplots(2, 1, figsize=(5.7, 5.0), sharex=True, constrained_layout=True)
+        fig, axes = plt.subplots(2, 1, figsize=(7.8, 5.6), sharex=True, constrained_layout=True)
         for ax, layout in zip(axes, LAYOUTS, strict=True):
             layout_rows = [row for row in rows if row["layout"] == layout]
             by_user = {int(row["users"]): row for row in layout_rows}
@@ -823,15 +864,15 @@ def report(run_dir: Path) -> Path:
                     for user in users
                 ]
                 if np.isfinite(values).any():
-                    ax.plot(positions, values, marker="o", linewidth=1.4, label=label)
-            _mark_incomplete(ax, positions, layout_rows, users, add_label=True)
+                    ax.plot(category_positions, values, marker="o", linewidth=1.4, label=label)
+            _mark_incomplete(ax, category_positions, layout_rows, users, add_label=True)
+            _configure_population_axis(ax, users, categorical=True)
             ax.set_ylabel(unit)
             ax.set_title(layout.capitalize(), fontsize=9, fontweight="normal")
             ax.grid(alpha=0.22)
             handles, _ = ax.get_legend_handles_labels()
             if handles:
                 ax.legend(frameon=False, fontsize=7, ncol=4)
-        axes[-1].set_xticks(positions, [str(user) for user in users])
         axes[-1].set_xlabel("Users / monitored entities")
         fig.suptitle(title, fontsize=10, fontweight="normal")
         fig.savefig(figures / f"{number}_{prefix}_mean_p95_peak.png", dpi=300, bbox_inches="tight")
@@ -857,9 +898,9 @@ def report(run_dir: Path) -> Path:
             completed = int(row.get("completed_repetitions", 0))
             matrix[row_index, column] = completed / total if total else 0
             annotations[row_index][column] = f"{completed}/{total}" if total else "—"
-    fig, ax = plt.subplots(figsize=(6.0, 2.25))
+    fig, ax = plt.subplots(figsize=(8.0, 2.8))
     image = ax.imshow(matrix, vmin=0, vmax=1, cmap="RdYlGn", aspect="auto")
-    ax.set_xticks(range(len(users)), [str(user) for user in users])
+    _configure_population_axis(ax, users, categorical=True)
     ax.set_yticks(range(len(LAYOUTS)), [x.capitalize() for x in LAYOUTS])
     for row_index in range(len(LAYOUTS)):
         for column in range(len(users)):
@@ -871,14 +912,20 @@ def report(run_dir: Path) -> Path:
     fig.savefig(figures / "11_timeout_failure_frontier.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
-    fig, ax = plt.subplots(figsize=(6.0, 3.45))
+    fig, ax = plt.subplots(figsize=(8.0, 4.1))
     for layout, offset in (("distributed", -width / 2), ("replicated", width / 2)):
         layout_rows = {int(row["users"]): row for row in rows if row["layout"] == layout}
         completed = [int(layout_rows.get(user, {}).get("completed_repetitions", 0)) for user in users]
         failed = [int(layout_rows.get(user, {}).get("failures", 0)) for user in users]
-        ax.bar(positions + offset, completed, width, color=COLORS[layout], label=f"{layout.capitalize()} completed")
         ax.bar(
-            positions + offset,
+            category_positions + offset,
+            completed,
+            width,
+            color=COLORS[layout],
+            label=f"{layout.capitalize()} completed",
+        )
+        ax.bar(
+            category_positions + offset,
             failed,
             width,
             bottom=completed,
@@ -887,7 +934,7 @@ def report(run_dir: Path) -> Path:
             hatch="xx",
             label=f"{layout.capitalize()} failed",
         )
-    ax.set_xticks(positions, [str(user) for user in users])
+    _configure_population_axis(ax, users, categorical=True)
     ax.set_ylim(0, 3.4)
     ax.set_yticks(range(4))
     _finish(

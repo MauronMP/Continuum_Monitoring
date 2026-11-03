@@ -314,6 +314,8 @@ def run(
                 "warmup": config.experiment["warmup"],
                 "repetitions": config.experiment["repetitions"],
                 "query_rounds": config.experiment["query_rounds"],
+                "worker_baseline": "restart_all_before_each_scenario_layout",
+                "post_oom_recovery": "restart_all_workers",
             },
             indent=2,
         )
@@ -408,6 +410,21 @@ def run(
                     "status": _failure_status(error),
                     "error": str(error),
                     "failure_scope": "reference_validation",
+                }
+                failures.append(failure)
+                (layout_dir / "failure.json").write_text(json.dumps(failure, indent=2) + "\n")
+                continue
+            restart_evidence = restart_workers(config, topology, {host.id for host in topology.hosts})
+            (layout_dir / "cold-start.json").write_text(json.dumps(restart_evidence, indent=2) + "\n")
+            restart_failures = [item for item in restart_evidence if not item.get("recovered", False)]
+            if restart_failures:
+                failure = {
+                    "scenario": scenario.name,
+                    "users": scenario.users,
+                    "layout": layout,
+                    "status": "failed",
+                    "error": f"worker cold-start failed: {restart_failures}",
+                    "failure_scope": "layout_cold_start",
                 }
                 failures.append(failure)
                 (layout_dir / "failure.json").write_text(json.dumps(failure, indent=2) + "\n")
@@ -565,7 +582,9 @@ def run(
                 }
                 if oom_hosts:
                     record["status"] = "oom_killed"
-                    record["post_oom_recovery"] = restart_workers(config, topology, oom_hosts)
+                    record["post_oom_recovery"] = restart_workers(
+                        config, topology, {host.id for host in topology.hosts}
+                    )
                 if record["status"] in {
                     "failed",
                     "hard_timeout",

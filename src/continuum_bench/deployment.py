@@ -231,7 +231,7 @@ def container_states(config: BenchmarkConfig, topology: Topology) -> list[dict]:
 
 
 def restart_workers(config: BenchmarkConfig, topology: Topology, host_ids: set[str]) -> list[dict]:
-    """Restart workers killed by a measured OOM after their evidence has been captured."""
+    """Restart selected worker processes and verify their semantic contract."""
     user = str(config.deployment["ssh_user"])
     image = str(config.deployment["image"])
     semantic = semantic_environment(config, topology)
@@ -247,7 +247,7 @@ def restart_workers(config: BenchmarkConfig, topology: Topology, host_ids: set[s
         if host.id not in host_ids:
             return {"host": host.id, "required": False}
         command = (
-            f'id=$(docker ps -aq --filter ancestor={image} | head -1); test -n "$id" && docker start "$id" >/dev/null'
+            f'id=$(docker ps -aq --filter ancestor={image} | head -1); test -n "$id" && docker restart "$id" >/dev/null'
         )
         try:
             _remote(host, user, command, float(config.deployment["health_timeout_seconds"]))
@@ -257,9 +257,21 @@ def restart_workers(config: BenchmarkConfig, topology: Topology, host_ids: set[s
                 require_idle=True,
                 expected=expected,
             )
-            return {"host": host.id, "required": True, "recovered": True, "health": health}
+            return {
+                "host": host.id,
+                "required": True,
+                "recovered": True,
+                "restarted": True,
+                "health": health,
+            }
         except Exception as error:
-            return {"host": host.id, "required": True, "recovered": False, "error": str(error)}
+            return {
+                "host": host.id,
+                "required": True,
+                "recovered": False,
+                "restarted": False,
+                "error": str(error),
+            }
 
     with ThreadPoolExecutor(max_workers=len(topology.hosts)) as pool:
         return list(pool.map(restart, topology.hosts))
