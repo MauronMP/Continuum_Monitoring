@@ -25,8 +25,17 @@ def _io_pair(value: str) -> tuple[int | None, int | None]:
 
 
 class ResourceSampler:
-    def __init__(self, hosts: tuple[Host, ...], ssh_user: str, image: str, output: Path, interval: float):
+    def __init__(
+        self,
+        hosts: tuple[Host, ...],
+        ssh_user: str,
+        image: str,
+        output: Path,
+        interval: float,
+        container_names: dict[str, str] | None = None,
+    ):
         self.hosts, self.ssh_user, self.image, self.output, self.interval = hosts, ssh_user, image, output, interval
+        self.container_names = container_names or {}
         self.stop_event = Event()
         self.thread: Thread | None = None
         self._phase = "unassigned"
@@ -75,8 +84,21 @@ class ResourceSampler:
         with self._lock:
             self._emit_locked({**row, "phase": self._phase})
 
+    def _container_selector(self, host: Host) -> str:
+        if host.id in self.container_names:
+            return f"id=$(docker ps --filter name=^/{self.container_names[host.id]}$ -q | head -1)"
+        # Compose labels are image metadata in some Docker/Compose versions and can
+        # therefore also be inherited by containers started with `docker run`.
+        # The published coordinator port uniquely identifies the worker represented
+        # by this topology entry, including when two workers share one physical host.
+        return (
+            f"id=$(docker ps --filter publish={host.port} --filter ancestor={self.image} -q | head -1); "
+            f'test -n "$id" || id=$(docker ps --filter publish={host.port} -q | head -1)'
+        )
+
     def _sample(self, host: Host) -> dict:
-        command = f"id=$(docker ps --filter ancestor={self.image} -q | head -1); test -n \"$id\" || id=$(docker ps --filter label=com.docker.compose.service=worker -q | head -1); test -n \"$id\" && docker stats --no-stream --format '{{{{json .}}}}' $id && docker exec $id sh -c 'cat /sys/fs/cgroup/cpu.stat; cat /sys/fs/cgroup/memory.current | sed s/^/memory_current=/; cat /sys/fs/cgroup/pids.current | sed s/^/pids_current=/'"
+        selector = self._container_selector(host)
+        command = f"{selector}; test -n \"$id\" && docker stats --no-stream --format '{{{{json .}}}}' $id && docker exec $id sh -c 'cat /sys/fs/cgroup/cpu.stat; cat /sys/fs/cgroup/memory.current | sed s/^/memory_current=/; cat /sys/fs/cgroup/pids.current | sed s/^/pids_current=/'"
         args = (
             ["bash", "-lc", command]
             if host.local

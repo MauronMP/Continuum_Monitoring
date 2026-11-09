@@ -123,6 +123,23 @@ def test_infrastructure_memory_sums_workers_at_each_sample():
     assert len(hosts) == 2
 
 
+def test_missing_resource_telemetry_is_not_reported_as_zero():
+    samples = [
+        {"host": "edge", "timestamp": "1", "cpu_percent": 1, "cpu_usage_seconds": 1, "memory_bytes": 100},
+        {"host": "edge", "timestamp": "2", "cpu_percent": 2, "cpu_usage_seconds": 2, "memory_bytes": 110},
+        {"host": "mist", "timestamp": "1", "error": "telemetry unavailable"},
+        {"host": "mist", "timestamp": "2", "error": "telemetry unavailable"},
+    ]
+    metrics, hosts = _resource_metrics(samples, 60)
+    mist = next(row for row in hosts if row["host"] == "mist")
+    assert mist["cpu_seconds_per_hour"] is None
+    assert mist["memory_peak"] is None
+    assert mist["network_rx_mib_per_hour"] is None
+    assert metrics["resource_hosts_total"] == 2
+    assert metrics["cpu_telemetry_hosts"] == 1
+    assert metrics["memory_telemetry_hosts"] == 1
+
+
 def test_fixed_rate_slots_do_not_drift_with_execution_duration():
     clock = FakeClock()
     scheduled = []

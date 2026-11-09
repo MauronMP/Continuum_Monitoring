@@ -181,6 +181,7 @@ def _task_executor(
     queries: dict[str, dict],
     layout: str,
     recover=None,
+    host_selector=None,
 ):
     logical_rows: list[dict] = []
     physical_rows: list[dict] = []
@@ -200,6 +201,7 @@ def _task_executor(
                     "physical_requests": physical_count,
                 }
             query = queries[query_id]
+            selected_hosts = host_selector(query, 1, int(query["order"]) - 1, layout) if host_selector else None
             try:
                 logical, physical = execute_logical_query(
                     topology.hosts,
@@ -209,6 +211,7 @@ def _task_executor(
                     layout=layout,
                     physical_timeout=config.physical_timeout_seconds,
                     logical_timeout=min(config.logical_timeout_seconds, remaining),
+                    selected_hosts=selected_hosts,
                 )
             except Exception as error:
                 return {

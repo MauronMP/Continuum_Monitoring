@@ -115,12 +115,15 @@ def execute_logical_query(
     request: RequestFunction = request_json,
     clock: Clock = monotonic,
     wait_for_futures=wait,
+    selected_hosts: tuple[Host, ...] | None = None,
 ) -> tuple[dict, list[dict]]:
     """Execute one logical query; only its required physical fan-out is concurrent."""
     logical_started_at = datetime.now(UTC).isoformat()
     logical_started = clock()
     deadline = logical_started + logical_timeout
-    selected = select_hosts(hosts, query, round_, query_index, layout)
+    selected = selected_hosts if selected_hosts is not None else select_hosts(hosts, query, round_, query_index, layout)
+    if not selected:
+        raise ValueError(f"Query {query['id']} has no selected physical participant")
     executor = ThreadPoolExecutor(max_workers=len(selected), thread_name_prefix="query-fanout")
     futures: dict[Future, Host] = {
         executor.submit(

@@ -200,9 +200,9 @@ def test_report_excludes_warmup_and_emits_auditable_outputs(tmp_path):
     with (summary / "physical_queries.csv").open() as handle:
         physical = next(csv.DictReader(handle))
     assert physical["host"] == "edge1"
-    assert len(list((run_dir / "figures").glob("*.png"))) == 21
+    assert len(list((run_dir / "figures").glob("*.png"))) == 25
     figure_manifest = json.loads((run_dir / "figures/manifest.json").read_text())
-    assert figure_manifest["figure_count"] == 21
+    assert figure_manifest["figure_count"] == 25
 
 
 def test_semantic_contract_snapshot_is_self_contained(root, tmp_path):

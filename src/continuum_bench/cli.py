@@ -35,6 +35,17 @@ def parser() -> argparse.ArgumentParser:
     monitor_parser.add_argument("--demand-level", action="append")
     monitor_report_parser = commands.add_parser("monitor-report")
     monitor_report_parser.add_argument("run_dir", type=Path)
+    adaptation_parser = commands.add_parser("adaptation")
+    adaptation_stages = adaptation_parser.add_subparsers(dest="adaptation_stage", required=True)
+    for stage in ("observe", "analyze", "plan", "execute", "verify"):
+        stage_parser = adaptation_stages.add_parser(stage)
+        stage_parser.add_argument(
+            "--config", dest="adaptation_config", type=Path, default=Path("configs/adaptation.toml")
+        )
+        if stage != "observe":
+            stage_parser.add_argument("run_dir", type=Path)
+    adaptation_report = adaptation_stages.add_parser("report")
+    adaptation_report.add_argument("run_dir", type=Path)
     report_parser = commands.add_parser("report")
     report_parser.add_argument("run_dir", type=Path)
     return root
@@ -57,6 +68,33 @@ def main() -> int:
         from .continuous_monitoring.reporting import report as report_monitoring
 
         result = {"summary": str(report_monitoring(args.run_dir.resolve()))}
+        print(json.dumps(result, indent=2))
+        return 0
+    if args.command == "adaptation":
+        from .adaptation.config import load_adaptation_config
+        from .adaptation.experiment import analyze, execute, observe, plan, verify
+        from .adaptation.reporting import report as report_adaptation
+
+        if args.adaptation_stage == "report":
+            result = {"comparison": str(report_adaptation(args.run_dir.resolve()))}
+        else:
+            adaptation = load_adaptation_config(args.adaptation_config)
+            topology = load_topology(
+                adaptation.benchmark.root / adaptation.benchmark.deployment["topology_file"],
+                set(args.exclude_host),
+            )
+            if args.adaptation_stage == "observe":
+                result = {"results": str(observe(adaptation, topology))}
+            else:
+                run_dir = args.run_dir.resolve()
+                if args.adaptation_stage == "analyze":
+                    result = analyze(adaptation, run_dir)
+                elif args.adaptation_stage == "plan":
+                    result = plan(adaptation, topology, run_dir)
+                elif args.adaptation_stage == "execute":
+                    result = execute(adaptation, topology, run_dir)
+                else:
+                    result = verify(adaptation, topology, run_dir)
         print(json.dumps(result, indent=2))
         return 0
     config = load_config(args.config)

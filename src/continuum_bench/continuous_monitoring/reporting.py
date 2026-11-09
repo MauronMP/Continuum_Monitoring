@@ -35,23 +35,26 @@ def _resource_metrics(samples: list[dict], duration: float) -> tuple[dict, list[
         rows = [row for row in samples if row.get("host") == host and "cpu_percent" in row]
         cpu = [float(row["cpu_percent"]) for row in rows]
         memory = [float(row["memory_bytes"]) for row in rows if row.get("memory_bytes") is not None]
-        counters = {}
+        counters: dict[str, float | None] = {}
         for key in ("cpu_usage_seconds", "network_rx_bytes", "network_tx_bytes"):
             values = [float(row[key]) for row in rows if row.get(key) is not None]
-            counters[key] = max(values) - min(values) if values else 0.0
+            counters[key] = max(values) - min(values) if len(values) >= 2 else None
+        cpu_seconds = counters["cpu_usage_seconds"]
+        network_rx = counters["network_rx_bytes"]
+        network_tx = counters["network_tx_bytes"]
         host_rows.append(
             {
                 "host": host,
                 "cpu_mean": float(np.mean(cpu)) if cpu else None,
                 "cpu_p95": _percentile(cpu, 95),
                 "cpu_peak": max(cpu) if cpu else None,
-                "cpu_seconds": counters["cpu_usage_seconds"],
-                "cpu_seconds_per_hour": counters["cpu_usage_seconds"] / hours if hours else None,
+                "cpu_seconds": cpu_seconds,
+                "cpu_seconds_per_hour": cpu_seconds / hours if hours and cpu_seconds is not None else None,
                 "memory_mean": float(np.mean(memory)) if memory else None,
                 "memory_p95": _percentile(memory, 95),
                 "memory_peak": max(memory) if memory else None,
-                "network_rx_mib_per_hour": counters["network_rx_bytes"] / 1024**2 / hours if hours else None,
-                "network_tx_mib_per_hour": counters["network_tx_bytes"] / 1024**2 / hours if hours else None,
+                "network_rx_mib_per_hour": network_rx / 1024**2 / hours if hours and network_rx is not None else None,
+                "network_tx_mib_per_hour": network_tx / 1024**2 / hours if hours and network_tx is not None else None,
                 "pids_peak": max((int(row.get("pids", 0)) for row in rows), default=0),
             }
         )
@@ -67,78 +70,161 @@ def _resource_metrics(samples: list[dict], duration: float) -> tuple[dict, list[
         values = [series[host][index].get("memory_bytes") for host in hosts]
         if all(value is not None for value in values):
             infrastructure_memory.append(sum(float(value) for value in values))
+
+    def observed_sum(field: str) -> float | None:
+        values = [float(row[field]) for row in host_rows if row.get(field) is not None]
+        return sum(values) if values else None
+
     return (
         {
             "cpu_mean": float(np.mean(cpu)) if cpu else None,
             "cpu_p95": _percentile(cpu, 95),
             "cpu_peak": max(cpu) if cpu else None,
-            "cpu_seconds_per_hour": (sum(row["cpu_seconds_per_hour"] for row in host_rows) if hours else None),
+            "cpu_seconds_per_hour": observed_sum("cpu_seconds_per_hour"),
             "worker_memory_mean": float(np.mean(worker_memory)) if worker_memory else None,
             "worker_memory_p95": _percentile(worker_memory, 95),
             "worker_memory_peak": max(worker_memory) if worker_memory else None,
             "infrastructure_memory_mean": (float(np.mean(infrastructure_memory)) if infrastructure_memory else None),
             "infrastructure_memory_p95": _percentile(infrastructure_memory, 95),
             "infrastructure_memory_peak": max(infrastructure_memory) if infrastructure_memory else None,
-            "network_rx_mib_per_hour": (sum(row["network_rx_mib_per_hour"] for row in host_rows) if hours else None),
-            "network_tx_mib_per_hour": (sum(row["network_tx_mib_per_hour"] for row in host_rows) if hours else None),
+            "network_rx_mib_per_hour": observed_sum("network_rx_mib_per_hour"),
+            "network_tx_mib_per_hour": observed_sum("network_tx_mib_per_hour"),
+            "resource_hosts_total": len(hosts),
+            "cpu_telemetry_hosts": sum(row.get("cpu_seconds_per_hour") is not None for row in host_rows),
+            "memory_telemetry_hosts": sum(row.get("memory_peak") is not None for row in host_rows),
+            "network_telemetry_hosts": sum(
+                row.get("network_rx_mib_per_hour") is not None and row.get("network_tx_mib_per_hour") is not None
+                for row in host_rows
+            ),
         },
         host_rows,
     )
 
 
-def _plot(summary: list[dict], figures: Path, field: str, filename: str, title: str, ylabel: str) -> None:
-    keys = []
-    for row in summary:
-        key = (row["scenario"], row["layout"])
-        if key not in keys:
-            keys.append(key)
-    levels = []
-    for row in summary:
-        if row["demand_level"] not in levels:
-            levels.append(row["demand_level"])
-    fig, ax = plt.subplots(figsize=(7.2, 4.0))
-    x = np.arange(len(levels))
-    for scenario, layout in keys:
-        by_level = {
-            row["demand_level"]: row for row in summary if row["scenario"] == scenario and row["layout"] == layout
-        }
-        values = [by_level.get(level, {}).get(field, np.nan) for level in levels]
-        ax.plot(x, values, marker="o", label=f"{scenario} · {layout}")
-    ax.set_xticks(x, levels)
-    ax.set_title(title, fontweight="normal")
-    ax.set_ylabel(ylabel)
-    ax.grid(alpha=0.25)
-    if keys:
-        ax.legend(frameon=False, fontsize=7)
-    fig.tight_layout()
-    fig.savefig(figures / filename, dpi=300, bbox_inches="tight")
-    plt.close(fig)
+DEMAND_ORDER = ("idle", "low", "normal", "high", "critical")
 
 
-def _plot_multi(
-    summary: list[dict], figures: Path, fields: tuple[tuple[str, str], ...], filename: str, title: str, ylabel: str
+def _ordered_levels(rows: list[dict]) -> list[str]:
+    present = {str(row["demand_level"]) for row in rows}
+    return [level for level in DEMAND_ORDER if level in present] + sorted(present - set(DEMAND_ORDER))
+
+
+def _median_or_nan(values: list[float]) -> float:
+    return float(median(values)) if values else float("nan")
+
+
+def _format_cell(value: float, specification: str) -> str:
+    if not np.isfinite(value):
+        return "N/A"
+    return format(value, specification)
+
+
+def _matrix_plot(
+    values: np.ndarray,
+    row_labels: list[str],
+    column_labels: list[str],
+    figures: Path,
+    filename: str,
+    title: str,
+    *,
+    formats: list[str] | None = None,
+    row_normalized: bool = False,
+    color_label: str = "Value",
+    cmap: str = "YlGnBu",
 ) -> None:
-    keys = list(dict.fromkeys((row["scenario"], row["layout"]) for row in summary))
-    levels = list(dict.fromkeys(row["demand_level"] for row in summary))
-    fig, ax = plt.subplots(figsize=(7.2, 4.0))
-    x = np.arange(len(levels))
-    styles = ("-", "--", ":")
-    for scenario, layout in keys:
-        by_level = {
-            row["demand_level"]: row for row in summary if row["scenario"] == scenario and row["layout"] == layout
-        }
-        for index, (field, label) in enumerate(fields):
-            values = [by_level.get(level, {}).get(field, np.nan) for level in levels]
-            ax.plot(x, values, marker="o", linestyle=styles[index], label=f"{scenario} · {layout} · {label}")
-    ax.set_xticks(x, levels)
-    ax.set_title(title, fontweight="normal")
-    ax.set_ylabel(ylabel)
-    ax.grid(alpha=0.25)
-    if keys:
-        ax.legend(frameon=False, fontsize=6.5)
+    raw = np.asarray(values, dtype=float)
+    display = raw.copy()
+    if row_normalized:
+        for index, row in enumerate(raw):
+            finite = row[np.isfinite(row)]
+            if finite.size:
+                minimum, maximum = float(np.min(finite)), float(np.max(finite))
+                display[index] = (row - minimum) / (maximum - minimum) if maximum > minimum else 0.5
+        color_label = "Relative magnitude within each metric"
+    masked = np.ma.masked_invalid(display)
+    palette = plt.get_cmap(cmap).with_extremes(bad="#e6e6e6")
+    height = max(3.3, 0.48 * len(row_labels) + 1.7)
+    width = max(6.2, 1.2 * len(column_labels) + 2.8)
+    fig, ax = plt.subplots(figsize=(width, height))
+    image = ax.imshow(masked, aspect="auto", cmap=palette, interpolation="nearest")
+    ax.set_xticks(np.arange(len(column_labels)), [label.title() for label in column_labels])
+    ax.set_yticks(np.arange(len(row_labels)), row_labels)
+    ax.set_title(title, fontweight="normal", pad=12)
+    ax.tick_params(axis="both", length=0)
+    ax.set_xticks(np.arange(-0.5, len(column_labels), 1), minor=True)
+    ax.set_yticks(np.arange(-0.5, len(row_labels), 1), minor=True)
+    ax.grid(which="minor", color="white", linewidth=1.5)
+    ax.tick_params(which="minor", bottom=False, left=False)
+    formats = formats or [".2f"] * len(row_labels)
+    threshold = np.nanmedian(display) if np.isfinite(display).any() else 0.5
+    for row_index in range(raw.shape[0]):
+        for column_index in range(raw.shape[1]):
+            value = raw[row_index, column_index]
+            shown = display[row_index, column_index]
+            color = "white" if np.isfinite(shown) and shown > threshold else "#17202a"
+            ax.text(
+                column_index,
+                row_index,
+                _format_cell(value, formats[row_index]),
+                ha="center",
+                va="center",
+                fontsize=8,
+                color=color,
+            )
+    colorbar = fig.colorbar(image, ax=ax, fraction=0.035, pad=0.03)
+    colorbar.set_label(color_label, fontsize=8)
+    if row_normalized:
+        colorbar.set_ticks((0, 0.5, 1))
+        colorbar.set_ticklabels(("row min", "mid", "row max"))
     fig.tight_layout()
     fig.savefig(figures / filename, dpi=300, bbox_inches="tight")
     plt.close(fig)
+
+
+def _summary_matrix(
+    summary: list[dict],
+    fields: tuple[tuple[str, str, str], ...],
+    levels: list[str],
+) -> tuple[np.ndarray, list[str], list[str]]:
+    by_level = {str(row["demand_level"]): row for row in summary}
+    values = np.asarray(
+        [[by_level.get(level, {}).get(field, np.nan) for level in levels] for field, _, _ in fields], dtype=float
+    )
+    return values, [label for _, label, _ in fields], [specification for _, _, specification in fields]
+
+
+def _host_matrix(
+    host_rows: list[dict], field: str, levels: list[str], divisor: float = 1.0
+) -> tuple[np.ndarray, list[str]]:
+    hosts = sorted({str(row["host"]) for row in host_rows})
+    values = []
+    for host in hosts:
+        host_values = []
+        for level in levels:
+            candidates = [row for row in host_rows if row["host"] == host and row["demand_level"] == level]
+            samples = [float(row[field]) / divisor for row in candidates if row.get(field) is not None]
+            host_values.append(_median_or_nan(samples) if len(samples) == len(candidates) else float("nan"))
+        values.append(host_values)
+    return np.asarray(values), hosts
+
+
+def _task_matrix(task_rows: list[dict], levels: list[str]) -> tuple[np.ndarray, list[str]]:
+    tasks = sorted({(str(row["task_id"]), str(row["policy_id"])) for row in task_rows})
+    values = []
+    for task_id, policy_id in tasks:
+        row_values = []
+        for level in levels:
+            samples = [
+                float(row["scheduled_cycles"])
+                for row in task_rows
+                if row["task_id"] == task_id
+                and row["policy_id"] == policy_id
+                and row["demand_level"] == level
+                and row.get("scheduled_cycles") is not None
+            ]
+            row_values.append(_median_or_nan(samples))
+        values.append(row_values)
+    return np.asarray(values), [f"{task_id}\n({policy_id})" for task_id, policy_id in tasks]
 
 
 def report(run_dir: Path) -> Path:
@@ -292,6 +378,10 @@ def report(run_dir: Path) -> Path:
         "infrastructure_memory_peak",
         "network_rx_mib_per_hour",
         "network_tx_mib_per_hour",
+        "resource_hosts_total",
+        "cpu_telemetry_hosts",
+        "memory_telemetry_hosts",
+        "network_telemetry_hosts",
         "logical_cycles_per_hour",
         "logical_queries_per_hour",
         "physical_requests_per_hour",
@@ -340,48 +430,121 @@ def report(run_dir: Path) -> Path:
     _write_csv(summary_dir / "host_summary.csv", host_rows)
     _write_csv(summary_dir / "task_policy_summary.csv", task_rows)
     _write_csv(summary_dir / "idle_vs_active.csv", idle_active)
-    plots = (
-        ("cpu_seconds_per_hour", "01_cpu_seconds_per_hour.png", "Recurring CPU cost", "CPU-seconds/hour"),
-        ("monitoring_compliance_percent", "04_compliance.png", "Policy monitoring compliance", "%"),
-        ("scheduler_utilization", "06_scheduler_utilization.png", "Scheduler utilization", "Ratio"),
+    levels = _ordered_levels(summary)
+    resource_fields = (
+        ("cpu_seconds_per_hour", "Observed CPU (s/h)", ".1f"),
+        ("worker_memory_peak", "Worker peak memory (MiB)", ".1f"),
+        ("network_rx_mib_per_hour", "Observed network RX (MiB/h)", ".2f"),
+        ("network_tx_mib_per_hour", "Observed network TX (MiB/h)", ".2f"),
+        ("cpu_telemetry_hosts", "Nodes with CPU telemetry", ".0f"),
+        ("memory_telemetry_hosts", "Nodes with memory telemetry", ".0f"),
     )
-    for field, filename, title, ylabel in plots:
-        _plot(summary, figures, field, filename, title, ylabel)
-    _plot_multi(
-        summary,
+    resource_values, resource_labels, resource_formats = _summary_matrix(summary, resource_fields, levels)
+    resource_values[1] /= 1024**2
+    _matrix_plot(
+        resource_values,
+        resource_labels,
+        levels,
         figures,
-        (("infrastructure_memory_mean", "mean"), ("infrastructure_memory_p95", "p95")),
-        "02_memory_by_demand.png",
-        "Total infrastructure memory by demand level",
-        "Bytes",
+        "01_resource_overhead_matrix.png",
+        "Monitoring resource overhead by demand level",
+        formats=resource_formats,
+        row_normalized=True,
     )
-    _plot_multi(
-        summary,
-        figures,
-        (("network_rx_mib_per_hour", "RX"), ("network_tx_mib_per_hour", "TX")),
-        "03_network_by_demand.png",
-        "Network traffic by demand level",
-        "MiB/hour",
+
+    workload_fields = (
+        ("logical_cycles_per_hour", "Monitoring cycles/h", ".0f"),
+        ("logical_queries_per_hour", "Logical queries/h", ".0f"),
+        ("physical_requests_per_hour", "Physical requests/h", ".0f"),
+        ("max_pending_monitoring_tasks", "Maximum pending tasks", ".0f"),
     )
-    _plot_multi(
-        summary,
+    workload_values, workload_labels, workload_formats = _summary_matrix(summary, workload_fields, levels)
+    _matrix_plot(
+        workload_values,
+        workload_labels,
+        levels,
         figures,
-        (("schedule_lag_p50", "p50"), ("schedule_lag_p95", "p95")),
-        "05_schedule_lag.png",
-        "Schedule lag by demand level",
-        "Seconds",
+        "02_workload_intensity_matrix.png",
+        "Executed monitoring workload",
+        formats=workload_formats,
+        row_normalized=True,
     )
-    _plot_multi(
-        summary,
+
+    cpu_values, hosts = _host_matrix(host_rows, "cpu_seconds_per_hour", levels)
+    _matrix_plot(
+        cpu_values,
+        hosts,
+        levels,
         figures,
-        (
-            ("logical_latency_p50", "p50"),
-            ("logical_latency_p95", "p95"),
-            ("logical_latency_p99", "p99"),
-        ),
-        "07_logical_latency.png",
-        "Logical query latency by demand level",
-        "Milliseconds",
+        "03_host_cpu_matrix.png",
+        "Recurring CPU cost by physical node",
+        formats=[".1f"] * len(hosts),
+        color_label="CPU-seconds/hour",
+    )
+
+    memory_values, hosts = _host_matrix(host_rows, "memory_peak", levels, 1024**2)
+    _matrix_plot(
+        memory_values,
+        hosts,
+        levels,
+        figures,
+        "04_host_memory_matrix.png",
+        "Peak worker memory by physical node",
+        formats=[".1f"] * len(hosts),
+        color_label="MiB",
+        cmap="PuBuGn",
+    )
+
+    network_rx, hosts = _host_matrix(host_rows, "network_rx_mib_per_hour", levels)
+    network_tx, _ = _host_matrix(host_rows, "network_tx_mib_per_hour", levels)
+    network_values = np.vstack((network_rx, network_tx))
+    network_labels = [f"{host} RX" for host in hosts] + [f"{host} TX" for host in hosts]
+    _matrix_plot(
+        network_values,
+        network_labels,
+        levels,
+        figures,
+        "05_host_network_matrix.png",
+        "Monitoring network traffic by physical node",
+        formats=[".2f"] * len(network_labels),
+        color_label="MiB/hour",
+        cmap="YlOrRd",
+    )
+
+    quality_levels = [level for level in levels if level != "idle"]
+    quality_fields = (
+        ("monitoring_compliance_percent", "Compliant cycles (%)", ".1f"),
+        ("scheduler_utilization", "Scheduler utilization (%)", ".2f"),
+        ("schedule_lag_p95", "Schedule lag p95 (s)", ".2f"),
+        ("logical_latency_p50", "Logical latency p50 (ms)", ".1f"),
+        ("logical_latency_p95", "Logical latency p95 (ms)", ".1f"),
+        ("logical_latency_p99", "Logical latency p99 (ms)", ".1f"),
+    )
+    quality_values, quality_labels, quality_formats = _summary_matrix(summary, quality_fields, quality_levels)
+    quality_values[1] *= 100
+    _matrix_plot(
+        quality_values,
+        quality_labels,
+        quality_levels,
+        figures,
+        "06_temporal_quality_matrix.png",
+        "Temporal quality and monitoring compliance",
+        formats=quality_formats,
+        row_normalized=True,
+        cmap="BuPu",
+    )
+
+    task_values, task_labels = _task_matrix(task_rows, quality_levels)
+    _matrix_plot(
+        task_values,
+        task_labels,
+        quality_levels,
+        figures,
+        "07_policy_task_cycles_matrix.png",
+        "Executed cycles by monitoring task and policy",
+        formats=[".0f"] * len(task_labels),
+        color_label="Median cycles per repetition",
+        cmap="YlGn",
     )
     (summary_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     (figures / "manifest.json").write_text(

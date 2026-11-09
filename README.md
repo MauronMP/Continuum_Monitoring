@@ -1,6 +1,6 @@
 # Continuum RDF Scalability Benchmark
 
-This repository contains two independent physical-continuum experiments. The scalability benchmark measures growth of the monitored population and RDF ABox. The continuous-monitoring experiment measures the recurring cost and temporal sustainability of predefined policy-driven schedules on an already prepared semantic state.
+This repository contains three independent physical-continuum experiments. The scalability benchmark measures growth of the monitored population and RDF ABox. The continuous-monitoring experiment measures the recurring cost and temporal sustainability of predefined policy-driven schedules on an already prepared semantic state. The controlled adaptation demonstration replays that scalability workload while policy monitoring observes sustained pressure, connects the evidence to simulated Analyze and Plan stages, explicitly deploys a read-only replica, and repeats the same workload for measured verification.
 
 Python is the experiment control plane. Rust is the semantic data plane: it generates deterministic ABoxes, parses and serializes RDF, materializes RDFS, executes SPARQL with Oxigraph, and serves the worker HTTP protocol.
 
@@ -34,6 +34,17 @@ continuum-bench monitor --config configs/monitoring.toml
 continuum-bench monitor-report outputs/monitoring-<run-id>
 ```
 
+The adaptation demonstration is deliberately staged. Execute is never invoked by Observe, Analyze or Plan:
+
+```bash
+continuum-bench adaptation observe --config configs/adaptation.toml
+continuum-bench adaptation analyze --config configs/adaptation.toml outputs/adaptation-<run-id>
+continuum-bench adaptation plan --config configs/adaptation.toml outputs/adaptation-<run-id>
+continuum-bench adaptation execute --config configs/adaptation.toml outputs/adaptation-<run-id>
+continuum-bench adaptation verify --config configs/adaptation.toml outputs/adaptation-<run-id>
+continuum-bench adaptation report outputs/adaptation-<run-id>
+```
+
 Use `--exclude-host <id>` only when a host is explicitly unavailable. `--diagnostic-unlimited` removes the complete remote `/prepare` request deadline and marks the run non-comparable; physical SPARQL requests and logical queries retain separate deadlines.
 
 Only one logical monitoring query is active at a time. A distributed query issues concurrent physical requests to every participant required by its routing contract, waits for the complete fan-out, and then merges the results. A partial fan-out is a failed logical result. The first logical query timeout aborts its repetition; workers must recover to an idle state or be restarted before another repetition can begin.
@@ -45,11 +56,13 @@ Installation requires a complete repository clone because configuration, ontolog
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Distributed ontology deployment](docs/DISTRIBUTED_ONTOLOGY.md)
 - [Benchmark method](docs/BENCHMARK.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [Result contract](docs/RESULTS.md)
 - [Continuous monitoring overhead](docs/MONITORING_OVERHEAD.md)
 - [Monitoring policy and query coverage](docs/MONITORING_POLICY_COVERAGE.md)
+- [Controlled policy-driven adaptation demonstration](docs/ADAPTATION_DEMO.md)
 - [RDF model](docs/RDF_MODEL.md)
 - [Requirements catalogue](docs/REQUIREMENTS.md)
 - [SPARQL query catalogue](docs/QUERY_CATALOG.md)

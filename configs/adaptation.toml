@@ -1,0 +1,45 @@
+[adaptation_experiment]
+benchmark_config = "benchmark.toml"
+monitoring_config = "monitoring.toml"
+scenario = "users-10000"
+layout = "distributed"
+demand_level = "high"
+stabilization_seconds = 30
+measurement_seconds = 300
+resource_sample_interval_seconds = 1.0
+# Replay the same ordered query catalog used by the scalability experiment while
+# policy monitoring runs. Before and after windows use the same number of rounds.
+scalability_query_rounds = 18
+
+trigger_policy = "P-ADAPT-03"
+trigger_task_ids = ["operational-node-state"]
+trigger_query_ids = ["BASE-Q07", "BASE-Q08", "BASE-Q26"]
+adaptation_context_query_id = "BASE-Q12"
+candidate_query_ids = ["BASE-Q19", "EXT-Q42"]
+consecutive_trigger_cycles = 3
+
+# Experimental adaptation thresholds; these are not ontology-defined temporal requirements.
+# CPU pressure is evaluated on the configured Edge candidates and must persist across cycles.
+cpu_p95_percent = 90.0
+cpu_mean_percent = 40.0
+cpu_saturation_fraction = 0.20
+logical_latency_p95_ms = 10000.0
+monitoring_compliance_min = 0.95
+timeouts = 1
+
+preferred_action = "deploy_read_only_replica"
+preferred_target = "mist"
+replica_source = "edge1"
+# The source is selected from these workers by sustained p95/mean pressure.
+# replica_source is the deterministic fallback when resource telemetry is unavailable.
+trigger_resource_hosts = ["edge1", "edge2", "edge3"]
+replica_port = 8491
+allowed_target_tiers = ["edge", "mist", "fog", "cloud"]
+excluded_targets = []
+minimum_available_memory_mib = 3072
+maximum_host_load_per_cpu = 0.90
+require_distinct_from_source = true
+fallback_to_ranked_candidate = true
+
+cpu_per_replica = 1.0
+memory_mib_per_replica = 1536

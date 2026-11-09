@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import tomllib
 from collections import Counter
 from pathlib import Path
 from statistics import median
@@ -494,6 +495,309 @@ def _plot_phase_metric(
     axes[-1].set_xlabel("Users / monitored entities")
     fig.suptitle(title, fontsize=10, fontweight="normal")
     fig.savefig(figures / filename, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _first_incomplete_position(rows: list[dict], users: list[int], layout: str) -> int | None:
+    by_user = {int(row["users"]): row for row in rows if row["layout"] == layout}
+    return next(
+        (
+            index
+            for index, user in enumerate(users)
+            if user in by_user
+            and int(by_user[user].get("completed_repetitions", 0)) < int(by_user[user].get("repetitions", 0))
+        ),
+        None,
+    )
+
+
+def _shade_replication_failure_region(ax, rows: list[dict], users: list[int], *, label: bool = False) -> None:
+    first = _first_incomplete_position(rows, users, "replicated")
+    if first is None:
+        return
+    ax.axvspan(
+        first - 0.45,
+        len(users) - 0.55,
+        color="#B22222",
+        alpha=0.07,
+        linewidth=0,
+        label="Replicated OOM region" if label else None,
+    )
+
+
+def _plot_scalability_evidence_overview(rows: list[dict], figures: Path, memory_limit_mib: float | None) -> None:
+    users = _users(rows)
+    positions = np.arange(len(users))
+    by_key = {(str(row["layout"]), int(row["users"])): row for row in rows}
+    metrics = (
+        ("ready_seconds_median", "Semantic readiness", "Median time (s)", 1.0),
+        ("query_latency_p95_ms", "Logical query tail latency", "p95 latency (ms)", 1.0),
+        ("catalog_throughput_per_second", "Logical throughput", "Queries/s", 1.0),
+        ("memory_peak_bytes", "Peak container memory", "Peak memory (MiB)", 1024**2),
+    )
+    fig, axes = plt.subplots(2, 2, figsize=(8.4, 5.9), sharex=True, constrained_layout=True)
+    for panel, (ax, (field, title, ylabel, scale)) in enumerate(zip(axes.flat, metrics, strict=True)):
+        for layout in LAYOUTS:
+            values = [
+                float(by_key[(layout, user)][field]) / scale
+                if (layout, user) in by_key and _finite(by_key[(layout, user)].get(field))
+                else np.nan
+                for user in users
+            ]
+            ax.plot(
+                positions,
+                values,
+                color=COLORS[layout],
+                marker=MARKERS[layout],
+                markersize=4.2,
+                linewidth=1.5,
+                label=layout.capitalize(),
+            )
+            _mark_incomplete(
+                ax,
+                positions,
+                [row for row in rows if row["layout"] == layout],
+                users,
+                add_label=False,
+            )
+        _shade_replication_failure_region(ax, rows, users, label=panel == 0)
+        if field == "ready_seconds_median":
+            ax.axhline(120, color="#666", linestyle="--", linewidth=0.9, label="120 s operational target")
+        if field == "memory_peak_bytes" and memory_limit_mib:
+            ax.axhline(
+                memory_limit_mib,
+                color="#7F1D1D",
+                linestyle="--",
+                linewidth=0.9,
+                label=f"{memory_limit_mib:g} MiB limit",
+            )
+        ax.set_title(title, fontsize=9, fontweight="normal")
+        ax.set_ylabel(ylabel)
+        ax.grid(alpha=0.22)
+        _configure_population_axis(ax, users, categorical=True)
+    for ax in axes[-1]:
+        ax.set_xlabel("Users / monitored entities")
+    handles, labels = [], []
+    for ax in axes.flat:
+        for handle, label in zip(*ax.get_legend_handles_labels(), strict=True):
+            if label not in labels:
+                handles.append(handle)
+                labels.append(label)
+    fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 1.075), ncol=3, frameon=False, fontsize=7.2)
+    fig.suptitle("Scalability evidence: distributed versus replicated", fontsize=10, fontweight="normal", y=1.145)
+    fig.savefig(figures / "22_scalability_evidence_overview.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _plot_normalized_cost_growth(rows: list[dict], figures: Path) -> None:
+    users = _users(rows)
+    positions = np.arange(len(users))
+    by_key = {(str(row["layout"]), int(row["users"])): row for row in rows}
+    metrics = (
+        ("ready_seconds_median", "Readiness"),
+        ("query_latency_p95_ms", "Query p95"),
+        ("transfer_bytes_median", "Transferred RDF"),
+        ("cpu_seconds_median", "CPU time"),
+    )
+    reference = next(
+        (
+            user
+            for user in users
+            if all(
+                _finite(by_key.get((layout, user), {}).get(field)) for layout in LAYOUTS for field, _title in metrics
+            )
+        ),
+        None,
+    )
+    fig, axes = plt.subplots(2, 2, figsize=(8.4, 5.9), sharex=True, constrained_layout=True)
+    if reference is None:
+        for ax in axes.flat:
+            ax.axis("off")
+        axes.flat[0].text(0.5, 0.5, "No paired completed baseline", ha="center", va="center")
+    else:
+        for panel, (ax, (field, title)) in enumerate(zip(axes.flat, metrics, strict=True)):
+            for layout in LAYOUTS:
+                baseline = float(by_key[(layout, reference)][field])
+                values = [
+                    float(by_key[(layout, user)][field]) / baseline
+                    if (layout, user) in by_key and _finite(by_key[(layout, user)].get(field))
+                    else np.nan
+                    for user in users
+                ]
+                ax.plot(
+                    positions,
+                    values,
+                    color=COLORS[layout],
+                    marker=MARKERS[layout],
+                    markersize=4.2,
+                    linewidth=1.5,
+                    label=layout.capitalize(),
+                )
+            _shade_replication_failure_region(ax, rows, users, label=panel == 0)
+            ax.axhline(1.0, color="#666", linestyle="--", linewidth=0.8)
+            ax.set_yscale("log")
+            ax.set_title(title, fontsize=9, fontweight="normal")
+            ax.set_ylabel(f"Growth from {reference} users (×)")
+            ax.grid(alpha=0.22, which="both")
+            _configure_population_axis(ax, users, categorical=True)
+        for ax in axes[-1]:
+            ax.set_xlabel("Users / monitored entities")
+        handles, labels = axes.flat[0].get_legend_handles_labels()
+        fig.legend(
+            handles,
+            labels,
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.065),
+            ncol=3,
+            frameon=False,
+            fontsize=7.2,
+        )
+    fig.suptitle("Normalized cost growth on completed repetitions", fontsize=10, fontweight="normal", y=1.125)
+    fig.savefig(figures / "23_normalized_scaling_growth.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _plot_capacity_frontier(rows: list[dict], figures: Path, memory_limit_mib: float | None) -> None:
+    users = _users(rows)
+    positions = np.arange(len(users))
+    by_key = {(str(row["layout"]), int(row["users"])): row for row in rows}
+    fig, axes = plt.subplots(2, 1, figsize=(8.0, 5.6), constrained_layout=True)
+    for layout in LAYOUTS:
+        memory = [
+            float(by_key[(layout, user)]["memory_peak_bytes"]) / 1024**2
+            if (layout, user) in by_key and _finite(by_key[(layout, user)].get("memory_peak_bytes"))
+            else np.nan
+            for user in users
+        ]
+        axes[0].plot(
+            positions,
+            memory,
+            color=COLORS[layout],
+            marker=MARKERS[layout],
+            linewidth=1.5,
+            label=f"{layout.capitalize()} measured peak",
+        )
+    failed_positions = [
+        index
+        for index, user in enumerate(users)
+        if ("replicated", user) in by_key
+        and int(by_key[("replicated", user)].get("completed_repetitions", 0))
+        < int(by_key[("replicated", user)].get("repetitions", 0))
+    ]
+    if failed_positions and memory_limit_mib:
+        axes[0].scatter(
+            failed_positions,
+            [memory_limit_mib] * len(failed_positions),
+            marker="x",
+            s=45,
+            linewidths=1.6,
+            color="#B22222",
+            label="Replicated OOM (no completed measurement)",
+            zorder=5,
+        )
+    if memory_limit_mib:
+        axes[0].axhline(memory_limit_mib, color="#7F1D1D", linestyle="--", linewidth=0.9)
+    _shade_replication_failure_region(axes[0], rows, users)
+    axes[0].set_title("Memory pressure and observed OOM boundary", fontsize=9, fontweight="normal")
+    axes[0].set_ylabel("Peak memory (MiB)")
+    axes[0].grid(alpha=0.22)
+    axes[0].legend(frameon=False, fontsize=7.0, ncol=2)
+    _configure_population_axis(axes[0], users, categorical=True)
+
+    maximum_completed = {}
+    first_failed = {}
+    for layout in LAYOUTS:
+        layout_rows = sorted((row for row in rows if row["layout"] == layout), key=lambda row: int(row["users"]))
+        complete = [
+            int(row["users"])
+            for row in layout_rows
+            if int(row.get("completed_repetitions", 0)) == int(row.get("repetitions", 0))
+        ]
+        failed = [
+            int(row["users"])
+            for row in layout_rows
+            if int(row.get("completed_repetitions", 0)) < int(row.get("repetitions", 0))
+        ]
+        maximum_completed[layout] = max(complete, default=0)
+        first_failed[layout] = min(failed, default=None)
+    y = np.arange(len(LAYOUTS))
+    bars = axes[1].barh(y, [maximum_completed[layout] for layout in LAYOUTS], color=[COLORS[x] for x in LAYOUTS])
+    axes[1].set_yticks(y, [layout.capitalize() for layout in LAYOUTS])
+    axes[1].set_xlabel("Largest population with 3/3 measured repetitions")
+    axes[1].set_title("Empirical completion frontier within the tested range", fontsize=9, fontweight="normal")
+    axes[1].grid(axis="x", alpha=0.22)
+    for bar, layout in zip(bars, LAYOUTS, strict=True):
+        value = maximum_completed[layout]
+        suffix = " (test limit)" if first_failed[layout] is None else f"; first OOM at {first_failed[layout]:,}"
+        axes[1].text(
+            value,
+            bar.get_y() + bar.get_height() / 2,
+            f" {value:,}{suffix}",
+            va="center",
+            fontsize=7.4,
+        )
+    axes[1].set_xlim(0, max(maximum_completed.values(), default=1) * 1.32)
+    fig.suptitle("Capacity frontier under identical container limits", fontsize=10, fontweight="normal")
+    fig.savefig(figures / "24_capacity_frontier_and_memory.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _plot_paired_layout_advantage(rows: list[dict], figures: Path) -> None:
+    by_key = {(str(row["layout"]), int(row["users"])): row for row in rows}
+    comparable = sorted(
+        user
+        for user in _users(rows)
+        if all(
+            (layout, user) in by_key
+            and int(by_key[(layout, user)].get("completed_repetitions", 0))
+            == int(by_key[(layout, user)].get("repetitions", 0))
+            for layout in LAYOUTS
+        )
+    )
+    fig, ax = plt.subplots(figsize=(7.2, 3.8))
+    if not comparable:
+        ax.axis("off")
+        ax.text(0.5, 0.5, "No paired completed population", ha="center", va="center")
+    else:
+        user = comparable[-1]
+        distributed = by_key[("distributed", user)]
+        replicated = by_key[("replicated", user)]
+        metrics = (
+            ("preparation_seconds_median", "Preparation time"),
+            ("query_latency_p95_ms", "Query p95 latency"),
+            ("transfer_bytes_median", "Transferred RDF"),
+            ("cpu_seconds_median", "CPU time"),
+            ("memory_peak_bytes", "Peak memory"),
+        )
+        reductions = [100.0 * (1.0 - float(distributed[field]) / float(replicated[field])) for field, _label in metrics]
+        labels = [label for _field, label in metrics]
+        y = np.arange(len(metrics))
+        colors = ["#2E7D32" if value >= 0 else "#B22222" for value in reductions]
+        bars = ax.barh(y, reductions, color=colors, alpha=0.88)
+        ax.set_yticks(y, labels)
+        ax.invert_yaxis()
+        ax.axvline(0, color="#555", linewidth=0.8)
+        ax.set_xlabel("Distributed cost reduction relative to replication (%)")
+        ax.set_title(
+            f"Paired advantage at {user:,} users (highest population completed by both layouts)",
+            fontsize=10,
+            fontweight="normal",
+        )
+        ax.grid(axis="x", alpha=0.22)
+        for bar, value in zip(bars, reductions, strict=True):
+            ax.text(
+                value + (1.2 if value >= 0 else -1.2),
+                bar.get_y() + bar.get_height() / 2,
+                f"{value:.1f}%",
+                va="center",
+                ha="left" if value >= 0 else "right",
+                fontsize=8,
+            )
+        lower = min(-5.0, min(reductions) - 8)
+        upper = max(10.0, max(reductions) + 12)
+        ax.set_xlim(lower, upper)
+    fig.tight_layout()
+    fig.savefig(figures / "25_paired_layout_advantage.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -1101,6 +1405,15 @@ def report(run_dir: Path) -> Path:
         "Peak memory (MiB)",
         1024**2,
     )
+    configuration_path = run_dir / "configuration.toml"
+    memory_limit_mib = None
+    if configuration_path.is_file():
+        configuration = tomllib.loads(configuration_path.read_text(encoding="utf-8"))
+        memory_limit_mib = float(configuration.get("deployment", {}).get("memory_mib_per_container", 0)) or None
+    _plot_scalability_evidence_overview(rows, figures, memory_limit_mib)
+    _plot_normalized_cost_growth(rows, figures)
+    _plot_capacity_frontier(rows, figures, memory_limit_mib)
+    _plot_paired_layout_advantage(rows, figures)
 
     campaign_manifest_path = run_dir / "manifest.json"
     campaign_manifest = json.loads(campaign_manifest_path.read_text()) if campaign_manifest_path.is_file() else {}
